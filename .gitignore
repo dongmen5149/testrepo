@@ -1,0 +1,29 @@
+# Extracted/derived assets - regenerable from Hero3/0103EFD4.jar
+work/
+
+# Build outputs
+build/
+.gradle/
+*.iml
+local.properties
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python (asset converter)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Ghidra
+*.gpr
+*.rep/
+*.lock
+*.lock~

@@ -1,0 +1,155 @@
+{
+  "count": 15,
+  "colors": [
+    {
+      "rgba_be": "#8b120469",
+      "argb_le": "#6904128b",
+      "bytes": [
+        139,
+        18,
+        4,
+        105
+      ]
+    },
+    {
+      "rgba_be": "#982dd5fe",
+      "argb_le": "#fed52d98",
+      "bytes": [
+        152,
+        45,
+        213,
+        254
+      ]
+    },
+    {
+      "rgba_be": "#88394479",
+      "argb_le": "#79443988",
+      "bytes": [
+        136,
+        57,
+        68,
+        121
+      ]
+    },
+    {
+      "rgba_be": "#523b47db",
+      "argb_le": "#db473b52",
+      "bytes": [
+        82,
+        59,
+        71,
+        219
+      ]
+    },
+    {
+      "rgba_be": "#c9510469",
+      "argb_le": "#690451c9",
+      "bytes": [
+        201,
+        81,
+        4,
+        105
+      ]
+    },
+    {
+      "rgba_be": "#5a56dbff",
+      "argb_le": "#ffdb565a",
+      "bytes": [
+        90,
+        86,
+        219,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#0b62c6b1",
+      "argb_le": "#b1c6620b",
+      "bytes": [
+        11,
+        98,
+        198,
+        177
+      ]
+    },
+    {
+      "rgba_be": "#508392fd",
+      "argb_le": "#fd928350",
+      "bytes": [
+        80,
+        131,
+        146,
+        253
+      ]
+    },
+    {
+      "rgba_be": "#5f87dfff",
+      "argb_le": "#ffdf875f",
+      "bytes": [
+        95,
+        135,
+        223,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#519b95fe",
+      "argb_le": "#fe959b51",
+      "bytes": [
+        81,
+        155,
+        149,
+        254
+      ]
+    },
+    {
+      "rgba_be": "#55acdbff",
+      "argb_le": "#ffdbac55",
+      "bytes": [
+        85,
+        172,
+        219,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#13b4dbff",
+      "argb_le": "#ffdbb413",
+      "bytes": [
+        19,
+        180,
+        219,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#d7bcdbff",
+      "argb_le": "#ffdbbcd7",
+      "bytes": [
+        215,
+        188,
+        219,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#57cddfff",
+      "argb_le": "#ffdfcd57",
+      "bytes": [
+        87,
+        205,
+        223,
+        255
+      ]
+    },
+    {
+      "rgba_be": "#96d5dfff",
+      "argb_le": "#ffdfd596",
+      "bytes": [
+        150,
+        213,
+        223,
+        255
+      ]
+    }
+  ]
+}

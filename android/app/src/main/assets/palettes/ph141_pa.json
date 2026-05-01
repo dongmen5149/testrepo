@@ -1,0 +1,45 @@
+{
+  "count": 4,
+  "colors": [
+    {
+      "rgba_be": "#c2608560",
+      "argb_le": "#608560c2",
+      "bytes": [
+        194,
+        96,
+        133,
+        96
+      ]
+    },
+    {
+      "rgba_be": "#04aa07a9",
+      "argb_le": "#a907aa04",
+      "bytes": [
+        4,
+        170,
+        7,
+        169
+      ]
+    },
+    {
+      "rgba_be": "#04ccc4c9",
+      "argb_le": "#c9c4cc04",
+      "bytes": [
+        4,
+        204,
+        196,
+        201
+      ]
+    },
+    {
+      "rgba_be": "#0afecafb",
+      "argb_le": "#fbcafe0a",
+      "bytes": [
+        10,
+        254,
+        202,
+        251
+      ]
+    }
+  ]
+}

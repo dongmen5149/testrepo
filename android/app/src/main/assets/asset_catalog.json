@@ -1,0 +1,4025 @@
+{
+  "meta": {
+    "generated_at": "2026-05-01",
+    "source": "work/converted"
+  },
+  "sprites_by_category": {
+    "boss": [
+      {
+        "name": "boss9000_bm",
+        "frame_count": 22,
+        "first_frame": "frame_00_22x32_tb.png",
+        "first_dim": "22x32"
+      },
+      {
+        "name": "boss9001_bm",
+        "frame_count": 30,
+        "first_frame": "frame_00_34x29_tb.png",
+        "first_dim": "34x29"
+      },
+      {
+        "name": "boss9002_bm",
+        "frame_count": 30,
+        "first_frame": "frame_00_58x66_tb.png",
+        "first_dim": "58x66"
+      },
+      {
+        "name": "boss9003_bm",
+        "frame_count": 23,
+        "first_frame": "frame_00_38x60_tb.png",
+        "first_dim": "38x60"
+      },
+      {
+        "name": "boss9004_bm",
+        "frame_count": 43,
+        "first_frame": "frame_00_10x8_tb.png",
+        "first_dim": "10x8"
+      }
+    ],
+    "comm": [
+      {
+        "name": "attmsg_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_48x15_tb.png",
+        "first_dim": "48x15"
+      },
+      {
+        "name": "inmenu_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_6x6_tb.png",
+        "first_dim": "6x6"
+      },
+      {
+        "name": "item_bm",
+        "frame_count": 29,
+        "first_frame": "frame_00_16x15_tb.png",
+        "first_dim": "16x15"
+      },
+      {
+        "name": "number_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_200x20_tb.png",
+        "first_dim": "200x20"
+      },
+      {
+        "name": "shadow_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_14x9_tb.png",
+        "first_dim": "14x9"
+      },
+      {
+        "name": "ui_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_16x7_tb.png",
+        "first_dim": "16x7"
+      }
+    ],
+    "enemy": [
+      {
+        "name": "e0100_bm",
+        "frame_count": 15,
+        "first_frame": "frame_00_16x14_tb.png",
+        "first_dim": "16x14"
+      },
+      {
+        "name": "e0101_bm",
+        "frame_count": 9,
+        "first_frame": "frame_00_26x40_tb.png",
+        "first_dim": "26x40"
+      },
+      {
+        "name": "e0102_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_6x5_tb.png",
+        "first_dim": "6x5"
+      },
+      {
+        "name": "e0103_bm",
+        "frame_count": 9,
+        "first_frame": "frame_00_8x10_tb.png",
+        "first_dim": "8x10"
+      },
+      {
+        "name": "e0104_bm",
+        "frame_count": 21,
+        "first_frame": "frame_00_20x15_tb.png",
+        "first_dim": "20x15"
+      },
+      {
+        "name": "e0105_bm",
+        "frame_count": 10,
+        "first_frame": "frame_00_15x13_tc.png",
+        "first_dim": "15x13"
+      },
+      {
+        "name": "e0106_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_12x13_tb.png",
+        "first_dim": "12x13"
+      },
+      {
+        "name": "e0107_bm",
+        "frame_count": 19,
+        "first_frame": "frame_00_20x16_tb.png",
+        "first_dim": "20x16"
+      },
+      {
+        "name": "e0108_bm",
+        "frame_count": 19,
+        "first_frame": "frame_00_14x13_tb.png",
+        "first_dim": "14x13"
+      },
+      {
+        "name": "e0109_bm",
+        "frame_count": 16,
+        "first_frame": "frame_00_18x19_tb.png",
+        "first_dim": "18x19"
+      },
+      {
+        "name": "e0110_bm",
+        "frame_count": 10,
+        "first_frame": "frame_00_4x4_tb.png",
+        "first_dim": "4x4"
+      },
+      {
+        "name": "e0111_bm",
+        "frame_count": 16,
+        "first_frame": "frame_00_34x23_tb.png",
+        "first_dim": "34x23"
+      },
+      {
+        "name": "e0112_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_28x22_tb.png",
+        "first_dim": "28x22"
+      },
+      {
+        "name": "e0113_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_14x10_tb.png",
+        "first_dim": "14x10"
+      },
+      {
+        "name": "e0114_bm",
+        "frame_count": 28,
+        "first_frame": "frame_00_18x10_tb.png",
+        "first_dim": "18x10"
+      },
+      {
+        "name": "e0115_bm",
+        "frame_count": 8,
+        "first_frame": "frame_00_6x5_tb.png",
+        "first_dim": "6x5"
+      },
+      {
+        "name": "e0116_bm",
+        "frame_count": 23,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "e0117_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_20x20_tb.png",
+        "first_dim": "20x20"
+      },
+      {
+        "name": "e0118_bm",
+        "frame_count": 15,
+        "first_frame": "frame_00_6x6_tb.png",
+        "first_dim": "6x6"
+      },
+      {
+        "name": "e0119_bm",
+        "frame_count": 20,
+        "first_frame": "frame_00_18x31_tb.png",
+        "first_dim": "18x31"
+      },
+      {
+        "name": "e0120_bm",
+        "frame_count": 8,
+        "first_frame": "frame_00_32x18_tb.png",
+        "first_dim": "32x18"
+      },
+      {
+        "name": "e0121_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_28x17_tb.png",
+        "first_dim": "28x17"
+      },
+      {
+        "name": "e0122_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_18x47_tc.png",
+        "first_dim": "18x47"
+      },
+      {
+        "name": "e0123_bm",
+        "frame_count": 22,
+        "first_frame": "frame_00_14x17_tb.png",
+        "first_dim": "14x17"
+      },
+      {
+        "name": "e0125_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_20x20_tb.png",
+        "first_dim": "20x20"
+      },
+      {
+        "name": "e0126_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x15_tb.png",
+        "first_dim": "16x15"
+      },
+      {
+        "name": "e0127_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_8x6_tb.png",
+        "first_dim": "8x6"
+      },
+      {
+        "name": "e1000_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_16x7_tb.png",
+        "first_dim": "16x7"
+      },
+      {
+        "name": "e1001_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_16x7_tb.png",
+        "first_dim": "16x7"
+      },
+      {
+        "name": "e1002_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "e1003_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x16_tb.png",
+        "first_dim": "8x16"
+      },
+      {
+        "name": "e1004_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x15_tb.png",
+        "first_dim": "8x15"
+      },
+      {
+        "name": "e1005_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_20x18_tb.png",
+        "first_dim": "20x18"
+      },
+      {
+        "name": "e1006_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_20x18_tb.png",
+        "first_dim": "20x18"
+      },
+      {
+        "name": "e1007_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_22x20_tb.png",
+        "first_dim": "22x20"
+      },
+      {
+        "name": "e1008_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_22x20_tb.png",
+        "first_dim": "22x20"
+      },
+      {
+        "name": "e1009_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_24x20_tb.png",
+        "first_dim": "24x20"
+      },
+      {
+        "name": "e1010_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_18x18_tb.png",
+        "first_dim": "18x18"
+      },
+      {
+        "name": "e1011_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_18x18_tb.png",
+        "first_dim": "18x18"
+      },
+      {
+        "name": "e1012_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_18x18_tb.png",
+        "first_dim": "18x18"
+      },
+      {
+        "name": "e1013_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_16x7_tb.png",
+        "first_dim": "16x7"
+      },
+      {
+        "name": "e1100_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_8x10_tb.png",
+        "first_dim": "8x10"
+      },
+      {
+        "name": "e1101_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_8x10_tb.png",
+        "first_dim": "8x10"
+      },
+      {
+        "name": "e1102_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_8x12_tb.png",
+        "first_dim": "8x12"
+      },
+      {
+        "name": "e1103_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "e1104_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "e1105_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_6x8_tb.png",
+        "first_dim": "6x8"
+      },
+      {
+        "name": "e1106_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_6x8_tb.png",
+        "first_dim": "6x8"
+      },
+      {
+        "name": "e1107_bm",
+        "frame_count": 17,
+        "first_frame": "frame_00_30x29_tb.png",
+        "first_dim": "30x29"
+      },
+      {
+        "name": "e1108_bm",
+        "frame_count": 17,
+        "first_frame": "frame_00_30x29_tb.png",
+        "first_dim": "30x29"
+      },
+      {
+        "name": "e1109_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_24x12_tb.png",
+        "first_dim": "24x12"
+      },
+      {
+        "name": "e1110_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_24x12_tb.png",
+        "first_dim": "24x12"
+      },
+      {
+        "name": "e1200_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x17_tb.png",
+        "first_dim": "22x17"
+      },
+      {
+        "name": "e1201_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_10x5_tb.png",
+        "first_dim": "10x5"
+      },
+      {
+        "name": "e1202_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_22x15_tb.png",
+        "first_dim": "22x15"
+      },
+      {
+        "name": "e1203_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_22x15_tb.png",
+        "first_dim": "22x15"
+      },
+      {
+        "name": "e1204_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_48x18_tb.png",
+        "first_dim": "48x18"
+      },
+      {
+        "name": "e1300_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_14x9_tb.png",
+        "first_dim": "14x9"
+      },
+      {
+        "name": "e1301_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_20x15_tb.png",
+        "first_dim": "20x15"
+      },
+      {
+        "name": "e1302_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_12x18_tb.png",
+        "first_dim": "12x18"
+      },
+      {
+        "name": "e1303_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_16x22_tb.png",
+        "first_dim": "16x22"
+      },
+      {
+        "name": "e1400_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_16x12_tb.png",
+        "first_dim": "16x12"
+      },
+      {
+        "name": "e1401_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x12_tb.png",
+        "first_dim": "16x12"
+      }
+    ],
+    "fgi": [
+      {
+        "name": "fgi0_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_11x12_tc.png",
+        "first_dim": "11x12"
+      },
+      {
+        "name": "fgi1_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      },
+      {
+        "name": "fgi2_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_8x8_tc.png",
+        "first_dim": "8x8"
+      },
+      {
+        "name": "fgi3_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      },
+      {
+        "name": "fgi4_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "fgi5_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x6_tb.png",
+        "first_dim": "16x6"
+      },
+      {
+        "name": "fgi6_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_16x16_tb.png",
+        "first_dim": "16x16"
+      }
+    ],
+    "hero": [
+      {
+        "name": "commeffect_bm",
+        "frame_count": 29,
+        "first_frame": "frame_00_48x19_tb.png",
+        "first_dim": "48x19"
+      },
+      {
+        "name": "h00000_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x23_tb.png",
+        "first_dim": "18x23"
+      },
+      {
+        "name": "h00001_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x23_tb.png",
+        "first_dim": "18x23"
+      },
+      {
+        "name": "h00002_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x23_tb.png",
+        "first_dim": "18x23"
+      },
+      {
+        "name": "h00003_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x23_tb.png",
+        "first_dim": "18x23"
+      },
+      {
+        "name": "h10000_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10001_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10002_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10003_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10004_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10005_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10006_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10007_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10008_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10009_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10010_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10011_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10012_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10013_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10014_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10015_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10016_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10017_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10018_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10019_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10020_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10021_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h10022_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "h20000_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20001_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20002_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20003_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20004_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20005_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20006_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20007_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20008_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20009_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20010_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20011_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20012_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20013_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x13_tb.png",
+        "first_dim": "12x13"
+      },
+      {
+        "name": "h20014_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "h20015_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "h30000_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30001_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30002_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30003_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30004_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30005_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30006_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30007_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30008_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30009_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30010_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30011_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h30012_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "h40400_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_8x44_tb.png",
+        "first_dim": "8x44"
+      },
+      {
+        "name": "h40500_bm",
+        "frame_count": 16,
+        "first_frame": "frame_00_20x5_tb.png",
+        "first_dim": "20x5"
+      },
+      {
+        "name": "h40600_bm",
+        "frame_count": 20,
+        "first_frame": "frame_00_8x44_tb.png",
+        "first_dim": "8x44"
+      },
+      {
+        "name": "h40700_bm",
+        "frame_count": 21,
+        "first_frame": "frame_00_12x19_tb.png",
+        "first_dim": "12x19"
+      },
+      {
+        "name": "h40800_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_40x38_tb.png",
+        "first_dim": "40x38"
+      },
+      {
+        "name": "h40900_bm",
+        "frame_count": 16,
+        "first_frame": "frame_00_30x30_tb.png",
+        "first_dim": "30x30"
+      },
+      {
+        "name": "h41000_bm",
+        "frame_count": 10,
+        "first_frame": "frame_00_42x42_tb.png",
+        "first_dim": "42x42"
+      },
+      {
+        "name": "h50400_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50401_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50402_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50403_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50404_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50405_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50406_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50407_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50408_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50409_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50410_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50411_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50412_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_38x15_tb.png",
+        "first_dim": "38x15"
+      },
+      {
+        "name": "h50500_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50501_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50502_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50503_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50504_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50505_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50506_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50507_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50508_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50509_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50510_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50511_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50512_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x29_tb.png",
+        "first_dim": "18x29"
+      },
+      {
+        "name": "h50513_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_12x13_tb.png",
+        "first_dim": "12x13"
+      },
+      {
+        "name": "h50600_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50601_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50602_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50603_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50604_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50605_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50606_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50607_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50608_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50609_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50610_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50611_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50612_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "h50700_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50701_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x19_tb.png",
+        "first_dim": "18x19"
+      },
+      {
+        "name": "h50702_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50703_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50704_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50705_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50706_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50707_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50708_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50709_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x21_tb.png",
+        "first_dim": "18x21"
+      },
+      {
+        "name": "h50710_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50711_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x19_tb.png",
+        "first_dim": "16x19"
+      },
+      {
+        "name": "h50712_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x21_tb.png",
+        "first_dim": "18x21"
+      },
+      {
+        "name": "h50800_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50801_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50802_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50803_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50804_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50805_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50806_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50807_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50808_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50809_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50810_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50811_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50812_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_10x28_tb.png",
+        "first_dim": "10x28"
+      },
+      {
+        "name": "h50900_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50901_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50902_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50903_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50904_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50905_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50906_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50907_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50908_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h50909_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51000_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51001_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51002_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51003_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51004_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51005_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51006_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51007_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51008_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51009_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_66x45_tb.png",
+        "first_dim": "66x45"
+      },
+      {
+        "name": "h51100_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51101_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51102_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51103_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51104_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51105_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51106_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51107_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51108_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51109_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51111_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h51112_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_20x14_tb.png",
+        "first_dim": "20x14"
+      },
+      {
+        "name": "h60000_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60001_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60002_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60003_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60004_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60005_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60006_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60007_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60008_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60009_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60010_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60011_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60012_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60013_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60014_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60015_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      },
+      {
+        "name": "h60016_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_22x28_tb.png",
+        "first_dim": "22x28"
+      }
+    ],
+    "logo": [
+      {
+        "name": "logo_bm",
+        "frame_count": 9,
+        "first_frame": "frame_00_30x9_tb.png",
+        "first_dim": "30x9"
+      }
+    ],
+    "map": [
+      {
+        "name": "obj_0_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_32x16_tc.png",
+        "first_dim": "32x16"
+      },
+      {
+        "name": "obj_10_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_110x93_tc.png",
+        "first_dim": "110x93"
+      },
+      {
+        "name": "obj_11_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_19x22_tc.png",
+        "first_dim": "19x22"
+      },
+      {
+        "name": "obj_12_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_58x38_tc.png",
+        "first_dim": "58x38"
+      },
+      {
+        "name": "obj_13_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x16_tc.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_14_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_81x79_tc.png",
+        "first_dim": "81x79"
+      },
+      {
+        "name": "obj_15_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_11x48_tc.png",
+        "first_dim": "11x48"
+      },
+      {
+        "name": "obj_16_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_26x37_tb.png",
+        "first_dim": "26x37"
+      },
+      {
+        "name": "obj_17_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_43x47_tc.png",
+        "first_dim": "43x47"
+      },
+      {
+        "name": "obj_18_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_44x36_tc.png",
+        "first_dim": "44x36"
+      },
+      {
+        "name": "obj_19_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_24x36_tc.png",
+        "first_dim": "24x36"
+      },
+      {
+        "name": "obj_1_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x16_tb.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_20_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x15_tc.png",
+        "first_dim": "16x15"
+      },
+      {
+        "name": "obj_21_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x15_tc.png",
+        "first_dim": "16x15"
+      },
+      {
+        "name": "obj_22_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_36x40_tc.png",
+        "first_dim": "36x40"
+      },
+      {
+        "name": "obj_23_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_2x1_tb.png",
+        "first_dim": "2x1"
+      },
+      {
+        "name": "obj_24_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x14_tb.png",
+        "first_dim": "16x14"
+      },
+      {
+        "name": "obj_25_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_32x16_tc.png",
+        "first_dim": "32x16"
+      },
+      {
+        "name": "obj_26_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x48_tb.png",
+        "first_dim": "16x48"
+      },
+      {
+        "name": "obj_27_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_44x85_tb.png",
+        "first_dim": "44x85"
+      },
+      {
+        "name": "obj_28_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_38x37_tb.png",
+        "first_dim": "38x37"
+      },
+      {
+        "name": "obj_29_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_2x1_tb.png",
+        "first_dim": "2x1"
+      },
+      {
+        "name": "obj_2_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_8x17_tb.png",
+        "first_dim": "8x17"
+      },
+      {
+        "name": "obj_30_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x16_tc.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_31_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x16_tc.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_32_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x12_tc.png",
+        "first_dim": "16x12"
+      },
+      {
+        "name": "obj_33_bm",
+        "frame_count": 52,
+        "first_frame": "frame_00_16x16_tb.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_34_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x7_tb.png",
+        "first_dim": "16x7"
+      },
+      {
+        "name": "obj_35_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x31_tc.png",
+        "first_dim": "18x31"
+      },
+      {
+        "name": "obj_36_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_98x70_tc.png",
+        "first_dim": "98x70"
+      },
+      {
+        "name": "obj_37_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_17x18_tc.png",
+        "first_dim": "17x18"
+      },
+      {
+        "name": "obj_38_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_12x23_tb.png",
+        "first_dim": "12x23"
+      },
+      {
+        "name": "obj_39_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x16_tc.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "obj_3_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_20x23_tb.png",
+        "first_dim": "20x23"
+      },
+      {
+        "name": "obj_40_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_24x46_tc.png",
+        "first_dim": "24x46"
+      },
+      {
+        "name": "obj_41_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_26x9_tb.png",
+        "first_dim": "26x9"
+      },
+      {
+        "name": "obj_42_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_16x12_tc.png",
+        "first_dim": "16x12"
+      },
+      {
+        "name": "obj_43_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_118x80_tc.png",
+        "first_dim": "118x80"
+      },
+      {
+        "name": "obj_4_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "obj_5_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_20x24_tb.png",
+        "first_dim": "20x24"
+      },
+      {
+        "name": "obj_6_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_24x32_tb.png",
+        "first_dim": "24x32"
+      },
+      {
+        "name": "obj_7_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x44_tc.png",
+        "first_dim": "18x44"
+      },
+      {
+        "name": "obj_8_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_119x80_tc.png",
+        "first_dim": "119x80"
+      },
+      {
+        "name": "obj_9_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_42x69_tc.png",
+        "first_dim": "42x69"
+      },
+      {
+        "name": "sprObj0_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_60x39_tb.png",
+        "first_dim": "60x39"
+      },
+      {
+        "name": "sprObj1_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_21x35_tc.png",
+        "first_dim": "21x35"
+      },
+      {
+        "name": "sprObj2_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_90x31_tb.png",
+        "first_dim": "90x31"
+      },
+      {
+        "name": "sprObj3_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_18x55_tc.png",
+        "first_dim": "18x55"
+      },
+      {
+        "name": "sprObj4_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x60_tc.png",
+        "first_dim": "16x60"
+      },
+      {
+        "name": "sprObj5_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_38x52_tc.png",
+        "first_dim": "38x52"
+      },
+      {
+        "name": "sprObj6_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_24x24_tb.png",
+        "first_dim": "24x24"
+      },
+      {
+        "name": "sprObj_0_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_60x39_tc.png",
+        "first_dim": "60x39"
+      },
+      {
+        "name": "theme_0_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x480_tc.png",
+        "first_dim": "16x480"
+      },
+      {
+        "name": "theme_10_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x272_tc.png",
+        "first_dim": "16x272"
+      },
+      {
+        "name": "theme_11_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x160_tc.png",
+        "first_dim": "16x160"
+      },
+      {
+        "name": "theme_12_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x176_tc.png",
+        "first_dim": "16x176"
+      },
+      {
+        "name": "theme_13_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x256_tc.png",
+        "first_dim": "16x256"
+      },
+      {
+        "name": "theme_14_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x144_tc.png",
+        "first_dim": "16x144"
+      },
+      {
+        "name": "theme_15_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x320_tc.png",
+        "first_dim": "16x320"
+      },
+      {
+        "name": "theme_16_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x256_tc.png",
+        "first_dim": "16x256"
+      },
+      {
+        "name": "theme_17_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      },
+      {
+        "name": "theme_18_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      },
+      {
+        "name": "theme_19_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x48_tc.png",
+        "first_dim": "16x48"
+      },
+      {
+        "name": "theme_1_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      },
+      {
+        "name": "theme_20_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x480_tc.png",
+        "first_dim": "16x480"
+      },
+      {
+        "name": "theme_21_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      },
+      {
+        "name": "theme_22_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      },
+      {
+        "name": "theme_23_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x480_tc.png",
+        "first_dim": "16x480"
+      },
+      {
+        "name": "theme_24_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x208_tc.png",
+        "first_dim": "16x208"
+      },
+      {
+        "name": "theme_25_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x128_tc.png",
+        "first_dim": "16x128"
+      },
+      {
+        "name": "theme_26_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x208_tc.png",
+        "first_dim": "16x208"
+      },
+      {
+        "name": "theme_27_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x192_tc.png",
+        "first_dim": "16x192"
+      },
+      {
+        "name": "theme_28_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x240_tc.png",
+        "first_dim": "16x240"
+      },
+      {
+        "name": "theme_29_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x192_tc.png",
+        "first_dim": "16x192"
+      },
+      {
+        "name": "theme_2_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x320_tc.png",
+        "first_dim": "16x320"
+      },
+      {
+        "name": "theme_30_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x208_tc.png",
+        "first_dim": "16x208"
+      },
+      {
+        "name": "theme_31_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x240_tc.png",
+        "first_dim": "16x240"
+      },
+      {
+        "name": "theme_32_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x192_tc.png",
+        "first_dim": "16x192"
+      },
+      {
+        "name": "theme_33_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x144_tc.png",
+        "first_dim": "16x144"
+      },
+      {
+        "name": "theme_34_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x368_tc.png",
+        "first_dim": "16x368"
+      },
+      {
+        "name": "theme_35_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x368_tc.png",
+        "first_dim": "16x368"
+      },
+      {
+        "name": "theme_36_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x240_tc.png",
+        "first_dim": "16x240"
+      },
+      {
+        "name": "theme_37_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x288_tc.png",
+        "first_dim": "16x288"
+      },
+      {
+        "name": "theme_38_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x336_tc.png",
+        "first_dim": "16x336"
+      },
+      {
+        "name": "theme_39_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x96_tc.png",
+        "first_dim": "16x96"
+      },
+      {
+        "name": "theme_3_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x176_tc.png",
+        "first_dim": "16x176"
+      },
+      {
+        "name": "theme_40_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x368_tc.png",
+        "first_dim": "16x368"
+      },
+      {
+        "name": "theme_41_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x432_tc.png",
+        "first_dim": "16x432"
+      },
+      {
+        "name": "theme_42_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x288_tc.png",
+        "first_dim": "16x288"
+      },
+      {
+        "name": "theme_43_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x160_tc.png",
+        "first_dim": "16x160"
+      },
+      {
+        "name": "theme_44_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x512_tc.png",
+        "first_dim": "16x512"
+      },
+      {
+        "name": "theme_45_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x224_tc.png",
+        "first_dim": "16x224"
+      },
+      {
+        "name": "theme_46_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x16_tb.png",
+        "first_dim": "16x16"
+      },
+      {
+        "name": "theme_4_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x288_tc.png",
+        "first_dim": "16x288"
+      },
+      {
+        "name": "theme_5_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x224_tc.png",
+        "first_dim": "16x224"
+      },
+      {
+        "name": "theme_6_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x192_tc.png",
+        "first_dim": "16x192"
+      },
+      {
+        "name": "theme_7_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x240_tc.png",
+        "first_dim": "16x240"
+      },
+      {
+        "name": "theme_8_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x304_tc.png",
+        "first_dim": "16x304"
+      },
+      {
+        "name": "theme_9_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x352_tc.png",
+        "first_dim": "16x352"
+      }
+    ],
+    "menu": [
+      {
+        "name": "alp_bm",
+        "frame_count": 26,
+        "first_frame": "frame_00_12x14_tb.png",
+        "first_dim": "12x14"
+      },
+      {
+        "name": "kei_bm",
+        "frame_count": 20,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "menu_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_8x11_tb.png",
+        "first_dim": "8x11"
+      },
+      {
+        "name": "rits_bm",
+        "frame_count": 20,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "title_bm",
+        "frame_count": 17,
+        "first_frame": "frame_00_57x153_tc.png",
+        "first_dim": "57x153"
+      }
+    ],
+    "npc": [
+      {
+        "name": "face_bm",
+        "frame_count": 28,
+        "first_frame": "frame_00_58x79_tc.png",
+        "first_dim": "58x79"
+      },
+      {
+        "name": "imo_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_10x16_tb.png",
+        "first_dim": "10x16"
+      },
+      {
+        "name": "npc0000_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0001_bm",
+        "frame_count": 9,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0002_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0003_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x25_tb.png",
+        "first_dim": "18x25"
+      },
+      {
+        "name": "npc0004_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0005_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0006_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0007_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0008_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0010_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0011_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0012_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0013_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0014_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0015_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0016_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0017_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0018_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x15_tb.png",
+        "first_dim": "18x15"
+      },
+      {
+        "name": "npc0019_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x15_tb.png",
+        "first_dim": "18x15"
+      },
+      {
+        "name": "npc0020_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0021_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0022_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x20_tb.png",
+        "first_dim": "16x20"
+      },
+      {
+        "name": "npc0023_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0024_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0025_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc0026_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_18x20_tb.png",
+        "first_dim": "18x20"
+      },
+      {
+        "name": "npc1000_bm",
+        "frame_count": 15,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "npc1001_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1002_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1003_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1004_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1005_bm",
+        "frame_count": 15,
+        "first_frame": "frame_00_8x10_tb.png",
+        "first_dim": "8x10"
+      },
+      {
+        "name": "npc1006_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1007_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "npc1008_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1010_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_10x12_tb.png",
+        "first_dim": "10x12"
+      },
+      {
+        "name": "npc1011_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1012_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1013_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1014_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1015_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1016_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1017_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1018_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1019_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1020_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1021_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1022_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x7_tb.png",
+        "first_dim": "8x7"
+      },
+      {
+        "name": "npc1023_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc1024_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_8x9_tb.png",
+        "first_dim": "8x9"
+      },
+      {
+        "name": "npc2000_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_22x19_tb.png",
+        "first_dim": "22x19"
+      },
+      {
+        "name": "npc2001_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2002_bm",
+        "frame_count": 18,
+        "first_frame": "frame_00_20x17_tb.png",
+        "first_dim": "20x17"
+      },
+      {
+        "name": "npc2003_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_18x16_tc.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2004_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2005_bm",
+        "frame_count": 12,
+        "first_frame": "frame_00_20x17_tc.png",
+        "first_dim": "20x17"
+      },
+      {
+        "name": "npc2006_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2007_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_20x19_tc.png",
+        "first_dim": "20x19"
+      },
+      {
+        "name": "npc2008_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2010_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_20x19_tb.png",
+        "first_dim": "20x19"
+      },
+      {
+        "name": "npc2011_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2012_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2013_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2014_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_18x16_tc.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2015_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2016_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2017_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2018_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc2019_bm",
+        "frame_count": 10,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      },
+      {
+        "name": "npc2020_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2021_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2022_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_18x16_tb.png",
+        "first_dim": "18x16"
+      },
+      {
+        "name": "npc2023_bm",
+        "frame_count": 10,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      },
+      {
+        "name": "npc2024_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_16x17_tb.png",
+        "first_dim": "16x17"
+      },
+      {
+        "name": "npc3000_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_19x20_tc.png",
+        "first_dim": "19x20"
+      },
+      {
+        "name": "npc3001_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_64x32_tc.png",
+        "first_dim": "64x32"
+      },
+      {
+        "name": "npc3002_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_38x22_tb.png",
+        "first_dim": "38x22"
+      },
+      {
+        "name": "npc3003_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_34x5_tb.png",
+        "first_dim": "34x5"
+      },
+      {
+        "name": "npc3004_bm",
+        "frame_count": 8,
+        "first_frame": "frame_00_24x30_tb.png",
+        "first_dim": "24x30"
+      },
+      {
+        "name": "npc3005_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_74x65_tb.png",
+        "first_dim": "74x65"
+      },
+      {
+        "name": "npc3006_bm",
+        "frame_count": 7,
+        "first_frame": "frame_00_40x38_tb.png",
+        "first_dim": "40x38"
+      },
+      {
+        "name": "npc3007_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_58x38_tb.png",
+        "first_dim": "58x38"
+      },
+      {
+        "name": "npc4000_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_16x30_tb.png",
+        "first_dim": "16x30"
+      },
+      {
+        "name": "npc4001_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_48x12_tb.png",
+        "first_dim": "48x12"
+      },
+      {
+        "name": "npc4002_bm",
+        "frame_count": 5,
+        "first_frame": "frame_00_48x12_tb.png",
+        "first_dim": "48x12"
+      },
+      {
+        "name": "npc4003_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_10x7_tb.png",
+        "first_dim": "10x7"
+      },
+      {
+        "name": "npc4004_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_18x27_tb.png",
+        "first_dim": "18x27"
+      },
+      {
+        "name": "npc4005_bm",
+        "frame_count": 16,
+        "first_frame": "frame_00_20x19_tb.png",
+        "first_dim": "20x19"
+      },
+      {
+        "name": "npc4006_bm",
+        "frame_count": 2,
+        "first_frame": "frame_00_32x13_tb.png",
+        "first_dim": "32x13"
+      },
+      {
+        "name": "npc4007_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_18x26_tb.png",
+        "first_dim": "18x26"
+      },
+      {
+        "name": "npc4008_bm",
+        "frame_count": 3,
+        "first_frame": "frame_00_12x30_tb.png",
+        "first_dim": "12x30"
+      },
+      {
+        "name": "npc4009_bm",
+        "frame_count": 13,
+        "first_frame": "frame_00_12x5_tb.png",
+        "first_dim": "12x5"
+      },
+      {
+        "name": "npc4010_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_18x19_tb.png",
+        "first_dim": "18x19"
+      },
+      {
+        "name": "npc9000_bm",
+        "frame_count": 14,
+        "first_frame": "frame_00_10x11_tb.png",
+        "first_dim": "10x11"
+      },
+      {
+        "name": "npc9001_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      },
+      {
+        "name": "npc9002_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_16x9_tb.png",
+        "first_dim": "16x9"
+      },
+      {
+        "name": "npc9003_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_14x14_tb.png",
+        "first_dim": "14x14"
+      },
+      {
+        "name": "npc9004_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_10x18_tb.png",
+        "first_dim": "10x18"
+      },
+      {
+        "name": "npc9005_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_6x8_tb.png",
+        "first_dim": "6x8"
+      },
+      {
+        "name": "npc9006_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_6x8_tb.png",
+        "first_dim": "6x8"
+      },
+      {
+        "name": "npc9007_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_6x8_tb.png",
+        "first_dim": "6x8"
+      },
+      {
+        "name": "npc9008_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_10x9_tb.png",
+        "first_dim": "10x9"
+      },
+      {
+        "name": "npc9009_bm",
+        "frame_count": 6,
+        "first_frame": "frame_00_12x10_tb.png",
+        "first_dim": "12x10"
+      },
+      {
+        "name": "npc9010_bm",
+        "frame_count": 11,
+        "first_frame": "frame_00_10x9_tb.png",
+        "first_dim": "10x9"
+      },
+      {
+        "name": "npc9011_bm",
+        "frame_count": 4,
+        "first_frame": "frame_00_12x11_tb.png",
+        "first_dim": "12x11"
+      }
+    ],
+    "skill": [
+      {
+        "name": "s10_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s4_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s5_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s6_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s7_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s8_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      },
+      {
+        "name": "s9_bm",
+        "frame_count": 1,
+        "first_frame": "frame_00_135x15_tc.png",
+        "first_dim": "135x15"
+      }
+    ]
+  },
+  "maps": [
+    {
+      "file": "map0_mp",
+      "name_ko": "NEOSOLTIA",
+      "name_en": "Neo Soltia",
+      "width": 35,
+      "height": 25,
+      "palette_count": 26
+    },
+    {
+      "file": "map1_mp",
+      "name_ko": "ROOM_TENER",
+      "name_en": "ROOM_TENER",
+      "width": 19,
+      "height": 18,
+      "palette_count": 18
+    },
+    {
+      "file": "map2_mp",
+      "name_ko": "ROOM_HALL",
+      "name_en": "ROOM_HALL",
+      "width": 30,
+      "height": 25,
+      "palette_count": 23
+    },
+    {
+      "file": "map3_mp",
+      "name_ko": "ROOM_REAH",
+      "name_en": "ROOM_REAH",
+      "width": 15,
+      "height": 13,
+      "palette_count": 14
+    },
+    {
+      "file": "map4_mp",
+      "name_ko": "ROOM_INN",
+      "name_en": "ROOM_INN",
+      "width": 22,
+      "height": 17,
+      "palette_count": 18
+    },
+    {
+      "file": "map5_mp",
+      "name_ko": "ROOM_TRAINING",
+      "name_en": "ROOM_TRAINING",
+      "width": 16,
+      "height": 16,
+      "palette_count": 15
+    },
+    {
+      "file": "map6_mp",
+      "name_ko": "NEMESIS_FOREST_1",
+      "name_en": "NEMESIS_FOREST_1",
+      "width": 30,
+      "height": 22,
+      "palette_count": 8
+    },
+    {
+      "file": "map7_mp",
+      "name_ko": "NEMESIS_FOREST_2 ",
+      "name_en": "NEMESIS_FOREST_2 ",
+      "width": 45,
+      "height": 35,
+      "palette_count": 7
+    },
+    {
+      "file": "map8_mp",
+      "name_ko": "NEMESIS_FOREST_3",
+      "name_en": "NEMESIS_FOREST_3",
+      "width": 40,
+      "height": 40,
+      "palette_count": 7
+    },
+    {
+      "file": "map9_mp",
+      "name_ko": "NEMESIS_FOREST_4",
+      "name_en": "NEMESIS_FOREST_4",
+      "width": 35,
+      "height": 45,
+      "palette_count": 8
+    },
+    {
+      "file": "map10_mp",
+      "name_ko": "NEMESIS_FOREST_5",
+      "name_en": "Nemesis Forest 5",
+      "width": 50,
+      "height": 30,
+      "palette_count": 8
+    },
+    {
+      "file": "map11_mp",
+      "name_ko": "SMALL_CAVE_1",
+      "name_en": "Small Cave 1",
+      "width": 35,
+      "height": 25,
+      "palette_count": 6
+    },
+    {
+      "file": "map12_mp",
+      "name_ko": "SMALL_CAVE_2",
+      "name_en": "SMALL_CAVE_2",
+      "width": 43,
+      "height": 37,
+      "palette_count": 6
+    },
+    {
+      "file": "map13_mp",
+      "name_ko": "SMALL_CAVE_3",
+      "name_en": "SMALL_CAVE_3",
+      "width": 40,
+      "height": 35,
+      "palette_count": 6
+    },
+    {
+      "file": "map14_mp",
+      "name_ko": "OLD_CAVE_1",
+      "name_en": "OLD_CAVE_1",
+      "width": 35,
+      "height": 40,
+      "palette_count": 2
+    },
+    {
+      "file": "map15_mp",
+      "name_ko": "OLD_CAVE_2",
+      "name_en": "OLD_CAVE_2",
+      "width": 30,
+      "height": 50,
+      "palette_count": 3
+    },
+    {
+      "file": "map16_mp",
+      "name_ko": "OLD_CAVE_3",
+      "name_en": "OLD_CAVE_3",
+      "width": 51,
+      "height": 20,
+      "palette_count": 7
+    },
+    {
+      "file": "map17_mp",
+      "name_ko": "OLD_CAVE_4",
+      "name_en": "OLD_CAVE_4",
+      "width": 46,
+      "height": 35,
+      "palette_count": 8
+    },
+    {
+      "file": "map18_mp",
+      "name_ko": "DUSK_LAND_1",
+      "name_en": "DUSK_LAND_1",
+      "width": 26,
+      "height": 35,
+      "palette_count": 4
+    },
+    {
+      "file": "map19_mp",
+      "name_ko": "DUSK_LAND_2",
+      "name_en": "DUSK_LAND_2",
+      "width": 34,
+      "height": 30,
+      "palette_count": 6
+    },
+    {
+      "file": "map20_mp",
+      "name_ko": "SECRET_GROUND",
+      "name_en": "SECRET_GROUND",
+      "width": 20,
+      "height": 21,
+      "palette_count": 6
+    },
+    {
+      "file": "map21_mp",
+      "name_ko": "HOLY_ALTER_1",
+      "name_en": "HOLY_ALTER_1",
+      "width": 43,
+      "height": 32,
+      "palette_count": 8
+    },
+    {
+      "file": "map22_mp",
+      "name_ko": "HOLY_ALTER_2",
+      "name_en": "HOLY_ALTER_2",
+      "width": 43,
+      "height": 37,
+      "palette_count": 8
+    },
+    {
+      "file": "map23_mp",
+      "name_ko": "TOREZ",
+      "name_en": "TOREZ",
+      "width": 35,
+      "height": 43,
+      "palette_count": 24
+    },
+    {
+      "file": "map24_mp",
+      "name_ko": "ROOM_OFFICE_1",
+      "name_en": "ROOM_OFFICE_1",
+      "width": 40,
+      "height": 20,
+      "palette_count": 24
+    },
+    {
+      "file": "map25_mp",
+      "name_ko": "ROOM_OFFICE_2",
+      "name_en": "ROOM_OFFICE_2",
+      "width": 20,
+      "height": 20,
+      "palette_count": 21
+    },
+    {
+      "file": "map26_mp",
+      "name_ko": "ROOM_HELENE",
+      "name_en": "ROOM_HELENE",
+      "width": 19,
+      "height": 15,
+      "palette_count": 15
+    },
+    {
+      "file": "map27_mp",
+      "name_ko": "ROOM_INN",
+      "name_en": "ROOM_INN",
+      "width": 26,
+      "height": 23,
+      "palette_count": 24
+    },
+    {
+      "file": "map28_mp",
+      "name_ko": "ROOM_HOUSE_1",
+      "name_en": "ROOM_HOUSE_1",
+      "width": 21,
+      "height": 18,
+      "palette_count": 25
+    },
+    {
+      "file": "map29_mp",
+      "name_ko": "ROOM_HOUSE_2",
+      "name_en": "ROOM_HOUSE_2",
+      "width": 18,
+      "height": 14,
+      "palette_count": 18
+    },
+    {
+      "file": "map30_mp",
+      "name_ko": "UNDER_TOREZ_1",
+      "name_en": "UNDER_TOREZ_1",
+      "width": 35,
+      "height": 35,
+      "palette_count": 3
+    },
+    {
+      "file": "map31_mp",
+      "name_ko": "UNDER_TOREZ_2",
+      "name_en": "UNDER_TOREZ_2",
+      "width": 50,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "map32_mp",
+      "name_ko": "UNDER_TOREZ_3",
+      "name_en": "UNDER_TOREZ_3",
+      "width": 34,
+      "height": 26,
+      "palette_count": 2
+    },
+    {
+      "file": "map33_mp",
+      "name_ko": "UNDER_TOREZ_4",
+      "name_en": "UNDER_TOREZ_4",
+      "width": 30,
+      "height": 30,
+      "palette_count": 4
+    },
+    {
+      "file": "map34_mp",
+      "name_ko": "TOREZ_MINE_1",
+      "name_en": "TOREZ_MINE_1",
+      "width": 40,
+      "height": 25,
+      "palette_count": 6
+    },
+    {
+      "file": "map35_mp",
+      "name_ko": "TOREZ_MINE_2",
+      "name_en": "TOREZ_MINE_2",
+      "width": 35,
+      "height": 25,
+      "palette_count": 4
+    },
+    {
+      "file": "map36_mp",
+      "name_ko": "TOREZ_MINE_3",
+      "name_en": "TOREZ_MINE_3",
+      "width": 30,
+      "height": 30,
+      "palette_count": 4
+    },
+    {
+      "file": "map37_mp",
+      "name_ko": "TOREZ_MINE_4",
+      "name_en": "TOREZ_MINE_4",
+      "width": 25,
+      "height": 40,
+      "palette_count": 6
+    },
+    {
+      "file": "map38_mp",
+      "name_ko": "TOREZ_MINE_5",
+      "name_en": "TOREZ_MINE_5",
+      "width": 30,
+      "height": 40,
+      "palette_count": 4
+    },
+    {
+      "file": "map39_mp",
+      "name_ko": "IRON_FACTORY_1",
+      "name_en": "IRON_FACTORY_1",
+      "width": 32,
+      "height": 34,
+      "palette_count": 11
+    },
+    {
+      "file": "map40_mp",
+      "name_ko": "IRON_FACTORY_2",
+      "name_en": "IRON_FACTORY_2",
+      "width": 32,
+      "height": 34,
+      "palette_count": 5
+    },
+    {
+      "file": "map41_mp",
+      "name_ko": "IRON_FACTORY_3",
+      "name_en": "IRON_FACTORY_3",
+      "width": 34,
+      "height": 34,
+      "palette_count": 7
+    },
+    {
+      "file": "map42_mp",
+      "name_ko": "IRON_FACTORY_4",
+      "name_en": "IRON_FACTORY_4",
+      "width": 45,
+      "height": 20,
+      "palette_count": 10
+    },
+    {
+      "file": "map43_mp",
+      "name_ko": "IRON_FACTORY_5",
+      "name_en": "IRON_FACTORY_5",
+      "width": 36,
+      "height": 36,
+      "palette_count": 10
+    },
+    {
+      "file": "map44_mp",
+      "name_ko": "SECRET_ROOM",
+      "name_en": "Secret Room",
+      "width": 30,
+      "height": 20,
+      "palette_count": 5
+    },
+    {
+      "file": "map45_mp",
+      "name_ko": "MINE_CAVE_1",
+      "name_en": "MINE_CAVE_1",
+      "width": 36,
+      "height": 34,
+      "palette_count": 5
+    },
+    {
+      "file": "map46_mp",
+      "name_ko": "MINE_CAVE_2",
+      "name_en": "MINE_CAVE_2",
+      "width": 40,
+      "height": 35,
+      "palette_count": 5
+    },
+    {
+      "file": "map47_mp",
+      "name_ko": "MINE_CAVE_3",
+      "name_en": "MINE_CAVE_3",
+      "width": 42,
+      "height": 33,
+      "palette_count": 7
+    },
+    {
+      "file": "map48_mp",
+      "name_ko": "SOLTIAN_POST",
+      "name_en": "SOLTIAN_POST",
+      "width": 30,
+      "height": 25,
+      "palette_count": 11
+    },
+    {
+      "file": "map49_mp",
+      "name_ko": "NEMESIS_PLATEAU_1",
+      "name_en": "NEMESIS_PLATEAU_1",
+      "width": 40,
+      "height": 30,
+      "palette_count": 3
+    },
+    {
+      "file": "map50_mp",
+      "name_ko": "NEMESIS_PLATEAU_2",
+      "name_en": "NEMESIS_PLATEAU_2",
+      "width": 50,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "map51_mp",
+      "name_ko": "NEMESIS_PLATEAU_3",
+      "name_en": "NEMESIS_PLATEAU_3",
+      "width": 30,
+      "height": 25,
+      "palette_count": 3
+    },
+    {
+      "file": "map52_mp",
+      "name_ko": "NEMESIS_CANYON_1",
+      "name_en": "NEMESIS_CANYON_1",
+      "width": 30,
+      "height": 50,
+      "palette_count": 7
+    },
+    {
+      "file": "map53_mp",
+      "name_ko": "NEMESIS_CANYON_2",
+      "name_en": "NEMESIS_CANYON_2",
+      "width": 40,
+      "height": 40,
+      "palette_count": 8
+    },
+    {
+      "file": "map54_mp",
+      "name_ko": "NEMESIS_CANYON_3",
+      "name_en": "NEMESIS_CANYON_3",
+      "width": 45,
+      "height": 35,
+      "palette_count": 7
+    },
+    {
+      "file": "map55_mp",
+      "name_ko": "SECRET_CAVE_1",
+      "name_en": "SECRET_CAVE_1",
+      "width": 35,
+      "height": 30,
+      "palette_count": 6
+    },
+    {
+      "file": "map56_mp",
+      "name_ko": "SECRET_CAVE_2",
+      "name_en": "SECRET_CAVE_2",
+      "width": 40,
+      "height": 40,
+      "palette_count": 6
+    },
+    {
+      "file": "map57_mp",
+      "name_ko": "ASKRAN_POST",
+      "name_en": "ASKRAN_POST",
+      "width": 30,
+      "height": 25,
+      "palette_count": 14
+    },
+    {
+      "file": "map58_mp",
+      "name_ko": "CLOSED_FACTORY_1",
+      "name_en": "CLOSED_FACTORY_1",
+      "width": 27,
+      "height": 30,
+      "palette_count": 3
+    },
+    {
+      "file": "map59_mp",
+      "name_ko": "CLOSED_FACTORY_2",
+      "name_en": "CLOSED_FACTORY_2",
+      "width": 39,
+      "height": 33,
+      "palette_count": 7
+    },
+    {
+      "file": "map60_mp",
+      "name_ko": "ENZARK",
+      "name_en": "ENZARK",
+      "width": 35,
+      "height": 36,
+      "palette_count": 14
+    },
+    {
+      "file": "map61_mp",
+      "name_ko": "ROOM_GUILD",
+      "name_en": "ROOM_GUILD",
+      "width": 18,
+      "height": 17,
+      "palette_count": 23
+    },
+    {
+      "file": "map62_mp",
+      "name_ko": "ROOM_LIBRARY",
+      "name_en": "ROOM_LIBRARY",
+      "width": 18,
+      "height": 20,
+      "palette_count": 22
+    },
+    {
+      "file": "map63_mp",
+      "name_ko": "ROOM_INN",
+      "name_en": "ROOM_INN",
+      "width": 24,
+      "height": 27,
+      "palette_count": 22
+    },
+    {
+      "file": "map64_mp",
+      "name_ko": "ROOM_HOUSE",
+      "name_en": "ROOM_HOUSE",
+      "width": 17,
+      "height": 17,
+      "palette_count": 18
+    },
+    {
+      "file": "map65_mp",
+      "name_ko": "ROOM_RUIN",
+      "name_en": "ROOM_RUIN",
+      "width": 20,
+      "height": 20,
+      "palette_count": 12
+    },
+    {
+      "file": "map66_mp",
+      "name_ko": "ENZARK_DESERT_1",
+      "name_en": "ENZARK_DESERT_1",
+      "width": 40,
+      "height": 30,
+      "palette_count": 3
+    },
+    {
+      "file": "map67_mp",
+      "name_ko": "ENZARK_DESERT_2",
+      "name_en": "ENZARK_DESERT_2",
+      "width": 45,
+      "height": 35,
+      "palette_count": 3
+    },
+    {
+      "file": "map68_mp",
+      "name_ko": "ENZARK_DESERT_3",
+      "name_en": "ENZARK_DESERT_3",
+      "width": 35,
+      "height": 45,
+      "palette_count": 3
+    },
+    {
+      "file": "map69_mp",
+      "name_ko": "ENZARK_DESERT_4",
+      "name_en": "ENZARK_DESERT_4",
+      "width": 45,
+      "height": 40,
+      "palette_count": 3
+    },
+    {
+      "file": "map70_mp",
+      "name_ko": "ENZARK_DESERT_5",
+      "name_en": "ENZARK_DESERT_5",
+      "width": 45,
+      "height": 30,
+      "palette_count": 3
+    },
+    {
+      "file": "map71_mp",
+      "name_ko": "GULBEIG_RUIN_1",
+      "name_en": "GULBEIG_RUIN_1",
+      "width": 30,
+      "height": 31,
+      "palette_count": 2
+    },
+    {
+      "file": "map72_mp",
+      "name_ko": "GULBEIG_RUIN_2",
+      "name_en": "GULBEIG_RUIN_2",
+      "width": 30,
+      "height": 29,
+      "palette_count": 4
+    },
+    {
+      "file": "map73_mp",
+      "name_ko": "GULBEIG_RUIN_3",
+      "name_en": "GULBEIG_RUIN_3",
+      "width": 32,
+      "height": 40,
+      "palette_count": 4
+    },
+    {
+      "file": "map74_mp",
+      "name_ko": "GULBEIG_RUIN_4",
+      "name_en": "GULBEIG_RUIN_4",
+      "width": 37,
+      "height": 42,
+      "palette_count": 3
+    },
+    {
+      "file": "map75_mp",
+      "name_ko": "GULBEIG_LIBRARY",
+      "name_en": "GULBEIG_LIBRARY",
+      "width": 24,
+      "height": 21,
+      "palette_count": 10
+    },
+    {
+      "file": "map76_mp",
+      "name_ko": "ENZARK_BEACON_1",
+      "name_en": "ENZARK_BEACON_1",
+      "width": 20,
+      "height": 25,
+      "palette_count": 5
+    },
+    {
+      "file": "map77_mp",
+      "name_ko": "ENZARK_BEACON_2",
+      "name_en": "ENZARK_BEACON_2",
+      "width": 26,
+      "height": 22,
+      "palette_count": 6
+    },
+    {
+      "file": "map78_mp",
+      "name_ko": "ENZARK_BEACON_3",
+      "name_en": "ENZARK_BEACON_3",
+      "width": 26,
+      "height": 22,
+      "palette_count": 5
+    },
+    {
+      "file": "map79_mp",
+      "name_ko": "ENZARK_BEACON_4",
+      "name_en": "ENZARK_BEACON_4",
+      "width": 26,
+      "height": 22,
+      "palette_count": 5
+    },
+    {
+      "file": "map80_mp",
+      "name_ko": "ENZARK_BEACON_5",
+      "name_en": "ENZARK_BEACON_5",
+      "width": 20,
+      "height": 60,
+      "palette_count": 8
+    },
+    {
+      "file": "map81_mp",
+      "name_ko": "LOWEN",
+      "name_en": "LOWEN",
+      "width": 27,
+      "height": 33,
+      "palette_count": 17
+    },
+    {
+      "file": "map82_mp",
+      "name_ko": "ROOM_HALL",
+      "name_en": "ROOM_HALL",
+      "width": 23,
+      "height": 33,
+      "palette_count": 19
+    },
+    {
+      "file": "map83_mp",
+      "name_ko": "ROOM_OFFICE",
+      "name_en": "ROOM_OFFICE",
+      "width": 23,
+      "height": 15,
+      "palette_count": 22
+    },
+    {
+      "file": "map84_mp",
+      "name_ko": "ROOM_INN",
+      "name_en": "ROOM_INN",
+      "width": 20,
+      "height": 20,
+      "palette_count": 15
+    },
+    {
+      "file": "map85_mp",
+      "name_ko": "ROOM_HOUSE",
+      "name_en": "ROOM_HOUSE",
+      "width": 11,
+      "height": 20,
+      "palette_count": 12
+    },
+    {
+      "file": "map86_mp",
+      "name_ko": "LOWEN_PLAIN_1",
+      "name_en": "LOWEN_PLAIN_1",
+      "width": 30,
+      "height": 30,
+      "palette_count": 7
+    },
+    {
+      "file": "map87_mp",
+      "name_ko": "LOWEN_PLAIN_2",
+      "name_en": "LOWEN_PLAIN_2",
+      "width": 40,
+      "height": 40,
+      "palette_count": 7
+    },
+    {
+      "file": "map88_mp",
+      "name_ko": "LOWEN_PLAIN_3",
+      "name_en": "LOWEN_PLAIN_3",
+      "width": 45,
+      "height": 35,
+      "palette_count": 7
+    },
+    {
+      "file": "map89_mp",
+      "name_ko": "LOWEN_PLAIN_4",
+      "name_en": "LOWEN_PLAIN_4",
+      "width": 30,
+      "height": 30,
+      "palette_count": 5
+    },
+    {
+      "file": "map90_mp",
+      "name_ko": "LOWEN_PLAIN_5",
+      "name_en": "LOWEN_PLAIN_5",
+      "width": 35,
+      "height": 45,
+      "palette_count": 7
+    },
+    {
+      "file": "map91_mp",
+      "name_ko": "CORBUS_AGIT_1",
+      "name_en": "CORBUS_AGIT_1",
+      "width": 20,
+      "height": 50,
+      "palette_count": 3
+    },
+    {
+      "file": "map92_mp",
+      "name_ko": "CORBUS_AGIT_2",
+      "name_en": "CORBUS_AGIT_2",
+      "width": 40,
+      "height": 40,
+      "palette_count": 6
+    },
+    {
+      "file": "map93_mp",
+      "name_ko": "CORBUS_AGIT_3",
+      "name_en": "CORBUS_AGIT_3",
+      "width": 40,
+      "height": 40,
+      "palette_count": 5
+    },
+    {
+      "file": "map94_mp",
+      "name_ko": "CORBUS_AGIT_4",
+      "name_en": "CORBUS_AGIT_4",
+      "width": 34,
+      "height": 28,
+      "palette_count": 5
+    },
+    {
+      "file": "map95_mp",
+      "name_ko": "CORBUS_AGIT_5",
+      "name_en": "CORBUS_AGIT_5",
+      "width": 30,
+      "height": 38,
+      "palette_count": 5
+    },
+    {
+      "file": "map96_mp",
+      "name_ko": "CORBUS_OFFICE",
+      "name_en": "CORBUS_OFFICE",
+      "width": 16,
+      "height": 19,
+      "palette_count": 9
+    },
+    {
+      "file": "map97_mp",
+      "name_ko": "SMALL_FACTORY_1",
+      "name_en": "SMALL_FACTORY_1",
+      "width": 24,
+      "height": 28,
+      "palette_count": 8
+    },
+    {
+      "file": "map98_mp",
+      "name_ko": "SMALL_FACTORY_2",
+      "name_en": "SMALL_FACTORY_2",
+      "width": 28,
+      "height": 30,
+      "palette_count": 2
+    },
+    {
+      "file": "map99_mp",
+      "name_ko": "SMALL_FACTORY_3",
+      "name_en": "SMALL_FACTORY_3",
+      "width": 60,
+      "height": 9,
+      "palette_count": 5
+    },
+    {
+      "file": "map100_mp",
+      "name_ko": "SMALL_FACTORY_4",
+      "name_en": "Small Factory 4",
+      "width": 30,
+      "height": 36,
+      "palette_count": 7
+    },
+    {
+      "file": "map101_mp",
+      "name_ko": "SECRET_ROOM",
+      "name_en": "Secret Room",
+      "width": 20,
+      "height": 25,
+      "palette_count": 7
+    },
+    {
+      "file": "map102_mp",
+      "name_ko": "RUINED_DESERT_1",
+      "name_en": "Ruined Desert 1",
+      "width": 45,
+      "height": 45,
+      "palette_count": 4
+    },
+    {
+      "file": "map103_mp",
+      "name_ko": "RUINED_DESERT_2",
+      "name_en": "Ruined Desert 2",
+      "width": 45,
+      "height": 30,
+      "palette_count": 4
+    },
+    {
+      "file": "map104_mp",
+      "name_ko": "RUINED_DESERT_3",
+      "name_en": "Ruined Desert 3",
+      "width": 35,
+      "height": 45,
+      "palette_count": 4
+    },
+    {
+      "file": "map105_mp",
+      "name_ko": "GULBEIG_RUIN_5",
+      "name_en": "Gulbeig Ruin 5",
+      "width": 35,
+      "height": 45,
+      "palette_count": 3
+    },
+    {
+      "file": "map106_mp",
+      "name_ko": "GULBEIG_RUIN_6",
+      "name_en": "Gulbeig Ruin 6",
+      "width": 38,
+      "height": 42,
+      "palette_count": 2
+    },
+    {
+      "file": "map107_mp",
+      "name_ko": "GULBEIG_RUIN_7",
+      "name_en": "Gulbeig Ruin 7",
+      "width": 35,
+      "height": 43,
+      "palette_count": 3
+    },
+    {
+      "file": "map108_mp",
+      "name_ko": "GULBEIG_ROOM",
+      "name_en": "Gulbeig Room",
+      "width": 20,
+      "height": 20,
+      "palette_count": 16
+    },
+    {
+      "file": "map109_mp",
+      "name_ko": "WAR_OF_RUIN_1",
+      "name_en": "War of Ruin 1",
+      "width": 70,
+      "height": 25,
+      "palette_count": 4
+    },
+    {
+      "file": "map110_mp",
+      "name_ko": "WAR_OF_RUIN_2",
+      "name_en": "War of Ruin 2",
+      "width": 35,
+      "height": 36,
+      "palette_count": 4
+    },
+    {
+      "file": "map111_mp",
+      "name_ko": "BEAST_FOREST_1",
+      "name_en": "Beast Forest 1",
+      "width": 25,
+      "height": 35,
+      "palette_count": 6
+    },
+    {
+      "file": "map112_mp",
+      "name_ko": "BEAST_FOREST_2",
+      "name_en": "Beast Forest 2",
+      "width": 35,
+      "height": 25,
+      "palette_count": 8
+    },
+    {
+      "file": "map113_mp",
+      "name_ko": "BEAST_FOREST_3",
+      "name_en": "Beast Forest 3",
+      "width": 47,
+      "height": 33,
+      "palette_count": 4
+    },
+    {
+      "file": "map114_mp",
+      "name_ko": "RETIREMENT",
+      "name_en": "Retirement",
+      "width": 20,
+      "height": 24,
+      "palette_count": 16
+    },
+    {
+      "file": "map115_mp",
+      "name_ko": "UNDER_CAVE_1",
+      "name_en": "Under Cave 1",
+      "width": 30,
+      "height": 30,
+      "palette_count": 4
+    },
+    {
+      "file": "map116_mp",
+      "name_ko": "UNDER_CAVE_2",
+      "name_en": "Under Cave 2",
+      "width": 30,
+      "height": 30,
+      "palette_count": 5
+    },
+    {
+      "file": "map117_mp",
+      "name_ko": "UNDER_CAVE_3",
+      "name_en": "Under Cave 3",
+      "width": 30,
+      "height": 30,
+      "palette_count": 6
+    },
+    {
+      "file": "map118_mp",
+      "name_ko": "GUARDIAN_CAVE_1",
+      "name_en": "Guardian Cave 1",
+      "width": 30,
+      "height": 35,
+      "palette_count": 10
+    },
+    {
+      "file": "map119_mp",
+      "name_ko": "GUARDIAN_CAVE_2",
+      "name_en": "Guardian Cave 2",
+      "width": 49,
+      "height": 40,
+      "palette_count": 12
+    },
+    {
+      "file": "map120_mp",
+      "name_ko": "GUARDIAN_CAVE_3",
+      "name_en": "Guardian Cave 3",
+      "width": 48,
+      "height": 42,
+      "palette_count": 6
+    },
+    {
+      "file": "map121_mp",
+      "name_ko": "GUARDIAN_CAVE_4",
+      "name_en": "Guardian Cave 4",
+      "width": 42,
+      "height": 47,
+      "palette_count": 13
+    },
+    {
+      "file": "map122_mp",
+      "name_ko": "GUARDIAN_CAVE_5",
+      "name_en": "Guardian Cave 5",
+      "width": 60,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "map123_mp",
+      "name_ko": "GUARDIAN_CAVE_6",
+      "name_en": "Guardian Cave 6",
+      "width": 60,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "map124_mp",
+      "name_ko": "GUARDIAN_CAVE_7",
+      "name_en": "Guardian Cave 7",
+      "width": 39,
+      "height": 35,
+      "palette_count": 3
+    },
+    {
+      "file": "map125_mp",
+      "name_ko": "CORE_OF_RUIN",
+      "name_en": "Core of Ruin",
+      "width": 20,
+      "height": 24,
+      "palette_count": 1
+    },
+    {
+      "file": "map126_mp",
+      "name_ko": "BOSS_TOWN",
+      "name_en": "Boss Town",
+      "width": 20,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "map127_mp",
+      "name_ko": "BOSS_PLATEAU",
+      "name_en": "BOSS_PLATEAU",
+      "width": 20,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "map128_mp",
+      "name_ko": "BOSS_DESERT",
+      "name_en": "BOSS_DESERT",
+      "width": 20,
+      "height": 20,
+      "palette_count": 0
+    },
+    {
+      "file": "map129_mp",
+      "name_ko": "BOSS_CAVE",
+      "name_en": "BOSS_CAVE",
+      "width": 20,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "map130_mp",
+      "name_ko": "BOSS_FACTORY",
+      "name_en": "BOSS_FACTORY",
+      "width": 20,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "map131_mp",
+      "name_ko": "BOSS_RUIN",
+      "name_en": "BOSS_RUIN",
+      "width": 20,
+      "height": 20,
+      "palette_count": 0
+    },
+    {
+      "file": "map132_mp",
+      "name_ko": "SOUL_CAVE_1",
+      "name_en": "SOUL_CAVE_1",
+      "width": 40,
+      "height": 34,
+      "palette_count": 2
+    },
+    {
+      "file": "map133_mp",
+      "name_ko": "SOUL_CAVE_2",
+      "name_en": "SOUL_CAVE_2",
+      "width": 40,
+      "height": 34,
+      "palette_count": 5
+    }
+  ],
+  "translations": {
+    "characters": {
+      "케이": "Kei",
+      "리츠": "Ritz",
+      "리치": "Litch",
+      "일레느": "Ilene",
+      "시엔": "Sien",
+      "레아": "Lea",
+      "엘지스": "Elgis",
+      "케네스": "Kenneth",
+      "이안": "Ian",
+      "멜페토": "Melpheto",
+      "토레즈": "Torez",
+      "듀크": "Duke"
+    },
+    "places": {
+      "솔티아": "Soltia",
+      "NEOSOLTIA": "Neo Soltia",
+      "SECRET_ROOM": "Secret Room",
+      "BOSS_TOWN": "Boss Town",
+      "RETIREMENT": "Retirement",
+      "CORE_OF_RUIN": "Core of Ruin",
+      "GUARDIAN_CAVE_1": "Guardian Cave 1",
+      "GUARDIAN_CAVE_2": "Guardian Cave 2",
+      "GUARDIAN_CAVE_3": "Guardian Cave 3",
+      "GUARDIAN_CAVE_4": "Guardian Cave 4",
+      "GUARDIAN_CAVE_5": "Guardian Cave 5",
+      "GUARDIAN_CAVE_6": "Guardian Cave 6",
+      "GUARDIAN_CAVE_7": "Guardian Cave 7",
+      "RUINED_DESERT_1": "Ruined Desert 1",
+      "RUINED_DESERT_2": "Ruined Desert 2",
+      "RUINED_DESERT_3": "Ruined Desert 3",
+      "GULBEIG_RUIN_5": "Gulbeig Ruin 5",
+      "GULBEIG_RUIN_6": "Gulbeig Ruin 6",
+      "GULBEIG_RUIN_7": "Gulbeig Ruin 7",
+      "GULBEIG_ROOM": "Gulbeig Room",
+      "WAR_OF_RUIN_1": "War of Ruin 1",
+      "WAR_OF_RUIN_2": "War of Ruin 2",
+      "NEMESIS_FOREST_5": "Nemesis Forest 5",
+      "BEAST_FOREST_1": "Beast Forest 1",
+      "BEAST_FOREST_2": "Beast Forest 2",
+      "BEAST_FOREST_3": "Beast Forest 3",
+      "UNDER_CAVE_1": "Under Cave 1",
+      "UNDER_CAVE_2": "Under Cave 2",
+      "UNDER_CAVE_3": "Under Cave 3",
+      "SMALL_CAVE_1": "Small Cave 1",
+      "SMALL_FACTORY_4": "Small Factory 4"
+    }
+  }
+}

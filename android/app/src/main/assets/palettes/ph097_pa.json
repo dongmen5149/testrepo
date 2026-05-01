@@ -1,0 +1,75 @@
+{
+  "count": 7,
+  "colors": [
+    {
+      "rgba_be": "#86118618",
+      "argb_le": "#18861186",
+      "bytes": [
+        134,
+        17,
+        134,
+        24
+      ]
+    },
+    {
+      "rgba_be": "#8b2a4b41",
+      "argb_le": "#414b2a8b",
+      "bytes": [
+        139,
+        42,
+        75,
+        65
+      ]
+    },
+    {
+      "rgba_be": "#8f4b4f6a",
+      "argb_le": "#6a4f4b8f",
+      "bytes": [
+        143,
+        75,
+        79,
+        106
+      ]
+    },
+    {
+      "rgba_be": "#525cd27a",
+      "argb_le": "#7ad25c52",
+      "bytes": [
+        82,
+        92,
+        210,
+        122
+      ]
+    },
+    {
+      "rgba_be": "#978517ac",
+      "argb_le": "#ac178597",
+      "bytes": [
+        151,
+        133,
+        23,
+        172
+      ]
+    },
+    {
+      "rgba_be": "#9abedacd",
+      "argb_le": "#cddabe9a",
+      "bytes": [
+        154,
+        190,
+        218,
+        205
+      ]
+    },
+    {
+      "rgba_be": "#5fdfdffe",
+      "argb_le": "#fedfdf5f",
+      "bytes": [
+        95,
+        223,
+        223,
+        254
+      ]
+    }
+  ]
+}
