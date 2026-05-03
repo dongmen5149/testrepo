@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x73",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "코르버스"
+    },
+    {
+      "offset": "0x7c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "본부"
+    },
+    {
+      "offset": "0x84",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "어딘가"
+    },
+    {
+      "offset": "0x8b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "바위가"
+    },
+    {
+      "offset": "0x92",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "움직이는"
+    },
+    {
+      "offset": "0x9b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "듯한"
+    },
+    {
+      "offset": "0xa0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진동이"
+    },
+    {
+      "offset": "0xa7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "느껴졌다"
+    }
+  ],
+  "count": 8
+}

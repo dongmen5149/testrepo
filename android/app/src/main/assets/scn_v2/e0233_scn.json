@@ -1,0 +1,2183 @@
+{
+  "entries": [
+    {
+      "offset": "0x4b4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x4bb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막"
+    },
+    {
+      "offset": "0x4cb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x4d2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아스크란"
+    },
+    {
+      "offset": "0x4db",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "군과는"
+    },
+    {
+      "offset": "0x4e2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다른"
+    },
+    {
+      "offset": "0x4e7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "분위긴데"
+    },
+    {
+      "offset": "0x4fc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x501",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "막"
+    },
+    {
+      "offset": "0x504",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "도착한"
+    },
+    {
+      "offset": "0x50b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "거"
+    },
+    {
+      "offset": "0x50e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같다"
+    },
+    {
+      "offset": "0x514",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x51b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "자리잡기"
+    },
+    {
+      "offset": "0x524",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "전에"
+    },
+    {
+      "offset": "0x529",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빠져"
+    },
+    {
+      "offset": "0x52e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나가야해"
+    },
+    {
+      "offset": "0x541",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아컥"
+    },
+    {
+      "offset": "0x548",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0x54b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다리"
+    },
+    {
+      "offset": "0x55c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "휴우"
+    },
+    {
+      "offset": "0x573",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "조심해서"
+    },
+    {
+      "offset": "0x57c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빠져나가자"
+    },
+    {
+      "offset": "0x594",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "뭐냐"
+    },
+    {
+      "offset": "0x599",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "네놈은"
+    },
+    {
+      "offset": "0x5ab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "치잇"
+    },
+    {
+      "offset": "0x5bb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "헉"
+    },
+    {
+      "offset": "0x5c0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "헉"
+    },
+    {
+      "offset": "0x5c5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0x5ca",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "강하잖아"
+    },
+    {
+      "offset": "0x5de",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다행히"
+    },
+    {
+      "offset": "0x5e5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "본대엔"
+    },
+    {
+      "offset": "0x5ec",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "들키지"
+    },
+    {
+      "offset": "0x5f3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않은"
+    },
+    {
+      "offset": "0x5f8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x5fb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같은데"
+    },
+    {
+      "offset": "0x60d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신호가"
+    },
+    {
+      "offset": "0x614",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "약해"
+    },
+    {
+      "offset": "0x61c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하지만"
+    },
+    {
+      "offset": "0x623",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "여전히"
+    },
+    {
+      "offset": "0x62a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "남쪽"
+    },
+    {
+      "offset": "0x63b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아아아"
+    },
+    {
+      "offset": "0x643",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x646",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "깡통"
+    },
+    {
+      "offset": "0x64b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가면을"
+    },
+    {
+      "offset": "0x652",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "정말로"
+    },
+    {
+      "offset": "0x659",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "믿어야"
+    },
+    {
+      "offset": "0x660",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하는"
+    },
+    {
+      "offset": "0x665",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x674",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "방법이"
+    },
+    {
+      "offset": "0x67b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없어"
+    },
+    {
+      "offset": "0x681",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "깡통"
+    },
+    {
+      "offset": "0x686",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가면의"
+    },
+    {
+      "offset": "0x68d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "말을"
+    },
+    {
+      "offset": "0x692",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "무시하더라도"
+    },
+    {
+      "offset": "0x69f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나에게"
+    },
+    {
+      "offset": "0x6a6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "믿을"
+    },
+    {
+      "offset": "0x6ab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x6ae",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x6b1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "펜던트"
+    },
+    {
+      "offset": "0x6b8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뿐이야"
+    },
+    {
+      "offset": "0x6c1",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "독안에"
+    },
+    {
+      "offset": "0x6c8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "든"
+    },
+    {
+      "offset": "0x6cb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "쥐"
+    },
+    {
+      "offset": "0x6cf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x6d6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x6de",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "미약한"
+    },
+    {
+      "offset": "0x6e5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신호"
+    },
+    {
+      "offset": "0x6eb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x6f2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x6fa",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "유적의"
+    },
+    {
+      "offset": "0x701",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "밖으로"
+    },
+    {
+      "offset": "0x709",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x710",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x723",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x728",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x72b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "괜찮아"
+    },
+    {
+      "offset": "0x73c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "응"
+    },
+    {
+      "offset": "0x74a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "조용하네"
+    },
+    {
+      "offset": "0x75e",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "왜"
+    },
+    {
+      "offset": "0x761",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "돌아가지"
+    },
+    {
+      "offset": "0x76a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "않았어"
+    },
+    {
+      "offset": "0x782",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "글쎄"
+    },
+    {
+      "offset": "0x793",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "난"
+    },
+    {
+      "offset": "0x796",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "말이지"
+    },
+    {
+      "offset": "0x79e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x7a3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "세상에"
+    },
+    {
+      "offset": "0x7aa",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나오면"
+    },
+    {
+      "offset": "0x7b1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x7b6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "바꿀"
+    },
+    {
+      "offset": "0x7bb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x7be",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있을"
+    },
+    {
+      "offset": "0x7c3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "줄"
+    },
+    {
+      "offset": "0x7c6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "알았어"
+    },
+    {
+      "offset": "0x7d7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "너를"
+    },
+    {
+      "offset": "0x7dc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "만나서"
+    },
+    {
+      "offset": "0x7e3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "마을을"
+    },
+    {
+      "offset": "0x7ea",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나설땐"
+    },
+    {
+      "offset": "0x7f2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x7f7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "큰일을"
+    },
+    {
+      "offset": "0x7fe",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "해내리라는"
+    },
+    {
+      "offset": "0x809",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "각오에"
+    },
+    {
+      "offset": "0x810",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "차있었지"
+    },
+    {
+      "offset": "0x823",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그런데"
+    },
+    {
+      "offset": "0x82c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뜻대로"
+    },
+    {
+      "offset": "0x833",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "되는"
+    },
+    {
+      "offset": "0x838",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "게"
+    },
+    {
+      "offset": "0x83b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하나도"
+    },
+    {
+      "offset": "0x842",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없더라구"
+    },
+    {
+      "offset": "0x855",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "결국"
+    },
+    {
+      "offset": "0x85a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나도"
+    },
+    {
+      "offset": "0x861",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아스크란을"
+    },
+    {
+      "offset": "0x86c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "증오하고"
+    },
+    {
+      "offset": "0x876",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "적대하고"
+    },
+    {
+      "offset": "0x880",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "싸우고"
+    },
+    {
+      "offset": "0x894",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "반전"
+    },
+    {
+      "offset": "0x899",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "세력"
+    },
+    {
+      "offset": "0x89e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "엘지스도"
+    },
+    {
+      "offset": "0x8a9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x8ae",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니었다면"
+    },
+    {
+      "offset": "0x8c5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "난"
+    },
+    {
+      "offset": "0x8c8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "영웅이"
+    },
+    {
+      "offset": "0x8cf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "되긴"
+    },
+    {
+      "offset": "0x8d4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "틀린"
+    },
+    {
+      "offset": "0x8d9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "걸지도"
+    },
+    {
+      "offset": "0x8e0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "몰라"
+    },
+    {
+      "offset": "0x8ef",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔직히"
+    },
+    {
+      "offset": "0x8f6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "네가"
+    },
+    {
+      "offset": "0x8fb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니었다면"
+    },
+    {
+      "offset": "0x908",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x90d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "포기하고"
+    },
+    {
+      "offset": "0x916",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "돌아갔을"
+    },
+    {
+      "offset": "0x91f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "거야"
+    },
+    {
+      "offset": "0x92e",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "어째서"
+    },
+    {
+      "offset": "0x935",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "그렇게"
+    },
+    {
+      "offset": "0x93e",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "나를"
+    },
+    {
+      "offset": "0x943",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "지켜주려"
+    },
+    {
+      "offset": "0x94c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "하는"
+    },
+    {
+      "offset": "0x951",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "거야"
+    },
+    {
+      "offset": "0x960",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "난"
+    },
+    {
+      "offset": "0x963",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "너에게"
+    },
+    {
+      "offset": "0x96c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "나에"
+    },
+    {
+      "offset": "0x971",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "대한"
+    },
+    {
+      "offset": "0x976",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x979",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "아무것도"
+    },
+    {
+      "offset": "0x982",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "말해주지"
+    },
+    {
+      "offset": "0x98b",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "않았는데"
+    },
+    {
+      "offset": "0x99f",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x9a4",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "리파이너라는"
+    },
+    {
+      "offset": "0x9b1",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x9b4",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "만으로"
+    },
+    {
+      "offset": "0x9bc",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "날"
+    },
+    {
+      "offset": "0x9bf",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "믿을"
+    },
+    {
+      "offset": "0x9c4",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x9c7",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0x9d6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔티안을"
+    },
+    {
+      "offset": "0x9df",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "위해"
+    },
+    {
+      "offset": "0x9e4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "자신을"
+    },
+    {
+      "offset": "0x9eb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "희생하는"
+    },
+    {
+      "offset": "0x9f4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "리파이너라는"
+    },
+    {
+      "offset": "0xa01",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xa10",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그리고"
+    },
+    {
+      "offset": "0xa17",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0xa20",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "추락을"
+    },
+    {
+      "offset": "0xa27",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "막기위해"
+    },
+    {
+      "offset": "0xa30",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "노력하는"
+    },
+    {
+      "offset": "0xa39",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xa48",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그것만으로도"
+    },
+    {
+      "offset": "0xa55",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "난"
+    },
+    {
+      "offset": "0xa58",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "널"
+    },
+    {
+      "offset": "0xa5b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "믿을"
+    },
+    {
+      "offset": "0xa60",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xa63",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0xa72",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "희생"
+    },
+    {
+      "offset": "0xa83",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0xa86",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "멋대로였지만"
+    },
+    {
+      "offset": "0xa95",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "너의"
+    },
+    {
+      "offset": "0xa9a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수호기사가"
+    },
+    {
+      "offset": "0xaa5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "된"
+    },
+    {
+      "offset": "0xaa8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xaab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "만큼은"
+    },
+    {
+      "offset": "0xab3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "한번도"
+    },
+    {
+      "offset": "0xaba",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "틀렸다고"
+    },
+    {
+      "offset": "0xac3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "생각한"
+    },
+    {
+      "offset": "0xaca",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "적이"
+    },
+    {
+      "offset": "0xacf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없다구"
+    },
+    {
+      "offset": "0xae0",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xae6",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "나는"
+    },
+    {
+      "offset": "0xaf7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "널"
+    },
+    {
+      "offset": "0xafd",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "좋아하는"
+    },
+    {
+      "offset": "0xb06",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xb09",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같아"
+    },
+    {
+      "offset": "0xb18",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "미안"
+    },
+    {
+      "offset": "0xb20",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "나는"
+    },
+    {
+      "offset": "0xb25",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "아무"
+    },
+    {
+      "offset": "0xb2a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "대답도"
+    },
+    {
+      "offset": "0xb32",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "해"
+    },
+    {
+      "offset": "0xb35",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "줄"
+    },
+    {
+      "offset": "0xb38",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xb3b",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "없어"
+    },
+    {
+      "offset": "0xb43",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "두근거림도"
+    },
+    {
+      "offset": "0xb4f",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "설레임도"
+    },
+    {
+      "offset": "0xb5a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "나에겐"
+    },
+    {
+      "offset": "0xb61",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "느껴지지"
+    },
+    {
+      "offset": "0xb6a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "않으니까"
+    },
+    {
+      "offset": "0xb75",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "너와"
+    },
+    {
+      "offset": "0xb7a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "있을"
+    },
+    {
+      "offset": "0xb7f",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "때"
+    },
+    {
+      "offset": "0xb82",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "느껴지는"
+    },
+    {
+      "offset": "0xb8b",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0xb90",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "미안함"
+    },
+    {
+      "offset": "0xb9a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "그것"
+    },
+    {
+      "offset": "0xb9f",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "뿐이야"
+    },
+    {
+      "offset": "0xba8",
+      "speaker": "시엔",
+      "mode_byte": "0x3b",
+      "text": "또"
+    },
+    {
+      "offset": "0xbab",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0xbb3",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "널"
+    },
+    {
+      "offset": "0xbb6",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "혼자두고"
+    },
+    {
+      "offset": "0xbbf",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "가는"
+    },
+    {
+      "offset": "0xbc5",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "날"
+    },
+    {
+      "offset": "0xbc8",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "이해해줘"
+    },
+    {
+      "offset": "0xbd2",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "고마웠어"
+    },
+    {
+      "offset": "0xbe6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0xbeb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "타이밍이라고"
+    },
+    {
+      "offset": "0xbf8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "생각했는데"
+    },
+    {
+      "offset": "0xc03",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "멋지게"
+    },
+    {
+      "offset": "0xc0a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "차였다"
+    },
+    {
+      "offset": "0xc1d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그렇다고"
+    },
+    {
+      "offset": "0xc26",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0xc2d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "또"
+    },
+    {
+      "offset": "0xc30",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "혼자두고"
+    },
+    {
+      "offset": "0xc39",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가버리다니"
+    },
+    {
+      "offset": "0xc46",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "말이야"
+    },
+    {
+      "offset": "0xc57",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0xc5c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아스크라로"
+    },
+    {
+      "offset": "0xc67",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "와서"
+    },
+    {
+      "offset": "0xc6c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "제대로"
+    },
+    {
+      "offset": "0xc73",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하는"
+    },
+    {
+      "offset": "0xc78",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "일이"
+    },
+    {
+      "offset": "0xc7d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하나도"
+    },
+    {
+      "offset": "0xc84",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없네"
+    },
+    {
+      "offset": "0xc8a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나란"
+    },
+    {
+      "offset": "0xc8f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놈은"
+    },
+    {
+      "offset": "0xc9f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "펜던트의"
+    },
+    {
+      "offset": "0xca8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신호"
+    },
+    {
+      "offset": "0xcb0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "북서쪽"
+    },
+    {
+      "offset": "0xcc3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그녀석"
+    },
+    {
+      "offset": "0xccc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "자신이"
+    },
+    {
+      "offset": "0xcd3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "혼자있을때"
+    },
+    {
+      "offset": "0xcde",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "얼마나"
+    },
+    {
+      "offset": "0xce5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "걱정스러운지"
+    },
+    {
+      "offset": "0xcf2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "알고는"
+    },
+    {
+      "offset": "0xcf9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있는"
+    },
+    {
+      "offset": "0xcfe",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "걸까"
+    },
+    {
+      "offset": "0xd0d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가자"
+    },
+    {
+      "offset": "0xd13",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0xd17",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "등대"
+    },
+    {
+      "offset": "0xd1c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "란"
+    },
+    {
+      "offset": "0xd1f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "곳으로"
+    },
+    {
+      "offset": "0xd32",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0xd35",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "녀석이"
+    },
+    {
+      "offset": "0xd3c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "길치인"
+    },
+    {
+      "offset": "0xd43",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0xd46",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "누구보다"
+    },
+    {
+      "offset": "0xd4f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "잘"
+    },
+    {
+      "offset": "0xd52",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "알고"
+    },
+    {
+      "offset": "0xd57",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있잖아"
+    },
+    {
+      "offset": "0xd68",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "펜던트의"
+    },
+    {
+      "offset": "0xd71",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신호가"
+    },
+    {
+      "offset": "0xd78",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "꺼지지"
+    },
+    {
+      "offset": "0xd7f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않는"
+    },
+    {
+      "offset": "0xd84",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "한"
+    },
+    {
+      "offset": "0xd87",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나의"
+    },
+    {
+      "offset": "0xd8c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "의무도"
+    },
+    {
+      "offset": "0xd93",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "끝난게"
+    },
+    {
+      "offset": "0xd9a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니야"
+    },
+    {
+      "offset": "0xdad",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0xdb2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없으면"
+    },
+    {
+      "offset": "0xdb9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "안"
+    },
+    {
+      "offset": "0xdbc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "될"
+    },
+    {
+      "offset": "0xdbf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "상황도"
+    },
+    {
+      "offset": "0xdc6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "몇번이나"
+    },
+    {
+      "offset": "0xdcf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있었다"
+    },
+    {
+      "offset": "0xdd7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "차인"
+    },
+    {
+      "offset": "0xddc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것과"
+    },
+    {
+      "offset": "0xde1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수호기사의"
+    },
+    {
+      "offset": "0xdec",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "의무는"
+    },
+    {
+      "offset": "0xdf3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "별개다"
+    },
+    {
+      "offset": "0xe04",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "심장이"
+    },
+    {
+      "offset": "0xe0b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "타버릴"
+    },
+    {
+      "offset": "0xe12",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "때까지"
+    },
+    {
+      "offset": "0xe1a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그게"
+    },
+    {
+      "offset": "0xe1f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0xe22",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신조다"
+    },
+    {
+      "offset": "0xe33",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "한"
+    },
+    {
+      "offset": "0xe36",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "번"
+    },
+    {
+      "offset": "0xe39",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "차인"
+    },
+    {
+      "offset": "0xe3e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "정도로"
+    },
+    {
+      "offset": "0xe45",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "포기할"
+    },
+    {
+      "offset": "0xe4c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "성"
+    },
+    {
+      "offset": "0xe4f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "싶으냐아아아"
+    },
+    {
+      "offset": "0xe5f",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "등대를"
+    },
+    {
+      "offset": "0xe66",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "향해"
+    },
+    {
+      "offset": "0xe6c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0xe73",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0xe82",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기서"
+    },
+    {
+      "offset": "0xe89",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잠시"
+    },
+    {
+      "offset": "0xe8e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "기다려"
+    },
+    {
+      "offset": "0xe9f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0xea4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "촌구석에"
+    },
+    {
+      "offset": "0xead",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "무슨"
+    },
+    {
+      "offset": "0xeb2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "볼일이"
+    },
+    {
+      "offset": "0xeb9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있어서"
+    },
+    {
+      "offset": "0xecc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "다짜고짜"
+    },
+    {
+      "offset": "0xed5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "덤벼들기는"
+    },
+    {
+      "offset": "0xeee",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "잠시만"
+    },
+    {
+      "offset": "0xf01",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "붉은"
+    },
+    {
+      "offset": "0xf06",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "늑대"
+    },
+    {
+      "offset": "0xf0b",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "문신"
+    },
+    {
+      "offset": "0xf13",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0xf18",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "코르버스"
+    },
+    {
+      "offset": "0xf21",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "길드야"
+    },
+    {
+      "offset": "0xf32",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "서둘러"
+    },
+    {
+      "offset": "0xf39",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "나오길"
+    },
+    {
+      "offset": "0xf40",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잘했군"
+    },
+    {
+      "offset": "0xf48",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0xf4d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0xf54",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "무더기로"
+    },
+    {
+      "offset": "0xf5d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "오면"
+    },
+    {
+      "offset": "0xf62",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "힘들어"
+    },
+    {
+      "offset": "0xf69",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "질거야"
+    },
+    {
+      "offset": "0xf7c",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "미안"
+    },
+    {
+      "offset": "0xf82",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "솔티안들은"
+    },
+    {
+      "offset": "0xf8d",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "행방이"
+    },
+    {
+      "offset": "0xf94",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "묘연해졌네"
+    },
+    {
+      "offset": "0xfaa",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가면의"
+    },
+    {
+      "offset": "0xfb1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "검사인가"
+    },
+    {
+      "offset": "0xfbb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그놈이"
+    },
+    {
+      "offset": "0xfc2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "빼돌린"
+    },
+    {
+      "offset": "0xfc9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xfcc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "같은데"
+    },
+    {
+      "offset": "0xfdd",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일단"
+    },
+    {
+      "offset": "0xfe2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안전한"
+    },
+    {
+      "offset": "0xfe9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "곳으로"
+    },
+    {
+      "offset": "0xff0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가자"
+    },
+    {
+      "offset": "0xfff",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그것보다"
+    },
+    {
+      "offset": "0x100a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "다른"
+    },
+    {
+      "offset": "0x100f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "듣고"
+    },
+    {
+      "offset": "0x1014",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싶은"
+    },
+    {
+      "offset": "0x1019",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "것들이"
+    },
+    {
+      "offset": "0x1020",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잔뜩"
+    },
+    {
+      "offset": "0x1025",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "생겼으니까"
+    },
+    {
+      "offset": "0x103c",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "아하"
+    },
+    {
+      "offset": "0x1042",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "이제야"
+    },
+    {
+      "offset": "0x1049",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0x104c",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "매력에"
+    },
+    {
+      "offset": "0x1053",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "눈을"
+    },
+    {
+      "offset": "0x1058",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "뜬거야"
+    },
+    {
+      "offset": "0x1069",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "놓고"
+    },
+    {
+      "offset": "0x106e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "간다"
+    },
+    {
+      "offset": "0x1075",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "어둠의"
+    },
+    {
+      "offset": "0x107c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "길드"
+    },
+    {
+      "offset": "0x1082",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1089",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "완료"
+    }
+  ],
+  "count": 363
+}

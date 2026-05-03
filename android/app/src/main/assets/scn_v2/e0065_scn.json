@@ -1,0 +1,47 @@
+{
+  "entries": [
+    {
+      "offset": "0xbd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "검은"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xca",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0xcf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제된"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "상태입니다"
+    },
+    {
+      "offset": "0xe3",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안을"
+    },
+    {
+      "offset": "0xea",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제합니다"
+    }
+  ],
+  "count": 7
+}

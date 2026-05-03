@@ -1,0 +1,1913 @@
+{
+  "entries": [
+    {
+      "offset": "0x39",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "衡"
+    },
+    {
+      "offset": "0x42",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "逈"
+    },
+    {
+      "offset": "0x1a1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잔존민의"
+    },
+    {
+      "offset": "0x1aa",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "은거지"
+    },
+    {
+      "offset": "0x1c1",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "비스트들이"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "대륙으로"
+    },
+    {
+      "offset": "0x1d5",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "내려갔는지"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "여기는"
+    },
+    {
+      "offset": "0x1e7",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "조용하네요"
+    },
+    {
+      "offset": "0x203",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "어른이"
+    },
+    {
+      "offset": "0x20a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "되면"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대륙으로"
+    },
+    {
+      "offset": "0x218",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "나가보고"
+    },
+    {
+      "offset": "0x221",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "싶어요"
+    },
+    {
+      "offset": "0x239",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "히야"
+    },
+    {
+      "offset": "0x23f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "빠르시네요"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "보기보다"
+    },
+    {
+      "offset": "0x254",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "훨씬"
+    },
+    {
+      "offset": "0x259",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "강하신가봐요"
+    },
+    {
+      "offset": "0x277",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "잠시만"
+    },
+    {
+      "offset": "0x27e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "기다리세요"
+    },
+    {
+      "offset": "0x28a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "금방"
+    },
+    {
+      "offset": "0x28f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "만들어"
+    },
+    {
+      "offset": "0x296",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "보일테니"
+    },
+    {
+      "offset": "0x2b0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "자"
+    },
+    {
+      "offset": "0x2b4",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "솔티아"
+    },
+    {
+      "offset": "0x2bb",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "특제"
+    },
+    {
+      "offset": "0x2c0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "미라클"
+    },
+    {
+      "offset": "0x2c7",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션이예요"
+    },
+    {
+      "offset": "0x2d3",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "약간"
+    },
+    {
+      "offset": "0x2d8",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "나눠드릴게요"
+    },
+    {
+      "offset": "0x2e7",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": "0x7b",
+      "text": "미라클"
+    },
+    {
+      "offset": "0x2ee",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션"
+    },
+    {
+      "offset": "0x2f5",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0x2f8",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x2fb",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x313",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "신기하게"
+    },
+    {
+      "offset": "0x31d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0x324",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "내려오니까"
+    },
+    {
+      "offset": "0x32f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "몬스터도"
+    },
+    {
+      "offset": "0x338",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "비스트도"
+    },
+    {
+      "offset": "0x341",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "뜸해졌어요"
+    },
+    {
+      "offset": "0x35d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "그녀석들도"
+    },
+    {
+      "offset": "0x368",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "다들"
+    },
+    {
+      "offset": "0x36d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0x374",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "내려간거"
+    },
+    {
+      "offset": "0x37d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "같은데"
+    },
+    {
+      "offset": "0x385",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0x38a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대륙이"
+    },
+    {
+      "offset": "0x391",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좋긴"
+    },
+    {
+      "offset": "0x396",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좋은가"
+    },
+    {
+      "offset": "0x39d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "보죠"
+    },
+    {
+      "offset": "0x3b3",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "어서"
+    },
+    {
+      "offset": "0x3b8",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "준비를"
+    },
+    {
+      "offset": "0x3bf",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "마치고"
+    },
+    {
+      "offset": "0x3c6",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "저도"
+    },
+    {
+      "offset": "0x3cb",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "내려가고"
+    },
+    {
+      "offset": "0x3d4",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "싶네요"
+    },
+    {
+      "offset": "0x3dd",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": "0x7b",
+      "text": "좀"
+    },
+    {
+      "offset": "0x3e0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좋은"
+    },
+    {
+      "offset": "0x3e5",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션"
+    },
+    {
+      "offset": "0x3eb",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x3f2",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x408",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대륙으로"
+    },
+    {
+      "offset": "0x411",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "내려가려면"
+    },
+    {
+      "offset": "0x41c",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0x41f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "강해져야"
+    },
+    {
+      "offset": "0x428",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "겠죠"
+    },
+    {
+      "offset": "0x43e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "강한"
+    },
+    {
+      "offset": "0x443",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "것도"
+    },
+    {
+      "offset": "0x448",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "강한"
+    },
+    {
+      "offset": "0x44d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "거지만"
+    },
+    {
+      "offset": "0x455",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "물약이나"
+    },
+    {
+      "offset": "0x45e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "장비도"
+    },
+    {
+      "offset": "0x465",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "준비해야"
+    },
+    {
+      "offset": "0x46e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "될텐데"
+    },
+    {
+      "offset": "0x488",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "혹시"
+    },
+    {
+      "offset": "0x48e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "에인션트버그를"
+    },
+    {
+      "offset": "0x49d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "사냥하실"
+    },
+    {
+      "offset": "0x4a6",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "능력이"
+    },
+    {
+      "offset": "0x4ad",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "되시나요"
+    },
+    {
+      "offset": "0x4b7",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "당연하지"
+    },
+    {
+      "offset": "0x4d1",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "그럼"
+    },
+    {
+      "offset": "0x4d7",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "에인션트"
+    },
+    {
+      "offset": "0x4e0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "하니"
+    },
+    {
+      "offset": "0x4e5",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x4e8",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "구해주시겠어요"
+    },
+    {
+      "offset": "0x508",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "제가"
+    },
+    {
+      "offset": "0x50d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "그걸로"
+    },
+    {
+      "offset": "0x514",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x517",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좋은"
+    },
+    {
+      "offset": "0x51c",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션을"
+    },
+    {
+      "offset": "0x523",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "만들어"
+    },
+    {
+      "offset": "0x52a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "쓰고"
+    },
+    {
+      "offset": "0x52f",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "있는데"
+    },
+    {
+      "offset": "0x537",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "버그들이"
+    },
+    {
+      "offset": "0x540",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "다"
+    },
+    {
+      "offset": "0x543",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대륙으로"
+    },
+    {
+      "offset": "0x54c",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "내려가서"
+    },
+    {
+      "offset": "0x567",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션을"
+    },
+    {
+      "offset": "0x56e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "만들면"
+    },
+    {
+      "offset": "0x575",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x578",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "나눠드릴테니"
+    },
+    {
+      "offset": "0x589",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0x58c",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "정도만"
+    },
+    {
+      "offset": "0x593",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "부탁드릴게요"
+    },
+    {
+      "offset": "0x5a2",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": "0x7b",
+      "text": "좀"
+    },
+    {
+      "offset": "0x5a5",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좋은"
+    },
+    {
+      "offset": "0x5aa",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션"
+    },
+    {
+      "offset": "0x5b0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x5b7",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x5bd",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x5c0",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "힘들어"
+    },
+    {
+      "offset": "0x5d8",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "으헛"
+    },
+    {
+      "offset": "0x5df",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "실망인데요"
+    },
+    {
+      "offset": "0x5eb",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "대륙의"
+    },
+    {
+      "offset": "0x5f2",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "모험가도"
+    },
+    {
+      "offset": "0x60d",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "보통"
+    },
+    {
+      "offset": "0x612",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "포션이"
+    },
+    {
+      "offset": "0x619",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "아니라"
+    },
+    {
+      "offset": "0x621",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "솔티아에"
+    },
+    {
+      "offset": "0x62a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "전해지는"
+    },
+    {
+      "offset": "0x633",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "전설의"
+    },
+    {
+      "offset": "0x63a",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "비약이라구요"
+    },
+    {
+      "offset": "0x658",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0x65d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x666",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가호가"
+    },
+    {
+      "offset": "0x66d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "함께"
+    },
+    {
+      "offset": "0x672",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "하기를"
+    },
+    {
+      "offset": "0x68a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0x690",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x693",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "골목대장"
+    },
+    {
+      "offset": "0x69c",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "케이가"
+    },
+    {
+      "offset": "0x6a3",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0x6aa",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "강해졌구나"
+    },
+    {
+      "offset": "0x6bf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하핫"
+    },
+    {
+      "offset": "0x6c6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "전"
+    },
+    {
+      "offset": "0x6c9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "제대로"
+    },
+    {
+      "offset": "0x6d0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "기억도"
+    },
+    {
+      "offset": "0x6d7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "안나는데"
+    },
+    {
+      "offset": "0x6e0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "부끄럽네요"
+    },
+    {
+      "offset": "0x6fc",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가디언들의"
+    },
+    {
+      "offset": "0x707",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "분노로"
+    },
+    {
+      "offset": "0x70e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤가"
+    },
+    {
+      "offset": "0x715",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "빛을"
+    },
+    {
+      "offset": "0x71a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "잃은지도"
+    },
+    {
+      "offset": "0x723",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x72a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "년이"
+    },
+    {
+      "offset": "0x72f",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "넘었구나"
+    },
+    {
+      "offset": "0x748",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "설령"
+    },
+    {
+      "offset": "0x74d",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "억지로"
+    },
+    {
+      "offset": "0x754",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "연다고"
+    },
+    {
+      "offset": "0x75b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "해도"
+    },
+    {
+      "offset": "0x761",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "노하시진"
+    },
+    {
+      "offset": "0x76a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "않겠지"
+    },
+    {
+      "offset": "0x782",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "우리들은"
+    },
+    {
+      "offset": "0x78b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "마지막까지"
+    },
+    {
+      "offset": "0x796",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "남아"
+    },
+    {
+      "offset": "0x79b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그들을"
+    },
+    {
+      "offset": "0x7a2",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "섬기고"
+    },
+    {
+      "offset": "0x7a9",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있으니"
+    },
+    {
+      "offset": "0x7bc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "영혼석"
+    },
+    {
+      "offset": "0x7c7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그리고"
+    },
+    {
+      "offset": "0x7ce",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x7d1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "조각들은"
+    },
+    {
+      "offset": "0x7eb",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가져가거라"
+    },
+    {
+      "offset": "0x7f7",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0x7fd",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x800",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "영혼석은"
+    },
+    {
+      "offset": "0x809",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "기다리던"
+    },
+    {
+      "offset": "0x812",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "너를"
+    },
+    {
+      "offset": "0x817",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "만난거야"
+    },
+    {
+      "offset": "0x822",
+      "speaker": "잔존민노인",
+      "mode_byte": "0x7b",
+      "text": "영혼석"
+    },
+    {
+      "offset": "0x829",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0x82c",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x843",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤가"
+    },
+    {
+      "offset": "0x84a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "인간의"
+    },
+    {
+      "offset": "0x851",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "손에"
+    },
+    {
+      "offset": "0x856",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "의해"
+    },
+    {
+      "offset": "0x85b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "열렸다는건"
+    },
+    {
+      "offset": "0x867",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그만큼"
+    },
+    {
+      "offset": "0x86e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가디언들이"
+    },
+    {
+      "offset": "0x879",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "우리에게서"
+    },
+    {
+      "offset": "0x884",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "멀어졌다는"
+    },
+    {
+      "offset": "0x88f",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "게지"
+    },
+    {
+      "offset": "0x8a4",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "우리에게"
+    },
+    {
+      "offset": "0x8ad",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "남은"
+    },
+    {
+      "offset": "0x8b2",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x8b7",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0x8bc",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가디언"
+    },
+    {
+      "offset": "0x8c3",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "뿐인게야"
+    },
+    {
+      "offset": "0x8ce",
+      "speaker": "잔존민노인",
+      "mode_byte": "0x7b",
+      "text": "빛을"
+    },
+    {
+      "offset": "0x8d3",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "잃은"
+    },
+    {
+      "offset": "0x8d8",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤"
+    },
+    {
+      "offset": "0x8de",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x8e5",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x8fa",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0x900",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "이거"
+    },
+    {
+      "offset": "0x905",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "케이가"
+    },
+    {
+      "offset": "0x90c",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "아니냐"
+    },
+    {
+      "offset": "0x91d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "헉"
+    },
+    {
+      "offset": "0x922",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저를"
+    },
+    {
+      "offset": "0x927",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아세요"
+    },
+    {
+      "offset": "0x93e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그래"
+    },
+    {
+      "offset": "0x945",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "솔럼에선"
+    },
+    {
+      "offset": "0x94e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "제법"
+    },
+    {
+      "offset": "0x953",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "골목대장"
+    },
+    {
+      "offset": "0x95c",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "노릇을"
+    },
+    {
+      "offset": "0x963",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "하지"
+    },
+    {
+      "offset": "0x968",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "않았느냐"
+    },
+    {
+      "offset": "0x97b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저는"
+    },
+    {
+      "offset": "0x982",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔티아에"
+    },
+    {
+      "offset": "0x98b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "남은"
+    },
+    {
+      "offset": "0x990",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "사람이"
+    },
+    {
+      "offset": "0x997",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있는"
+    },
+    {
+      "offset": "0x99c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "줄도"
+    },
+    {
+      "offset": "0x9a1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "몰랐는데"
+    },
+    {
+      "offset": "0x9bb",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0x9c1",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "우리는"
+    },
+    {
+      "offset": "0x9c8",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "고향을"
+    },
+    {
+      "offset": "0x9cf",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "못버린게지"
+    },
+    {
+      "offset": "0x9db",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "지상을"
+    },
+    {
+      "offset": "0x9e2",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "두려워"
+    },
+    {
+      "offset": "0x9e9",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "했던"
+    },
+    {
+      "offset": "0x9ee",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "것도"
+    },
+    {
+      "offset": "0x9f3",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있고"
+    },
+    {
+      "offset": "0xa08",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그러는"
+    },
+    {
+      "offset": "0xa0f",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "너는"
+    },
+    {
+      "offset": "0xa14",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "어떻게"
+    },
+    {
+      "offset": "0xa1b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "다시"
+    },
+    {
+      "offset": "0xa20",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "올라온게냐"
+    },
+    {
+      "offset": "0xa2c",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "땅에"
+    },
+    {
+      "offset": "0xa31",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "떨어지긴했지만"
+    },
+    {
+      "offset": "0xa40",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "솔티아와"
+    },
+    {
+      "offset": "0xa49",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "지상은"
+    },
+    {
+      "offset": "0xa50",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "비스트들로"
+    },
+    {
+      "offset": "0xa5b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가로막혀"
+    },
+    {
+      "offset": "0xa64",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있을텐데"
+    },
+    {
+      "offset": "0xa78",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "여러"
+    },
+    {
+      "offset": "0xa7d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "사정이"
+    },
+    {
+      "offset": "0xa84",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있어서요"
+    },
+    {
+      "offset": "0xa8e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지금은"
+    },
+    {
+      "offset": "0xa95",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "영혼석을"
+    },
+    {
+      "offset": "0xa9e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "찾아다니고"
+    },
+    {
+      "offset": "0xaa9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있어요"
+    },
+    {
+      "offset": "0xac0",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "오호라"
+    },
+    {
+      "offset": "0xac9",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "영혼석"
+    },
+    {
+      "offset": "0xad2",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "그거라면"
+    },
+    {
+      "offset": "0xadb",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "우리도"
+    },
+    {
+      "offset": "0xae2",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "하나"
+    },
+    {
+      "offset": "0xae7",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "보관하고"
+    },
+    {
+      "offset": "0xaf0",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있을텐데"
+    },
+    {
+      "offset": "0xb04",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "우왓"
+    },
+    {
+      "offset": "0xb0a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "정말요"
+    },
+    {
+      "offset": "0xb22",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "문제는"
+    },
+    {
+      "offset": "0xb29",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "보관중인"
+    },
+    {
+      "offset": "0xb32",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤가"
+    },
+    {
+      "offset": "0xb39",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "봉인되어"
+    },
+    {
+      "offset": "0xb42",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있다는"
+    },
+    {
+      "offset": "0xb49",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "게지"
+    },
+    {
+      "offset": "0xb59",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아"
+    },
+    {
+      "offset": "0xb5d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그놈의"
+    },
+    {
+      "offset": "0xb64",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "봉인"
+    },
+    {
+      "offset": "0xb69",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "여기저기"
+    },
+    {
+      "offset": "0xb72",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "잘도"
+    },
+    {
+      "offset": "0xb77",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "걸려있네"
+    },
+    {
+      "offset": "0xb91",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0xb97",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "꼭"
+    },
+    {
+      "offset": "0xb9a",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "필요한가보구나"
+    },
+    {
+      "offset": "0xbaa",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤에"
+    },
+    {
+      "offset": "0xbb1",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "빛을"
+    },
+    {
+      "offset": "0xbb6",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "되찾아"
+    },
+    {
+      "offset": "0xbbd",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "줄"
+    },
+    {
+      "offset": "0xbc0",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xbc3",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있다면"
+    },
+    {
+      "offset": "0xbca",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "여는"
+    },
+    {
+      "offset": "0xbcf",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "것도"
+    },
+    {
+      "offset": "0xbd4",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가능할게야"
+    },
+    {
+      "offset": "0xbf0",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "라이트닝파우더"
+    },
+    {
+      "offset": "0xbff",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0xc05",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0xc09",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "정도"
+    },
+    {
+      "offset": "0xc0e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있으면"
+    },
+    {
+      "offset": "0xc15",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "된단다"
+    },
+    {
+      "offset": "0xc1d",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "야수의"
+    },
+    {
+      "offset": "0xc24",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0xc27",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "안쪽에서"
+    },
+    {
+      "offset": "0xc30",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "한번"
+    },
+    {
+      "offset": "0xc35",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "구해보렴"
+    },
+    {
+      "offset": "0xc40",
+      "speaker": "잔존민노인",
+      "mode_byte": "0x7b",
+      "text": "빛을잃은"
+    },
+    {
+      "offset": "0xc49",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤"
+    },
+    {
+      "offset": "0xc4f",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0xc56",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0xc6b",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "성궤는"
+    },
+    {
+      "offset": "0xc72",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "원래"
+    },
+    {
+      "offset": "0xc77",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "스스로"
+    },
+    {
+      "offset": "0xc7e",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "빛을"
+    },
+    {
+      "offset": "0xc83",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "내서"
+    },
+    {
+      "offset": "0xc88",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "열리지"
+    },
+    {
+      "offset": "0xc90",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "하지만"
+    },
+    {
+      "offset": "0xc98",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "라이트닝"
+    },
+    {
+      "offset": "0xca1",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "파우더"
+    },
+    {
+      "offset": "0xcaa",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0xcae",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "정도면"
+    },
+    {
+      "offset": "0xcb5",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "인위적으로"
+    },
+    {
+      "offset": "0xcc0",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "열수도"
+    },
+    {
+      "offset": "0xcc7",
+      "speaker": "잔존민노인",
+      "mode_byte": null,
+      "text": "있을게야"
+    },
+    {
+      "offset": "0xce1",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "솔럼의"
+    },
+    {
+      "offset": "0xce8",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "물건들은"
+    },
+    {
+      "offset": "0xcf1",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "아직"
+    },
+    {
+      "offset": "0xcf6",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "많이"
+    },
+    {
+      "offset": "0xcfb",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "남아있어요"
+    },
+    {
+      "offset": "0xd1b",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "살아남기"
+    },
+    {
+      "offset": "0xd24",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "위해선"
+    },
+    {
+      "offset": "0xd2c",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "제련"
+    },
+    {
+      "offset": "0xd31",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "기술을"
+    },
+    {
+      "offset": "0xd38",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "익혀야"
+    },
+    {
+      "offset": "0xd3f",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "했어"
+    }
+  ],
+  "count": 318
+}

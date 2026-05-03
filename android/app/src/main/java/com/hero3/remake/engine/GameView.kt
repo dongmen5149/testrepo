@@ -45,6 +45,7 @@ class GameView(context: Context, private val input: InputController) :
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_POUND) {
             onPoundKey?.invoke()
+            input.setPressed(InputController.K_POUND, true)
             return true
         }
         return mapKey(keyCode)?.let {

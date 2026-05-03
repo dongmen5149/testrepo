@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "offset": "0x3e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x45",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "평원"
+    }
+  ],
+  "count": 2
+}

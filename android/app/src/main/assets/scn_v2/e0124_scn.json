@@ -1,0 +1,89 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "驗"
+    },
+    {
+      "offset": "0x53",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "驗"
+    },
+    {
+      "offset": "0xbc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0xc3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막"
+    },
+    {
+      "offset": "0xcb",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "홀리앰버"
+    },
+    {
+      "offset": "0xd4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xde",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0xef",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "도외지로"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빠진건가"
+    },
+    {
+      "offset": "0x103",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "경계가"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "한결"
+    },
+    {
+      "offset": "0x10f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "허술해"
+    },
+    {
+      "offset": "0x116",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "졌는데"
+    }
+  ],
+  "count": 14
+}

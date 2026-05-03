@@ -1,0 +1,65 @@
+{
+  "entries": [
+    {
+      "offset": "0x60",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x67",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산"
+    },
+    {
+      "offset": "0x6f",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "채굴장"
+    },
+    {
+      "offset": "0x7f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0x84",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "채굴장에는"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "볼일이"
+    },
+    {
+      "offset": "0x96",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없다"
+    },
+    {
+      "offset": "0x9c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느를"
+    },
+    {
+      "offset": "0xa5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "찾아야"
+    },
+    {
+      "offset": "0xac",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해"
+    }
+  ],
+  "count": 10
+}

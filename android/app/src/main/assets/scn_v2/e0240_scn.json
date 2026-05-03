@@ -1,0 +1,215 @@
+{
+  "entries": [
+    {
+      "offset": "0xad",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "통일전쟁"
+    },
+    {
+      "offset": "0xb6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "중"
+    },
+    {
+      "offset": "0xbb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "멜하르"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공국"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": null,
+      "mode_byte": "0x39",
+      "text": "년전"
+    },
+    {
+      "offset": "0xcd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "통일전쟁"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "중"
+    },
+    {
+      "offset": "0xdd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "멜하르"
+    },
+    {
+      "offset": "0xe4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공국"
+    },
+    {
+      "offset": "0xf5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "혼자서"
+    },
+    {
+      "offset": "0xfe",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "우리"
+    },
+    {
+      "offset": "0x103",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "멜하르"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "기사단을"
+    },
+    {
+      "offset": "0x120",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "힘의"
+    },
+    {
+      "offset": "0x125",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "차이는"
+    },
+    {
+      "offset": "0x12c",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "분명하다"
+    },
+    {
+      "offset": "0x13f",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "다시한번"
+    },
+    {
+      "offset": "0x148",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "권한다"
+    },
+    {
+      "offset": "0x150",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "항복하고"
+    },
+    {
+      "offset": "0x15a",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "아스크라의"
+    },
+    {
+      "offset": "0x165",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "이름"
+    },
+    {
+      "offset": "0x16a",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "아래로"
+    },
+    {
+      "offset": "0x171",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "들어올"
+    },
+    {
+      "offset": "0x178",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "것을"
+    },
+    {
+      "offset": "0x187",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "크윽"
+    },
+    {
+      "offset": "0x19a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "우리에겐"
+    },
+    {
+      "offset": "0x1a3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "멜하르를"
+    },
+    {
+      "offset": "0x1ac",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "수호하는"
+    },
+    {
+      "offset": "0x1b5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "기사단으로써의"
+    },
+    {
+      "offset": "0x1c4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "긍지가"
+    },
+    {
+      "offset": "0x1cb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x1df",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "그렇다면"
+    },
+    {
+      "offset": "0x1e9",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "전해라"
+    },
+    {
+      "offset": "0x1f2",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "반항은"
+    },
+    {
+      "offset": "0x1f9",
+      "speaker": "이안",
+      "mode_byte": null,
+      "text": "무의미하다고"
+    }
+  ],
+  "count": 35
+}

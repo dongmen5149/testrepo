@@ -1,0 +1,137 @@
+{
+  "entries": [
+    {
+      "offset": "0x7f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "황혼의"
+    },
+    {
+      "offset": "0x86",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "땅"
+    },
+    {
+      "offset": "0x8c",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0x99",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0x9e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0xa1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xa4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "없습니다"
+    },
+    {
+      "offset": "0xae",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0xb3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0xc5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0xd1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "안면이"
+    },
+    {
+      "offset": "0xd8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "익네"
+    },
+    {
+      "offset": "0xde",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "너는"
+    },
+    {
+      "offset": "0xe3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이곳의"
+    },
+    {
+      "offset": "0xea",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수호신이었던"
+    },
+    {
+      "offset": "0xf7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "거로구나"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "미안하지만"
+    },
+    {
+      "offset": "0x115",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이번에는"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그때처럼"
+    },
+    {
+      "offset": "0x127",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "무르지"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않아"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니오"
+    }
+  ],
+  "count": 22
+}

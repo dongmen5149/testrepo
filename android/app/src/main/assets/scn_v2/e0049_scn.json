@@ -1,0 +1,119 @@
+{
+  "entries": [
+    {
+      "offset": "0x72",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x79",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지하"
+    },
+    {
+      "offset": "0x89",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "느낌"
+    },
+    {
+      "offset": "0x8e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "상으로는"
+    },
+    {
+      "offset": "0x97",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기가"
+    },
+    {
+      "offset": "0x9e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "맞는"
+    },
+    {
+      "offset": "0xa3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xa6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "같은데"
+    },
+    {
+      "offset": "0xbd",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "경계장치들이"
+    },
+    {
+      "offset": "0xca",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "풀가동"
+    },
+    {
+      "offset": "0xd1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "되고"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있군"
+    },
+    {
+      "offset": "0xdc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티안"
+    },
+    {
+      "offset": "0xe3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "때문인가"
+    },
+    {
+      "offset": "0xf6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그렇다해도"
+    },
+    {
+      "offset": "0x103",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x106",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "과한"
+    },
+    {
+      "offset": "0x10b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x10e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "같은데"
+    }
+  ],
+  "count": 19
+}

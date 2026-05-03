@@ -5,7 +5,162 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**현재까지 마지막 마일스톤** (2026-05-01, NPC + 세이브슬롯 완료):
+**현재까지 마지막 마일스톤** (2026-05-04, QuestScene 골드 표시):
+- QuestScene 헤더 우측에 현재 소지금 표시 — 보상 검토 시 즉시 비교 가능
+
+**이전 마일스톤** (2026-05-04, 슬롯 copyFrom 누락 필드 보강):
+- 세이브/로드 시 누락되던 필드 모두 복사: gameCleared, tutorialShown, bossesDefeated, defeatedEnemyIds, activeQuestIds, doneQuestIds, openedChestIds, visitedMapIds
+- 이전엔 슬롯 로드 후 도감/보스/퀘스트/상자 상태 모두 사라지던 버그 수정
+
+**이전 마일스톤** (2026-05-04, KEY 아이템 판매 차단):
+- ShopScene SELL 시 KEY 종류 차단 + "열쇠 아이템은 판매 불가" 메시지
+
+**이전 마일스톤** (2026-05-04, BestiaryScene 드롭 목록):
+- 처치한 적 우측 상세에 드롭 아이템 + 확률(%) 표시 ("- 약초 50%")
+
+**이전 마일스톤** (2026-05-04, 인벤 KEY 슬롯 색상):
+- KEY 종류 아이템은 갈색 슬롯 배경으로 일반 아이템과 시각 구분 (드롭도 # 키로 차단되는 것과 일관)
+
+**이전 마일스톤** (2026-05-04, StatusScene 영웅 포트레이트):
+- 캐릭터 정보 박스 우측에 영웅(h00000_bm) 3× scale 포트레이트
+
+**이전 마일스톤** (2026-05-04, 새 게임 클리어 플래그 보존):
+- NewGame 시 이전 `gameCleared` 만 보존 → ★ CLEAR 배지가 회차 시작 후에도 유지
+
+**이전 마일스톤** (2026-05-04, 새 게임 진짜 초기화):
+- TitleScene "새 게임" 이 `SceneRequest.NewGame` 으로 라우팅 → 활성 슬롯(0) `clear()` + 솔티아 (17,12) 리셋. 이전 진행은 다른 슬롯(1~3) 에 저장된 것만 보존됨
+
+**이전 마일스톤** (2026-05-04, HealParty 토스트):
+- 여관/신관 대화 종료 후 회복 결과 EventBus 토스트 ("휴식. -10G" / 부족 시 "골드 부족.")
+
+**이전 마일스톤** (2026-05-04, TitleScene Asset Gallery 라우팅):
+- "자산 갤러리" 항목이 SpriteGallery 직진입 (이전엔 MainMenu 우회)
+
+**이전 마일스톤** (2026-05-04, 미니맵 영웅 방향 표시):
+- 미니맵 hero 점에 방향 화살표(흰색 사각형) 추가 — UP/DOWN/LEFT/RIGHT 즉시 시각화
+
+**이전 마일스톤** (2026-05-04, EndingScene 모드 분리):
+- `markCleared` 플래그 — Ending 진입(클리어)은 `gameCleared=true` + 종료 시 Title, CreditsView 진입은 마킹 없이 단순 Pop
+- MainMenu "크레딧" 은 CreditsView 라우팅 → 미클리어 사용자가 봐도 진척에 영향 없음
+
+**이전 마일스톤** (2026-05-04, MainMenu 크레딧 항목):
+- "크레딧 / Credits" debug 항목 추가 → 게임 클리어 안 해도 EndingScene 직접 진입 가능
+
+**이전 마일스톤** (2026-05-04, Settings 튜토리얼 재생):
+- "튜토리얼 재생" 항목 추가, OK 시 `tutorialShown=false` + EventBus 알림
+- SettingsScene 에 GameState 주입
+
+**이전 마일스톤** (2026-05-04, 미니맵 토글):
+- **Settings.minimapVisible** + UI 토글 ON/OFF
+- MapWalkScene 미니맵 렌더가 토글 따라 보임/숨김
+
+**이전 마일스톤** (2026-05-04, MapWalk 리더 캐시):
+- 매 프레임 `loadParty()` 호출 → JSON 재파싱 비용 → 250ms 캐시 도입. HUD 갱신엔 영향 없으면서 60fps 부담 감소
+
+**이전 마일스톤** (2026-05-04, 영웅 lunge 애니):
+- BattleScene 영웅 공격/스킬 시 sprite 가 ~280ms 동안 우측으로 16px 돌진 후 복귀
+
+**이전 마일스톤** (2026-05-04, SkillScene 효과 텍스트):
+- heal: "Heal: INT×0.5 +30" / dmg: "DMG: ATK×2.0 +20" 형식, 무의미한 mul=1 / flat=0 자동 생략
+
+**이전 마일스톤** (2026-05-04, 퀘스트 시작 토스트):
+- 신규 퀘스트 활성화 시 EventBus "퀘스트 시작: <제목>" 토스트 (한·영). 이미 진행/완료면 토스트 없음
+
+**이전 마일스톤** (2026-05-04, 영웅 방향 sprite):
+- **MapWalkScene** — 영웅 sprite 가 heroFacing(0=DOWN/1=UP/2=LEFT/3=RIGHT) 에 매칭되는 4 frame 사용. 이동 방향이 시각으로 보임
+
+**이전 마일스톤** (2026-05-04, 액세서리 효과 보강):
+- **ring_dest** (Tier-3) — STR +8 ATK 반영 (이전엔 ring_pwr 만)
+- **ring_mana** — INT +5 가 effectiveIntl 로 heal 스킬에 적용
+- BattleScene useSkill heal = effectiveIntl 사용
+
+**이전 마일스톤** (2026-05-04, ShopScene 스크롤):
+- BUY/SELL 모두 12개 초과 시 자동 스크롤 + `n/N` 카운터. Tier-3 잠금 해제 후 14개 stock 모두 노출
+
+**이전 마일스톤** (2026-05-04, BattleScene 영웅 sprite):
+- 좌측에 영웅(h00000_bm) 3× scale sprite 배치 → 적과 1:1 대치 시각화
+
+**이전 마일스톤** (2026-05-04, FastTravel 비용):
+- **TravelScene** — 다른 맵 이동 시 50G 차감, 부족하면 EventBus 토스트로 거부
+
+**이전 마일스톤** (2026-05-04, MainMenu 스크롤):
+- **MainMenuScene** — 15 항목이 화면을 넘어 잘리던 문제 수정. itemH=16 + 자동 스크롤 + `n/N` 카운터
+
+**이전 마일스톤** (2026-05-04, BattleScene Skill 스크롤):
+- **Skill 메뉴 동일 스크롤** — 4개 초과 시 가시 영역 유지 + 카운터 (Lv8 케이 = 3 스킬 모두 노출)
+
+**이전 마일스톤** (2026-05-04, BattleScene Item 스크롤):
+- **Item 메뉴 4개 초과 시 스크롤** — 현재 선택을 항상 가시 영역에 유지, "n/N" 카운터 표시
+
+**이전 마일스톤** (2026-05-04, 빠른 이동):
+- **GameState.visitedMapIds** + MapWalk loadMap 시 자동 markVisited
+- **TravelScene** — 방문한 맵 목록, 선택 시 안전한 진입점에 영웅 배치 + MapWalk 재로딩
+- MainMenu 의 "빠른 이동 / Fast Travel" 항목
+
+**이전 마일스톤** (2026-05-04, NPC 퀘스트 마커):
+- **MapWalkScene** — 퀘스트 발급 NPC 위에 "!"(새 퀘스트, 노랑) / "?"(진행중, 파랑) 부유 마커. 한 눈에 어디로 가야할지 인지
+
+**이전 마일스톤** (2026-05-04, map12 NPC 2명 추가):
+- **수호 영혼 (map12 5,5)** — boss_sealed 처치 전/후 대사 분기
+- **잃어버린 사제 (map12 14,11)** — 좌우 patrol, 천 년 갇힌 사제의 부탁
+
+**이전 마일스톤** (2026-05-04, 첫 진입 튜토리얼 + 세션 종합):
+- **GameState.tutorialShown** + MapWalk 첫 진입 시 6s 검은 페이드 + 컨트롤 안내 (한·영). OK 즉시 닫기
+
+---
+
+**세션 종합** (2026-05-04, 게임 1주차 콘텐츠 + _scn 분석):
+
+### 게임 콘텐츠 (Android 클라이언트)
+- **3 보스 + 5 맵** — boss_guardian (map10), boss_chaos (map11), boss_sealed (map12) 체인. boss_sealed 처치 시 EndingScene 자동 진입
+- **Tier 1/2/3 아이템 16종** — `merchant_bo` 가 보스 처치 따라 점진적 잠금 해제
+- **퀘스트 체인** — guardian_hunt → chaos_lord → sealed_god (자동 followUp). herb_gather (수집형). QuestLog.tickAutoComplete 가 보스/아이템 OR 조건으로 자동 완료 + 보상 지급
+- **NPC 11명** — map0 (촌장/상인보/경비병/아이/여관주인), map1 (방랑자린/농부돌), map10 (학자에드/신관엘리/상인진), map11 (신탁관세라). 4명 patrol path. postBoss / postBoss2 / postBoss3 alt 대사 (1차/2차/진엔딩 단계별 분기)
+- **전투 시스템** — Attack/Skill/Item/Run, 12 스킬 (Lv1~8 게이트), 적 10 + 보스 3, dropTable, popups, 영웅·적 HP/SP 바, 부유/피격 shake/사망 페이드/보스 인트로(1.8s)/처치 플래시(600ms)
+- **랜덤 인카운터** — map1=10%, map10=15%, map11=20%, map12=25%. 그레이스 3s, Settings 배수 0.0/0.5/1.0/2.0
+- **장비** — Character.equipWeapon/Armor/Accessory + InventoryScene 장착, effectiveAttack/Defense() 합산, BattleScene 반영
+- **레벨업** — `level² × 20` 임계, HP/SP 성장 + 풀 회복 + 화이트 플래시
+- **자연 회복** — 5걸음마다 HP+2/SP+1
+- **패배 부활** — HP/SP 25% + map0 (17,12) 워프
+- **여관/신관** — map0 매(10G), map10 엘리(100G) 풀 회복 NPC
+- **보물상자 8개** — ChestRegistry, MapWalk 자동 픽업, 미니맵 황금 마커
+- **세이브 슬롯 3 + slot 0 활성** — 라벨에 ★ 클리어 / Lv / G / HH:MM:SS
+- **Records 화면** — 플레이 시간 / 도감 / 보스 / 상자 / 퀘스트 / 클리어 ★
+- **적 도감 BestiaryScene** — 처치 적 sprite + 스탯, 미처치는 ???
+- **EndingScene** — 한·영 스크롤 크레딧, gameCleared 플래그 set
+- **TitleScene** — ★ CLEAR 배지
+
+### 씬·UX
+- 17 씬: Title/MainMenu/MapWalk/NpcDialogue/SaveSlots/Status/Inventory/DialogueDemo/Settings/SpriteGallery/Map/Battle/Shop/Skill/Quest/Bestiary/Records/EventViewer/Ending
+- MapWalk HUD: 맵명·좌표·Lv/EXP/HP/SP/G·미니맵·활성 퀘스트 라인·NPC인접/보스근접/출구 힌트 cycling
+- EventBus 토스트 시스템 (보스/레벨업/퀘스트/드롭/픽업)
+- StatusScene L 키 = 같은 영웅 내 직업 cycle (5종)
+- InventoryScene # 키 = 1개 버리기, OK = 회복약 사용 (필드)
+- Settings: 언어 / 화질(SD/HD) / 인카운터 배수
+- MapGraph 수동 정의 (map0↔1/10, 10↔11, 11↔12) — extras 디코드 후 자동 생성 예정
+
+### `_scn` 분석 (Ghidra 없이)
+- **`tools/recon/extract_scn_speakers.py`** — 0x5b...0x5d 화자 태그 105종 추출 (리츠 774, 케이 758)
+- **`tools/converter/convert_scn_v2.py`** — 244 _scn → 화자/모드/대사 트리플 25,818개 JSON, Android assets 통합
+- **dispatch 발견**: 대사 시작 opcode `0x00 [mode]` (mode ∈ {0x7c, 0x27, 0x24, 0x7b}). PROGRESS §4.4 가설 확정
+- **헤더 영역 분리**: 첫 화자 태그 이전 0~1930 byte 가 이벤트 메타 (트리거/플래그) — Ghidra 진입점 우선순위
+- inter-speaker 영역은 단순 마커 (분기 opcode 부재)
+- `work/scn_*.json` 4개 보고서
+
+### `_cif` 분석 (Ghidra 없이)
+- **헤더 재해석**: `uint8 slot_count + uint8 category` (기존 uint16 가정 폐기). category 0=hero/boss(8슬롯), 1=enemy(0~7)
+- `19 19` 마커 = frame size (76% 파일)
+- 9-byte record 가설 약함 — 가변길이 record 추정
+- `tools/recon/analyze_cif.py`, `tools/converter/convert_cif.py` 헤더 패치
+
+### `_mp` extras 분석 (Ghidra 없이)
+- **`tools/recon/analyze_mp_extras.py`** — 134맵 통계. best rec_size 4(60맵)/6(35맵)/12(10맵) 분산 → 단일 fixed-size 가설 부적합
+- 첫 byte 0x80(67) / 0xc0(11) dominant → flag/type
+- 결정적 디코드는 Ghidra 필요
+
+---
+
+**이전 마일스톤** (2026-05-01, NPC + 세이브슬롯 완료):
 - **11개 Android 씬** (Title/MainMenu/MapWalk/NpcDialogue/SaveSlots/Status/Inventory/DialogueDemo/Settings/SpriteGallery/Map)
 - **NPC 시스템** — `NpcRegistry` + map0 에 4 NPC 하드코딩 (촌장/상인/경비병/아이) + 인접 OK 키 → `NpcDialogueScene`
 - **세이브 슬롯** — 3슬롯 SAVE/LOAD UI, 슬롯별 별도 SharedPreferences

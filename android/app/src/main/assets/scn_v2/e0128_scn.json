@@ -1,0 +1,353 @@
+{
+  "entries": [
+    {
+      "offset": "0x103",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x10e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x116",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0x123",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0x128",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x12b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "없습니다"
+    },
+    {
+      "offset": "0x138",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0x14f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0x152",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x162",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "여기"
+    },
+    {
+      "offset": "0x169",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "인가"
+    },
+    {
+      "offset": "0x16f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x17a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "유적이라는"
+    },
+    {
+      "offset": "0x185",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "곳이"
+    },
+    {
+      "offset": "0x196",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "제대로"
+    },
+    {
+      "offset": "0x19d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "쫓아온"
+    },
+    {
+      "offset": "0x1a4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x1a7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같군"
+    },
+    {
+      "offset": "0x1ad",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "어디보자"
+    },
+    {
+      "offset": "0x1c2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신호가"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "너무"
+    },
+    {
+      "offset": "0x1d1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "약한데"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지하라서"
+    },
+    {
+      "offset": "0x1e4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그런가"
+    },
+    {
+      "offset": "0x1f5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "어차피"
+    },
+    {
+      "offset": "0x1fc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "더이상의"
+    },
+    {
+      "offset": "0x205",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "단서도"
+    },
+    {
+      "offset": "0x20c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없어"
+    },
+    {
+      "offset": "0x212",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "일단"
+    },
+    {
+      "offset": "0x217",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x21a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "유적을"
+    },
+    {
+      "offset": "0x221",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뒤져보자"
+    },
+    {
+      "offset": "0x22c",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "수호기사의"
+    },
+    {
+      "offset": "0x237",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "의지"
+    },
+    {
+      "offset": "0x23d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x244",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "유적"
+    },
+    {
+      "offset": "0x250",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "진입"
+    },
+    {
+      "offset": "0x256",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x25d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x26c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이곳이로군"
+    },
+    {
+      "offset": "0x278",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x283",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "유적이라는"
+    },
+    {
+      "offset": "0x28e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "곳이"
+    },
+    {
+      "offset": "0x29f",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "조심해"
+    },
+    {
+      "offset": "0x2a7",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "이곳의"
+    },
+    {
+      "offset": "0x2ae",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "몬스터들은"
+    },
+    {
+      "offset": "0x2b9",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "강하니까"
+    },
+    {
+      "offset": "0x2c5",
+      "speaker": "일레느",
+      "mode_byte": "0x7b",
+      "text": "앞서간"
+    },
+    {
+      "offset": "0x2cc",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "누군가"
+    },
+    {
+      "offset": "0x2d4",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2db",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x2e2",
+      "speaker": "일레느",
+      "mode_byte": "0x7b",
+      "text": "오래된"
+    },
+    {
+      "offset": "0x2e9",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x2ef",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2f6",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 58
+}

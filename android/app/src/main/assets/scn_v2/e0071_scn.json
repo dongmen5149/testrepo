@@ -1,0 +1,221 @@
+{
+  "entries": [
+    {
+      "offset": "0x23",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "頁"
+    },
+    {
+      "offset": "0xa0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "頁"
+    },
+    {
+      "offset": "0x1d2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "검은"
+    },
+    {
+      "offset": "0x1d7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x1df",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "데빌스펄"
+    },
+    {
+      "offset": "0x1e8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x1ef",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x1f2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x1fb",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "어딘가의"
+    },
+    {
+      "offset": "0x204",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보안장치로"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "문이"
+    },
+    {
+      "offset": "0x214",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잠겨있다"
+    },
+    {
+      "offset": "0x21f",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안을"
+    },
+    {
+      "offset": "0x226",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제합니다"
+    },
+    {
+      "offset": "0x233",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안이"
+    },
+    {
+      "offset": "0x23a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제된"
+    },
+    {
+      "offset": "0x241",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "상태입니다"
+    },
+    {
+      "offset": "0x25a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "설마"
+    },
+    {
+      "offset": "0x25f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "또"
+    },
+    {
+      "offset": "0x262",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "엇갈리는"
+    },
+    {
+      "offset": "0x26b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x273",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이거"
+    },
+    {
+      "offset": "0x278",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "연애했으면"
+    },
+    {
+      "offset": "0x283",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "큰일날"
+    },
+    {
+      "offset": "0x28a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "인연이로군"
+    },
+    {
+      "offset": "0x29f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기에"
+    },
+    {
+      "offset": "0x2a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없다면"
+    },
+    {
+      "offset": "0x2ad",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아직"
+    },
+    {
+      "offset": "0x2b2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "못들어왔다거나"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "어디로"
+    },
+    {
+      "offset": "0x2c9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잡혀"
+    },
+    {
+      "offset": "0x2ce",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "갔다거나"
+    },
+    {
+      "offset": "0x2e7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니면"
+    },
+    {
+      "offset": "0x2ee",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "어딘가"
+    },
+    {
+      "offset": "0x2f5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "숨어있다거나"
+    },
+    {
+      "offset": "0x304",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "겠지"
+    }
+  ],
+  "count": 36
+}

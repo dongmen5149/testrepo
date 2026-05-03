@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "offset": "0x3be",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x3c9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x3db",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "보안"
+    },
+    {
+      "offset": "0x3e0",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "시스템"
+    },
+    {
+      "offset": "0x3e7",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "같아"
+    },
+    {
+      "offset": "0x3ed",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "양쪽"
+    },
+    {
+      "offset": "0x3f2",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "방의"
+    },
+    {
+      "offset": "0x3f7",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "신호를"
+    },
+    {
+      "offset": "0x3fe",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "똑같이"
+    },
+    {
+      "offset": "0x405",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "맞추라는"
+    },
+    {
+      "offset": "0x40e",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x41d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "보안"
+    },
+    {
+      "offset": "0x422",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시스템이로군"
+    },
+    {
+      "offset": "0x430",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "양쪽방의"
+    },
+    {
+      "offset": "0x439",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "구조가"
+    },
+    {
+      "offset": "0x440",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동일한"
+    },
+    {
+      "offset": "0x447",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x44c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "힌트인가"
+    }
+  ],
+  "count": 18
+}

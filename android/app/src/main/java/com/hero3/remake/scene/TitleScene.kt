@@ -31,10 +31,10 @@ class TitleScene(
     private data class Item(val labelResId: Int, val request: MainActivity.SceneRequest)
 
     private val items = listOf(
-        Item(R.string.menu_new_game, MainActivity.SceneRequest.MapWalk),
+        Item(R.string.menu_new_game, MainActivity.SceneRequest.NewGame),
         Item(R.string.menu_continue, MainActivity.SceneRequest.SaveSlots),
         Item(R.string.menu_settings, MainActivity.SceneRequest.SettingsScene),
-        Item(R.string.menu_gallery, MainActivity.SceneRequest.MainMenu),
+        Item(R.string.menu_gallery, MainActivity.SceneRequest.SpriteGallery),
     )
     private var selected = 0
 
@@ -70,6 +70,7 @@ class TitleScene(
         context.assets.open("$dir/${files.first()}").use { BitmapFactory.decodeStream(it) }
     }.getOrNull()
 
+    private val cleared: Boolean = com.hero3.remake.engine.GameState.anySlotCleared(context)
     private var elapsedMs = 0L
 
     override fun update(deltaMs: Long) {
@@ -110,5 +111,13 @@ class TitleScene(
 
         // 버전
         canvas.drawText("v0.1.0", virtualWidth - 4f, virtualHeight - 4f, versionPaint)
+        // 클리어 ★
+        if (cleared) {
+            val starPaint = Paint().apply {
+                color = Color.rgb(255, 220, 80); textSize = 11f; isFakeBoldText = true
+                textAlign = Paint.Align.LEFT
+            }
+            canvas.drawText("★ CLEAR", 4f, virtualHeight - 4f, starPaint)
+        }
     }
 }

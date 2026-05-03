@@ -1,0 +1,443 @@
+{
+  "entries": [
+    {
+      "offset": "0x177",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막마을"
+    },
+    {
+      "offset": "0x180",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x190",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "남쪽으로"
+    },
+    {
+      "offset": "0x199",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가기전에"
+    },
+    {
+      "offset": "0x1a2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해야할"
+    },
+    {
+      "offset": "0x1a9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일이"
+    },
+    {
+      "offset": "0x1ae",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있지"
+    },
+    {
+      "offset": "0x1bd",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "용병아저씨들은"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "왜"
+    },
+    {
+      "offset": "0x1cf",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "항상"
+    },
+    {
+      "offset": "0x1d4",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "찡그리고"
+    },
+    {
+      "offset": "0x1dd",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "다녀요"
+    },
+    {
+      "offset": "0x1ee",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x1f1",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "마을도"
+    },
+    {
+      "offset": "0x1f8",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x200",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "년"
+    },
+    {
+      "offset": "0x203",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "가까이"
+    },
+    {
+      "offset": "0x20a",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "되었군"
+    },
+    {
+      "offset": "0x212",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x215",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "정도면"
+    },
+    {
+      "offset": "0x21c",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "기적같은"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "성장이지"
+    },
+    {
+      "offset": "0x238",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "후후"
+    },
+    {
+      "offset": "0x23f",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "동쪽에선"
+    },
+    {
+      "offset": "0x248",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "제법"
+    },
+    {
+      "offset": "0x24d",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "이름을"
+    },
+    {
+      "offset": "0x254",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "날린"
+    },
+    {
+      "offset": "0x259",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "모양이던데"
+    },
+    {
+      "offset": "0x265",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "젊은이"
+    },
+    {
+      "offset": "0x276",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "무더위"
+    },
+    {
+      "offset": "0x27d",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "속에서도"
+    },
+    {
+      "offset": "0x286",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "변치않는"
+    },
+    {
+      "offset": "0x28f",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "품질"
+    },
+    {
+      "offset": "0x295",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x29c",
+      "speaker": "상인",
+      "mode_byte": null,
+      "text": "상회입니다"
+    },
+    {
+      "offset": "0x2b5",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "제련인가"
+    },
+    {
+      "offset": "0x2bf",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "아니면"
+    },
+    {
+      "offset": "0x2c6",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "조합인가"
+    },
+    {
+      "offset": "0x2d0",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "특수조합은"
+    },
+    {
+      "offset": "0x2db",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "조합서가"
+    },
+    {
+      "offset": "0x2e4",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "필요하다네"
+    },
+    {
+      "offset": "0x2f9",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "밖에"
+    },
+    {
+      "offset": "0x2fe",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "나갈땐"
+    },
+    {
+      "offset": "0x305",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "항상"
+    },
+    {
+      "offset": "0x30a",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "준비를"
+    },
+    {
+      "offset": "0x311",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "철저히"
+    },
+    {
+      "offset": "0x318",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "해"
+    },
+    {
+      "offset": "0x31c",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "대장장이는"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "조금의"
+    },
+    {
+      "offset": "0x32e",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "재료만으로도"
+    },
+    {
+      "offset": "0x33b",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "물약을"
+    },
+    {
+      "offset": "0x342",
+      "speaker": "군인",
+      "mode_byte": null,
+      "text": "만들어주니까"
+    },
+    {
+      "offset": "0x35d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뭘"
+    },
+    {
+      "offset": "0x360",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "보나"
+    },
+    {
+      "offset": "0x373",
+      "speaker": "행인",
+      "mode_byte": null,
+      "text": "무섭다"
+    },
+    {
+      "offset": "0x387",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저"
+    },
+    {
+      "offset": "0x38a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여자"
+    },
+    {
+      "offset": "0x391",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "왠지"
+    },
+    {
+      "offset": "0x396",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "낯익은데"
+    },
+    {
+      "offset": "0x3ab",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0x3b0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동네에"
+    },
+    {
+      "offset": "0x3b7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x3bc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아는"
+    },
+    {
+      "offset": "0x3c1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "사람이"
+    },
+    {
+      "offset": "0x3c8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있을리가"
+    },
+    {
+      "offset": "0x3d1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없을텐데"
+    },
+    {
+      "offset": "0x3da",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "희안하군"
+    },
+    {
+      "offset": "0x3ed",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "설마"
+    },
+    {
+      "offset": "0x3f5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느인가"
+    },
+    {
+      "offset": "0x402",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "낯익은"
+    },
+    {
+      "offset": "0x409",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여자"
+    },
+    {
+      "offset": "0x40f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x416",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 73
+}

@@ -12,6 +12,9 @@ interface Scene {
     val virtualWidth: Int get() = 240
     val virtualHeight: Int get() = 320
 
+    /** true 면 # 키를 씬 내부에서 처리(데모 씬 전환 비활성화). */
+    val consumesPoundKey: Boolean get() = false
+
     fun update(deltaMs: Long)
 
     /** [canvas]는 이미 가상 좌표계로 스케일·평행이동되어 있음. (0,0)–(240,320)에 그리면 됨. */

@@ -1,0 +1,1565 @@
+{
+  "entries": [
+    {
+      "offset": "0xb9",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "기본적인"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "사냥"
+    },
+    {
+      "offset": "0xc7",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "지식"
+    },
+    {
+      "offset": "0xcc",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "에"
+    },
+    {
+      "offset": "0xcf",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "대한"
+    },
+    {
+      "offset": "0xd4",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "수업을"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "받겠는가"
+    },
+    {
+      "offset": "0xe5",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "클래스의"
+    },
+    {
+      "offset": "0xee",
+      "speaker": "o훈련대기실\u0000$[교관",
+      "mode_byte": null,
+      "text": "성향"
+    },
+    {
+      "offset": "0xfc",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "제일"
+    },
+    {
+      "offset": "0x101",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "먼저"
+    },
+    {
+      "offset": "0x107",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "자신이"
+    },
+    {
+      "offset": "0x10e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용하는"
+    },
+    {
+      "offset": "0x117",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기의"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "특성을"
+    },
+    {
+      "offset": "0x125",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "파악하는"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x133",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "중요하다"
+    },
+    {
+      "offset": "0x147",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "스피어"
+    },
+    {
+      "offset": "0x14e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "는"
+    },
+    {
+      "offset": "0x151",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격력이"
+    },
+    {
+      "offset": "0x15a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "약하지만"
+    },
+    {
+      "offset": "0x165",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "방패"
+    },
+    {
+      "offset": "0x16a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x16d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "추가로"
+    },
+    {
+      "offset": "0x174",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "들"
+    },
+    {
+      "offset": "0x177",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x17a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0x180",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "방어력"
+    },
+    {
+      "offset": "0x187",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x18a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "높고"
+    },
+    {
+      "offset": "0x18f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "때로는"
+    },
+    {
+      "offset": "0x196",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "적의"
+    },
+    {
+      "offset": "0x19b",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격을"
+    },
+    {
+      "offset": "0x1a2",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "완전히"
+    },
+    {
+      "offset": "0x1a9",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "방어한다"
+    },
+    {
+      "offset": "0x1bd",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "스워드"
+    },
+    {
+      "offset": "0x1c4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "는"
+    },
+    {
+      "offset": "0x1c7",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "범위가"
+    },
+    {
+      "offset": "0x1ce",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "넓고"
+    },
+    {
+      "offset": "0x1d3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격력이"
+    },
+    {
+      "offset": "0x1dc",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "강하며"
+    },
+    {
+      "offset": "0x1e3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "매우"
+    },
+    {
+      "offset": "0x1e8",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "높은"
+    },
+    {
+      "offset": "0x1ee",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "명중률"
+    },
+    {
+      "offset": "0x1f5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0x1f8",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "갖지만"
+    },
+    {
+      "offset": "0x200",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격"
+    },
+    {
+      "offset": "0x205",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "속도가"
+    },
+    {
+      "offset": "0x20c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "느리지"
+    },
+    {
+      "offset": "0x21e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "나이프"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "는"
+    },
+    {
+      "offset": "0x228",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "범위가"
+    },
+    {
+      "offset": "0x22f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "좁지만"
+    },
+    {
+      "offset": "0x236",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "빠른"
+    },
+    {
+      "offset": "0x23b",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격이"
+    },
+    {
+      "offset": "0x242",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "가능하며"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "매우"
+    },
+    {
+      "offset": "0x250",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "높은"
+    },
+    {
+      "offset": "0x256",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "회피율"
+    },
+    {
+      "offset": "0x25d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0x260",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "가질"
+    },
+    {
+      "offset": "0x265",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x268",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x277",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "또한"
+    },
+    {
+      "offset": "0x27c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "마법"
+    },
+    {
+      "offset": "0x281",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0x286",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "특징이"
+    },
+    {
+      "offset": "0x28d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "나뉘어"
+    },
+    {
+      "offset": "0x296",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "다크"
+    },
+    {
+      "offset": "0x29c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "쥬엘은"
+    },
+    {
+      "offset": "0x2a4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격과"
+    },
+    {
+      "offset": "0x2ab",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "저주"
+    },
+    {
+      "offset": "0x2b0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "에"
+    },
+    {
+      "offset": "0x2b5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0x2bb",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "쥬엘은"
+    },
+    {
+      "offset": "0x2c3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "회복과"
+    },
+    {
+      "offset": "0x2ca",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "보조"
+    },
+    {
+      "offset": "0x2cf",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "에"
+    },
+    {
+      "offset": "0x2d2",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "초점이"
+    },
+    {
+      "offset": "0x2d9",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "맞춰져"
+    },
+    {
+      "offset": "0x2e0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0x2ef",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "모든"
+    },
+    {
+      "offset": "0x2f4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "클래스는"
+    },
+    {
+      "offset": "0x2fd",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "이중"
+    },
+    {
+      "offset": "0x303",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "개의"
+    },
+    {
+      "offset": "0x308",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기를"
+    },
+    {
+      "offset": "0x30f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용한다"
+    },
+    {
+      "offset": "0x319",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "각"
+    },
+    {
+      "offset": "0x31c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기들의"
+    },
+    {
+      "offset": "0x325",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "장점을"
+    },
+    {
+      "offset": "0x32c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "기억하고"
+    },
+    {
+      "offset": "0x336",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "특화시키는"
+    },
+    {
+      "offset": "0x341",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x346",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "강해지는"
+    },
+    {
+      "offset": "0x34f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "길임을"
+    },
+    {
+      "offset": "0x356",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "기억해라"
+    },
+    {
+      "offset": "0x360",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "효율적인"
+    },
+    {
+      "offset": "0x369",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격"
+    },
+    {
+      "offset": "0x377",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "각"
+    },
+    {
+      "offset": "0x37a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "클래스는"
+    },
+    {
+      "offset": "0x383",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "두"
+    },
+    {
+      "offset": "0x386",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "종류의"
+    },
+    {
+      "offset": "0x38d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "기본공격을"
+    },
+    {
+      "offset": "0x398",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "갖는다"
+    },
+    {
+      "offset": "0x3a2",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "키"
+    },
+    {
+      "offset": "0x3a8",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "키"
+    },
+    {
+      "offset": "0x3ab",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "로"
+    },
+    {
+      "offset": "0x3ae",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "주무기"
+    },
+    {
+      "offset": "0x3b5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보를"
+    },
+    {
+      "offset": "0x3bf",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "키"
+    },
+    {
+      "offset": "0x3c2",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "로"
+    },
+    {
+      "offset": "0x3c5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "보조무기"
+    },
+    {
+      "offset": "0x3ce",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보를"
+    },
+    {
+      "offset": "0x3d5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용하지"
+    },
+    {
+      "offset": "0x3e8",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "뿐만아니라"
+    },
+    {
+      "offset": "0x400",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "과"
+    },
+    {
+      "offset": "0x403",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "같이"
+    },
+    {
+      "offset": "0x408",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "두가지"
+    },
+    {
+      "offset": "0x40f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기의"
+    },
+    {
+      "offset": "0x416",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보를"
+    },
+    {
+      "offset": "0x41d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "연속하여"
+    },
+    {
+      "offset": "0x426",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "구사하는"
+    },
+    {
+      "offset": "0x42f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것도"
+    },
+    {
+      "offset": "0x434",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "가능하다"
+    },
+    {
+      "offset": "0x447",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "보조"
+    },
+    {
+      "offset": "0x44c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기의"
+    },
+    {
+      "offset": "0x453",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "경우"
+    },
+    {
+      "offset": "0x458",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "바로"
+    },
+    {
+      "offset": "0x45d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용하면"
+    },
+    {
+      "offset": "0x466",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무기를"
+    },
+    {
+      "offset": "0x46d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "교체하는"
+    },
+    {
+      "offset": "0x476",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "시간이"
+    },
+    {
+      "offset": "0x47d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "필요하므로"
+    },
+    {
+      "offset": "0x48a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보로"
+    },
+    {
+      "offset": "0x491",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용하는"
+    },
+    {
+      "offset": "0x49a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x49f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "효과적"
+    },
+    {
+      "offset": "0x4a6",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "이야"
+    },
+    {
+      "offset": "0x4b5",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "또한"
+    },
+    {
+      "offset": "0x4bb",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보를"
+    },
+    {
+      "offset": "0x4c2",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "어떻게"
+    },
+    {
+      "offset": "0x4c9",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "조합하느냐에"
+    },
+    {
+      "offset": "0x4d6",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "따라"
+    },
+    {
+      "offset": "0x4de",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0x4e1",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "회복되는"
+    },
+    {
+      "offset": "0x4ea",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "양"
+    },
+    {
+      "offset": "0x4ed",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "도"
+    },
+    {
+      "offset": "0x4f0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "천차만별이지"
+    },
+    {
+      "offset": "0x507",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "최적의"
+    },
+    {
+      "offset": "0x50e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "콤보를"
+    },
+    {
+      "offset": "0x515",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "찾아"
+    },
+    {
+      "offset": "0x51b",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "빠르게"
+    },
+    {
+      "offset": "0x524",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x527",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "채워"
+    },
+    {
+      "offset": "0x52c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "강력한"
+    },
+    {
+      "offset": "0x533",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "스킬을"
+    },
+    {
+      "offset": "0x53a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사용하는"
+    },
+    {
+      "offset": "0x543",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x547",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "이것이"
+    },
+    {
+      "offset": "0x54e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "바로"
+    },
+    {
+      "offset": "0x553",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "효율적인"
+    },
+    {
+      "offset": "0x55c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "공격의"
+    },
+    {
+      "offset": "0x563",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "비밀이다"
+    },
+    {
+      "offset": "0x56d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "적의"
+    },
+    {
+      "offset": "0x572",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "성향"
+    },
+    {
+      "offset": "0x580",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "필드로"
+    },
+    {
+      "offset": "0x587",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "나간다고"
+    },
+    {
+      "offset": "0x590",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "무작정"
+    },
+    {
+      "offset": "0x597",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "적을"
+    },
+    {
+      "offset": "0x59c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "후려쳤다간"
+    },
+    {
+      "offset": "0x5a7",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "낭패를"
+    },
+    {
+      "offset": "0x5ae",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "보기"
+    },
+    {
+      "offset": "0x5b3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "쉽다"
+    },
+    {
+      "offset": "0x5b9",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "적들에게도"
+    },
+    {
+      "offset": "0x5c4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "특징이란"
+    },
+    {
+      "offset": "0x5cd",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "게"
+    },
+    {
+      "offset": "0x5d0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있으니까"
+    },
+    {
+      "offset": "0x5e4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "평화적인"
+    },
+    {
+      "offset": "0x5ed",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈"
+    },
+    {
+      "offset": "0x5f0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "은"
+    },
+    {
+      "offset": "0x5f3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "먼저"
+    },
+    {
+      "offset": "0x5f8",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "싸움을"
+    },
+    {
+      "offset": "0x5ff",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "걸어오지"
+    },
+    {
+      "offset": "0x608",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "않고"
+    },
+    {
+      "offset": "0x60d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "얌전하지만"
+    },
+    {
+      "offset": "0x61a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "호전적인"
+    },
+    {
+      "offset": "0x623",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈"
+    },
+    {
+      "offset": "0x626",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "들은"
+    },
+    {
+      "offset": "0x62b",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "눈이"
+    },
+    {
+      "offset": "0x630",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "마주치면"
+    },
+    {
+      "offset": "0x639",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "바로"
+    },
+    {
+      "offset": "0x63e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "싸움을"
+    },
+    {
+      "offset": "0x645",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "걸어오지"
+    },
+    {
+      "offset": "0x658",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "보통"
+    },
+    {
+      "offset": "0x65d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "필드에는"
+    },
+    {
+      "offset": "0x666",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "평화적인"
+    },
+    {
+      "offset": "0x66f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x676",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "많고"
+    },
+    {
+      "offset": "0x67c",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "던전에는"
+    },
+    {
+      "offset": "0x685",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "호전적인"
+    },
+    {
+      "offset": "0x68e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x695",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "많아"
+    },
+    {
+      "offset": "0x6a4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "하지만"
+    },
+    {
+      "offset": "0x6ab",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "때론"
+    },
+    {
+      "offset": "0x6b0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "평화적인"
+    },
+    {
+      "offset": "0x6b9",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x6c0",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0x6c3",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "위험할"
+    },
+    {
+      "offset": "0x6ca",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x6cd",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0x6d4",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "한"
+    },
+    {
+      "offset": "0x6d7",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "놈을"
+    },
+    {
+      "offset": "0x6dc",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "치면"
+    },
+    {
+      "offset": "0x6e1",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "여러마리가"
+    },
+    {
+      "offset": "0x6ec",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "몰려드는"
+    },
+    {
+      "offset": "0x6f6",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "경우가"
+    },
+    {
+      "offset": "0x6fd",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "있거든"
+    },
+    {
+      "offset": "0x70e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "새로운"
+    },
+    {
+      "offset": "0x715",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "사냥터에"
+    },
+    {
+      "offset": "0x71e",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "들어서면"
+    },
+    {
+      "offset": "0x728",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "우선적으로"
+    },
+    {
+      "offset": "0x733",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "적의"
+    },
+    {
+      "offset": "0x738",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "성향을"
+    },
+    {
+      "offset": "0x73f",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "파악하는데"
+    },
+    {
+      "offset": "0x74a",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "주력하는"
+    },
+    {
+      "offset": "0x753",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x758",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "좋을"
+    },
+    {
+      "offset": "0x75d",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "거다"
+    },
+    {
+      "offset": "0x763",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "수업"
+    },
+    {
+      "offset": "0x768",
+      "speaker": "교관",
+      "mode_byte": null,
+      "text": "거부"
+    },
+    {
+      "offset": "0x779",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "보조"
+    },
+    {
+      "offset": "0x77e",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "액티브"
+    },
+    {
+      "offset": "0x785",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "스킬"
+    },
+    {
+      "offset": "0x78a",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "들은"
+    },
+    {
+      "offset": "0x78f",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "매우"
+    },
+    {
+      "offset": "0x794",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "높은"
+    },
+    {
+      "offset": "0x799",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "효과를"
+    },
+    {
+      "offset": "0x7a0",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "가지니"
+    },
+    {
+      "offset": "0x7a8",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "가능하면"
+    },
+    {
+      "offset": "0x7b1",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "항상"
+    },
+    {
+      "offset": "0x7b6",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "달고"
+    },
+    {
+      "offset": "0x7bb",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "다니도록"
+    },
+    {
+      "offset": "0x7c4",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "해"
+    },
+    {
+      "offset": "0x7d3",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "기억해"
+    },
+    {
+      "offset": "0x7da",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "둬"
+    },
+    {
+      "offset": "0x7e1",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "에서"
+    },
+    {
+      "offset": "0x7e7",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "회피는"
+    },
+    {
+      "offset": "0x7ee",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "명중"
+    },
+    {
+      "offset": "0x7f3",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "으로"
+    },
+    {
+      "offset": "0x7fa",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "명중은"
+    },
+    {
+      "offset": "0x801",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "방어"
+    },
+    {
+      "offset": "0x806",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "로"
+    },
+    {
+      "offset": "0x80b",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "방어는"
+    },
+    {
+      "offset": "0x812",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "공격"
+    },
+    {
+      "offset": "0x817",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "으로"
+    },
+    {
+      "offset": "0x81e",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "공격은"
+    },
+    {
+      "offset": "0x825",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "회피"
+    },
+    {
+      "offset": "0x82a",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "로"
+    },
+    {
+      "offset": "0x82d",
+      "speaker": "수련생",
+      "mode_byte": null,
+      "text": "잡는거야"
+    }
+  ],
+  "count": 260
+}

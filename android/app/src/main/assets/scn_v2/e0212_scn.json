@@ -1,0 +1,59 @@
+{
+  "entries": [
+    {
+      "offset": "0x82",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "와"
+    },
+    {
+      "offset": "0x88",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놀랐다"
+    },
+    {
+      "offset": "0x9b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0xa0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0xab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "기운"
+    },
+    {
+      "offset": "0xb0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "때문에"
+    },
+    {
+      "offset": "0xb9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "비스트가"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "몰리는"
+    },
+    {
+      "offset": "0xc9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "건가"
+    }
+  ],
+  "count": 9
+}

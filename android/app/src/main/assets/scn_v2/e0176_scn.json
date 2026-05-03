@@ -1,0 +1,71 @@
+{
+  "entries": [
+    {
+      "offset": "0x96",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x9d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xa5",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0xaa",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가동중"
+    },
+    {
+      "offset": "0xb2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외부인의"
+    },
+    {
+      "offset": "0xbb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "접근을"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "차단합니다"
+    },
+    {
+      "offset": "0xd0",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "지하통로를"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "개방하시겠습니까"
+    },
+    {
+      "offset": "0xed",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0xf0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "아니오"
+    }
+  ],
+  "count": 11
+}

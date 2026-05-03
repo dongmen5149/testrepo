@@ -1,0 +1,215 @@
+{
+  "entries": [
+    {
+      "offset": "0x1f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "革"
+    },
+    {
+      "offset": "0x83",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "革"
+    },
+    {
+      "offset": "0xe4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0xeb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xf3",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "레인보우장갑"
+    },
+    {
+      "offset": "0x100",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x107",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x113",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0x118",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가동중"
+    },
+    {
+      "offset": "0x120",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외부인의"
+    },
+    {
+      "offset": "0x129",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "접근을"
+    },
+    {
+      "offset": "0x130",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "차단합니다"
+    },
+    {
+      "offset": "0x146",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "공장의"
+    },
+    {
+      "offset": "0x14d",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "보안은"
+    },
+    {
+      "offset": "0x154",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "정전"
+    },
+    {
+      "offset": "0x159",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "상태만"
+    },
+    {
+      "offset": "0x160",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "되지"
+    },
+    {
+      "offset": "0x165",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "않으면"
+    },
+    {
+      "offset": "0x16c",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "항상"
+    },
+    {
+      "offset": "0x171",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "유지되지"
+    },
+    {
+      "offset": "0x188",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "집회"
+    },
+    {
+      "offset": "0x18d",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "참가자인가"
+    },
+    {
+      "offset": "0x199",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "집회실은"
+    },
+    {
+      "offset": "0x1a2",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "여기가"
+    },
+    {
+      "offset": "0x1a9",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "아니라"
+    },
+    {
+      "offset": "0x1b0",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "제일"
+    },
+    {
+      "offset": "0x1b5",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "위쪽"
+    },
+    {
+      "offset": "0x1ba",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "통로야"
+    },
+    {
+      "offset": "0x1c2",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "중앙"
+    },
+    {
+      "offset": "0x1c7",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "통로의"
+    },
+    {
+      "offset": "0x1ce",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "스위치를"
+    },
+    {
+      "offset": "0x1d7",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "해제하고"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "가면"
+    },
+    {
+      "offset": "0x1e5",
+      "speaker": "경비",
+      "mode_byte": null,
+      "text": "돼"
+    }
+  ],
+  "count": 35
+}

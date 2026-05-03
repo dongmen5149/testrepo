@@ -1,0 +1,59 @@
+{
+  "entries": [
+    {
+      "offset": "0x9e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "비스트"
+    },
+    {
+      "offset": "0xa7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저"
+    },
+    {
+      "offset": "0xaa",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "소녀를"
+    },
+    {
+      "offset": "0xb1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지키려는"
+    },
+    {
+      "offset": "0xba",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0xca",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "도대체"
+    },
+    {
+      "offset": "0xd1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "무슨"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "짓을"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "하려고"
+    }
+  ],
+  "count": 9
+}

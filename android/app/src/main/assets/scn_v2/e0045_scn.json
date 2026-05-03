@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "爀"
+    },
+    {
+      "offset": "0x39",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "爀"
+    },
+    {
+      "offset": "0x71",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x78",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지하"
+    },
+    {
+      "offset": "0x80",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "얼음비늘흉갑"
+    },
+    {
+      "offset": "0x8d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x94",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x97",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

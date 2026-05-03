@@ -1,0 +1,503 @@
+{
+  "entries": [
+    {
+      "offset": "0x13c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산도시"
+    },
+    {
+      "offset": "0x145",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x155",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "대륙"
+    },
+    {
+      "offset": "0x15a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동쪽으로"
+    },
+    {
+      "offset": "0x163",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "돌아갈"
+    },
+    {
+      "offset": "0x16a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일은"
+    },
+    {
+      "offset": "0x16f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "한동안"
+    },
+    {
+      "offset": "0x176",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없을거야"
+    },
+    {
+      "offset": "0x181",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x188",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시청"
+    },
+    {
+      "offset": "0x18d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "관계자"
+    },
+    {
+      "offset": "0x194",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "외"
+    },
+    {
+      "offset": "0x197",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "출입금지"
+    },
+    {
+      "offset": "0x1a1",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "문이"
+    },
+    {
+      "offset": "0x1a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잠겨있다"
+    },
+    {
+      "offset": "0x1bf",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "이번에도"
+    },
+    {
+      "offset": "0x1c8",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x1d1",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "고원"
+    },
+    {
+      "offset": "0x1d6",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "공략에"
+    },
+    {
+      "offset": "0x1dd",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "실패했다는군"
+    },
+    {
+      "offset": "0x1eb",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "붉은"
+    },
+    {
+      "offset": "0x1f0",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "마녀는"
+    },
+    {
+      "offset": "0x1f7",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0x1fc",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "상상을"
+    },
+    {
+      "offset": "0x203",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "초월한데"
+    },
+    {
+      "offset": "0x21c",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "에이블이"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "시장이"
+    },
+    {
+      "offset": "0x22c",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "된"
+    },
+    {
+      "offset": "0x22f",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "뒤로"
+    },
+    {
+      "offset": "0x235",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "토레즈의"
+    },
+    {
+      "offset": "0x23e",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "발전속도는"
+    },
+    {
+      "offset": "0x249",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "장난이"
+    },
+    {
+      "offset": "0x250",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "아니야"
+    },
+    {
+      "offset": "0x267",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "솔티안들은"
+    },
+    {
+      "offset": "0x272",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "회복"
+    },
+    {
+      "offset": "0x277",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "마법"
+    },
+    {
+      "offset": "0x27c",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "같은"
+    },
+    {
+      "offset": "0x281",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "걸"
+    },
+    {
+      "offset": "0x284",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "써서"
+    },
+    {
+      "offset": "0x28a",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "우리쪽보다"
+    },
+    {
+      "offset": "0x295",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "훨씬"
+    },
+    {
+      "offset": "0x29a",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "방어가"
+    },
+    {
+      "offset": "0x2a1",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "용이한"
+    },
+    {
+      "offset": "0x2a8",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "거"
+    },
+    {
+      "offset": "0x2ab",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "같아"
+    },
+    {
+      "offset": "0x2bb",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "년만에"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "돌아온"
+    },
+    {
+      "offset": "0x2c9",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "토레즈인데"
+    },
+    {
+      "offset": "0x2d5",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0x2da",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "엄청나게"
+    },
+    {
+      "offset": "0x2e3",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "변했군"
+    },
+    {
+      "offset": "0x2eb",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "전쟁덕인가"
+    },
+    {
+      "offset": "0x307",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "흥"
+    },
+    {
+      "offset": "0x30c",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "또"
+    },
+    {
+      "offset": "0x30f",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "용병인가"
+    },
+    {
+      "offset": "0x31a",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "꾸역꾸역"
+    },
+    {
+      "offset": "0x323",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "어디서"
+    },
+    {
+      "offset": "0x32a",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "잘도"
+    },
+    {
+      "offset": "0x32f",
+      "speaker": "토레즈빈민",
+      "mode_byte": null,
+      "text": "몰려오는군"
+    },
+    {
+      "offset": "0x344",
+      "speaker": "상점",
+      "mode_byte": null,
+      "text": "어서오세요"
+    },
+    {
+      "offset": "0x350",
+      "speaker": "상점",
+      "mode_byte": null,
+      "text": "항상"
+    },
+    {
+      "offset": "0x355",
+      "speaker": "상점",
+      "mode_byte": null,
+      "text": "좋은"
+    },
+    {
+      "offset": "0x35a",
+      "speaker": "상점",
+      "mode_byte": null,
+      "text": "물건으로"
+    },
+    {
+      "offset": "0x363",
+      "speaker": "상점",
+      "mode_byte": null,
+      "text": "모시겠습니다"
+    },
+    {
+      "offset": "0x37e",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "토레즈의"
+    },
+    {
+      "offset": "0x387",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "제련"
+    },
+    {
+      "offset": "0x38c",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "기술은"
+    },
+    {
+      "offset": "0x393",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x396",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "어느곳에도"
+    },
+    {
+      "offset": "0x3a1",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "뒤지지"
+    },
+    {
+      "offset": "0x3a8",
+      "speaker": "대장장이",
+      "mode_byte": null,
+      "text": "않습니다"
+    },
+    {
+      "offset": "0x3c1",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "솔티안"
+    },
+    {
+      "offset": "0x3c8",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "공략과"
+    },
+    {
+      "offset": "0x3cf",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "도시"
+    },
+    {
+      "offset": "0x3d4",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "발전"
+    },
+    {
+      "offset": "0x3da",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "에이블"
+    },
+    {
+      "offset": "0x3e1",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "시장이"
+    },
+    {
+      "offset": "0x3e8",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "두가지를"
+    },
+    {
+      "offset": "0x3f1",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "잘"
+    },
+    {
+      "offset": "0x3f4",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "병행하긴"
+    },
+    {
+      "offset": "0x3fd",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "하는데"
+    },
+    {
+      "offset": "0x406",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x40b",
+      "speaker": "토레즈시민",
+      "mode_byte": null,
+      "text": "미심쩍어"
+    }
+  ],
+  "count": 83
+}

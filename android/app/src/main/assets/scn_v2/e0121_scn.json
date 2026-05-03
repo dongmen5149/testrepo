@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "許"
+    },
+    {
+      "offset": "0x39",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "許"
+    },
+    {
+      "offset": "0x71",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x78",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막"
+    },
+    {
+      "offset": "0x80",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "붉은머리띠"
+    },
+    {
+      "offset": "0x8b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x92",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x95",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

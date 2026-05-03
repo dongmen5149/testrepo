@@ -1,0 +1,137 @@
+{
+  "entries": [
+    {
+      "offset": "0xd9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0xe4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0xf6",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "저기인가봐"
+    },
+    {
+      "offset": "0x102",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "사막의"
+    },
+    {
+      "offset": "0x109",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "붕괴로"
+    },
+    {
+      "offset": "0x110",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "새로"
+    },
+    {
+      "offset": "0x115",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "열린"
+    },
+    {
+      "offset": "0x11a",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "숨겨진"
+    },
+    {
+      "offset": "0x121",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "길이란게"
+    },
+    {
+      "offset": "0x12d",
+      "speaker": "일레느",
+      "mode_byte": "0x7d",
+      "text": "신비한"
+    },
+    {
+      "offset": "0x134",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "광체를"
+    },
+    {
+      "offset": "0x13b",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "내며"
+    },
+    {
+      "offset": "0x140",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "동력로가"
+    },
+    {
+      "offset": "0x149",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "기동하고"
+    },
+    {
+      "offset": "0x152",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x161",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저쪽인가"
+    },
+    {
+      "offset": "0x16b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아"
+    },
+    {
+      "offset": "0x172",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "추락의"
+    },
+    {
+      "offset": "0x179",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "충격으로"
+    },
+    {
+      "offset": "0x182",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "드러난"
+    },
+    {
+      "offset": "0x189",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "숨겨진"
+    },
+    {
+      "offset": "0x190",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "부분은"
+    }
+  ],
+  "count": 22
+}

@@ -1,0 +1,95 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "孑"
+    },
+    {
+      "offset": "0x25",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "鎣"
+    },
+    {
+      "offset": "0x28",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "頰"
+    },
+    {
+      "offset": "0x3e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "頰"
+    },
+    {
+      "offset": "0x4b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "孑"
+    },
+    {
+      "offset": "0xa6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사령의"
+    },
+    {
+      "offset": "0xad",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0xb5",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "오웬글레이브"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xc9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xcc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0xd5",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "오래된"
+    },
+    {
+      "offset": "0xdc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보석함"
+    },
+    {
+      "offset": "0xe3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0xe6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 15
+}

@@ -1,0 +1,443 @@
+{
+  "entries": [
+    {
+      "offset": "0x150",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "재앙이"
+    },
+    {
+      "offset": "0x157",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시작된"
+    },
+    {
+      "offset": "0x15e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "것은"
+    },
+    {
+      "offset": "0x165",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "년"
+    },
+    {
+      "offset": "0x168",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "전"
+    },
+    {
+      "offset": "0x16e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "하늘에선"
+    },
+    {
+      "offset": "0x177",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "거대한"
+    },
+    {
+      "offset": "0x17e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "바위가"
+    },
+    {
+      "offset": "0x185",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "떨어졌고"
+    },
+    {
+      "offset": "0x18f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "강대한"
+    },
+    {
+      "offset": "0x196",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "비스트들이"
+    },
+    {
+      "offset": "0x1a1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "곳곳에서"
+    },
+    {
+      "offset": "0x1aa",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "출몰했으며"
+    },
+    {
+      "offset": "0x1b6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "대륙"
+    },
+    {
+      "offset": "0x1bb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "서부의"
+    },
+    {
+      "offset": "0x1c2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲은"
+    },
+    {
+      "offset": "0x1c7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "갑자기"
+    },
+    {
+      "offset": "0x1ce",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "나타난"
+    },
+    {
+      "offset": "0x1d5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "마법민족에"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "의해"
+    },
+    {
+      "offset": "0x1e5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "점령당했다"
+    },
+    {
+      "offset": "0x1f1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "레갈리스"
+    },
+    {
+      "offset": "0x1fa",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "교단"
+    },
+    {
+      "offset": "0x1ff",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "붕괴"
+    },
+    {
+      "offset": "0x204",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "후"
+    },
+    {
+      "offset": "0x208",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "흔들리던"
+    },
+    {
+      "offset": "0x211",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "아스크라"
+    },
+    {
+      "offset": "0x21a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "왕국은"
+    },
+    {
+      "offset": "0x221",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "이를"
+    },
+    {
+      "offset": "0x226",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "천공의"
+    },
+    {
+      "offset": "0x22d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "대륙"
+    },
+    {
+      "offset": "0x233",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x23c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "침공으로"
+    },
+    {
+      "offset": "0x245",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "간주하고"
+    },
+    {
+      "offset": "0x250",
+      "speaker": null,
+      "mode_byte": "0x3b",
+      "text": "국민의"
+    },
+    {
+      "offset": "0x257",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "의지를"
+    },
+    {
+      "offset": "0x25e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "모아"
+    },
+    {
+      "offset": "0x263",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "마법민족"
+    },
+    {
+      "offset": "0x26d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "솔티안들을"
+    },
+    {
+      "offset": "0x278",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토벌하기"
+    },
+    {
+      "offset": "0x281",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시작했다"
+    },
+    {
+      "offset": "0x28c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x295",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "이유모를"
+    },
+    {
+      "offset": "0x29e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소멸"
+    },
+    {
+      "offset": "0x2a7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "천공의"
+    },
+    {
+      "offset": "0x2ae",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "대륙"
+    },
+    {
+      "offset": "0x2b3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "솔티아는"
+    },
+    {
+      "offset": "0x2bc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "붕괴하기"
+    },
+    {
+      "offset": "0x2c5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시작했다"
+    },
+    {
+      "offset": "0x2cf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "솔티아를"
+    },
+    {
+      "offset": "0x2d8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "떠받치던"
+    },
+    {
+      "offset": "0x2e1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "암석들은"
+    },
+    {
+      "offset": "0x2eb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0x2f2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "떨어져"
+    },
+    {
+      "offset": "0x2f9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "내렸고"
+    },
+    {
+      "offset": "0x304",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x30d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지배를"
+    },
+    {
+      "offset": "0x314",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "벗어난"
+    },
+    {
+      "offset": "0x323",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "들은"
+    },
+    {
+      "offset": "0x328",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "미쳐"
+    },
+    {
+      "offset": "0x32d",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "날뛰니"
+    },
+    {
+      "offset": "0x335",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "살아남기"
+    },
+    {
+      "offset": "0x33e",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "위해"
+    },
+    {
+      "offset": "0x344",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "솔티안들은"
+    },
+    {
+      "offset": "0x34f",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "도망쳐야"
+    },
+    {
+      "offset": "0x358",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "했다"
+    },
+    {
+      "offset": "0x360",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "봉인된"
+    },
+    {
+      "offset": "0x367",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "홀리가디언을"
+    },
+    {
+      "offset": "0x374",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "해방하여"
+    },
+    {
+      "offset": "0x380",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "진정한"
+    },
+    {
+      "offset": "0x387",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "대지"
+    },
+    {
+      "offset": "0x38d",
+      "speaker": "비스트",
+      "mode_byte": null,
+      "text": "에레보스로"
+    },
+    {
+      "offset": "0x39a",
+      "speaker": "비스트",
+      "mode_byte": "0x3b",
+      "text": "하지만"
+    }
+  ],
+  "count": 73
+}

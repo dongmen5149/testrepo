@@ -1,0 +1,1553 @@
+{
+  "entries": [
+    {
+      "offset": "0xfd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "도서관"
+    },
+    {
+      "offset": "0x118",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "에레보스"
+    },
+    {
+      "offset": "0x121",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "대륙은"
+    },
+    {
+      "offset": "0x128",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "묘하게"
+    },
+    {
+      "offset": "0x12f",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "부자연스러운"
+    },
+    {
+      "offset": "0x13c",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "형태를"
+    },
+    {
+      "offset": "0x143",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "띄고"
+    },
+    {
+      "offset": "0x148",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x14e",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "가장"
+    },
+    {
+      "offset": "0x153",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "눈에"
+    },
+    {
+      "offset": "0x158",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "띄는"
+    },
+    {
+      "offset": "0x15d",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "것은"
+    },
+    {
+      "offset": "0x162",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "대륙의"
+    },
+    {
+      "offset": "0x169",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "서쪽"
+    },
+    {
+      "offset": "0x16e",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "끝"
+    },
+    {
+      "offset": "0x173",
+      "speaker": "사라진 대지",
+      "mode_byte": "0x7d",
+      "text": "마치"
+    },
+    {
+      "offset": "0x178",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "거대한"
+    },
+    {
+      "offset": "0x17f",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "반도"
+    },
+    {
+      "offset": "0x184",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "하나가"
+    },
+    {
+      "offset": "0x18b",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "사라져버린"
+    },
+    {
+      "offset": "0x196",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "듯한"
+    },
+    {
+      "offset": "0x19b",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x19e",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "흔적은"
+    },
+    {
+      "offset": "0x1a6",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "황혼의"
+    },
+    {
+      "offset": "0x1ad",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "땅이라"
+    },
+    {
+      "offset": "0x1b4",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "불리우며"
+    },
+    {
+      "offset": "0x1bd",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "사람들의"
+    },
+    {
+      "offset": "0x1c6",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "동경의"
+    },
+    {
+      "offset": "0x1cd",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "대상이"
+    },
+    {
+      "offset": "0x1d4",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "되었다"
+    },
+    {
+      "offset": "0x1dd",
+      "speaker": "사라진 대지",
+      "mode_byte": "0x7d",
+      "text": "어쩌면"
+    },
+    {
+      "offset": "0x1e5",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "그것은"
+    },
+    {
+      "offset": "0x1ef",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "여년전"
+    },
+    {
+      "offset": "0x1f6",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "일제히"
+    },
+    {
+      "offset": "0x1fd",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "사라졌다는"
+    },
+    {
+      "offset": "0x208",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "일단의"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "가디언"
+    },
+    {
+      "offset": "0x216",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "연구자들과"
+    },
+    {
+      "offset": "0x221",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "어떤"
+    },
+    {
+      "offset": "0x226",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "연관이"
+    },
+    {
+      "offset": "0x22d",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "있는"
+    },
+    {
+      "offset": "0x232",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x235",
+      "speaker": "사라진 대지",
+      "mode_byte": null,
+      "text": "아닐까"
+    },
+    {
+      "offset": "0x25f",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "하지만"
+    },
+    {
+      "offset": "0x266",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x269",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "피폐한"
+    },
+    {
+      "offset": "0x270",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x277",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "사막도"
+    },
+    {
+      "offset": "0x27e",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "한때는"
+    },
+    {
+      "offset": "0x285",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "비옥한"
+    },
+    {
+      "offset": "0x28c",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "초원이었다는"
+    },
+    {
+      "offset": "0x299",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "연구"
+    },
+    {
+      "offset": "0x29e",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "결과가"
+    },
+    {
+      "offset": "0x2a5",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "나오고"
+    },
+    {
+      "offset": "0x2ac",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x2b3",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": "0x7d",
+      "text": "그"
+    },
+    {
+      "offset": "0x2b6",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "사실을"
+    },
+    {
+      "offset": "0x2bd",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "통해"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "우리는"
+    },
+    {
+      "offset": "0x2c9",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "그곳에서"
+    },
+    {
+      "offset": "0x2d2",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "이루어졌던"
+    },
+    {
+      "offset": "0x2dd",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "가디언에"
+    },
+    {
+      "offset": "0x2e6",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "대한"
+    },
+    {
+      "offset": "0x2eb",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "연구가"
+    },
+    {
+      "offset": "0x2f2",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "얼마나"
+    },
+    {
+      "offset": "0x2f9",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "위험했는지를"
+    },
+    {
+      "offset": "0x306",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "반추할"
+    },
+    {
+      "offset": "0x30d",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x310",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x317",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": "0x7d",
+      "text": "여기까지만"
+    },
+    {
+      "offset": "0x322",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "봐도"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "예상하겠지만"
+    },
+    {
+      "offset": "0x335",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "앞으로"
+    },
+    {
+      "offset": "0x33c",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "다룰"
+    },
+    {
+      "offset": "0x341",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "내용들은"
+    },
+    {
+      "offset": "0x34a",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "리파이너가"
+    },
+    {
+      "offset": "0x355",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "정말로"
+    },
+    {
+      "offset": "0x35c",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "존재했다는"
+    },
+    {
+      "offset": "0x367",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "가정을"
+    },
+    {
+      "offset": "0x36e",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "기반으로"
+    },
+    {
+      "offset": "0x377",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "하고"
+    },
+    {
+      "offset": "0x37c",
+      "speaker": "엔자크의 진실을 찾아",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x3a2",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "역사가"
+    },
+    {
+      "offset": "0x3a9",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "낳은"
+    },
+    {
+      "offset": "0x3ae",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "허구라고"
+    },
+    {
+      "offset": "0x3b7",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "생각되던"
+    },
+    {
+      "offset": "0x3c0",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x3c9",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "존재가"
+    },
+    {
+      "offset": "0x3d0",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "그의"
+    },
+    {
+      "offset": "0x3d5",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "손에"
+    },
+    {
+      "offset": "0x3da",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "의해"
+    },
+    {
+      "offset": "0x3df",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "사람들"
+    },
+    {
+      "offset": "0x3e6",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "앞에"
+    },
+    {
+      "offset": "0x3eb",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "드러났을"
+    },
+    {
+      "offset": "0x3f4",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "때"
+    },
+    {
+      "offset": "0x3f9",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": "0x7d",
+      "text": "모든"
+    },
+    {
+      "offset": "0x3fe",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "이들은"
+    },
+    {
+      "offset": "0x405",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "환희"
+    },
+    {
+      "offset": "0x40b",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "절망"
+    },
+    {
+      "offset": "0x411",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "공포"
+    },
+    {
+      "offset": "0x417",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "희망의"
+    },
+    {
+      "offset": "0x41e",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "네가지"
+    },
+    {
+      "offset": "0x425",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "감정중"
+    },
+    {
+      "offset": "0x42c",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "적어도"
+    },
+    {
+      "offset": "0x433",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "한가지"
+    },
+    {
+      "offset": "0x43a",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "이상씩은"
+    },
+    {
+      "offset": "0x443",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "본능적으로"
+    },
+    {
+      "offset": "0x44e",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "느꼈을"
+    },
+    {
+      "offset": "0x455",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "것이다"
+    },
+    {
+      "offset": "0x45e",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": "0x7d",
+      "text": "그"
+    },
+    {
+      "offset": "0x461",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "감정의"
+    },
+    {
+      "offset": "0x468",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "지배하에"
+    },
+    {
+      "offset": "0x472",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "거짓말"
+    },
+    {
+      "offset": "0x479",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "처럼"
+    },
+    {
+      "offset": "0x47e",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "빠르게"
+    },
+    {
+      "offset": "0x485",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "통일"
+    },
+    {
+      "offset": "0x48a",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "전쟁은"
+    },
+    {
+      "offset": "0x491",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "마무리"
+    },
+    {
+      "offset": "0x498",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "되어"
+    },
+    {
+      "offset": "0x49d",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "갔다"
+    },
+    {
+      "offset": "0x4a3",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "아스크라의"
+    },
+    {
+      "offset": "0x4ae",
+      "speaker": "통일 전쟁의 반환점",
+      "mode_byte": null,
+      "text": "이름으로"
+    },
+    {
+      "offset": "0x4d2",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "아스크라"
+    },
+    {
+      "offset": "0x4db",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "왕국과"
+    },
+    {
+      "offset": "0x4e2",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "레갈리스"
+    },
+    {
+      "offset": "0x4eb",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "교단의"
+    },
+    {
+      "offset": "0x4f2",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "굳건한"
+    },
+    {
+      "offset": "0x4f9",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "결착"
+    },
+    {
+      "offset": "0x500",
+      "speaker": "국가와 종교",
+      "mode_byte": "0x7d",
+      "text": "이렇게"
+    },
+    {
+      "offset": "0x507",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "교권을"
+    },
+    {
+      "offset": "0x50e",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "기반으로"
+    },
+    {
+      "offset": "0x517",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "형성된"
+    },
+    {
+      "offset": "0x51e",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "왕권은"
+    },
+    {
+      "offset": "0x525",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "종교가"
+    },
+    {
+      "offset": "0x52c",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x52f",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "신뢰를"
+    },
+    {
+      "offset": "0x536",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "잃을"
+    },
+    {
+      "offset": "0x53b",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "때"
+    },
+    {
+      "offset": "0x53e",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "함께"
+    },
+    {
+      "offset": "0x543",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "붕괴할"
+    },
+    {
+      "offset": "0x54a",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "위험성이"
+    },
+    {
+      "offset": "0x553",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "다분하다"
+    },
+    {
+      "offset": "0x55e",
+      "speaker": "국가와 종교",
+      "mode_byte": "0x7d",
+      "text": "언젠가"
+    },
+    {
+      "offset": "0x565",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "레갈리스"
+    },
+    {
+      "offset": "0x56e",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "교가"
+    },
+    {
+      "offset": "0x573",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x576",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "신앙적"
+    },
+    {
+      "offset": "0x57d",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "지지를"
+    },
+    {
+      "offset": "0x584",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "잃게"
+    },
+    {
+      "offset": "0x589",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "된다면"
+    },
+    {
+      "offset": "0x591",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "아스크라"
+    },
+    {
+      "offset": "0x59a",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "정부는"
+    },
+    {
+      "offset": "0x5a1",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "국민의"
+    },
+    {
+      "offset": "0x5a8",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "뜻을"
+    },
+    {
+      "offset": "0x5ad",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "모을"
+    },
+    {
+      "offset": "0x5b2",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "다른"
+    },
+    {
+      "offset": "0x5b7",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "어떤"
+    },
+    {
+      "offset": "0x5bc",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "방법을"
+    },
+    {
+      "offset": "0x5c3",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "강구해야"
+    },
+    {
+      "offset": "0x5cc",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x5cf",
+      "speaker": "국가와 종교",
+      "mode_byte": null,
+      "text": "것이다"
+    },
+    {
+      "offset": "0x5f2",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "교황"
+    },
+    {
+      "offset": "0x5f7",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "율리케의"
+    },
+    {
+      "offset": "0x600",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "실종"
+    },
+    {
+      "offset": "0x605",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "직후"
+    },
+    {
+      "offset": "0x60a",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "바위의"
+    },
+    {
+      "offset": "0x611",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "비와"
+    },
+    {
+      "offset": "0x617",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "흉악한"
+    },
+    {
+      "offset": "0x61e",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "비스트와"
+    },
+    {
+      "offset": "0x628",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "돌림병이"
+    },
+    {
+      "offset": "0x631",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "대륙을"
+    },
+    {
+      "offset": "0x638",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "휩쓸었으니"
+    },
+    {
+      "offset": "0x645",
+      "speaker": "종말은 오는가",
+      "mode_byte": "0x7d",
+      "text": "누구인가"
+    },
+    {
+      "offset": "0x64f",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "믿음을"
+    },
+    {
+      "offset": "0x656",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "저버린"
+    },
+    {
+      "offset": "0x65d",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "자는"
+    },
+    {
+      "offset": "0x663",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "교황의"
+    },
+    {
+      "offset": "0x66a",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "의지에"
+    },
+    {
+      "offset": "0x671",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "반하여"
+    },
+    {
+      "offset": "0x678",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "끝끝내"
+    },
+    {
+      "offset": "0x67f",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "세계의"
+    },
+    {
+      "offset": "0x686",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "진실을"
+    },
+    {
+      "offset": "0x68d",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "배신한"
+    },
+    {
+      "offset": "0x694",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "자는"
+    },
+    {
+      "offset": "0x69c",
+      "speaker": "종말은 오는가",
+      "mode_byte": "0x7d",
+      "text": "우리는"
+    },
+    {
+      "offset": "0x6a3",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "흔들림"
+    },
+    {
+      "offset": "0x6aa",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "없이"
+    },
+    {
+      "offset": "0x6af",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "레갈리스의"
+    },
+    {
+      "offset": "0x6ba",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "신들을"
+    },
+    {
+      "offset": "0x6c1",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "추종하며"
+    },
+    {
+      "offset": "0x6ca",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "다가올"
+    },
+    {
+      "offset": "0x6d1",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "심판의"
+    },
+    {
+      "offset": "0x6d8",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "날에"
+    },
+    {
+      "offset": "0x6dd",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "거인신들과"
+    },
+    {
+      "offset": "0x6e8",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "맞서야"
+    },
+    {
+      "offset": "0x6ef",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x6f2",
+      "speaker": "종말은 오는가",
+      "mode_byte": null,
+      "text": "것이다"
+    },
+    {
+      "offset": "0x714",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "레갈리스"
+    },
+    {
+      "offset": "0x71d",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "교단의"
+    },
+    {
+      "offset": "0x724",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "붕괴와"
+    },
+    {
+      "offset": "0x72b",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "아스크라의"
+    },
+    {
+      "offset": "0x736",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "내분"
+    },
+    {
+      "offset": "0x73c",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "종말의"
+    },
+    {
+      "offset": "0x743",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "징후들"
+    },
+    {
+      "offset": "0x74a",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "속에서도"
+    },
+    {
+      "offset": "0x753",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "두"
+    },
+    {
+      "offset": "0x756",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "영웅은"
+    },
+    {
+      "offset": "0x75d",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "침묵하고"
+    },
+    {
+      "offset": "0x766",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "있다"
+    },
+    {
+      "offset": "0x76d",
+      "speaker": "영웅의 그림자",
+      "mode_byte": "0x7d",
+      "text": "이안과"
+    },
+    {
+      "offset": "0x774",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "케네스"
+    },
+    {
+      "offset": "0x77c",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "그들은"
+    },
+    {
+      "offset": "0x783",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "정녕"
+    },
+    {
+      "offset": "0x788",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "과거의"
+    },
+    {
+      "offset": "0x78f",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "위업에"
+    },
+    {
+      "offset": "0x796",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "만족하는"
+    },
+    {
+      "offset": "0x79f",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "것일까"
+    },
+    {
+      "offset": "0x7a8",
+      "speaker": "영웅의 그림자",
+      "mode_byte": "0x7d",
+      "text": "아니"
+    },
+    {
+      "offset": "0x7ae",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "어쩌면"
+    },
+    {
+      "offset": "0x7b5",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "이것이야말로"
+    },
+    {
+      "offset": "0x7c2",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "진정"
+    },
+    {
+      "offset": "0x7c7",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "그들이"
+    },
+    {
+      "offset": "0x7ce",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "원하는"
+    },
+    {
+      "offset": "0x7d5",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "세계의"
+    },
+    {
+      "offset": "0x7dc",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "모습일지도"
+    },
+    {
+      "offset": "0x7e7",
+      "speaker": "영웅의 그림자",
+      "mode_byte": null,
+      "text": "모르겠다"
+    },
+    {
+      "offset": "0x809",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "맥주가"
+    },
+    {
+      "offset": "0x810",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "미지근해졌을"
+    },
+    {
+      "offset": "0x81d",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "때에는"
+    },
+    {
+      "offset": "0x824",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "얼음을"
+    },
+    {
+      "offset": "0x82b",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "넣어"
+    },
+    {
+      "offset": "0x830",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "마시면"
+    },
+    {
+      "offset": "0x837",
+      "speaker": "생활의 지혜",
+      "mode_byte": null,
+      "text": "좋다"
+    },
+    {
+      "offset": "0x84a",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "늙으면"
+    },
+    {
+      "offset": "0x851",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "읽고"
+    },
+    {
+      "offset": "0x856",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "싶어도"
+    },
+    {
+      "offset": "0x85d",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "못읽는게"
+    },
+    {
+      "offset": "0x866",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "책이야"
+    },
+    {
+      "offset": "0x86e",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "젊은"
+    },
+    {
+      "offset": "0x873",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "때"
+    },
+    {
+      "offset": "0x876",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "부지런히"
+    },
+    {
+      "offset": "0x87f",
+      "speaker": "관리인",
+      "mode_byte": null,
+      "text": "읽으라고"
+    },
+    {
+      "offset": "0x894",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "레갈리스교"
+    },
+    {
+      "offset": "0x89f",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "붕괴에"
+    },
+    {
+      "offset": "0x8a6",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "대한"
+    },
+    {
+      "offset": "0x8ab",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x8ae",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0x8b1",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "정확한"
+    },
+    {
+      "offset": "0x8b8",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "정보는"
+    },
+    {
+      "offset": "0x8bf",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "언제쯤"
+    },
+    {
+      "offset": "0x8c6",
+      "speaker": "독서광",
+      "mode_byte": null,
+      "text": "나올까"
+    },
+    {
+      "offset": "0x8d7",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "리파이너라는"
+    },
+    {
+      "offset": "0x8e4",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x8e8",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "마법사"
+    },
+    {
+      "offset": "0x8ef",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "같은"
+    },
+    {
+      "offset": "0x8f4",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "걸까요"
+    },
+    {
+      "offset": "0x8fc",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "직접"
+    },
+    {
+      "offset": "0x901",
+      "speaker": "소녀",
+      "mode_byte": null,
+      "text": "보고싶어요"
+    }
+  ],
+  "count": 258
+}

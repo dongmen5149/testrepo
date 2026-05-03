@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "offset": "0x29",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "衒"
+    },
+    {
+      "offset": "0x39",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "亨"
+    },
+    {
+      "offset": "0x3d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "兮"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "亨"
+    },
+    {
+      "offset": "0xcd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "衒"
+    },
+    {
+      "offset": "0x1c5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "폐쇄된"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x1d4",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "데스락"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x1e2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x1e5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x1ee",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "테너의"
+    },
+    {
+      "offset": "0x1f5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유물"
+    },
+    {
+      "offset": "0x1fa",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0x1fd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x206",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "어딘가의"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보안장치로"
+    },
+    {
+      "offset": "0x21a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잠겨있다"
+    }
+  ],
+  "count": 18
+}

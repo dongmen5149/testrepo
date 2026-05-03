@@ -1,0 +1,791 @@
+{
+  "entries": [
+    {
+      "offset": "0x1e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "俔"
+    },
+    {
+      "offset": "0x79",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "俔"
+    },
+    {
+      "offset": "0x124",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x12b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막"
+    },
+    {
+      "offset": "0x133",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "베인커터"
+    },
+    {
+      "offset": "0x13c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x143",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x146",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x15b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그렇다면"
+    },
+    {
+      "offset": "0x164",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "굴베이그님은"
+    },
+    {
+      "offset": "0x171",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "누굴"
+    },
+    {
+      "offset": "0x176",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그리워하며"
+    },
+    {
+      "offset": "0x181",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x184",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "시를"
+    },
+    {
+      "offset": "0x189",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유리방패에"
+    },
+    {
+      "offset": "0x194",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "남긴걸까"
+    },
+    {
+      "offset": "0x19e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "역사의"
+    },
+    {
+      "offset": "0x1a5",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "가면은"
+    },
+    {
+      "offset": "0x1ac",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "벗겨도"
+    },
+    {
+      "offset": "0x1b3",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "벗겨도"
+    },
+    {
+      "offset": "0x1ba",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "끝이없군"
+    },
+    {
+      "offset": "0x1c7",
+      "speaker": "역사학자",
+      "mode_byte": "0x7b",
+      "text": "유리방패"
+    },
+    {
+      "offset": "0x1d0",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x1d3",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "전해"
+    },
+    {
+      "offset": "0x1d8",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "주었다"
+    },
+    {
+      "offset": "0x1ed",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그래"
+    },
+    {
+      "offset": "0x1f2",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "이거야"
+    },
+    {
+      "offset": "0x1fc",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0x202",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "방패에"
+    },
+    {
+      "offset": "0x209",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "새겨진건"
+    },
+    {
+      "offset": "0x212",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "굴베이그님의"
+    },
+    {
+      "offset": "0x220",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "영혼의"
+    },
+    {
+      "offset": "0x227",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "시"
+    },
+    {
+      "offset": "0x23b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x246",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유적에서"
+    },
+    {
+      "offset": "0x24f",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "발견된"
+    },
+    {
+      "offset": "0x256",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유리방패에"
+    },
+    {
+      "offset": "0x261",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "새겨져있다는"
+    },
+    {
+      "offset": "0x26e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x281",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "레갈리스교의"
+    },
+    {
+      "offset": "0x28e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "창시자인"
+    },
+    {
+      "offset": "0x297",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "굴베이그님이"
+    },
+    {
+      "offset": "0x2a4",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "솔티안이자"
+    },
+    {
+      "offset": "0x2b0",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "리파이너"
+    },
+    {
+      "offset": "0x2b9",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "였다는"
+    },
+    {
+      "offset": "0x2c0",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "결정적"
+    },
+    {
+      "offset": "0x2c7",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "증거"
+    },
+    {
+      "offset": "0x2db",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "학계가"
+    },
+    {
+      "offset": "0x2e2",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "뒤집어"
+    },
+    {
+      "offset": "0x2e9",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "질거야"
+    },
+    {
+      "offset": "0x2f2",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "으흐흐"
+    },
+    {
+      "offset": "0x308",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "아"
+    },
+    {
+      "offset": "0x30c",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "미안하네"
+    },
+    {
+      "offset": "0x316",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "사례를"
+    },
+    {
+      "offset": "0x31d",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "해줘야지"
+    },
+    {
+      "offset": "0x328",
+      "speaker": "역사학자",
+      "mode_byte": "0x7b",
+      "text": "세라핌핸드"
+    },
+    {
+      "offset": "0x33b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x33e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x347",
+      "speaker": "역사학자",
+      "mode_byte": "0x7b",
+      "text": "마지막"
+    },
+    {
+      "offset": "0x34e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "증거"
+    },
+    {
+      "offset": "0x354",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x35b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x36e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "저"
+    },
+    {
+      "offset": "0x371",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "안에서"
+    },
+    {
+      "offset": "0x378",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "가져나와야"
+    },
+    {
+      "offset": "0x383",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x386",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "것이"
+    },
+    {
+      "offset": "0x38b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "있는데"
+    },
+    {
+      "offset": "0x395",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "이상한"
+    },
+    {
+      "offset": "0x39c",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x3a3",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유적을"
+    },
+    {
+      "offset": "0x3aa",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "점령해"
+    },
+    {
+      "offset": "0x3b1",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "버려서"
+    },
+    {
+      "offset": "0x3b8",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "들어가고"
+    },
+    {
+      "offset": "0x3c1",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "싶어도"
+    },
+    {
+      "offset": "0x3c8",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "갈수가"
+    },
+    {
+      "offset": "0x3cf",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "없다네"
+    },
+    {
+      "offset": "0x3e4",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "예전에"
+    },
+    {
+      "offset": "0x3eb",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그것을"
+    },
+    {
+      "offset": "0x3f2",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "발견했을"
+    },
+    {
+      "offset": "0x3fb",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "때"
+    },
+    {
+      "offset": "0x3fe",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "가져나왔어야"
+    },
+    {
+      "offset": "0x40b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "했는데"
+    },
+    {
+      "offset": "0x414",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x417",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "중요한"
+    },
+    {
+      "offset": "0x41e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유물을"
+    },
+    {
+      "offset": "0x425",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "두고"
+    },
+    {
+      "offset": "0x42a",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "나오다니"
+    },
+    {
+      "offset": "0x442",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "자네"
+    },
+    {
+      "offset": "0x448",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "실력있는"
+    },
+    {
+      "offset": "0x451",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "모험가라면"
+    },
+    {
+      "offset": "0x45c",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "저안에서"
+    },
+    {
+      "offset": "0x466",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유리방패"
+    },
+    {
+      "offset": "0x46f",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x472",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "찾아와"
+    },
+    {
+      "offset": "0x479",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "주지"
+    },
+    {
+      "offset": "0x47e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "않겠나"
+    },
+    {
+      "offset": "0x493",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0x496",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "학설을"
+    },
+    {
+      "offset": "0x49d",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "증명할"
+    },
+    {
+      "offset": "0x4a4",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "마지막"
+    },
+    {
+      "offset": "0x4ab",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "증거일세"
+    },
+    {
+      "offset": "0x4b5",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "내"
+    },
+    {
+      "offset": "0x4b8",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "사례는"
+    },
+    {
+      "offset": "0x4bf",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "심심찮게"
+    },
+    {
+      "offset": "0x4c8",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "해줄테니"
+    },
+    {
+      "offset": "0x4d3",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x4d6",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "정도쯤이야"
+    },
+    {
+      "offset": "0x4ee",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "고맙네"
+    },
+    {
+      "offset": "0x4f6",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "자네같은"
+    },
+    {
+      "offset": "0x4ff",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "젊은이들이"
+    },
+    {
+      "offset": "0x50a",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "있기에"
+    },
+    {
+      "offset": "0x511",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "역사의"
+    },
+    {
+      "offset": "0x518",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "진실이"
+    },
+    {
+      "offset": "0x51f",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "밝혀지는"
+    },
+    {
+      "offset": "0x528",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "게지"
+    },
+    {
+      "offset": "0x52f",
+      "speaker": "역사학자",
+      "mode_byte": "0x7b",
+      "text": "마지막"
+    },
+    {
+      "offset": "0x536",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "증거"
+    },
+    {
+      "offset": "0x53c",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x543",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x549",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "직접"
+    },
+    {
+      "offset": "0x54e",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "하시지요"
+    },
+    {
+      "offset": "0x564",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유적안"
+    },
+    {
+      "offset": "0x56b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "어딘가에"
+    },
+    {
+      "offset": "0x576",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "유리방패"
+    },
+    {
+      "offset": "0x57f",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0x582",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "있을"
+    },
+    {
+      "offset": "0x587",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "걸세"
+    },
+    {
+      "offset": "0x58d",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "무언가"
+    },
+    {
+      "offset": "0x594",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "글귀가"
+    },
+    {
+      "offset": "0x59b",
+      "speaker": "역사학자",
+      "mode_byte": null,
+      "text": "새겨진"
+    }
+  ],
+  "count": 131
+}

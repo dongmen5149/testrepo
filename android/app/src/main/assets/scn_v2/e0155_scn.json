@@ -1,0 +1,83 @@
+{
+  "entries": [
+    {
+      "offset": "0x51",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "민가"
+    },
+    {
+      "offset": "0x65",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "공장일"
+    },
+    {
+      "offset": "0x6c",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "해서"
+    },
+    {
+      "offset": "0x71",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "하루"
+    },
+    {
+      "offset": "0x76",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "벌어"
+    },
+    {
+      "offset": "0x7b",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "하루"
+    },
+    {
+      "offset": "0x80",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "먹고"
+    },
+    {
+      "offset": "0x85",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "살기"
+    },
+    {
+      "offset": "0x8a",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "빠듯해요"
+    },
+    {
+      "offset": "0x94",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "마물들이"
+    },
+    {
+      "offset": "0x9d",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "습격해오지"
+    },
+    {
+      "offset": "0xa8",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "않기만을"
+    },
+    {
+      "offset": "0xb1",
+      "speaker": "로우엔주민",
+      "mode_byte": null,
+      "text": "바래야죠"
+    }
+  ],
+  "count": 13
+}

@@ -1,0 +1,119 @@
+{
+  "entries": [
+    {
+      "offset": "0x31",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "兄"
+    },
+    {
+      "offset": "0x77",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "兄"
+    },
+    {
+      "offset": "0x1e6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x1f1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x1f9",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "이"
+    },
+    {
+      "offset": "0x1fc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동력로는"
+    },
+    {
+      "offset": "0x205",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "고장났는지"
+    },
+    {
+      "offset": "0x211",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "제대로"
+    },
+    {
+      "offset": "0x218",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동작하지"
+    },
+    {
+      "offset": "0x221",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "않는"
+    },
+    {
+      "offset": "0x226",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "듯"
+    },
+    {
+      "offset": "0x229",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "하다"
+    },
+    {
+      "offset": "0x230",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "오래된"
+    },
+    {
+      "offset": "0x237",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동력로가"
+    },
+    {
+      "offset": "0x240",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "작동하기"
+    },
+    {
+      "offset": "0x249",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시작했다"
+    },
+    {
+      "offset": "0x254",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "유리방패"
+    },
+    {
+      "offset": "0x25d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x260",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 19
+}

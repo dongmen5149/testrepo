@@ -71,6 +71,26 @@ def main(argv: list[str]) -> int:
             shutil.copy2(src, out / special)
             counts['extras'] += 1
 
+    # dat/ 의 비-텍스트 파싱 결과 (char_dat 등) → assets/dat/
+    dat_root = out / 'dat'
+    dat_root.mkdir(parents=True, exist_ok=True)
+    counts['dat'] = 0
+    for special in ('char_dat.json',):
+        src = converted / 'dat' / special
+        if src.exists():
+            shutil.copy2(src, dat_root / special)
+            counts['dat'] += 1
+
+    # scn_v2/ — 화자별 대사 구조화 JSON (전체)
+    scn_src = converted / 'scn_v2'
+    if scn_src.exists():
+        scn_dst = out / 'scn_v2'
+        scn_dst.mkdir(parents=True, exist_ok=True)
+        counts['scn_v2'] = 0
+        for j in scn_src.glob('*.json'):
+            shutil.copy2(j, scn_dst / j.name)
+            counts['scn_v2'] += 1
+
     print(f'Copied to {out}:')
     print(f'  sprites:  {counts["sprites"]}')
     print(f'  strings:  {counts["strings"]}')

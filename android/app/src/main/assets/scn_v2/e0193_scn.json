@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "炫"
+    },
+    {
+      "offset": "0x41",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "炫"
+    },
+    {
+      "offset": "0x7f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "야수의"
+    },
+    {
+      "offset": "0x86",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x8c",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "다크코트"
+    },
+    {
+      "offset": "0x95",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x9c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x9f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

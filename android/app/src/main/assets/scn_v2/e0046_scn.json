@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "offset": "0x3e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x45",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지하"
+    }
+  ],
+  "count": 2
+}

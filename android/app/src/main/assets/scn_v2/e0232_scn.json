@@ -1,0 +1,317 @@
+{
+  "entries": [
+    {
+      "offset": "0x20a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거기"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "서"
+    },
+    {
+      "offset": "0x21d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "추격자"
+    },
+    {
+      "offset": "0x226",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x22b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "따라온건가"
+    },
+    {
+      "offset": "0x241",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거기"
+    },
+    {
+      "offset": "0x246",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "서"
+    },
+    {
+      "offset": "0x254",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "추격자"
+    },
+    {
+      "offset": "0x25d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x262",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "따라온건가"
+    },
+    {
+      "offset": "0x278",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "제법이구나"
+    },
+    {
+      "offset": "0x284",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x28d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "쥐새끼"
+    },
+    {
+      "offset": "0x2a3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "쳇"
+    },
+    {
+      "offset": "0x2a9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이대로는"
+    },
+    {
+      "offset": "0x2b2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "당하겠어"
+    },
+    {
+      "offset": "0x2c8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기까지다"
+    },
+    {
+      "offset": "0x2d4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네놈들이"
+    },
+    {
+      "offset": "0x2dd",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x2e0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잘난"
+    },
+    {
+      "offset": "0x2e5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가디언으로"
+    },
+    {
+      "offset": "0x2f0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "더이상"
+    },
+    {
+      "offset": "0x2f7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "설치지"
+    },
+    {
+      "offset": "0x2fe",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "못하게"
+    },
+    {
+      "offset": "0x305",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해주지"
+    },
+    {
+      "offset": "0x316",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "죄송합니다"
+    },
+    {
+      "offset": "0x32b",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "저희가"
+    },
+    {
+      "offset": "0x332",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x335",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "바빠서"
+    },
+    {
+      "offset": "0x33d",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "실례하겠습니다"
+    },
+    {
+      "offset": "0x356",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건방진"
+    },
+    {
+      "offset": "0x35d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "소릴"
+    },
+    {
+      "offset": "0x36f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "제법이구나"
+    },
+    {
+      "offset": "0x37b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x384",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "쥐새끼"
+    },
+    {
+      "offset": "0x39a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "쳇"
+    },
+    {
+      "offset": "0x3a0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이대로는"
+    },
+    {
+      "offset": "0x3a9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "당하겠어"
+    },
+    {
+      "offset": "0x3bf",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기까지다"
+    },
+    {
+      "offset": "0x3cb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네놈들이"
+    },
+    {
+      "offset": "0x3d4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x3d7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잘난"
+    },
+    {
+      "offset": "0x3dc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가디언으로"
+    },
+    {
+      "offset": "0x3e7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "더이상"
+    },
+    {
+      "offset": "0x3ee",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "설치지"
+    },
+    {
+      "offset": "0x3f5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "못하게"
+    },
+    {
+      "offset": "0x3fc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해주지"
+    },
+    {
+      "offset": "0x40d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건방진"
+    },
+    {
+      "offset": "0x414",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "소릴"
+    },
+    {
+      "offset": "0x41d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x423",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이건"
+    },
+    {
+      "offset": "0x42b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가디언의"
+    }
+  ],
+  "count": 52
+}

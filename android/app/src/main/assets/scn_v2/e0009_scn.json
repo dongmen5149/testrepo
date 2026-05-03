@@ -1,0 +1,323 @@
+{
+  "entries": [
+    {
+      "offset": "0x13a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x143",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x151",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "으랏차"
+    },
+    {
+      "offset": "0x158",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "마지막"
+    },
+    {
+      "offset": "0x16a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "핫핫핫"
+    },
+    {
+      "offset": "0x173",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "간단하군"
+    },
+    {
+      "offset": "0x17d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "마녀님께서는"
+    },
+    {
+      "offset": "0x18a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나를"
+    },
+    {
+      "offset": "0x18f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "과소평가했어"
+    },
+    {
+      "offset": "0x19e",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "노력의"
+    },
+    {
+      "offset": "0x1a5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "증명"
+    },
+    {
+      "offset": "0x1ac",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1b3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x1c2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가만있자"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다음은"
+    },
+    {
+      "offset": "0x1d5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "와일드쿠퍼"
+    },
+    {
+      "offset": "0x1e1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이건"
+    },
+    {
+      "offset": "0x1e6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "어디"
+    },
+    {
+      "offset": "0x1eb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "사는"
+    },
+    {
+      "offset": "0x1f0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "분이시다냐"
+    },
+    {
+      "offset": "0x1fc",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "노력의"
+    },
+    {
+      "offset": "0x203",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "증명"
+    },
+    {
+      "offset": "0x20a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x211",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x224",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "음"
+    },
+    {
+      "offset": "0x228",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0x22d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭔가가"
+    },
+    {
+      "offset": "0x240",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저런"
+    },
+    {
+      "offset": "0x245",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "곳에"
+    },
+    {
+      "offset": "0x24d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동굴이"
+    },
+    {
+      "offset": "0x254",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "있었나"
+    },
+    {
+      "offset": "0x25c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "게다가"
+    },
+    {
+      "offset": "0x263",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "방금"
+    },
+    {
+      "offset": "0x268",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x26b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빛은"
+    },
+    {
+      "offset": "0x27d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수상하다"
+    },
+    {
+      "offset": "0x287",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "매우"
+    },
+    {
+      "offset": "0x28c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수상해"
+    },
+    {
+      "offset": "0x295",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "수상한"
+    },
+    {
+      "offset": "0x29c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x2a2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2a9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x2b8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저런"
+    },
+    {
+      "offset": "0x2bd",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수상한"
+    },
+    {
+      "offset": "0x2c4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동굴을"
+    },
+    {
+      "offset": "0x2cb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그냥"
+    },
+    {
+      "offset": "0x2d0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지나칠"
+    },
+    {
+      "offset": "0x2d7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "순"
+    },
+    {
+      "offset": "0x2da",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없지"
+    },
+    {
+      "offset": "0x2e8",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "이쪽인가"
+    },
+    {
+      "offset": "0x2fb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니아니"
+    },
+    {
+      "offset": "0x305",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "마을은"
+    },
+    {
+      "offset": "0x30c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "반대쪽"
+    }
+  ],
+  "count": 53
+}

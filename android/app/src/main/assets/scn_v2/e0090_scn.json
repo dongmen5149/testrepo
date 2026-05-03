@@ -1,0 +1,161 @@
+{
+  "entries": [
+    {
+      "offset": "0x7d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x86",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "고원"
+    },
+    {
+      "offset": "0x96",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0x9b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네오"
+    },
+    {
+      "offset": "0xa0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아쪽으로"
+    },
+    {
+      "offset": "0xad",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가봐야"
+    },
+    {
+      "offset": "0xb4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아무"
+    },
+    {
+      "offset": "0xb9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "도움이"
+    },
+    {
+      "offset": "0xc0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안돼"
+    },
+    {
+      "offset": "0xcf",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "고원에도"
+    },
+    {
+      "offset": "0xdf",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잔뜩"
+    },
+    {
+      "offset": "0xe4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "매복하고"
+    },
+    {
+      "offset": "0xed",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있었군"
+    },
+    {
+      "offset": "0x100",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0x107",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "바보같이"
+    },
+    {
+      "offset": "0x110",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "죽을"
+    },
+    {
+      "offset": "0x115",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "성"
+    },
+    {
+      "offset": "0x118",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싶으냐"
+    },
+    {
+      "offset": "0x121",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "악의"
+    },
+    {
+      "offset": "0x127",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "필사의"
+    },
+    {
+      "offset": "0x13c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "탈출"
+    },
+    {
+      "offset": "0x142",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x149",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 26
+}

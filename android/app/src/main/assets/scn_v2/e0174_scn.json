@@ -1,0 +1,185 @@
+{
+  "entries": [
+    {
+      "offset": "0x22a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x231",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x239",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0x246",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x24e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x251",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "없습니다"
+    },
+    {
+      "offset": "0x25b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0x260",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0x272",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0x27e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭐야"
+    },
+    {
+      "offset": "0x283",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저건"
+    },
+    {
+      "offset": "0x289",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저것도"
+    },
+    {
+      "offset": "0x290",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "무인"
+    },
+    {
+      "offset": "0x295",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "경계"
+    },
+    {
+      "offset": "0x29a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "시설인가"
+    },
+    {
+      "offset": "0x2a5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x2ad",
+      "speaker": "케이",
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0x2ba",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0x2bf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x2c5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없으며"
+    },
+    {
+      "offset": "0x2cd",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "용병길드의"
+    },
+    {
+      "offset": "0x2d8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "서브퀘스트가"
+    },
+    {
+      "offset": "0x2e5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "사라집니다"
+    },
+    {
+      "offset": "0x2f1",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0x2f6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0x311",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x316",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "귀찮은게"
+    },
+    {
+      "offset": "0x31f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있군"
+    }
+  ],
+  "count": 30
+}

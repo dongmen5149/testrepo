@@ -1,0 +1,131 @@
+{
+  "entries": [
+    {
+      "offset": "0x3e4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x3ef",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x3f7",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0x404",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0x409",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x40c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x40f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "없습니다"
+    },
+    {
+      "offset": "0x419",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0x41e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0x430",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0x43e",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "조심해"
+    },
+    {
+      "offset": "0x446",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "유적을"
+    },
+    {
+      "offset": "0x44d",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "수호하는"
+    },
+    {
+      "offset": "0x456",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "비스트야"
+    },
+    {
+      "offset": "0x460",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x470",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "비스트인가"
+    },
+    {
+      "offset": "0x47e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x481",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "방은"
+    },
+    {
+      "offset": "0x486",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "중요한"
+    },
+    {
+      "offset": "0x48d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "방이라는"
+    },
+    {
+      "offset": "0x496",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "소리로군"
+    }
+  ],
+  "count": 21
+}

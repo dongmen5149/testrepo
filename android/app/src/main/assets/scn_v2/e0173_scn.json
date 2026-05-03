@@ -1,0 +1,77 @@
+{
+  "entries": [
+    {
+      "offset": "0xda",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0xe1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xe9",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "출입"
+    },
+    {
+      "offset": "0xee",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "카드를"
+    },
+    {
+      "offset": "0xf5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "투입해"
+    },
+    {
+      "offset": "0xfc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "주세요"
+    },
+    {
+      "offset": "0x104",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "카드투입"
+    },
+    {
+      "offset": "0x10e",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "씨크릿카드"
+    },
+    {
+      "offset": "0x11b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소모"
+    },
+    {
+      "offset": "0x123",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "취"
+    },
+    {
+      "offset": "0x126",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소"
+    }
+  ],
+  "count": 12
+}

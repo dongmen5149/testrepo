@@ -1,0 +1,47 @@
+{
+  "entries": [
+    {
+      "offset": "0x72",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x7b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "협곡"
+    },
+    {
+      "offset": "0x83",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "몬스터의"
+    },
+    {
+      "offset": "0x8c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잦은"
+    },
+    {
+      "offset": "0x91",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "습격으로"
+    },
+    {
+      "offset": "0x9a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장을"
+    },
+    {
+      "offset": "0xa1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "폐쇄함"
+    }
+  ],
+  "count": 7
+}

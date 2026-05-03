@@ -1,0 +1,41 @@
+{
+  "entries": [
+    {
+      "offset": "0xc1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "평원"
+    },
+    {
+      "offset": "0xd8",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "이곳은"
+    },
+    {
+      "offset": "0xdf",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "출입금지"
+    },
+    {
+      "offset": "0xe8",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "구역이니"
+    },
+    {
+      "offset": "0xf2",
+      "speaker": "용병",
+      "mode_byte": null,
+      "text": "돌아가주시오"
+    }
+  ],
+  "count": 6
+}

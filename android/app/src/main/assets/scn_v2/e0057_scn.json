@@ -1,0 +1,125 @@
+{
+  "entries": [
+    {
+      "offset": "0x9c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0xa3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산"
+    },
+    {
+      "offset": "0xb7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "더이상"
+    },
+    {
+      "offset": "0xbe",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "도망쳐선"
+    },
+    {
+      "offset": "0xc7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안돼"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이미"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "모두"
+    },
+    {
+      "offset": "0xe0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퇴각한"
+    },
+    {
+      "offset": "0xe7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "주둔지다"
+    },
+    {
+      "offset": "0xf1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "별로"
+    },
+    {
+      "offset": "0xf6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "보고"
+    },
+    {
+      "offset": "0xfb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싶지도"
+    },
+    {
+      "offset": "0x102",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "않고"
+    },
+    {
+      "offset": "0x109",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "서"
+    },
+    {
+      "offset": "0x10c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "군주둔지"
+    },
+    {
+      "offset": "0x115",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "북"
+    },
+    {
+      "offset": "0x118",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "채굴장"
+    },
+    {
+      "offset": "0x11f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동"
+    },
+    {
+      "offset": "0x122",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x129",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "검은공장"
+    }
+  ],
+  "count": 20
+}

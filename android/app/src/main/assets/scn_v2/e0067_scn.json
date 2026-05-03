@@ -1,0 +1,83 @@
+{
+  "entries": [
+    {
+      "offset": "0x21",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "嫌"
+    },
+    {
+      "offset": "0x77",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "嫌"
+    },
+    {
+      "offset": "0xf0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "검은"
+    },
+    {
+      "offset": "0xf5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xfd",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "스타사파이어"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x111",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x114",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x11d",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0x122",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제된"
+    },
+    {
+      "offset": "0x129",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "상태입니다"
+    },
+    {
+      "offset": "0x136",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안을"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제합니다"
+    }
+  ],
+  "count": 13
+}

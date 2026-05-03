@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x60",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x6b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x73",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "신비한"
+    },
+    {
+      "offset": "0x7a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광체를"
+    },
+    {
+      "offset": "0x81",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "내며"
+    },
+    {
+      "offset": "0x86",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동력로가"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "기동하고"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "있다"
+    }
+  ],
+  "count": 8
+}

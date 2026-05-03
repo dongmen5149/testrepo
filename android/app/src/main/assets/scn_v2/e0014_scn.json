@@ -1,0 +1,95 @@
+{
+  "entries": [
+    {
+      "offset": "0x6e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x77",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x85",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이쪽으로"
+    },
+    {
+      "offset": "0x8e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가면"
+    },
+    {
+      "offset": "0x93",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빙"
+    },
+    {
+      "offset": "0x96",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "돌아가게"
+    },
+    {
+      "offset": "0x9f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "돼"
+    },
+    {
+      "offset": "0xa3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "급하니까"
+    },
+    {
+      "offset": "0xac",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "남쪽길로"
+    },
+    {
+      "offset": "0xb5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가자"
+    },
+    {
+      "offset": "0xbc",
+      "speaker": "케이",
+      "mode_byte": "0x7d",
+      "text": "서"
+    },
+    {
+      "offset": "0xbf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빛의신당"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동"
+    },
+    {
+      "offset": "0xcb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "네오솔티아"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "군주둔지"
+    }
+  ],
+  "count": 15
+}

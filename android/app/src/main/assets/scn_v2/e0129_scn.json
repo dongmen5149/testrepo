@@ -1,0 +1,323 @@
+{
+  "entries": [
+    {
+      "offset": "0x117",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x122",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x132",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "자들"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x140",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "코르버스의"
+    },
+    {
+      "offset": "0x14b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "인간들이었구나"
+    },
+    {
+      "offset": "0x166",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0x16c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "몰래"
+    },
+    {
+      "offset": "0x171",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "들어갈"
+    },
+    {
+      "offset": "0x178",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "방법을"
+    },
+    {
+      "offset": "0x17f",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "찾아야"
+    },
+    {
+      "offset": "0x186",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "될"
+    },
+    {
+      "offset": "0x189",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x18c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "같아"
+    },
+    {
+      "offset": "0x19c",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0x1ad",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "저놈들이"
+    },
+    {
+      "offset": "0x1b6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "엘지스를"
+    },
+    {
+      "offset": "0x1c5",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "다시"
+    },
+    {
+      "offset": "0x1ca",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "유적으로"
+    },
+    {
+      "offset": "0x1d4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x1e2",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "유적"
+    },
+    {
+      "offset": "0x1e7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "강행"
+    },
+    {
+      "offset": "0x1ec",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "돌파"
+    },
+    {
+      "offset": "0x1f2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1f9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x208",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여전히"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "죽치고"
+    },
+    {
+      "offset": "0x216",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있군"
+    },
+    {
+      "offset": "0x21c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저놈들"
+    },
+    {
+      "offset": "0x230",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "케네스라도"
+    },
+    {
+      "offset": "0x23b",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "있으면"
+    },
+    {
+      "offset": "0x242",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "낭패인데"
+    },
+    {
+      "offset": "0x257",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "코르버스"
+    },
+    {
+      "offset": "0x260",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "길드"
+    },
+    {
+      "offset": "0x266",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이놈들은"
+    },
+    {
+      "offset": "0x26f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뭘"
+    },
+    {
+      "offset": "0x272",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "노리는"
+    },
+    {
+      "offset": "0x279",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거지"
+    },
+    {
+      "offset": "0x28c",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "어쩌면"
+    },
+    {
+      "offset": "0x293",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "케이와"
+    },
+    {
+      "offset": "0x29a",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "시엔은"
+    },
+    {
+      "offset": "0x2a1",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "이미"
+    },
+    {
+      "offset": "0x2a6",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "당했을지도"
+    },
+    {
+      "offset": "0x2b5",
+      "speaker": "일레느",
+      "mode_byte": "0x7b",
+      "text": "추락의"
+    },
+    {
+      "offset": "0x2bc",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "단서"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2c9",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x2d0",
+      "speaker": "일레느",
+      "mode_byte": "0x7b",
+      "text": "코르버스"
+    },
+    {
+      "offset": "0x2d9",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "길드"
+    },
+    {
+      "offset": "0x2df",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2e6",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 53
+}

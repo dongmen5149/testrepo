@@ -1,13 +1,14 @@
 """
 Hero3 _cif → JSON 메타데이터 (부분 파싱).
 
-확정된 부분:
-    uint16 slot_count                       // 0..1
-    uint8  sprite_indices[slot_count]       // 2..2+count
-    bytes  animation_data[]                 // 나머지 (포맷 미확정)
+2026-05-04 헤더 재해석:
+    uint8  slot_count          // 0..8 (hero/boss=8, enemy=0~7)
+    uint8  type_or_category    // 0=hero/boss, 1=enemy 추정
+    uint8  sprite_indices[slot_count]
+    bytes  animation_data[]    // 미해독 (timing/event)
 
-slot_count + indices 만으로도 캐릭터 시스템의 키프레임 매핑을 알 수 있음.
-animation_data 의 timing/event 디코딩은 추가 분석 필요 (보류).
+`19 19` 패턴이 76% 파일에 존재 → frame size 마커.
+animation_data 의 정확한 record 구조는 Ghidra 분석 필요 (보류).
 
 사용:
     python convert_cif.py <input.cif> <output.json>
@@ -18,13 +19,16 @@ import struct, sys, json, pathlib
 
 def parse_cif(data: bytes) -> dict:
     if len(data) < 2:
-        return {'slot_count': 0, 'indices': [], 'raw_size': len(data)}
-    slot_count = struct.unpack_from('<H', data, 0)[0]
-    indices_bytes = data[2:2 + slot_count] if slot_count + 2 <= len(data) else data[2:]
+        return {'slot_count': 0, 'category': 0, 'indices': [], 'raw_size': len(data)}
+    slot_count = data[0]
+    category = data[1]
+    end = 2 + slot_count
+    indices_bytes = data[2:end] if end <= len(data) else data[2:]
     indices = list(indices_bytes)
-    rest = data[2 + slot_count:] if 2 + slot_count <= len(data) else b''
+    rest = data[end:] if end <= len(data) else b''
     return {
         'slot_count': slot_count,
+        'category': category,
         'indices': indices,
         'animation_data_size': len(rest),
         'animation_data_hex_preview': rest[:32].hex() if rest else '',

@@ -1,0 +1,47 @@
+{
+  "entries": [
+    {
+      "offset": "0x22",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "莢"
+    },
+    {
+      "offset": "0x46",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "莢"
+    },
+    {
+      "offset": "0x87",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "채굴장"
+    },
+    {
+      "offset": "0x91",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "시그널"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "팬던트"
+    },
+    {
+      "offset": "0x9f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xa2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 7
+}

@@ -1,0 +1,869 @@
+{
+  "entries": [
+    {
+      "offset": "0xf9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x100",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "여관"
+    },
+    {
+      "offset": "0x106",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "숙박비"
+    },
+    {
+      "offset": "0x111",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0x114",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "충분하지"
+    },
+    {
+      "offset": "0x11d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "않습니다"
+    },
+    {
+      "offset": "0x132",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "이곳에"
+    },
+    {
+      "offset": "0x139",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "출몰하는"
+    },
+    {
+      "offset": "0x142",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마수들의"
+    },
+    {
+      "offset": "0x14b",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "소문을"
+    },
+    {
+      "offset": "0x152",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "듣고"
+    },
+    {
+      "offset": "0x157",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퇴치하러"
+    },
+    {
+      "offset": "0x160",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "왔는데"
+    },
+    {
+      "offset": "0x169",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x16e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사람들이"
+    },
+    {
+      "offset": "0x177",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "의욕이"
+    },
+    {
+      "offset": "0x17e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "없어서"
+    },
+    {
+      "offset": "0x185",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "안되겠어"
+    },
+    {
+      "offset": "0x19a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "뭐"
+    },
+    {
+      "offset": "0x19e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "혹시"
+    },
+    {
+      "offset": "0x1a3",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "다른"
+    },
+    {
+      "offset": "0x1a8",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "의뢰"
+    },
+    {
+      "offset": "0x1ad",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "할만한게"
+    },
+    {
+      "offset": "0x1b6",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "들어오면"
+    },
+    {
+      "offset": "0x1bf",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "또"
+    },
+    {
+      "offset": "0x1c2",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "같이"
+    },
+    {
+      "offset": "0x1c7",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "하자구"
+    },
+    {
+      "offset": "0x1da",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "후후"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "생각보다"
+    },
+    {
+      "offset": "0x1e9",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "늦었군"
+    },
+    {
+      "offset": "0x1f1",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "어쨌든"
+    },
+    {
+      "offset": "0x1f8",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x1fd",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "잡은"
+    },
+    {
+      "offset": "0x202",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "놈들까지"
+    },
+    {
+      "offset": "0x20d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마리"
+    },
+    {
+      "offset": "0x212",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "이상의"
+    },
+    {
+      "offset": "0x219",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "블러디"
+    },
+    {
+      "offset": "0x220",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "데몬을"
+    },
+    {
+      "offset": "0x227",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퇴치했어"
+    },
+    {
+      "offset": "0x23c",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "보상금으로"
+    },
+    {
+      "offset": "0x24d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x250",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "받았으니"
+    },
+    {
+      "offset": "0x259",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "나눠가지면"
+    },
+    {
+      "offset": "0x264",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "되겠지"
+    },
+    {
+      "offset": "0x274",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x277",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x28a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "근데"
+    },
+    {
+      "offset": "0x28f",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "말이야"
+    },
+    {
+      "offset": "0x297",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "아무래도"
+    },
+    {
+      "offset": "0x2a0",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x2a3",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "데몬들이"
+    },
+    {
+      "offset": "0x2ac",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을을"
+    },
+    {
+      "offset": "0x2b3",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "습격할"
+    },
+    {
+      "offset": "0x2ba",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x2bd",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "같진"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "않더란"
+    },
+    {
+      "offset": "0x2c9",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "말이지"
+    },
+    {
+      "offset": "0x2dc",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x2e1",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사람들이"
+    },
+    {
+      "offset": "0x2ea",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "두려워하는"
+    },
+    {
+      "offset": "0x2f5",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x2f8",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "만큼"
+    },
+    {
+      "offset": "0x2fd",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "호전적인"
+    },
+    {
+      "offset": "0x306",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x309",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "같지도"
+    },
+    {
+      "offset": "0x310",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "않고"
+    },
+    {
+      "offset": "0x317",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "희안한"
+    },
+    {
+      "offset": "0x31e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "일이야"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "모험가",
+      "mode_byte": "0x7b",
+      "text": "사령의"
+    },
+    {
+      "offset": "0x32e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x334",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x33b",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x34c",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x351",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사람들이"
+    },
+    {
+      "offset": "0x35a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "남쪽"
+    },
+    {
+      "offset": "0x35f",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동굴에"
+    },
+    {
+      "offset": "0x366",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "출몰하는"
+    },
+    {
+      "offset": "0x370",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "블러디데몬의"
+    },
+    {
+      "offset": "0x37d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퇴치"
+    },
+    {
+      "offset": "0x382",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x385",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "의뢰해오긴"
+    },
+    {
+      "offset": "0x390",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "했는데"
+    },
+    {
+      "offset": "0x398",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "이게"
+    },
+    {
+      "offset": "0x39d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "참"
+    },
+    {
+      "offset": "0x3a0",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "난감해"
+    },
+    {
+      "offset": "0x3b5",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마리"
+    },
+    {
+      "offset": "0x3ba",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "이상의"
+    },
+    {
+      "offset": "0x3c1",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "개체수를"
+    },
+    {
+      "offset": "0x3ca",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "줄여달라는데"
+    },
+    {
+      "offset": "0x3d8",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "그게"
+    },
+    {
+      "offset": "0x3dd",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "혼자"
+    },
+    {
+      "offset": "0x3e2",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "힘으로는"
+    },
+    {
+      "offset": "0x3eb",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x3ee",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "벅차거든"
+    },
+    {
+      "offset": "0x403",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "혹시"
+    },
+    {
+      "offset": "0x408",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "생각있으면"
+    },
+    {
+      "offset": "0x413",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "나눠서"
+    },
+    {
+      "offset": "0x41a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "해보지"
+    },
+    {
+      "offset": "0x421",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "않겠나"
+    },
+    {
+      "offset": "0x42c",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마리"
+    },
+    {
+      "offset": "0x431",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "만"
+    },
+    {
+      "offset": "0x434",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "잡아"
+    },
+    {
+      "offset": "0x439",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "준다면"
+    },
+    {
+      "offset": "0x440",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "보수는"
+    },
+    {
+      "offset": "0x449",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "대"
+    },
+    {
+      "offset": "0x44e",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "으로"
+    },
+    {
+      "offset": "0x453",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "해주지"
+    },
+    {
+      "offset": "0x45b",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0x469",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "좋아"
+    },
+    {
+      "offset": "0x46f",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "용기있는"
+    },
+    {
+      "offset": "0x478",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "친구로군"
+    },
+    {
+      "offset": "0x482",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "다른"
+    },
+    {
+      "offset": "0x487",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x48c",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사람들은"
+    },
+    {
+      "offset": "0x495",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "영"
+    },
+    {
+      "offset": "0x498",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동료구하기가"
+    },
+    {
+      "offset": "0x4a5",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "쉽지"
+    },
+    {
+      "offset": "0x4aa",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "않아서"
+    },
+    {
+      "offset": "0x4bd",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x4c2",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "남쪽"
+    },
+    {
+      "offset": "0x4c8",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사령의"
+    },
+    {
+      "offset": "0x4cf",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x4d4",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "에서"
+    },
+    {
+      "offset": "0x4da",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "블러디데몬"
+    },
+    {
+      "offset": "0x4e7",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "마리"
+    },
+    {
+      "offset": "0x4ec",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x4ef",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퇴치하거든"
+    },
+    {
+      "offset": "0x4fa",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "다시"
+    },
+    {
+      "offset": "0x4ff",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "오게"
+    },
+    {
+      "offset": "0x506",
+      "speaker": "모험가",
+      "mode_byte": "0x7b",
+      "text": "사령의"
+    },
+    {
+      "offset": "0x50d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x513",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x51a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x520",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x532",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x535",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "동네"
+    },
+    {
+      "offset": "0x53a",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "사람들은"
+    },
+    {
+      "offset": "0x543",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "영"
+    },
+    {
+      "offset": "0x546",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "용기가"
+    },
+    {
+      "offset": "0x54d",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "없군"
+    },
+    {
+      "offset": "0x552",
+      "speaker": "모험가",
+      "mode_byte": null,
+      "text": "그래"
+    },
+    {
+      "offset": "0x564",
+      "speaker": "종업원",
+      "mode_byte": null,
+      "text": "숙박비는"
+    },
+    {
+      "offset": "0x571",
+      "speaker": "종업원",
+      "mode_byte": null,
+      "text": "입니다"
+    },
+    {
+      "offset": "0x579",
+      "speaker": "종업원",
+      "mode_byte": null,
+      "text": "쉬어가시겠습니까"
+    }
+  ],
+  "count": 144
+}

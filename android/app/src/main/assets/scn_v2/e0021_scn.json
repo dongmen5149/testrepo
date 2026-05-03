@@ -1,0 +1,41 @@
+{
+  "entries": [
+    {
+      "offset": "0x6b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "작은"
+    },
+    {
+      "offset": "0x70",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x84",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "뭐지"
+    },
+    {
+      "offset": "0x8a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x8d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "불길한"
+    },
+    {
+      "offset": "0x94",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "진동"
+    }
+  ],
+  "count": 6
+}

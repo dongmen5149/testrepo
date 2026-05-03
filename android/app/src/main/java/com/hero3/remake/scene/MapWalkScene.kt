@@ -9,8 +9,12 @@ import android.graphics.Paint
 import android.graphics.Rect
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.ChestRegistry
+import com.hero3.remake.engine.EncounterTable
+import com.hero3.remake.engine.ItemRegistry
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
+import com.hero3.remake.engine.MapGraph
 import com.hero3.remake.engine.Npc
 import com.hero3.remake.engine.NpcRegistry
 import com.hero3.remake.engine.Scene
@@ -59,10 +63,29 @@ class MapWalkScene(
     private val tilePx = 16
     private val moveCooldownMs = 130L
 
+    private var toastText: String = ""
+    private var toastTtl: Long = 0L
+
+    /** 전투 직후 인카운터 억제. MapWalk 진입 시점부터 3s. */
+    private var encounterGraceMs: Long = 3000L
+    private var playtimeAccumMs: Long = 0L
+    private var stepsSinceSave: Int = 0
+    private var tutorialMs: Long = if (!gameState.tutorialShown) 6000L else 0L
+    private var leaderCache: com.hero3.remake.engine.Character? = null
+    private var leaderCacheStamp: Long = -1L
+    private fun cachedLeader(): com.hero3.remake.engine.Character? {
+        if (leaderCacheStamp != elapsedMs / 250L) {
+            leaderCache = gameState.loadParty().firstOrNull()
+            leaderCacheStamp = elapsedMs / 250L
+        }
+        return leaderCache
+    }
+
     private var moveTimer = 0L
     private var animFrame = 0
     private var animTimer = 0L
     private val animFrameMs = 200L
+    private var elapsedMs = 0L
 
     private val bg = Paint().apply { color = Color.rgb(8, 10, 18) }
     private val tilePaint = Paint()
@@ -98,6 +121,7 @@ class MapWalkScene(
                 layer0 = jsonIntArray(o.optJSONArray("layer_0")),
                 layer1 = jsonIntArray(o.optJSONArray("layer_1")),
             )
+            gameState.markVisited(id)
         }
     }
 
@@ -139,8 +163,10 @@ class MapWalkScene(
     private fun isWalkable(x: Int, y: Int): Boolean {
         val m = map ?: return false
         if (x < 0 || y < 0 || x >= m.w || y >= m.h) return false
-        // NPC 가 있는 칸은 통행 불가
-        if (NpcRegistry.forMap(m.id).any { it.x == x && it.y == y }) return false
+        // NPC 가 있는 칸은 통행 불가 (patrol 반영)
+        if (NpcRegistry.forMap(m.id).any {
+                val p = NpcRegistry.effectivePos(it, elapsedMs); p.first == x && p.second == y
+            }) return false
         if (m.layer1.isEmpty()) return true
         val idx = y * m.w + x
         if (idx >= m.layer1.size) return true
@@ -151,13 +177,116 @@ class MapWalkScene(
         gameState.heroFacing = facing
         val newX = gameState.heroX + dx
         val newY = gameState.heroY + dy
+        val m = map ?: return
+
+        // 맵 경계를 넘어갈 때 → MapGraph 에서 이웃 맵 검색
+        if (newX < 0 || newY < 0 || newX >= m.w || newY >= m.h) {
+            val side = MapGraph.sideOf(dx, dy) ?: return
+            val nextId = MapGraph.neighborOf(m.id, side) ?: return
+            transitionTo(nextId, side, gameState.heroX, gameState.heroY)
+            return
+        }
         if (isWalkable(newX, newY)) {
             gameState.heroX = newX
             gameState.heroY = newY
+            // 한 걸음마다 작은 자연 회복 + 5걸음마다 일괄 저장
+            stepsSinceSave++
+            if (stepsSinceSave >= 5) {
+                val party = gameState.loadParty().toMutableList()
+                var changed = false
+                for (c in party) {
+                    if (c.hp < c.hpMax) { c.hp = (c.hp + 2).coerceAtMost(c.hpMax); changed = true }
+                    if (c.sp < c.spMax) { c.sp = (c.sp + 1).coerceAtMost(c.spMax); changed = true }
+                }
+                if (changed) gameState.saveParty(party)
+                stepsSinceSave = 0
+            }
+            // 보물상자 픽업
+            val chest = ChestRegistry.at(m.id, newX, newY)
+            if (chest != null && chest.id !in gameState.openedChestIds) {
+                openChest(chest)
+            }
+            // 보스 트리거 타일 우선 검사 (인카운터보다 우선)
+            val bossId = bossTriggerAt(m.id, newX, newY)
+            if (bossId != null && !gameState.isBossDefeated(bossId)) {
+                onRequest(MainActivity.SceneRequest.BattleEnemy(bossId))
+                return
+            }
+            if (encounterGraceMs <= 0 && settings.encounterMultiplier > 0f &&
+                EncounterTable.shouldEncounter(m.id, kotlin.random.Random.nextFloat() / settings.encounterMultiplier)) {
+                val enemy = EncounterTable.rollEnemy(m.id)
+                if (enemy != null) {
+                    encounterGraceMs = 3000L
+                    onRequest(MainActivity.SceneRequest.BattleEnemy(enemy.id))
+                }
+            }
         }
     }
 
+    private fun openChest(chest: com.hero3.remake.engine.Chest) {
+        val inv = gameState.loadInventory()
+        val ok = if (chest.itemId.isNotEmpty()) inv.add(chest.itemId, chest.count) else true
+        if (ok) {
+            gameState.saveInventory(inv)
+            gameState.openedChestIds = gameState.openedChestIds + chest.id
+            if (chest.gold > 0) gameState.gold += chest.gold
+            val isEn = settings.language == "en"
+            val item = ItemRegistry.get(chest.itemId)
+            val nm = (if (isEn) item?.nameEn else item?.nameKo) ?: chest.itemId
+            val gold = if (chest.gold > 0) " +${chest.gold}G" else ""
+            com.hero3.remake.engine.EventBus.push(
+                if (isEn) "Chest: $nm ×${chest.count}$gold" else "보물상자: $nm ×${chest.count}$gold")
+        } else {
+            com.hero3.remake.engine.EventBus.push(
+                if (settings.language == "en") "Bag full — chest skipped." else "가방 가득 — 상자 패스.")
+        }
+    }
+
+    private fun bossTriggerAt(mapId: Int, x: Int, y: Int): String? =
+        bossTriggersFor(mapId).firstOrNull { it.x == x && it.y == y }?.bossId
+
+    private data class BossTrigger(val x: Int, val y: Int, val bossId: String)
+
+    private fun bossTriggersFor(mapId: Int): List<BossTrigger> = when (mapId) {
+        10 -> listOf(BossTrigger(8, 4, "boss_guardian"))
+        11 -> listOf(BossTrigger(6, 6, "boss_chaos"))
+        12 -> listOf(BossTrigger(10, 6, "boss_sealed"))
+        else -> emptyList()
+    }
+
+    private fun transitionTo(nextId: Int, fromSide: MapGraph.Side, fromX: Int, fromY: Int) {
+        loadMap(nextId)
+        val nm = map ?: return
+        val (nx, ny) = MapGraph.entryPoint(fromSide, fromX, fromY, nm.w, nm.h)
+        gameState.resetPosition(nm.id, nx, ny, gameState.heroFacing)
+        moveTimer = 250L   // 전환 직후 잠깐 대기
+        encounterGraceMs = 3000L
+    }
+
     override fun update(deltaMs: Long) {
+        // gameState 의 맵 ID 가 외부에서 바뀌었으면(예: 패배 부활) 재로딩
+        if (map?.id != gameState.currentMapId) loadMap(gameState.currentMapId)
+        // 토스트 큐 폴링
+        if (toastTtl > 0) toastTtl -= deltaMs
+        if (toastTtl <= 0) {
+            val next = com.hero3.remake.engine.EventBus.pop()
+            if (next != null) { toastText = next; toastTtl = 2500L }
+            else { toastText = "" }
+        }
+        elapsedMs += deltaMs
+        if (encounterGraceMs > 0) encounterGraceMs -= deltaMs
+        if (tutorialMs > 0) {
+            tutorialMs -= deltaMs
+            if (tutorialMs <= 0 || input.pressedOnce(InputController.K_OK)) {
+                tutorialMs = 0; gameState.tutorialShown = true
+            }
+        }
+        // 플레이 시간 누적 (1초마다 일괄 저장)
+        playtimeAccumMs += deltaMs
+        if (playtimeAccumMs >= 1000L) {
+            gameState.addPlayTime(playtimeAccumMs)
+            playtimeAccumMs = 0L
+        }
         animTimer += deltaMs
         if (animTimer >= animFrameMs) {
             animTimer = 0L
@@ -180,8 +309,9 @@ class MapWalkScene(
             // 영웅이 바라보는 칸의 NPC 와 대화 (없으면 인접 NPC 검색)
             val face = facingTile(gameState.heroFacing)
             val targetNpc = NpcRegistry.forMap(gameState.currentMapId).firstOrNull {
-                it.x == gameState.heroX + face.first && it.y == gameState.heroY + face.second
-            } ?: NpcRegistry.adjacent(gameState.currentMapId, gameState.heroX, gameState.heroY)
+                val p = NpcRegistry.effectivePos(it, elapsedMs)
+                p.first == gameState.heroX + face.first && p.second == gameState.heroY + face.second
+            } ?: NpcRegistry.adjacent(gameState.currentMapId, gameState.heroX, gameState.heroY, elapsedMs)
             if (targetNpc != null) {
                 onRequest(MainActivity.SceneRequest.NpcDialogue(targetNpc.id))
             }
@@ -246,24 +376,59 @@ class MapWalkScene(
             }
         }
 
-        // NPC 그리기
+        // 보물상자 (안 열린 것만)
+        for (chest in ChestRegistry.forMap(m.id)) {
+            if (chest.id in gameState.openedChestIds) continue
+            if (chest.x !in tx0..tx1 || chest.y !in ty0..ty1) continue
+            val cx = chest.x * tilePx - camX + 2
+            val cy = chest.y * tilePx - camY + hudOffsetY + 2
+            tilePaint.color = Color.rgb(180, 130, 40)
+            canvas.drawRect(cx.toFloat(), cy.toFloat(),
+                (cx + tilePx - 4).toFloat(), (cy + tilePx - 4).toFloat(), tilePaint)
+            tilePaint.color = Color.rgb(255, 220, 90)
+            canvas.drawRect((cx + 4).toFloat(), (cy + 5).toFloat(),
+                (cx + tilePx - 8).toFloat(), (cy + 8).toFloat(), tilePaint)
+        }
+
+        // NPC 그리기 (patrol 반영)
         for (npc in NpcRegistry.forMap(gameState.currentMapId)) {
-            if (npc.x !in tx0..tx1 || npc.y !in ty0..ty1) continue
+            val (px, py) = NpcRegistry.effectivePos(npc, elapsedMs)
+            if (px !in tx0..tx1 || py !in ty0..ty1) continue
             val sprite = loadNpcSprite(npc)
-            val nx = npc.x * tilePx - camX + (tilePx - (sprite?.width ?: tilePx)) / 2
-            val ny = npc.y * tilePx - camY + (tilePx - (sprite?.height ?: tilePx)) + hudOffsetY
+            val nx = px * tilePx - camX + (tilePx - (sprite?.width ?: tilePx)) / 2
+            val ny = py * tilePx - camY + (tilePx - (sprite?.height ?: tilePx)) + hudOffsetY
             if (sprite != null) {
                 canvas.drawBitmap(sprite, nx.toFloat(), ny.toFloat(), null)
             } else {
                 tilePaint.color = Color.rgb(220, 200, 100)
-                canvas.drawCircle((npc.x * tilePx - camX + tilePx / 2).toFloat(),
-                    (npc.y * tilePx - camY + tilePx / 2 + hudOffsetY).toFloat(),
+                canvas.drawCircle((px * tilePx - camX + tilePx / 2).toFloat(),
+                    (py * tilePx - camY + tilePx / 2 + hudOffsetY).toFloat(),
                     4f, tilePaint)
+            }
+            // 퀘스트 마커 (! = 새 퀘스트 / ? = 진행 중인데 이 NPC 가 발급자)
+            val q = npc.startsQuestId
+            if (q != null) {
+                val active = gameState.activeQuestIds.contains(q)
+                val done   = gameState.doneQuestIds.contains(q)
+                val mark = when { !active && !done -> "!"; active && !done -> "?"; else -> null }
+                if (mark != null) {
+                    val bob = (kotlin.math.sin(elapsedMs / 220.0) * 2.0).toFloat()
+                    val mp = Paint().apply {
+                        color = if (mark == "!") Color.rgb(255, 220, 80) else Color.rgb(120, 200, 255)
+                        textSize = 12f; isFakeBoldText = true; textAlign = Paint.Align.CENTER
+                    }
+                    canvas.drawText(mark,
+                        (px * tilePx - camX + tilePx / 2).toFloat(),
+                        (py * tilePx - camY + hudOffsetY - 2 + bob),
+                        mp)
+                }
             }
         }
 
-        // 영웅 그리기 (현재 frame)
-        val frame = heroFrames.getOrNull(animFrame.coerceAtMost(heroFrames.size - 1))
+        // 영웅 그리기 — 방향에 맞는 frame 우선, 없으면 cycle
+        val facing = gameState.heroFacing.coerceIn(0, 3)
+        val frame = heroFrames.getOrNull(facing)
+            ?: heroFrames.getOrNull(animFrame.coerceAtMost(heroFrames.size - 1))
         if (frame != null) {
             val hx = gameState.heroX * tilePx - camX + (tilePx - frame.width) / 2
             val hy = gameState.heroY * tilePx - camY + (tilePx - frame.height) + hudOffsetY
@@ -276,24 +441,163 @@ class MapWalkScene(
             canvas.drawCircle(hx, hy, 4f, tilePaint)
         }
 
+        // 미니맵 (우측 하단, 60×60) — Settings 토글
+        if (settings.minimapVisible) run {
+            val miniSize = 60
+            val cell = (miniSize.toFloat() / maxOf(m.w, m.h)).coerceAtMost(2f)
+            val mapPxMiniW = (m.w * cell).toInt()
+            val mapPxMiniH = (m.h * cell).toInt()
+            val mx = virtualWidth - mapPxMiniW - 4
+            val my = virtualHeight - mapPxMiniH - 14
+            // 배경
+            tilePaint.color = Color.argb(180, 0, 0, 0)
+            canvas.drawRect(mx.toFloat() - 1, my.toFloat() - 1,
+                (mx + mapPxMiniW + 1).toFloat(), (my + mapPxMiniH + 1).toFloat(), tilePaint)
+            // 충돌
+            for (ty in 0 until m.h) {
+                for (tx in 0 until m.w) {
+                    val i = ty * m.w + tx
+                    val blocked = (i < m.layer1.size && m.layer1[i] != 0)
+                    tilePaint.color = if (blocked) Color.rgb(80, 80, 100) else Color.rgb(40, 80, 50)
+                    canvas.drawRect(mx + tx * cell, my + ty * cell,
+                        mx + (tx + 1) * cell, my + (ty + 1) * cell, tilePaint)
+                }
+            }
+            // 보스 트리거 (미처치만, 보라)
+            tilePaint.color = Color.rgb(220, 80, 220)
+            for ((bx, by, bossId) in bossTriggersFor(m.id)) {
+                if (gameState.isBossDefeated(bossId)) continue
+                canvas.drawRect(mx + bx * cell, my + by * cell,
+                    mx + (bx + 1) * cell, my + (by + 1) * cell, tilePaint)
+            }
+            // 닫힌 상자 (황금)
+            tilePaint.color = Color.rgb(255, 200, 60)
+            for (chest in ChestRegistry.forMap(m.id)) {
+                if (chest.id in gameState.openedChestIds) continue
+                canvas.drawRect(mx + chest.x * cell, my + chest.y * cell,
+                    mx + (chest.x + 1) * cell, my + (chest.y + 1) * cell, tilePaint)
+            }
+            // NPC dots (patrol 반영)
+            tilePaint.color = Color.rgb(120, 200, 255)
+            for (npc in NpcRegistry.forMap(m.id)) {
+                val (px, py) = NpcRegistry.effectivePos(npc, elapsedMs)
+                canvas.drawRect(mx + px * cell, my + py * cell,
+                    mx + (px + 1) * cell, my + (py + 1) * cell, tilePaint)
+            }
+            // hero (방향 표시)
+            tilePaint.color = Color.rgb(255, 60, 60)
+            val hx = mx + gameState.heroX * cell
+            val hy = my + gameState.heroY * cell
+            canvas.drawRect(hx, hy, hx + cell, hy + cell, tilePaint)
+            // 방향 화살표 (작은 사각형으로 가리키는 방향 강조)
+            tilePaint.color = Color.WHITE
+            val s = (cell / 2f).coerceAtLeast(1f)
+            when (gameState.heroFacing) {
+                GameState.FACING_UP    -> canvas.drawRect(hx + s/2, hy,           hx + cell - s/2, hy + s/2,        tilePaint)
+                GameState.FACING_DOWN  -> canvas.drawRect(hx + s/2, hy + cell - s/2, hx + cell - s/2, hy + cell,    tilePaint)
+                GameState.FACING_LEFT  -> canvas.drawRect(hx,       hy + s/2,     hx + s/2,        hy + cell - s/2, tilePaint)
+                GameState.FACING_RIGHT -> canvas.drawRect(hx + cell - s/2, hy + s/2, hx + cell,    hy + cell - s/2, tilePaint)
+            }
+        }
+
         // HUD (상단 24px)
         UiKit.drawBox(canvas, 0f, 0f, virtualWidth.toFloat(), 24f, radius = 0f)
         canvas.drawText("📍 ${m.name}  (${gameState.heroX},${gameState.heroY})",
             4f, 16f, UiKit.body)
-
-        // 인접 NPC 가 있으면 OK 힌트 표시
-        val nearbyNpc = NpcRegistry.forMap(gameState.currentMapId).firstOrNull { npc ->
-            val dx = kotlin.math.abs(npc.x - gameState.heroX)
-            val dy = kotlin.math.abs(npc.y - gameState.heroY)
-            (dx + dy) == 1
+        val leader = cachedLeader()
+        if (leader != null) {
+            val hudText = "Lv${leader.level} ${leader.exp}/${leader.expToNext()}  HP ${leader.hp}/${leader.hpMax}  SP ${leader.sp}/${leader.spMax}  ${gameState.gold}G"
+            canvas.drawText(hudText, virtualWidth - 200f, 16f, UiKit.body)
         }
-        val hint = if (nearbyNpc != null) {
-            val name = if (settings.language == "en") nearbyNpc.nameEn else nearbyNpc.nameKo
-            if (settings.language == "en") "OK ▶ Talk to $name" else "OK ▶ ${name} 와(과) 대화"
-        } else {
-            "${context.getString(R.string.hint_dpad_navigate)}  L menu  R title"
+        // 활성 퀘스트 한 줄 (최상단 active quest)
+        val activeId = gameState.activeQuestIds.firstOrNull()
+        if (activeId != null) {
+            val q = com.hero3.remake.engine.QuestRegistry.get(activeId)
+            val title = q?.let { if (settings.language == "en") it.titleEn else it.titleKo } ?: activeId
+            val tp = Paint(UiKit.muted).apply { color = Color.rgb(255, 220, 130); textSize = 9f }
+            canvas.drawText("◆ $title", 4f, 23f, tp)
+        }
+
+        // 인접 NPC 가 있으면 OK 힌트 표시 (patrol 반영)
+        val nearbyNpc = NpcRegistry.adjacent(gameState.currentMapId,
+            gameState.heroX, gameState.heroY, elapsedMs)
+        // 보스 근접 경고 (3타일 이내 + 미처치)
+        val bossWarn: String? = run {
+            val nearest = bossTriggersFor(m.id).firstOrNull { bt ->
+                !gameState.isBossDefeated(bt.bossId) &&
+                kotlin.math.abs(bt.x - gameState.heroX) + kotlin.math.abs(bt.y - gameState.heroY) <= 3
+            } ?: return@run null
+            val def = com.hero3.remake.engine.EnemyRegistry.get(nearest.bossId)
+            val name = def?.let { if (settings.language == "en") it.nameEn else it.nameKo } ?: nearest.bossId
+            if (settings.language == "en") "⚠ Boss nearby: $name" else "⚠ 보스 근처: $name"
+        }
+        val edgeHint: String? = run {
+            val sides = mutableListOf<String>()
+            if (gameState.heroX == 0          && MapGraph.neighborOf(m.id, MapGraph.Side.W) != null) sides += "◀"
+            if (gameState.heroX == m.w - 1    && MapGraph.neighborOf(m.id, MapGraph.Side.E) != null) sides += "▶"
+            if (gameState.heroY == 0          && MapGraph.neighborOf(m.id, MapGraph.Side.N) != null) sides += "▲"
+            if (gameState.heroY == m.h - 1    && MapGraph.neighborOf(m.id, MapGraph.Side.S) != null) sides += "▼"
+            if (sides.isEmpty()) null
+            else if (settings.language == "en") "Exit: ${sides.joinToString(" ")}"
+            else                                "출구: ${sides.joinToString(" ")}"
+        }
+        val hint = when {
+            nearbyNpc != null -> {
+                val name = if (settings.language == "en") nearbyNpc.nameEn else nearbyNpc.nameKo
+                if (settings.language == "en") "OK ▶ Talk to $name" else "OK ▶ ${name} 와(과) 대화"
+            }
+            bossWarn != null -> bossWarn
+            edgeHint != null -> edgeHint
+            else -> "${context.getString(R.string.hint_dpad_navigate)}  L menu  R title"
         }
         UiKit.drawHints(canvas, virtualWidth, virtualHeight, hint)
+
+        // 튜토리얼 오버레이 (첫 진입)
+        if (tutorialMs > 0) {
+            val a = (tutorialMs.coerceAtMost(1000L) / 1000f * 220f).toInt().coerceIn(0, 220)
+            canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(),
+                Paint().apply { color = Color.argb(a, 0, 0, 0) })
+            val tp = Paint(UiKit.body).apply { color = Color.rgb(255, 235, 200); textSize = 11f }
+            val isEn = settings.language == "en"
+            val lines = if (isEn) listOf(
+                "Welcome to Hero3 Remake.",
+                "",
+                "◀▶▲▼  Move",
+                "OK     Talk / Interact",
+                "L      Main Menu",
+                "R      Title",
+                "#      (debug screens)",
+                "",
+                "OK to dismiss.",
+            ) else listOf(
+                "영웅서기3 리메이크에 오신 것을 환영합니다.",
+                "",
+                "◀▶▲▼  이동",
+                "OK     대화 / 상호작용",
+                "L      메인 메뉴",
+                "R      타이틀",
+                "#      (디버그 화면)",
+                "",
+                "OK 키로 닫기.",
+            )
+            var ty = 90f
+            for (line in lines) {
+                val w = tp.measureText(line)
+                canvas.drawText(line, (virtualWidth - w) / 2f, ty, tp)
+                ty += 16f
+            }
+        }
+
+        // 토스트 (중앙 상단)
+        if (toastTtl > 0 && toastText.isNotEmpty()) {
+            val pad = 8f
+            val textW = UiKit.body.measureText(toastText)
+            val boxW = textW + pad * 2
+            val boxX = (virtualWidth - boxW) / 2f
+            val boxY = 30f
+            UiKit.drawBox(canvas, boxX, boxY, boxW, 22f)
+            canvas.drawText(toastText, boxX + pad, boxY + 14f, UiKit.body)
+        }
     }
 
     private fun colorForTile(tileId: Int, layer: Int): Int {

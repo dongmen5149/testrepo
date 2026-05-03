@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x6c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x75",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "협곡"
+    },
+    {
+      "offset": "0x88",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "적진에"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "임하여"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "위험한"
+    },
+    {
+      "offset": "0x9f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "협곡"
+    },
+    {
+      "offset": "0xa5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0xac",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 8
+}

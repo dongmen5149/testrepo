@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "玄"
+    },
+    {
+      "offset": "0x39",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "玄"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "파괴된"
+    },
+    {
+      "offset": "0x96",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "대지"
+    },
+    {
+      "offset": "0x9e",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "바람늑대장갑"
+    },
+    {
+      "offset": "0xab",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xb2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xb5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

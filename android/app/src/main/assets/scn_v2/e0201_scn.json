@@ -1,0 +1,365 @@
+{
+  "entries": [
+    {
+      "offset": "0x18b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "고대"
+    },
+    {
+      "offset": "0x190",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "연구"
+    },
+    {
+      "offset": "0x195",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시설"
+    },
+    {
+      "offset": "0x1a5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이곳이"
+    },
+    {
+      "offset": "0x1ae",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x1b7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x1c8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이제부터"
+    },
+    {
+      "offset": "0x1d3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "목표가"
+    },
+    {
+      "offset": "0x1da",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "갈라지나"
+    },
+    {
+      "offset": "0x1ed",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "당신의"
+    },
+    {
+      "offset": "0x1f4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "목표는"
+    },
+    {
+      "offset": "0x1fb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "굴베이그의"
+    },
+    {
+      "offset": "0x206",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "의지인가요"
+    },
+    {
+      "offset": "0x21b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니"
+    },
+    {
+      "offset": "0x221",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느의"
+    },
+    {
+      "offset": "0x22a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "의지다"
+    },
+    {
+      "offset": "0x23b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그렇다면"
+    },
+    {
+      "offset": "0x245",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "갈라지지"
+    },
+    {
+      "offset": "0x24e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않습니다"
+    },
+    {
+      "offset": "0x258",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "리츠씨"
+    },
+    {
+      "offset": "0x269",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그런가"
+    },
+    {
+      "offset": "0x272",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안심했다"
+    },
+    {
+      "offset": "0x27c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0x28b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x290",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "엄청난"
+    },
+    {
+      "offset": "0x297",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "진동은"
+    },
+    {
+      "offset": "0x2ab",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뭔가"
+    },
+    {
+      "offset": "0x2b0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시작된"
+    },
+    {
+      "offset": "0x2b7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "모양이로군"
+    },
+    {
+      "offset": "0x2c3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "노닥거릴"
+    },
+    {
+      "offset": "0x2cc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "때가"
+    },
+    {
+      "offset": "0x2d1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아닌건가"
+    },
+    {
+      "offset": "0x2e4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "기다려"
+    },
+    {
+      "offset": "0x2ec",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "시엔"
+    },
+    {
+      "offset": "0x2f3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "폭주해선"
+    },
+    {
+      "offset": "0x2fc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "안돼"
+    },
+    {
+      "offset": "0x30c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이곳이"
+    },
+    {
+      "offset": "0x315",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x31e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x32f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이제부터"
+    },
+    {
+      "offset": "0x33a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "목표가"
+    },
+    {
+      "offset": "0x341",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "갈라지나"
+    },
+    {
+      "offset": "0x354",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "당신의"
+    },
+    {
+      "offset": "0x35b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "목표는"
+    },
+    {
+      "offset": "0x362",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "굴베이그의"
+    },
+    {
+      "offset": "0x36d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "의지인가요"
+    },
+    {
+      "offset": "0x382",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니"
+    },
+    {
+      "offset": "0x388",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느의"
+    },
+    {
+      "offset": "0x391",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "의지다"
+    },
+    {
+      "offset": "0x3a2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그렇다면"
+    },
+    {
+      "offset": "0x3ac",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "갈라지지"
+    },
+    {
+      "offset": "0x3b5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않습니다"
+    },
+    {
+      "offset": "0x3bf",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "리츠씨"
+    },
+    {
+      "offset": "0x3d0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그런가"
+    },
+    {
+      "offset": "0x3d9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안심했다"
+    },
+    {
+      "offset": "0x3e3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0x3ea",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "진보의"
+    },
+    {
+      "offset": "0x3f1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "순간"
+    },
+    {
+      "offset": "0x3f7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x3fe",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 60
+}

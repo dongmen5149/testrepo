@@ -1,0 +1,77 @@
+{
+  "entries": [
+    {
+      "offset": "0x6b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x74",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x7a",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "서"
+    },
+    {
+      "offset": "0x7d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "빛의신당"
+    },
+    {
+      "offset": "0x86",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동"
+    },
+    {
+      "offset": "0x89",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네오솔티아"
+    },
+    {
+      "offset": "0x94",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "군주둔지"
+    },
+    {
+      "offset": "0xa6",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빛의"
+    },
+    {
+      "offset": "0xab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "신당에는"
+    },
+    {
+      "offset": "0xb4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "함부로"
+    },
+    {
+      "offset": "0xbb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "들어가면"
+    },
+    {
+      "offset": "0xc4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "안되지"
+    }
+  ],
+  "count": 12
+}

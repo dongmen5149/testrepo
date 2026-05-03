@@ -40,11 +40,17 @@ class MainMenuScene(
         // res/values 의 txt_NNN 키 사용
         MenuItem(R.string.txt_007, MainActivity.SceneRequest.Status),       // 상태보기
         MenuItem(R.string.txt_008, MainActivity.SceneRequest.Inventory),    // 가방
-        MenuItem(R.string.txt_009, MainActivity.SceneRequest.Inventory),    // 장비
-        MenuItem(R.string.txt_010, MainActivity.SceneRequest.Status),       // 스킬 (placeholder)
-        MenuItem(R.string.txt_011, MainActivity.SceneRequest.Status),       // 퀘스트 (placeholder)
+        MenuItem(R.string.txt_009, MainActivity.SceneRequest.Equipment),    // 장비
+        MenuItem(R.string.txt_010, MainActivity.SceneRequest.Skills),       // 스킬
+        MenuItem(R.string.txt_011, MainActivity.SceneRequest.Quests),       // 퀘스트
         MenuItem(R.string.txt_013, MainActivity.SceneRequest.SaveSlots),    // 세이브
         MenuItem(R.string.txt_012, MainActivity.SceneRequest.SettingsScene),// 시스템 → Settings
+        MenuItem(R.string.scene_battle, MainActivity.SceneRequest.Battle, isDebug = true),
+        MenuItem(R.string.scene_bestiary, MainActivity.SceneRequest.Bestiary, isDebug = true),
+        MenuItem(R.string.scene_records, MainActivity.SceneRequest.Records, isDebug = true),
+        MenuItem(R.string.scene_event_viewer, MainActivity.SceneRequest.EventViewer, isDebug = true),
+        MenuItem(R.string.scene_credits, MainActivity.SceneRequest.CreditsView, isDebug = true),
+        MenuItem(R.string.scene_travel, MainActivity.SceneRequest.Travel),
         MenuItem(R.string.scene_dialogue_demo, MainActivity.SceneRequest.DialogueDemo, isDebug = true),
         MenuItem(R.string.scene_sprite_gallery, MainActivity.SceneRequest.SpriteGallery, isDebug = true),
         MenuItem(R.string.scene_map_gallery, MainActivity.SceneRequest.MapGallery, isDebug = true),
@@ -67,13 +73,21 @@ class MainMenuScene(
             context.getString(R.string.scene_main_menu),
             context.getString(R.string.main_title))
 
-        val itemH = 22f
-        val totalH = items.size * itemH
-        val startY = (virtualHeight - totalH) / 2f - 10f
-        for ((i, item) in items.withIndex()) {
-            val y = startY + i * itemH
+        val itemH = 16f
+        val visible = ((virtualHeight - 60f) / itemH).toInt().coerceAtMost(items.size)
+        val scrollStart = (selected - visible + 2).coerceAtLeast(0).coerceAtMost(maxOf(0, items.size - visible))
+        val startY = 32f
+        for (j in 0 until visible) {
+            val i = scrollStart + j
+            if (i >= items.size) break
+            val item = items[i]
+            val y = startY + j * itemH
             val label = context.getString(item.labelResId) + if (item.isDebug) " [debug]" else ""
             UiKit.drawMenuItem(canvas, 20f, y, virtualWidth - 40f, itemH - 2f, label, i == selected)
+        }
+        if (items.size > visible) {
+            canvas.drawText("${selected + 1}/${items.size}",
+                virtualWidth - 40f, virtualHeight - 28f, UiKit.muted)
         }
 
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,

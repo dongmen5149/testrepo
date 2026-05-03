@@ -1,0 +1,161 @@
+{
+  "entries": [
+    {
+      "offset": "0x7e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적의"
+    },
+    {
+      "offset": "0x85",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "전장"
+    },
+    {
+      "offset": "0x95",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기까지"
+    },
+    {
+      "offset": "0x9e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "와서"
+    },
+    {
+      "offset": "0xa3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "도망칠성"
+    },
+    {
+      "offset": "0xac",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싶으냐"
+    },
+    {
+      "offset": "0xb6",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "보스전에서는"
+    },
+    {
+      "offset": "0xc3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저장"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0xcb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xce",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없습니다"
+    },
+    {
+      "offset": "0xd8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0xdd",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0xef",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0xf2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x109",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "희생으로부터"
+    },
+    {
+      "offset": "0x120",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "벌써"
+    },
+    {
+      "offset": "0x125",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거하게들"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "벌이고"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있군"
+    },
+    {
+      "offset": "0x146",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0x14d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "놈들의"
+    },
+    {
+      "offset": "0x154",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뜻대로"
+    },
+    {
+      "offset": "0x15b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "돌아가게"
+    },
+    {
+      "offset": "0x164",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "두진"
+    },
+    {
+      "offset": "0x169",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "않는다"
+    }
+  ],
+  "count": 26
+}

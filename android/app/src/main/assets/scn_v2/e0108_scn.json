@@ -1,0 +1,35 @@
+{
+  "entries": [
+    {
+      "offset": "0x248",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "폐쇄된"
+    },
+    {
+      "offset": "0x24f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x257",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "어딘가의"
+    },
+    {
+      "offset": "0x260",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보안장치로"
+    },
+    {
+      "offset": "0x26b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잠겨있다"
+    }
+  ],
+  "count": 5
+}

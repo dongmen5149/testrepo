@@ -1,0 +1,419 @@
+{
+  "entries": [
+    {
+      "offset": "0x20",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "睍"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "睍"
+    },
+    {
+      "offset": "0x19d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x1a6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x1ac",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "시리우스"
+    },
+    {
+      "offset": "0x1b5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x1bc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x1bf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x1d0",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지금은"
+    },
+    {
+      "offset": "0x1d7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "전장"
+    },
+    {
+      "offset": "0x1dc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "근처로"
+    },
+    {
+      "offset": "0x1e3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가고"
+    },
+    {
+      "offset": "0x1e8",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "싶지"
+    },
+    {
+      "offset": "0x1ed",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "않아"
+    },
+    {
+      "offset": "0x1fd",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이러다"
+    },
+    {
+      "offset": "0x204",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "암살범을"
+    },
+    {
+      "offset": "0x20d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놓치겠어"
+    },
+    {
+      "offset": "0x220",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놓칠"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "줄"
+    },
+    {
+      "offset": "0x228",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "알고"
+    },
+    {
+      "offset": "0x230",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "가면의"
+    },
+    {
+      "offset": "0x237",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "위협"
+    },
+    {
+      "offset": "0x23d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x244",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "적국의"
+    },
+    {
+      "offset": "0x252",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "암살자"
+    },
+    {
+      "offset": "0x25a",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x261",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x268",
+      "speaker": "케이",
+      "mode_byte": "0x7d",
+      "text": "북"
+    },
+    {
+      "offset": "0x26b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "네오솔티아"
+    },
+    {
+      "offset": "0x276",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "서"
+    },
+    {
+      "offset": "0x279",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빛의신당"
+    },
+    {
+      "offset": "0x282",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동"
+    },
+    {
+      "offset": "0x285",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "군주둔지"
+    },
+    {
+      "offset": "0x298",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이곳이"
+    },
+    {
+      "offset": "0x29f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "놈들의"
+    },
+    {
+      "offset": "0x2a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x2af",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "고원"
+    },
+    {
+      "offset": "0x2b4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "주둔지로군"
+    },
+    {
+      "offset": "0x2c1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "위험해"
+    },
+    {
+      "offset": "0x2d2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "상황이"
+    },
+    {
+      "offset": "0x2d9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "안좋아"
+    },
+    {
+      "offset": "0x2e1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일단"
+    },
+    {
+      "offset": "0x2e6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아스크라로"
+    },
+    {
+      "offset": "0x2f3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동쪽으로"
+    },
+    {
+      "offset": "0x2fc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "달리자"
+    },
+    {
+      "offset": "0x30d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "젠장"
+    },
+    {
+      "offset": "0x313",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x316",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지렁이"
+    },
+    {
+      "offset": "0x31d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "자식"
+    },
+    {
+      "offset": "0x322",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "짜증나는"
+    },
+    {
+      "offset": "0x330",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "놈이네"
+    },
+    {
+      "offset": "0x342",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x34b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "고원"
+    },
+    {
+      "offset": "0x350",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "은"
+    },
+    {
+      "offset": "0x354",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "동쪽"
+    },
+    {
+      "offset": "0x359",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "인가"
+    },
+    {
+      "offset": "0x360",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일단"
+    },
+    {
+      "offset": "0x365",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "적지를"
+    },
+    {
+      "offset": "0x36c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "벗어나야"
+    },
+    {
+      "offset": "0x375",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해"
+    },
+    {
+      "offset": "0x37a",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "솔티안의"
+    },
+    {
+      "offset": "0x383",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "땅"
+    },
+    {
+      "offset": "0x387",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x38e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x395",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "악의"
+    },
+    {
+      "offset": "0x39b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x3a2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 69
+}

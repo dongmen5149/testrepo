@@ -1,0 +1,71 @@
+{
+  "entries": [
+    {
+      "offset": "0x16b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x176",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0x17e",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "동력로가"
+    },
+    {
+      "offset": "0x187",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "작동하기"
+    },
+    {
+      "offset": "0x190",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시작했다"
+    },
+    {
+      "offset": "0x19b",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "동력로는"
+    },
+    {
+      "offset": "0x1a4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "기묘한"
+    },
+    {
+      "offset": "0x1ab",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소리를"
+    },
+    {
+      "offset": "0x1b2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "내며"
+    },
+    {
+      "offset": "0x1b7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "돌아가고"
+    },
+    {
+      "offset": "0x1c0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "있다"
+    }
+  ],
+  "count": 11
+}

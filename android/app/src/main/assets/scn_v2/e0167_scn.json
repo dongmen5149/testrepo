@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "offset": "0xe4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "코르버스"
+    },
+    {
+      "offset": "0xed",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "본부"
+    }
+  ],
+  "count": 2
+}

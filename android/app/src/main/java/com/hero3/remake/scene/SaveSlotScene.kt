@@ -63,11 +63,15 @@ class SaveSlotScene(
         var y = 60f
         for (i in 0 until slotCount) {
             val slot = slots[i]
+            val star = if (slot.gameCleared) "★ " else ""
             val label = if (slot.isEmpty()) {
-                if (currentLanguageIsKorean()) "슬롯 ${i + 1}: 비어있음"
-                else "Slot ${i + 1}: empty"
+                if (currentLanguageIsKorean()) "$star슬롯 ${i + 1}: 비어있음"
+                else "${star}Slot ${i + 1}: empty"
             } else {
-                "Slot ${i + 1}: map ${slot.currentMapId} (${slot.heroX},${slot.heroY})"
+                val leader = slot.loadParty().firstOrNull()
+                val lv = leader?.level ?: 1
+                val t = GameState.formatPlayTime(slot.playTimeMs)
+                "${star}Slot ${i + 1}  Lv$lv  ${slot.gold}G  $t"
             }
             UiKit.drawMenuItem(canvas, 12f, y, virtualWidth - 24f, 28f, label, i == selected)
             y += 34f

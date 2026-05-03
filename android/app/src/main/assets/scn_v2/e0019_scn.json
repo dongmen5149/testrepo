@@ -1,0 +1,125 @@
+{
+  "entries": [
+    {
+      "offset": "0xdc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "작은"
+    },
+    {
+      "offset": "0xe1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0xe9",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "스위치는"
+    },
+    {
+      "offset": "0xf2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "고정되어"
+    },
+    {
+      "offset": "0xfb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "움직이지"
+    },
+    {
+      "offset": "0x104",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "않는다"
+    },
+    {
+      "offset": "0x115",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "레버"
+    },
+    {
+      "offset": "0x11d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이곳은"
+    },
+    {
+      "offset": "0x124",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "자연"
+    },
+    {
+      "offset": "0x129",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동굴이"
+    },
+    {
+      "offset": "0x130",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아닌"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x138",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같군"
+    },
+    {
+      "offset": "0x147",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "누가"
+    },
+    {
+      "offset": "0x14c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "만든"
+    },
+    {
+      "offset": "0x151",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동굴인지도"
+    },
+    {
+      "offset": "0x15c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "모르는데"
+    },
+    {
+      "offset": "0x165",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이러고"
+    },
+    {
+      "offset": "0x16c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다녀도"
+    },
+    {
+      "offset": "0x173",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "되나"
+    }
+  ],
+  "count": 20
+}

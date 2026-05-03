@@ -1,0 +1,83 @@
+{
+  "entries": [
+    {
+      "offset": "0x1e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "顯"
+    },
+    {
+      "offset": "0x63",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "顯"
+    },
+    {
+      "offset": "0xb3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0xba",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0xc2",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "비스트건틀릿"
+    },
+    {
+      "offset": "0xcf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xd6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xd9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0xe2",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0xe7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가동중"
+    },
+    {
+      "offset": "0xef",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외부인의"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "접근을"
+    },
+    {
+      "offset": "0xff",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "차단합니다"
+    }
+  ],
+  "count": 13
+}

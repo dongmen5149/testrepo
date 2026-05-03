@@ -1,0 +1,965 @@
+{
+  "entries": [
+    {
+      "offset": "0x117",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "관청"
+    },
+    {
+      "offset": "0x12e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "망할"
+    },
+    {
+      "offset": "0x133",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "시골마을"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "도적들도"
+    },
+    {
+      "offset": "0x146",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마물들도"
+    },
+    {
+      "offset": "0x14f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "지긋지긋해"
+    },
+    {
+      "offset": "0x15a",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x16b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "훌륭하군"
+    },
+    {
+      "offset": "0x175",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "자네도"
+    },
+    {
+      "offset": "0x17d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "요즘"
+    },
+    {
+      "offset": "0x182",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "도적들이"
+    },
+    {
+      "offset": "0x18b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "한층"
+    },
+    {
+      "offset": "0x190",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "늘어나서"
+    },
+    {
+      "offset": "0x1a4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "어째서"
+    },
+    {
+      "offset": "0x1ab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "도적질"
+    },
+    {
+      "offset": "0x1b2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "따윌"
+    },
+    {
+      "offset": "0x1b7",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "하는"
+    },
+    {
+      "offset": "0x1bc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "걸까요"
+    },
+    {
+      "offset": "0x1c3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그들은"
+    },
+    {
+      "offset": "0x1d6",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "알게"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "뭐야"
+    },
+    {
+      "offset": "0x1e1",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "전쟁"
+    },
+    {
+      "offset": "0x1e6",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "고아"
+    },
+    {
+      "offset": "0x1eb",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "녀석들이"
+    },
+    {
+      "offset": "0x1f4",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "나이들고"
+    },
+    {
+      "offset": "0x1fd",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "할짓없으니"
+    },
+    {
+      "offset": "0x208",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "그러는"
+    },
+    {
+      "offset": "0x20f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "거겠지"
+    },
+    {
+      "offset": "0x222",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "다"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "때려잡아야지"
+    },
+    {
+      "offset": "0x232",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "원"
+    },
+    {
+      "offset": "0x236",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "신고가"
+    },
+    {
+      "offset": "0x23d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "많아서"
+    },
+    {
+      "offset": "0x244",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "귀찮아"
+    },
+    {
+      "offset": "0x24b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "죽겠어"
+    },
+    {
+      "offset": "0x25d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그런가"
+    },
+    {
+      "offset": "0x266",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x269",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "도적들은"
+    },
+    {
+      "offset": "0x281",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이봐"
+    },
+    {
+      "offset": "0x287",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "포상금"
+    },
+    {
+      "offset": "0x28e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "안받을"
+    },
+    {
+      "offset": "0x295",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "거야"
+    },
+    {
+      "offset": "0x2a4",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x2a7",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x2b0",
+      "speaker": "공무원",
+      "mode_byte": "0x7b",
+      "text": "로우엔의"
+    },
+    {
+      "offset": "0x2b9",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "치안"
+    },
+    {
+      "offset": "0x2bf",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x2c6",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x2d7",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "흠"
+    },
+    {
+      "offset": "0x2db",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "엄청나게"
+    },
+    {
+      "offset": "0x2e4",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "빠른데"
+    },
+    {
+      "offset": "0x2ec",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "용병인가"
+    },
+    {
+      "offset": "0x2f5",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "자네"
+    },
+    {
+      "offset": "0x304",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "고용할"
+    },
+    {
+      "offset": "0x30b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "생각은"
+    },
+    {
+      "offset": "0x312",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "하지마"
+    },
+    {
+      "offset": "0x31a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0x31d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이상"
+    },
+    {
+      "offset": "0x322",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시간"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뺏기긴"
+    },
+    {
+      "offset": "0x32e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싫군"
+    },
+    {
+      "offset": "0x33f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "깐깐하게"
+    },
+    {
+      "offset": "0x348",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "굴기는"
+    },
+    {
+      "offset": "0x350",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "어쨌든"
+    },
+    {
+      "offset": "0x357",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "조금은"
+    },
+    {
+      "offset": "0x35e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "신고가"
+    },
+    {
+      "offset": "0x365",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "줄겠지"
+    },
+    {
+      "offset": "0x36d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "없어지진"
+    },
+    {
+      "offset": "0x376",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "않겠지만"
+    },
+    {
+      "offset": "0x38b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "약속한"
+    },
+    {
+      "offset": "0x392",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "포상금일세"
+    },
+    {
+      "offset": "0x39e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "어여"
+    },
+    {
+      "offset": "0x3a3",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "갈길"
+    },
+    {
+      "offset": "0x3a8",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0x3ab",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "봐"
+    },
+    {
+      "offset": "0x3ba",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이봐"
+    },
+    {
+      "offset": "0x3c0",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "모험가라면"
+    },
+    {
+      "offset": "0x3cb",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "포상금이나"
+    },
+    {
+      "offset": "0x3d6",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "노려보라고"
+    },
+    {
+      "offset": "0x3e3",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x3e8",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "주변의"
+    },
+    {
+      "offset": "0x3ef",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "도적들"
+    },
+    {
+      "offset": "0x3f7",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "말야"
+    },
+    {
+      "offset": "0x40a",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "놈만"
+    },
+    {
+      "offset": "0x40f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "잡으면"
+    },
+    {
+      "offset": "0x416",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "포상금이"
+    },
+    {
+      "offset": "0x427",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "인데"
+    },
+    {
+      "offset": "0x42d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "구미가"
+    },
+    {
+      "offset": "0x434",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "당기지"
+    },
+    {
+      "offset": "0x43b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "않아"
+    },
+    {
+      "offset": "0x441",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "도적소탕"
+    },
+    {
+      "offset": "0x44b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "좋은데"
+    },
+    {
+      "offset": "0x45f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x464",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "주변에"
+    },
+    {
+      "offset": "0x46b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "징그럽게"
+    },
+    {
+      "offset": "0x474",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "늘었어"
+    },
+    {
+      "offset": "0x47b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "요즘"
+    },
+    {
+      "offset": "0x481",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "잘"
+    },
+    {
+      "offset": "0x484",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x487",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "부탁하네"
+    },
+    {
+      "offset": "0x492",
+      "speaker": "공무원",
+      "mode_byte": "0x7b",
+      "text": "로우엔의"
+    },
+    {
+      "offset": "0x49b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "치안"
+    },
+    {
+      "offset": "0x4a1",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x4a8",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x4ae",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "그럴때가"
+    },
+    {
+      "offset": "0x4b7",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "아니지"
+    },
+    {
+      "offset": "0x4ca",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "요즘은"
+    },
+    {
+      "offset": "0x4d1",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "쓸만한"
+    },
+    {
+      "offset": "0x4d8",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "모험가들이"
+    },
+    {
+      "offset": "0x4e3",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "없군"
+    },
+    {
+      "offset": "0x4ea",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "쯧"
+    },
+    {
+      "offset": "0x4f9",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "더도"
+    },
+    {
+      "offset": "0x4fe",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "말고"
+    },
+    {
+      "offset": "0x504",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마을주변"
+    },
+    {
+      "offset": "0x50d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "도적"
+    },
+    {
+      "offset": "0x515",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "명만"
+    },
+    {
+      "offset": "0x51a",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "퇴치해"
+    },
+    {
+      "offset": "0x521",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "주게나"
+    },
+    {
+      "offset": "0x534",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "토레즈는"
+    },
+    {
+      "offset": "0x53d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이쪽에"
+    },
+    {
+      "offset": "0x544",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "출현하는"
+    },
+    {
+      "offset": "0x54d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마물들에"
+    },
+    {
+      "offset": "0x556",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "대해서는"
+    },
+    {
+      "offset": "0x55f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "관심을"
+    },
+    {
+      "offset": "0x566",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "안갖는구만"
+    },
+    {
+      "offset": "0x572",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "자기네"
+    },
+    {
+      "offset": "0x579",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "일"
+    },
+    {
+      "offset": "0x57c",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "아니라는"
+    },
+    {
+      "offset": "0x585",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "거지"
+    },
+    {
+      "offset": "0x58c",
+      "speaker": "공무원",
+      "mode_byte": "0x7b",
+      "text": "토레즈의"
+    },
+    {
+      "offset": "0x595",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "서신"
+    },
+    {
+      "offset": "0x59a",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "을"
+    },
+    {
+      "offset": "0x59d",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "전달했다"
+    },
+    {
+      "offset": "0x5b5",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "뭐야"
+    },
+    {
+      "offset": "0x5ba",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이건"
+    },
+    {
+      "offset": "0x5cb",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "우리가"
+    },
+    {
+      "offset": "0x5d2",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "남쪽의"
+    },
+    {
+      "offset": "0x5d9",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마물들"
+    },
+    {
+      "offset": "0x5e0",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "때문에"
+    },
+    {
+      "offset": "0x5e7",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "고생할때는"
+    },
+    {
+      "offset": "0x5f2",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "쳐다도"
+    },
+    {
+      "offset": "0x5f9",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "안보고"
+    },
+    {
+      "offset": "0x600",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "불평하지"
+    },
+    {
+      "offset": "0x609",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "말라더니"
+    },
+    {
+      "offset": "0x61e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "이제와서"
+    },
+    {
+      "offset": "0x627",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "협조해서"
+    },
+    {
+      "offset": "0x630",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "몬스터들을"
+    },
+    {
+      "offset": "0x63b",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "물리쳐"
+    },
+    {
+      "offset": "0x643",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "웃기지"
+    },
+    {
+      "offset": "0x64a",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "마"
+    },
+    {
+      "offset": "0x659",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "가서"
+    },
+    {
+      "offset": "0x65e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "우린"
+    },
+    {
+      "offset": "0x663",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "우리"
+    },
+    {
+      "offset": "0x668",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "힘으로"
+    },
+    {
+      "offset": "0x66f",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "살테니"
+    },
+    {
+      "offset": "0x677",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "그쪽도"
+    },
+    {
+      "offset": "0x67e",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "알아서"
+    },
+    {
+      "offset": "0x685",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "하라고"
+    },
+    {
+      "offset": "0x68c",
+      "speaker": "공무원",
+      "mode_byte": null,
+      "text": "그래"
+    }
+  ],
+  "count": 160
+}

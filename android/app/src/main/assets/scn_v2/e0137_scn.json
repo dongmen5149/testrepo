@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "險"
+    },
+    {
+      "offset": "0x51",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "險"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리파이너의"
+    },
+    {
+      "offset": "0x9a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "유적"
+    },
+    {
+      "offset": "0xa2",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "데스블러드"
+    },
+    {
+      "offset": "0xad",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xb4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xb7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

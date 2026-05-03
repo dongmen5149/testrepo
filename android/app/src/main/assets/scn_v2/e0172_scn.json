@@ -1,0 +1,245 @@
+{
+  "entries": [
+    {
+      "offset": "0x117",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x126",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "출입"
+    },
+    {
+      "offset": "0x12b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "카드를"
+    },
+    {
+      "offset": "0x132",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "투입해"
+    },
+    {
+      "offset": "0x139",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "주세요"
+    },
+    {
+      "offset": "0x141",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "카드투입"
+    },
+    {
+      "offset": "0x14b",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "씨크릿카드"
+    },
+    {
+      "offset": "0x158",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "개"
+    },
+    {
+      "offset": "0x15b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소모"
+    },
+    {
+      "offset": "0x160",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "취"
+    },
+    {
+      "offset": "0x163",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "소"
+    },
+    {
+      "offset": "0x167",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "출입"
+    },
+    {
+      "offset": "0x16c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "카드를"
+    },
+    {
+      "offset": "0x173",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "투입해"
+    },
+    {
+      "offset": "0x17a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "주세요"
+    },
+    {
+      "offset": "0x18c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "출입"
+    },
+    {
+      "offset": "0x191",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "카드"
+    },
+    {
+      "offset": "0x1a0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "젠장"
+    },
+    {
+      "offset": "0x1a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "꼴에"
+    },
+    {
+      "offset": "0x1ab",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "또"
+    },
+    {
+      "offset": "0x1ae",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "경비시스템은"
+    },
+    {
+      "offset": "0x1c8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "출입"
+    },
+    {
+      "offset": "0x1cd",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "카드"
+    },
+    {
+      "offset": "0x1d2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "라"
+    },
+    {
+      "offset": "0x1d6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "보통"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x1e6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "대장장이"
+    },
+    {
+      "offset": "0x1ef",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "들이"
+    },
+    {
+      "offset": "0x1f4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "만들텐데"
+    },
+    {
+      "offset": "0x1ff",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "로우엔"
+    },
+    {
+      "offset": "0x206",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x20c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x213",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x21a",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "자동"
+    },
+    {
+      "offset": "0x21f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "경비"
+    },
+    {
+      "offset": "0x224",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시스템"
+    },
+    {
+      "offset": "0x22c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x233",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 40
+}

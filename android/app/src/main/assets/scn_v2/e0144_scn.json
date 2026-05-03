@@ -1,0 +1,47 @@
+{
+  "entries": [
+    {
+      "offset": "0x1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "懸"
+    },
+    {
+      "offset": "0x40",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "懸"
+    },
+    {
+      "offset": "0x98",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "등대"
+    },
+    {
+      "offset": "0xa0",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "롱그리브"
+    },
+    {
+      "offset": "0xa9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xb0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xb3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 7
+}

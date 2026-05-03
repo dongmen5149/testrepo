@@ -1,0 +1,137 @@
+{
+  "entries": [
+    {
+      "offset": "0x94",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x9b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산"
+    },
+    {
+      "offset": "0xad",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xb3",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "유적은"
+    },
+    {
+      "offset": "0xba",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "북쪽이야"
+    },
+    {
+      "offset": "0xc5",
+      "speaker": "일레느",
+      "mode_byte": "0x7d",
+      "text": "북"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "엔자크사막"
+    },
+    {
+      "offset": "0xd3",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "남서"
+    },
+    {
+      "offset": "0xd8",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "채굴장"
+    },
+    {
+      "offset": "0xe0",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "남동"
+    },
+    {
+      "offset": "0xe5",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0xf5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0xfa",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "채굴장에는"
+    },
+    {
+      "offset": "0x105",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "볼일이"
+    },
+    {
+      "offset": "0x10c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없다"
+    },
+    {
+      "offset": "0x112",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느를"
+    },
+    {
+      "offset": "0x11b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "찾아야"
+    },
+    {
+      "offset": "0x122",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "해"
+    },
+    {
+      "offset": "0x12f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느의"
+    },
+    {
+      "offset": "0x138",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "집은"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "토레즈에"
+    },
+    {
+      "offset": "0x146",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있어"
+    }
+  ],
+  "count": 22
+}

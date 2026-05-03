@@ -1,0 +1,89 @@
+{
+  "entries": [
+    {
+      "offset": "0x1f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "許"
+    },
+    {
+      "offset": "0x27",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "型"
+    },
+    {
+      "offset": "0x4a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "許"
+    },
+    {
+      "offset": "0x57",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "型"
+    },
+    {
+      "offset": "0xba",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0xc3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0xc9",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "붉은머리띠"
+    },
+    {
+      "offset": "0xd4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xdb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xde",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0xe7",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "반토막난"
+    },
+    {
+      "offset": "0xf0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지도"
+    },
+    {
+      "offset": "0xf5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 14
+}

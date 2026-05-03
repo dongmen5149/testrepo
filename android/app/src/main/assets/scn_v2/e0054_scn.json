@@ -1,0 +1,257 @@
+{
+  "entries": [
+    {
+      "offset": "0x122",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x129",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산"
+    },
+    {
+      "offset": "0x139",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "저쪽은"
+    },
+    {
+      "offset": "0x140",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "우리"
+    },
+    {
+      "offset": "0x145",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "주둔지가"
+    },
+    {
+      "offset": "0x14e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "있는"
+    },
+    {
+      "offset": "0x153",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "쪽인데"
+    },
+    {
+      "offset": "0x15b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "무슨"
+    },
+    {
+      "offset": "0x160",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "속셈이지"
+    },
+    {
+      "offset": "0x178",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그렇군"
+    },
+    {
+      "offset": "0x180",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "채굴장인가"
+    },
+    {
+      "offset": "0x195",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이쪽은"
+    },
+    {
+      "offset": "0x19c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "도심지"
+    },
+    {
+      "offset": "0x1a3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같은데"
+    },
+    {
+      "offset": "0x1ab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "위험해"
+    },
+    {
+      "offset": "0x1be",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "역시"
+    },
+    {
+      "offset": "0x1c3",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "헤메네"
+    },
+    {
+      "offset": "0x1cb",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "이쪽은"
+    },
+    {
+      "offset": "0x1d2",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "공장으로"
+    },
+    {
+      "offset": "0x1db",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "가는"
+    },
+    {
+      "offset": "0x1e0",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "길이라고"
+    },
+    {
+      "offset": "0x1ea",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "볼일"
+    },
+    {
+      "offset": "0x1ef",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "없잖아"
+    },
+    {
+      "offset": "0x200",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0x205",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "공장쪽으로"
+    },
+    {
+      "offset": "0x210",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가서"
+    },
+    {
+      "offset": "0x215",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "뭘하나"
+    },
+    {
+      "offset": "0x21e",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "챕터가"
+    },
+    {
+      "offset": "0x225",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "종료되면"
+    },
+    {
+      "offset": "0x22e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "진행중인"
+    },
+    {
+      "offset": "0x237",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "서브"
+    },
+    {
+      "offset": "0x23c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트가"
+    },
+    {
+      "offset": "0x245",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "사라집니다"
+    },
+    {
+      "offset": "0x251",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "진행하시겠습니까"
+    },
+    {
+      "offset": "0x263",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "예"
+    },
+    {
+      "offset": "0x266",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니오"
+    },
+    {
+      "offset": "0x26e",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "서쪽"
+    },
+    {
+      "offset": "0x273",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "군주둔지"
+    },
+    {
+      "offset": "0x27c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "북쪽"
+    },
+    {
+      "offset": "0x281",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x293",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "남쪽"
+    },
+    {
+      "offset": "0x298",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "검은공장"
+    }
+  ],
+  "count": 42
+}

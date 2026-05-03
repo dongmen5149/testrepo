@@ -1,0 +1,197 @@
+{
+  "entries": [
+    {
+      "offset": "0xa5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0xae",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0xbc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "으랏차"
+    },
+    {
+      "offset": "0xc3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "마지막"
+    },
+    {
+      "offset": "0xd5",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "헤고"
+    },
+    {
+      "offset": "0xdc",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "심장이"
+    },
+    {
+      "offset": "0xe3",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "타버릴"
+    },
+    {
+      "offset": "0xea",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "거"
+    },
+    {
+      "offset": "0xed",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "같네"
+    },
+    {
+      "offset": "0xf6",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "노력의"
+    },
+    {
+      "offset": "0xfd",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "증명"
+    },
+    {
+      "offset": "0x105",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x10c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x11b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "다음은"
+    },
+    {
+      "offset": "0x124",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "와일드"
+    },
+    {
+      "offset": "0x12b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "라이칸"
+    },
+    {
+      "offset": "0x134",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "몰라몰라"
+    },
+    {
+      "offset": "0x13e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "남은"
+    },
+    {
+      "offset": "0x143",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x146",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "나중에"
+    },
+    {
+      "offset": "0x14d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "할테다"
+    },
+    {
+      "offset": "0x15e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "난"
+    },
+    {
+      "offset": "0x161",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아직"
+    },
+    {
+      "offset": "0x166",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "전장으로"
+    },
+    {
+      "offset": "0x16f",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "못"
+    },
+    {
+      "offset": "0x172",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "들어가"
+    },
+    {
+      "offset": "0x17b",
+      "speaker": "케이",
+      "mode_byte": "0x7d",
+      "text": "북"
+    },
+    {
+      "offset": "0x17e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "네오솔티아"
+    },
+    {
+      "offset": "0x189",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "서"
+    },
+    {
+      "offset": "0x18c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "빛의신당"
+    },
+    {
+      "offset": "0x195",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "동"
+    },
+    {
+      "offset": "0x198",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "군주둔지"
+    }
+  ],
+  "count": 32
+}

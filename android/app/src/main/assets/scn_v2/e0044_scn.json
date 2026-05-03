@@ -1,0 +1,65 @@
+{
+  "entries": [
+    {
+      "offset": "0x27",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "舷"
+    },
+    {
+      "offset": "0x8a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "舷"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0xff",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "지하"
+    },
+    {
+      "offset": "0x104",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "감옥"
+    },
+    {
+      "offset": "0x10a",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "데몬블레이드"
+    },
+    {
+      "offset": "0x117",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x11e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x121",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x12a",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "잠겨있다"
+    }
+  ],
+  "count": 10
+}

@@ -1,0 +1,191 @@
+{
+  "entries": [
+    {
+      "offset": "0x28",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "刑"
+    },
+    {
+      "offset": "0x81",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "刑"
+    },
+    {
+      "offset": "0x13d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "엔자크"
+    },
+    {
+      "offset": "0x144",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "사막"
+    },
+    {
+      "offset": "0x154",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "이쪽을"
+    },
+    {
+      "offset": "0x15b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "점령한"
+    },
+    {
+      "offset": "0x162",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놈들은"
+    },
+    {
+      "offset": "0x169",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "보통"
+    },
+    {
+      "offset": "0x16e",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x175",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아냐"
+    },
+    {
+      "offset": "0x17c",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "굳이"
+    },
+    {
+      "offset": "0x181",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "들어갈"
+    },
+    {
+      "offset": "0x188",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "필요없지"
+    },
+    {
+      "offset": "0x19b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지금은"
+    },
+    {
+      "offset": "0x1a2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "돌아다닐"
+    },
+    {
+      "offset": "0x1ab",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "여유가"
+    },
+    {
+      "offset": "0x1b2",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "없어"
+    },
+    {
+      "offset": "0x1b9",
+      "speaker": "케이",
+      "mode_byte": "0x7b",
+      "text": "굴베이그의"
+    },
+    {
+      "offset": "0x1c4",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지팡이"
+    },
+    {
+      "offset": "0x1cb",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x1ce",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x1df",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "사막이"
+    },
+    {
+      "offset": "0x1e9",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "갈라져있어"
+    },
+    {
+      "offset": "0x201",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "누가"
+    },
+    {
+      "offset": "0x206",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "괴물들"
+    },
+    {
+      "offset": "0x20d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아니랄까봐"
+    },
+    {
+      "offset": "0x218",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "아주"
+    },
+    {
+      "offset": "0x21d",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지형을"
+    },
+    {
+      "offset": "0x224",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "개조해"
+    },
+    {
+      "offset": "0x22b",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "가면서"
+    },
+    {
+      "offset": "0x232",
+      "speaker": "케이",
+      "mode_byte": null,
+      "text": "지나갔구만"
+    }
+  ],
+  "count": 31
+}

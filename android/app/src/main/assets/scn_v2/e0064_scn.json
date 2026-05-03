@@ -1,0 +1,35 @@
+{
+  "entries": [
+    {
+      "offset": "0x76",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "검은"
+    },
+    {
+      "offset": "0x7b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x83",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안"
+    },
+    {
+      "offset": "0x88",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "해제된"
+    },
+    {
+      "offset": "0x8f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "상태입니다"
+    }
+  ],
+  "count": 5
+}

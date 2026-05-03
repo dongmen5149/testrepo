@@ -1,0 +1,569 @@
+{
+  "entries": [
+    {
+      "offset": "0x3d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "矣넜섞믄둥"
+    },
+    {
+      "offset": "0x774",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x77e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x78d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x7a6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x7b0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x7bf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x7d8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "忌"
+    },
+    {
+      "offset": "0x805",
+      "speaker": null,
+      "mode_byte": "0x17",
+      "text": "忌"
+    },
+    {
+      "offset": "0xa67",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xa75",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "안함"
+    },
+    {
+      "offset": "0xa7a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "함"
+    },
+    {
+      "offset": "0xa81",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xa93",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xaa5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xab7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xac9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xadb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xaed",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xaff",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xb0d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "인간형"
+    },
+    {
+      "offset": "0xb14",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보스"
+    },
+    {
+      "offset": "0xb19",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xb23",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xb2d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xb37",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xb41",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xb4b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xb55",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "큐"
+    },
+    {
+      "offset": "0xb5d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "멜페토"
+    },
+    {
+      "offset": "0xb69",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "거대"
+    },
+    {
+      "offset": "0xb6e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "보스"
+    },
+    {
+      "offset": "0xb73",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "나무"
+    },
+    {
+      "offset": "0xb7d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "늑대"
+    },
+    {
+      "offset": "0xb87",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "늑대"
+    },
+    {
+      "offset": "0xb91",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "벨루스"
+    },
+    {
+      "offset": "0xb9d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공성병기"
+    },
+    {
+      "offset": "0xbab",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공성병기"
+    },
+    {
+      "offset": "0xbb9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "홀리가디언"
+    },
+    {
+      "offset": "0xbc6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "페이스"
+    },
+    {
+      "offset": "0xbcd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xbd8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "듀크"
+    },
+    {
+      "offset": "0xbdd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일레느"
+    },
+    {
+      "offset": "0xbe4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "죽음"
+    },
+    {
+      "offset": "0xbe9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일레느"
+    },
+    {
+      "offset": "0xbf0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xbf5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일레느"
+    },
+    {
+      "offset": "0xbfc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외침"
+    },
+    {
+      "offset": "0xc01",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일레느"
+    },
+    {
+      "offset": "0xc08",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "미소"
+    },
+    {
+      "offset": "0xc0d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "홀리가디언"
+    },
+    {
+      "offset": "0xc18",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "이안"
+    },
+    {
+      "offset": "0xc1d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "부상"
+    },
+    {
+      "offset": "0xc22",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "이안"
+    },
+    {
+      "offset": "0xc27",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc2c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xc31",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc36",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xc3b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외침"
+    },
+    {
+      "offset": "0xc40",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xc45",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "웃음"
+    },
+    {
+      "offset": "0xc4a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케이"
+    },
+    {
+      "offset": "0xc4f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "놀람"
+    },
+    {
+      "offset": "0xc54",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "케네스"
+    },
+    {
+      "offset": "0xc5b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc60",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가면"
+    },
+    {
+      "offset": "0xc65",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "깨짐"
+    },
+    {
+      "offset": "0xc6a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "가면"
+    },
+    {
+      "offset": "0xc6f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc74",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "멜페토"
+    },
+    {
+      "offset": "0xc7b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "큐"
+    },
+    {
+      "offset": "0xc7e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "레아"
+    },
+    {
+      "offset": "0xc83",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc88",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "레아"
+    },
+    {
+      "offset": "0xc8d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "진지"
+    },
+    {
+      "offset": "0xc92",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xc97",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xc9c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xca1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "썩소"
+    },
+    {
+      "offset": "0xca6",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xcab",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "외침"
+    },
+    {
+      "offset": "0xcb0",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "리츠"
+    },
+    {
+      "offset": "0xcb5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "눈물"
+    },
+    {
+      "offset": "0xcba",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시엔"
+    },
+    {
+      "offset": "0xcbf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "암울"
+    },
+    {
+      "offset": "0xcc4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시엔"
+    },
+    {
+      "offset": "0xcc9",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "미소"
+    },
+    {
+      "offset": "0xcce",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시엔"
+    },
+    {
+      "offset": "0xcd3",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "일반"
+    },
+    {
+      "offset": "0xcd8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "시엔"
+    },
+    {
+      "offset": "0xcdd",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "부끄럼"
+    },
+    {
+      "offset": "0xce4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테너"
+    },
+    {
+      "offset": "0xced",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "테스트"
+    },
+    {
+      "offset": "0xcf4",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "까맣게함"
+    }
+  ],
+  "count": 94
+}

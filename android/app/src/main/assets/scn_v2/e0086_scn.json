@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "offset": "0x3e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x47",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "고원"
+    }
+  ],
+  "count": 2
+}

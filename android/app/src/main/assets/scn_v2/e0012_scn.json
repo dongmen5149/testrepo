@@ -1,0 +1,227 @@
+{
+  "entries": [
+    {
+      "offset": "0x1e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "晛"
+    },
+    {
+      "offset": "0x4b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "晛"
+    },
+    {
+      "offset": "0xde",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0xe7",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0xed",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "비스트아이"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xff",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x102",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x113",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "과연"
+    },
+    {
+      "offset": "0x11b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티안들은"
+    },
+    {
+      "offset": "0x126",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이렇게"
+    },
+    {
+      "offset": "0x12d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0x134",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "내려온"
+    },
+    {
+      "offset": "0x13b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거였나"
+    },
+    {
+      "offset": "0x14c",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그렇다면"
+    },
+    {
+      "offset": "0x155",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기는"
+    },
+    {
+      "offset": "0x167",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네메시스"
+    },
+    {
+      "offset": "0x170",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "숲"
+    },
+    {
+      "offset": "0x176",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이겠지"
+    },
+    {
+      "offset": "0x187",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0x18f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "얄궂은"
+    },
+    {
+      "offset": "0x196",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "운명이로군"
+    },
+    {
+      "offset": "0x1a3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x1a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0x1a9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "보라는"
+    },
+    {
+      "offset": "0x1b0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x1b6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "네오"
+    },
+    {
+      "offset": "0x1bb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x1c4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "삶을"
+    },
+    {
+      "offset": "0x1cd",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "대지로의"
+    },
+    {
+      "offset": "0x1d6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "귀환"
+    },
+    {
+      "offset": "0x1dc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1e3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x1ea",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "솔티안의"
+    },
+    {
+      "offset": "0x1f3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "땅"
+    },
+    {
+      "offset": "0x1f7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x1fe",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 37
+}

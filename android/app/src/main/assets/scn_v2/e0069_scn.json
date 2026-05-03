@@ -1,0 +1,35 @@
+{
+  "entries": [
+    {
+      "offset": "0x106",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "검은"
+    },
+    {
+      "offset": "0x10b",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x113",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "보안이"
+    },
+    {
+      "offset": "0x11a",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "아직"
+    },
+    {
+      "offset": "0x11f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동작중입니다"
+    }
+  ],
+  "count": 5
+}

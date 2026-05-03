@@ -1,0 +1,137 @@
+{
+  "entries": [
+    {
+      "offset": "0x2ab",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "폐쇄된"
+    },
+    {
+      "offset": "0x2b2",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x2ba",
+      "speaker": null,
+      "mode_byte": "0x7d",
+      "text": "문이"
+    },
+    {
+      "offset": "0x2bf",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잠겨있다"
+    },
+    {
+      "offset": "0x2d5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "잠겨있는데"
+    },
+    {
+      "offset": "0x2ec",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "기다려봐"
+    },
+    {
+      "offset": "0x2f7",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "내게"
+    },
+    {
+      "offset": "0x2fc",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "열쇠가"
+    },
+    {
+      "offset": "0x303",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "있어"
+    },
+    {
+      "offset": "0x312",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "꼭"
+    },
+    {
+      "offset": "0x315",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0x31a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "음침한"
+    },
+    {
+      "offset": "0x321",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "곳에서"
+    },
+    {
+      "offset": "0x328",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "만들어야"
+    },
+    {
+      "offset": "0x331",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "하는"
+    },
+    {
+      "offset": "0x336",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x347",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "일단은"
+    },
+    {
+      "offset": "0x350",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "불법"
+    },
+    {
+      "offset": "0x355",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "생산품이니까"
+    },
+    {
+      "offset": "0x364",
+      "speaker": "일레느",
+      "mode_byte": "0x7d",
+      "text": "어딘가의"
+    },
+    {
+      "offset": "0x36d",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "보안장치로"
+    },
+    {
+      "offset": "0x378",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "잠겨있다"
+    }
+  ],
+  "count": 22
+}

@@ -1,0 +1,53 @@
+{
+  "entries": [
+    {
+      "offset": "0x1e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "血"
+    },
+    {
+      "offset": "0x41",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "血"
+    },
+    {
+      "offset": "0x7f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "작은"
+    },
+    {
+      "offset": "0x84",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0x8c",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "블랙하피"
+    },
+    {
+      "offset": "0x95",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0x9c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x9f",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    }
+  ],
+  "count": 8
+}

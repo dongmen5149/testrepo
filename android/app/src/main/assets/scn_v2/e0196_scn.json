@@ -1,0 +1,1823 @@
+{
+  "entries": [
+    {
+      "offset": "0x214",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "잔존민의"
+    },
+    {
+      "offset": "0x21d",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "은거지"
+    },
+    {
+      "offset": "0x234",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x239",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "우린"
+    },
+    {
+      "offset": "0x23e",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "어떻게"
+    },
+    {
+      "offset": "0x245",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "되는"
+    },
+    {
+      "offset": "0x24a",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "걸까요"
+    },
+    {
+      "offset": "0x252",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "대륙은"
+    },
+    {
+      "offset": "0x259",
+      "speaker": "잔존민 소녀",
+      "mode_byte": null,
+      "text": "평화롭나요"
+    },
+    {
+      "offset": "0x275",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "전"
+    },
+    {
+      "offset": "0x278",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "이"
+    },
+    {
+      "offset": "0x27b",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "숲이"
+    },
+    {
+      "offset": "0x280",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "세상의"
+    },
+    {
+      "offset": "0x287",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "전부인"
+    },
+    {
+      "offset": "0x28e",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "줄만"
+    },
+    {
+      "offset": "0x293",
+      "speaker": "잔존민 꼬마",
+      "mode_byte": null,
+      "text": "알았어요"
+    },
+    {
+      "offset": "0x2ad",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0x2b2",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x2bb",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가호가"
+    },
+    {
+      "offset": "0x2c2",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "함께"
+    },
+    {
+      "offset": "0x2c7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "하기를"
+    },
+    {
+      "offset": "0x2e0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "정말"
+    },
+    {
+      "offset": "0x2e5",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "고맙네"
+    },
+    {
+      "offset": "0x2ed",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙의"
+    },
+    {
+      "offset": "0x2f4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "청년"
+    },
+    {
+      "offset": "0x2fb",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x300",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "한시름"
+    },
+    {
+      "offset": "0x307",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "덜었구만"
+    },
+    {
+      "offset": "0x322",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "이건"
+    },
+    {
+      "offset": "0x327",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리가"
+    },
+    {
+      "offset": "0x32e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "보이는"
+    },
+    {
+      "offset": "0x335",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "작은"
+    },
+    {
+      "offset": "0x33a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "성의일세"
+    },
+    {
+      "offset": "0x344",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "받아주게"
+    },
+    {
+      "offset": "0x34f",
+      "speaker": "잔존민 노인",
+      "mode_byte": "0x7b",
+      "text": "데스자칼"
+    },
+    {
+      "offset": "0x358",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "슈트"
+    },
+    {
+      "offset": "0x364",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0x367",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x378",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "순수하군"
+    },
+    {
+      "offset": "0x383",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "당신들은"
+    },
+    {
+      "offset": "0x397",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0x3a0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "힘에"
+    },
+    {
+      "offset": "0x3a5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "의지한"
+    },
+    {
+      "offset": "0x3ae",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "힘겨운"
+    },
+    {
+      "offset": "0x3b5",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "생존인가"
+    },
+    {
+      "offset": "0x3d1",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "인간이"
+    },
+    {
+      "offset": "0x3d8",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "의지할"
+    },
+    {
+      "offset": "0x3df",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0x3e2",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "없이"
+    },
+    {
+      "offset": "0x3e7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "어떻게"
+    },
+    {
+      "offset": "0x3ee",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "살겠나"
+    },
+    {
+      "offset": "0x3f7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "허허허"
+    },
+    {
+      "offset": "0x401",
+      "speaker": "잔존민 노인",
+      "mode_byte": "0x7b",
+      "text": "남겨진"
+    },
+    {
+      "offset": "0x408",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x40e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x415",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "완료"
+    },
+    {
+      "offset": "0x42b",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "여기는"
+    },
+    {
+      "offset": "0x432",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그나마"
+    },
+    {
+      "offset": "0x439",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "비스트들이"
+    },
+    {
+      "offset": "0x444",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "적은"
+    },
+    {
+      "offset": "0x449",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "곳이었는데"
+    },
+    {
+      "offset": "0x466",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "최근에는"
+    },
+    {
+      "offset": "0x470",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "기버로크"
+    },
+    {
+      "offset": "0x479",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "들이"
+    },
+    {
+      "offset": "0x47e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "은신처"
+    },
+    {
+      "offset": "0x485",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "근방에"
+    },
+    {
+      "offset": "0x48c",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "너무"
+    },
+    {
+      "offset": "0x491",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "많아서"
+    },
+    {
+      "offset": "0x498",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "위험해"
+    },
+    {
+      "offset": "0x4b0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "사냥하러"
+    },
+    {
+      "offset": "0x4b9",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "나간"
+    },
+    {
+      "offset": "0x4be",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "친구들이"
+    },
+    {
+      "offset": "0x4c7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "조심해야"
+    },
+    {
+      "offset": "0x4d0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "할텐데"
+    },
+    {
+      "offset": "0x4e3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "기버로크"
+    },
+    {
+      "offset": "0x4ec",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "따위한테"
+    },
+    {
+      "offset": "0x4f7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "긴장하는"
+    },
+    {
+      "offset": "0x500",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "건가"
+    },
+    {
+      "offset": "0x516",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "쉽게"
+    },
+    {
+      "offset": "0x51b",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "말하지"
+    },
+    {
+      "offset": "0x522",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "말게"
+    },
+    {
+      "offset": "0x528",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "개체수가"
+    },
+    {
+      "offset": "0x531",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "많아서"
+    },
+    {
+      "offset": "0x538",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그렇다네"
+    },
+    {
+      "offset": "0x553",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리는"
+    },
+    {
+      "offset": "0x55a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "인구가"
+    },
+    {
+      "offset": "0x561",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "적어"
+    },
+    {
+      "offset": "0x566",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "한명"
+    },
+    {
+      "offset": "0x56b",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "한명의"
+    },
+    {
+      "offset": "0x572",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "목숨이"
+    },
+    {
+      "offset": "0x579",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "마을의"
+    },
+    {
+      "offset": "0x580",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "생존과"
+    },
+    {
+      "offset": "0x587",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "직결된단"
+    },
+    {
+      "offset": "0x590",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "말일세"
+    },
+    {
+      "offset": "0x5a6",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x5ab",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "개체수를"
+    },
+    {
+      "offset": "0x5b4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "줄여주지"
+    },
+    {
+      "offset": "0x5be",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "쓸데없는"
+    },
+    {
+      "offset": "0x5c7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "걱정"
+    },
+    {
+      "offset": "0x5cc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "없도록"
+    },
+    {
+      "offset": "0x5e4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "아"
+    },
+    {
+      "offset": "0x5e9",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그래주겠나"
+    },
+    {
+      "offset": "0x5f5",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙의"
+    },
+    {
+      "offset": "0x5fc",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "청년들은"
+    },
+    {
+      "offset": "0x605",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "아주"
+    },
+    {
+      "offset": "0x60a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "호의적이구먼"
+    },
+    {
+      "offset": "0x618",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "다행이야"
+    },
+    {
+      "offset": "0x62d",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그딴"
+    },
+    {
+      "offset": "0x632",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "게"
+    },
+    {
+      "offset": "0x635",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니야"
+    },
+    {
+      "offset": "0x63e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "단지"
+    },
+    {
+      "offset": "0x647",
+      "speaker": "리츠",
+      "mode_byte": "0x7b",
+      "text": "남겨진"
+    },
+    {
+      "offset": "0x64e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "마을"
+    },
+    {
+      "offset": "0x654",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0x65b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "입수"
+    },
+    {
+      "offset": "0x672",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "기버로크"
+    },
+    {
+      "offset": "0x67b",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "의"
+    },
+    {
+      "offset": "0x67e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "개체수를"
+    },
+    {
+      "offset": "0x68a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "마리"
+    },
+    {
+      "offset": "0x68f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "만"
+    },
+    {
+      "offset": "0x692",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "줄여주게"
+    },
+    {
+      "offset": "0x6ad",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "솔럼의"
+    },
+    {
+      "offset": "0x6b4",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "물건들은"
+    },
+    {
+      "offset": "0x6bd",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "아직"
+    },
+    {
+      "offset": "0x6c2",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "많이"
+    },
+    {
+      "offset": "0x6c7",
+      "speaker": "잔존민 상인",
+      "mode_byte": null,
+      "text": "남아있어요"
+    },
+    {
+      "offset": "0x6e7",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "살아남기"
+    },
+    {
+      "offset": "0x6f0",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "위해선"
+    },
+    {
+      "offset": "0x6f8",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "제련"
+    },
+    {
+      "offset": "0x6fd",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "기술을"
+    },
+    {
+      "offset": "0x704",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "익혀야"
+    },
+    {
+      "offset": "0x70b",
+      "speaker": "잔존민 대장장이",
+      "mode_byte": null,
+      "text": "했어"
+    },
+    {
+      "offset": "0x71a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "어째서"
+    },
+    {
+      "offset": "0x721",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "나까지"
+    },
+    {
+      "offset": "0x728",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "구해주는"
+    },
+    {
+      "offset": "0x731",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "거지"
+    },
+    {
+      "offset": "0x743",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "그냥"
+    },
+    {
+      "offset": "0x753",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "우리가"
+    },
+    {
+      "offset": "0x75a",
+      "speaker": "시엔",
+      "mode_byte": null,
+      "text": "미워"
+    },
+    {
+      "offset": "0x779",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "모르겠어"
+    },
+    {
+      "offset": "0x783",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "이젠"
+    },
+    {
+      "offset": "0x797",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "누군가가"
+    },
+    {
+      "offset": "0x7a0",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "유죄라면"
+    },
+    {
+      "offset": "0x7b3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여"
+    },
+    {
+      "offset": "0x7b8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "여기는"
+    },
+    {
+      "offset": "0x7d0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "정신이"
+    },
+    {
+      "offset": "0x7d7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "들었구만"
+    },
+    {
+      "offset": "0x7e1",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙의"
+    },
+    {
+      "offset": "0x7e8",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "젊은이"
+    },
+    {
+      "offset": "0x7fb",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "나는"
+    },
+    {
+      "offset": "0x803",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "등대에서"
+    },
+    {
+      "offset": "0x80e",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x817",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "추락에"
+    },
+    {
+      "offset": "0x831",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그래"
+    },
+    {
+      "offset": "0x837",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "여기가"
+    },
+    {
+      "offset": "0x83e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "솔티아"
+    },
+    {
+      "offset": "0x845",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙일세"
+    },
+    {
+      "offset": "0x858",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x85b",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "상황에서"
+    },
+    {
+      "offset": "0x866",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "살아난건가"
+    },
+    {
+      "offset": "0x882",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "빛의"
+    },
+    {
+      "offset": "0x887",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "보호를"
+    },
+    {
+      "offset": "0x88e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "받으며"
+    },
+    {
+      "offset": "0x895",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "이곳으로"
+    },
+    {
+      "offset": "0x89e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "보내졌네"
+    },
+    {
+      "offset": "0x8b8",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "필시"
+    },
+    {
+      "offset": "0x8bf",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "홀리가디언의"
+    },
+    {
+      "offset": "0x8cc",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가호를"
+    },
+    {
+      "offset": "0x8d3",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "받은거야"
+    },
+    {
+      "offset": "0x8dd",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "자네는"
+    },
+    {
+      "offset": "0x8f2",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그래"
+    },
+    {
+      "offset": "0x8f9",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x8fc",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "소녀가"
+    },
+    {
+      "offset": "0x90f",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "당신들은"
+    },
+    {
+      "offset": "0x91a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "솔티아의"
+    },
+    {
+      "offset": "0x923",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "주민인가"
+    },
+    {
+      "offset": "0x93d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그렇다네"
+    },
+    {
+      "offset": "0x948",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "다들"
+    },
+    {
+      "offset": "0x94d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙으로"
+    },
+    {
+      "offset": "0x956",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "내려갈때"
+    },
+    {
+      "offset": "0x960",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "고향을"
+    },
+    {
+      "offset": "0x967",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "버리지"
+    },
+    {
+      "offset": "0x96e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "못한"
+    },
+    {
+      "offset": "0x973",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "사람들이지"
+    },
+    {
+      "offset": "0x98f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "아무리"
+    },
+    {
+      "offset": "0x996",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "위험하다"
+    },
+    {
+      "offset": "0x99f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "해도"
+    },
+    {
+      "offset": "0x9a6",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리가"
+    },
+    {
+      "offset": "0x9ad",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "태어난"
+    },
+    {
+      "offset": "0x9b4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "고향이니까"
+    },
+    {
+      "offset": "0x9bf",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "말일세"
+    },
+    {
+      "offset": "0x9d1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "위험하다고"
+    },
+    {
+      "offset": "0x9ed",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "흠"
+    },
+    {
+      "offset": "0x9f2",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "내려간"
+    },
+    {
+      "offset": "0x9f9",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "이들이"
+    },
+    {
+      "offset": "0xa00",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "아무말도"
+    },
+    {
+      "offset": "0xa09",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "안하던가"
+    },
+    {
+      "offset": "0xa23",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "솔티아"
+    },
+    {
+      "offset": "0xa2a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대륙은"
+    },
+    {
+      "offset": "0xa31",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0xa3a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "힘을"
+    },
+    {
+      "offset": "0xa3f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "잃은"
+    },
+    {
+      "offset": "0xa44",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "뒤"
+    },
+    {
+      "offset": "0xa47",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "완전히"
+    },
+    {
+      "offset": "0xa4e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "망가졌어"
+    },
+    {
+      "offset": "0xa61",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0xa6a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "힘을"
+    },
+    {
+      "offset": "0xa72",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "설마"
+    },
+    {
+      "offset": "0xa89",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "지금"
+    },
+    {
+      "offset": "0xa8e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리에게"
+    },
+    {
+      "offset": "0xa97",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "남은"
+    },
+    {
+      "offset": "0xa9c",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0xa9f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "최후의"
+    },
+    {
+      "offset": "0xaa6",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언"
+    },
+    {
+      "offset": "0xaaf",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0xab4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언"
+    },
+    {
+      "offset": "0xabc",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "뿐이지"
+    },
+    {
+      "offset": "0xad4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그것을"
+    },
+    {
+      "offset": "0xadb",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "사용하기"
+    },
+    {
+      "offset": "0xae4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "시작하면서"
+    },
+    {
+      "offset": "0xaf0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "비스트"
+    },
+    {
+      "offset": "0xaf7",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "들이"
+    },
+    {
+      "offset": "0xafc",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "폭주하기"
+    },
+    {
+      "offset": "0xb05",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "시작했어"
+    },
+    {
+      "offset": "0xb1f",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "살아남는"
+    },
+    {
+      "offset": "0xb28",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "길은"
+    },
+    {
+      "offset": "0xb2d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0xb34",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "도망치는"
+    },
+    {
+      "offset": "0xb3d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xb40",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "뿐이었지"
+    },
+    {
+      "offset": "0xb5a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "뭐"
+    },
+    {
+      "offset": "0xb5d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "결국"
+    },
+    {
+      "offset": "0xb62",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리도"
+    },
+    {
+      "offset": "0xb69",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "버티긴"
+    },
+    {
+      "offset": "0xb70",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "했지만"
+    },
+    {
+      "offset": "0xb77",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "결국"
+    },
+    {
+      "offset": "0xb7c",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0xb83",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "내려와"
+    },
+    {
+      "offset": "0xb8a",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "버렸다네"
+    },
+    {
+      "offset": "0xb94",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0xbaa",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "모두"
+    },
+    {
+      "offset": "0xbb1",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "홀리"
+    },
+    {
+      "offset": "0xbb6",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0xbbf",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "힘이"
+    },
+    {
+      "offset": "0xbc4",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "남아있어"
+    },
+    {
+      "offset": "0xbcd",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "줘서야"
+    },
+    {
+      "offset": "0xbe1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "그런가"
+    },
+    {
+      "offset": "0xbf9",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "솔티안들에게"
+    },
+    {
+      "offset": "0xc06",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "가디언은"
+    },
+    {
+      "offset": "0xc0f",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "삶의"
+    },
+    {
+      "offset": "0xc14",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "일부가"
+    },
+    {
+      "offset": "0xc1b",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "되어있어"
+    },
+    {
+      "offset": "0xc35",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "그것을"
+    },
+    {
+      "offset": "0xc3c",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "빼앗는다고"
+    },
+    {
+      "offset": "0xc48",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "전쟁이"
+    },
+    {
+      "offset": "0xc4f",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "끝날"
+    },
+    {
+      "offset": "0xc54",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "것"
+    },
+    {
+      "offset": "0xc57",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "같진"
+    },
+    {
+      "offset": "0xc5c",
+      "speaker": "엘지스멤버2",
+      "mode_byte": null,
+      "text": "않군"
+    },
+    {
+      "offset": "0xc6d",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "솔티안들은"
+    },
+    {
+      "offset": "0xc79",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "가디언의"
+    },
+    {
+      "offset": "0xc82",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "힘이"
+    },
+    {
+      "offset": "0xc87",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "없이는"
+    },
+    {
+      "offset": "0xc8e",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "살"
+    },
+    {
+      "offset": "0xc91",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0xc94",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "없을"
+    },
+    {
+      "offset": "0xc99",
+      "speaker": "일레느",
+      "mode_byte": null,
+      "text": "테니까"
+    },
+    {
+      "offset": "0xcad",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "시끄러"
+    },
+    {
+      "offset": "0xcc5",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "왜"
+    },
+    {
+      "offset": "0xcca",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "왜"
+    },
+    {
+      "offset": "0xccd",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "그러나"
+    },
+    {
+      "offset": "0xcde",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아니"
+    },
+    {
+      "offset": "0xce4",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아닙니다"
+    },
+    {
+      "offset": "0xcf7",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "아래로"
+    },
+    {
+      "offset": "0xd00",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "내려가는"
+    },
+    {
+      "offset": "0xd09",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "방법을"
+    },
+    {
+      "offset": "0xd10",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "알고"
+    },
+    {
+      "offset": "0xd15",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "싶군요"
+    },
+    {
+      "offset": "0xd2d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "흠"
+    },
+    {
+      "offset": "0xd32",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "성격이"
+    },
+    {
+      "offset": "0xd39",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "급한"
+    },
+    {
+      "offset": "0xd3e",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "친구로군"
+    },
+    {
+      "offset": "0xd59",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "남동쪽"
+    },
+    {
+      "offset": "0xd60",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "동굴"
+    },
+    {
+      "offset": "0xd66",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "깊숙한"
+    },
+    {
+      "offset": "0xd6d",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "곳에"
+    },
+    {
+      "offset": "0xd74",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "우리"
+    },
+    {
+      "offset": "0xd79",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "주민들이"
+    },
+    {
+      "offset": "0xd82",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "대지로"
+    },
+    {
+      "offset": "0xd89",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "내려가기"
+    },
+    {
+      "offset": "0xd92",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "위해"
+    },
+    {
+      "offset": "0xd97",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "사용했던"
+    },
+    {
+      "offset": "0xda1",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "워프포인트"
+    },
+    {
+      "offset": "0xdac",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가"
+    },
+    {
+      "offset": "0xdaf",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "있네만"
+    },
+    {
+      "offset": "0xdc8",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "조금"
+    },
+    {
+      "offset": "0xdcd",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "더"
+    },
+    {
+      "offset": "0xdd0",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "쉬다"
+    },
+    {
+      "offset": "0xdd5",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "가는게"
+    },
+    {
+      "offset": "0xddc",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "어떻겠나"
+    },
+    {
+      "offset": "0xde9",
+      "speaker": "잔존민 노인",
+      "mode_byte": "0x7b",
+      "text": "솔티아"
+    },
+    {
+      "offset": "0xdf1",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "퀘스트"
+    },
+    {
+      "offset": "0xdf8",
+      "speaker": "잔존민 노인",
+      "mode_byte": null,
+      "text": "입수"
+    }
+  ],
+  "count": 303
+}

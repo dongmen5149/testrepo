@@ -1,0 +1,611 @@
+{
+  "entries": [
+    {
+      "offset": "0x1e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "絃"
+    },
+    {
+      "offset": "0x4c",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "絃"
+    },
+    {
+      "offset": "0xd5",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0xdc",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "관청"
+    },
+    {
+      "offset": "0xe4",
+      "speaker": null,
+      "mode_byte": "0x7b",
+      "text": "가시나무장화"
+    },
+    {
+      "offset": "0xf1",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "조합서"
+    },
+    {
+      "offset": "0xf8",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "를"
+    },
+    {
+      "offset": "0xfb",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "얻었다"
+    },
+    {
+      "offset": "0x10e",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0x114",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "엔자크의"
+    },
+    {
+      "offset": "0x11d",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "난민들에"
+    },
+    {
+      "offset": "0x128",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "솔티안들까지"
+    },
+    {
+      "offset": "0x135",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "들고"
+    },
+    {
+      "offset": "0x13a",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "일어나니"
+    },
+    {
+      "offset": "0x144",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "한시도"
+    },
+    {
+      "offset": "0x14b",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "쉴틈이"
+    },
+    {
+      "offset": "0x152",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "없군요"
+    },
+    {
+      "offset": "0x166",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "로우엔의"
+    },
+    {
+      "offset": "0x16f",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "공장"
+    },
+    {
+      "offset": "0x178",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "확실한가"
+    },
+    {
+      "offset": "0x18d",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "지금까지"
+    },
+    {
+      "offset": "0x197",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x19a",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "남자"
+    },
+    {
+      "offset": "0x19f",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "의"
+    },
+    {
+      "offset": "0x1a2",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "예측이"
+    },
+    {
+      "offset": "0x1a9",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "빗나간"
+    },
+    {
+      "offset": "0x1b0",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "적이"
+    },
+    {
+      "offset": "0x1b5",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "있었습니까"
+    },
+    {
+      "offset": "0x1cc",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "드디어"
+    },
+    {
+      "offset": "0x1d3",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "일망타진"
+    },
+    {
+      "offset": "0x1dc",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "할"
+    },
+    {
+      "offset": "0x1df",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "수"
+    },
+    {
+      "offset": "0x1e2",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "있겠군"
+    },
+    {
+      "offset": "0x1ea",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "그"
+    },
+    {
+      "offset": "0x1ed",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "반동분자들을"
+    },
+    {
+      "offset": "0x1fa",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "말이야"
+    },
+    {
+      "offset": "0x20d",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "뒷수습는"
+    },
+    {
+      "offset": "0x216",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "내가"
+    },
+    {
+      "offset": "0x21b",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "알아서"
+    },
+    {
+      "offset": "0x222",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "할테니"
+    },
+    {
+      "offset": "0x22a",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "깨끗하게만"
+    },
+    {
+      "offset": "0x235",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "처리해"
+    },
+    {
+      "offset": "0x23c",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "주게"
+    },
+    {
+      "offset": "0x251",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "그럼"
+    },
+    {
+      "offset": "0x256",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "부탁드립니다"
+    },
+    {
+      "offset": "0x264",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "에이블"
+    },
+    {
+      "offset": "0x26b",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "시장님"
+    },
+    {
+      "offset": "0x27e",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "허허"
+    },
+    {
+      "offset": "0x284",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "내게도"
+    },
+    {
+      "offset": "0x28b",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "눈엣가시같은"
+    },
+    {
+      "offset": "0x298",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "놈들이었으니까"
+    },
+    {
+      "offset": "0x2b4",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "이런"
+    },
+    {
+      "offset": "0x2b9",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "시대에"
+    },
+    {
+      "offset": "0x2c0",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "평화를"
+    },
+    {
+      "offset": "0x2c7",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "외치는"
+    },
+    {
+      "offset": "0x2ce",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x2d1",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "어리석은"
+    },
+    {
+      "offset": "0x2da",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "짓이죠"
+    },
+    {
+      "offset": "0x2ed",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "토레즈가"
+    },
+    {
+      "offset": "0x2f6",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "전쟁을"
+    },
+    {
+      "offset": "0x2fd",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "통해"
+    },
+    {
+      "offset": "0x302",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "얼마나"
+    },
+    {
+      "offset": "0x309",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "발전했는지"
+    },
+    {
+      "offset": "0x314",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "뻔히"
+    },
+    {
+      "offset": "0x319",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "아는"
+    },
+    {
+      "offset": "0x31e",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "놈들이"
+    },
+    {
+      "offset": "0x333",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "이제"
+    },
+    {
+      "offset": "0x338",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "배가"
+    },
+    {
+      "offset": "0x33d",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "부른거지"
+    },
+    {
+      "offset": "0x352",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "엘지스를"
+    },
+    {
+      "offset": "0x35b",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "정리하면"
+    },
+    {
+      "offset": "0x364",
+      "speaker": "멜페토",
+      "mode_byte": null,
+      "text": "전면전입니까"
+    },
+    {
+      "offset": "0x37d",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "어허어허"
+    },
+    {
+      "offset": "0x387",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "알만한"
+    },
+    {
+      "offset": "0x38e",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "사람이"
+    },
+    {
+      "offset": "0x395",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "왜이러나"
+    },
+    {
+      "offset": "0x3aa",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "계속"
+    },
+    {
+      "offset": "0x3af",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "국가"
+    },
+    {
+      "offset": "0x3b4",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "지원을"
+    },
+    {
+      "offset": "0x3bb",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "받고"
+    },
+    {
+      "offset": "0x3c0",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "무기를"
+    },
+    {
+      "offset": "0x3c7",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "만들어"
+    },
+    {
+      "offset": "0x3ce",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "팔려면"
+    },
+    {
+      "offset": "0x3d5",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "전쟁이"
+    },
+    {
+      "offset": "0x3dc",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "끝나선"
+    },
+    {
+      "offset": "0x3e3",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "안돼"
+    },
+    {
+      "offset": "0x3f4",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "적당히"
+    },
+    {
+      "offset": "0x3fb",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "긴장을"
+    },
+    {
+      "offset": "0x402",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "유지시키면서"
+    },
+    {
+      "offset": "0x40f",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "그래야지"
+    },
+    {
+      "offset": "0x419",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "응"
+    },
+    {
+      "offset": "0x428",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "전쟁이란"
+    },
+    {
+      "offset": "0x431",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "건"
+    },
+    {
+      "offset": "0x434",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "말일세"
+    },
+    {
+      "offset": "0x43c",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "결국"
+    },
+    {
+      "offset": "0x441",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "좀"
+    },
+    {
+      "offset": "0x444",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "큰"
+    },
+    {
+      "offset": "0x447",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "규모의"
+    },
+    {
+      "offset": "0x44e",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "사업일"
+    },
+    {
+      "offset": "0x455",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "뿐이라고"
+    },
+    {
+      "offset": "0x45f",
+      "speaker": "에이블",
+      "mode_byte": null,
+      "text": "수비대장"
+    }
+  ],
+  "count": 101
+}

@@ -1,0 +1,71 @@
+{
+  "entries": [
+    {
+      "offset": "0x6e",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0x75",
+      "speaker": null,
+      "mode_byte": null,
+      "text": "광산"
+    },
+    {
+      "offset": "0x85",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일단"
+    },
+    {
+      "offset": "0x8a",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "일레느를"
+    },
+    {
+      "offset": "0x93",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "찾아가자"
+    },
+    {
+      "offset": "0x9e",
+      "speaker": "리츠",
+      "mode_byte": "0x7d",
+      "text": "서쪽"
+    },
+    {
+      "offset": "0xa3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "군주둔지"
+    },
+    {
+      "offset": "0xac",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "북쪽"
+    },
+    {
+      "offset": "0xb1",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "토레즈"
+    },
+    {
+      "offset": "0xc3",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "남쪽"
+    },
+    {
+      "offset": "0xc8",
+      "speaker": "리츠",
+      "mode_byte": null,
+      "text": "검은공장"
+    }
+  ],
+  "count": 11
+}

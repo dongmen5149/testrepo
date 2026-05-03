@@ -21,17 +21,22 @@ class SettingsScene(
     private val context: Context,
     private val input: InputController,
     private val settings: Settings,
+    private val gameState: com.hero3.remake.engine.GameState,
     private val onRequest: (MainActivity.SceneRequest) -> Unit,
 ) : Scene {
 
     private data class Item(val labelResId: Int, val type: Type)
-    private enum class Type { LANGUAGE, QUALITY, BACK }
+    private enum class Type { LANGUAGE, QUALITY, ENCOUNTER, MINIMAP, REPLAY_TUTORIAL, BACK }
 
     private val items = listOf(
         Item(R.string.settings_language, Type.LANGUAGE),
         Item(R.string.settings_quality, Type.QUALITY),
+        Item(R.string.settings_encounter, Type.ENCOUNTER),
+        Item(R.string.settings_minimap, Type.MINIMAP),
+        Item(R.string.settings_replay_tutorial, Type.REPLAY_TUTORIAL),
         Item(R.string.txt_134, Type.BACK),  // 확인 / Confirm
     )
+    private val encounterValues = listOf(0.0f, 0.5f, 1.0f, 2.0f)
     private var selected = 0
 
     private val bg = Paint().apply { color = Color.rgb(15, 18, 30) }
@@ -44,7 +49,7 @@ class SettingsScene(
         }
         if (input.pressedOnce(InputController.K_OK)) {
             when (items[selected].type) {
-                Type.LANGUAGE, Type.QUALITY -> toggleCurrent()
+                Type.LANGUAGE, Type.QUALITY, Type.ENCOUNTER, Type.MINIMAP, Type.REPLAY_TUTORIAL -> toggleCurrent()
                 Type.BACK -> onRequest(MainActivity.SceneRequest.Pop)
             }
         }
@@ -60,6 +65,18 @@ class SettingsScene(
             }
             Type.QUALITY -> {
                 settings.qualityHd = !settings.qualityHd
+            }
+            Type.ENCOUNTER -> {
+                val cur = encounterValues.indexOfFirst { kotlin.math.abs(it - settings.encounterMultiplier) < 0.01f }
+                val next = (cur + 1).let { if (it < 0 || it >= encounterValues.size) 0 else it }
+                settings.encounterMultiplier = encounterValues[next]
+            }
+            Type.MINIMAP -> { settings.minimapVisible = !settings.minimapVisible }
+            Type.REPLAY_TUTORIAL -> {
+                gameState.tutorialShown = false
+                com.hero3.remake.engine.EventBus.push(
+                    if (settings.language == "en") "Tutorial will replay on next map walk."
+                    else "다음 맵 진입 시 튜토리얼 재생.")
             }
             Type.BACK -> {}
         }
@@ -77,6 +94,17 @@ class SettingsScene(
                     context.getString(R.string.language_korean) else context.getString(R.string.language_english)
                 Type.QUALITY -> if (settings.qualityHd)
                     context.getString(R.string.settings_quality_hd) else context.getString(R.string.settings_quality_sd)
+                Type.ENCOUNTER -> {
+                    val v = settings.encounterMultiplier
+                    when {
+                        v == 0.0f -> if (settings.language == "en") "OFF" else "꺼짐"
+                        else -> "%.1fx".format(v)
+                    }
+                }
+                Type.MINIMAP -> if (settings.minimapVisible)
+                    (if (settings.language == "en") "ON" else "켜짐")
+                    else (if (settings.language == "en") "OFF" else "꺼짐")
+                Type.REPLAY_TUTORIAL -> if (settings.language == "en") "(OK)" else "(OK)"
                 Type.BACK -> ""
             }
             val label = if (item.type == Type.BACK) name else "$name : ◀ $value ▶"
