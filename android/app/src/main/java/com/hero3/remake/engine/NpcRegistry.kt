@@ -112,6 +112,24 @@ object NpcRegistry {
                 "Welcome! I have great items.",
                 "I sell potions and weapons.",
             ),
+            postBossId = "boss_guardian",
+            dialoguesKoAfter = listOf(
+                "가디언이 사라졌으니 이제 안심하고 거래할 수 있군.",
+                "강철검 같은 더 좋은 무기를 들여왔어.",
+            ),
+            dialoguesEnAfter = listOf(
+                "Now that the Guardian is gone, trade is safe.",
+                "I've stocked finer gear like the steel sword.",
+            ),
+            postBoss2Id = "boss_chaos",
+            dialoguesKoAfter2 = listOf(
+                "혼돈의 군주마저 잡혔다고? 자네에게 어울리는 신성한 장비를 갖췄네.",
+                "성검과 용비늘갑옷, 살펴보게.",
+            ),
+            dialoguesEnAfter2 = listOf(
+                "The Chaos Lord too? I have sacred gear worthy of you.",
+                "Holy sword and dragon scale — take a look.",
+            ),
             patrolPath = listOf(22 to 10, 23 to 10, 22 to 10, 21 to 10),
         ),
         Npc(

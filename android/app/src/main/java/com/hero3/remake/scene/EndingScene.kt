@@ -23,7 +23,10 @@ class EndingScene(
     private val markCleared: Boolean = true,
 ) : Scene {
 
-    init { if (markCleared) gameState.gameCleared = true }
+    init {
+        if (markCleared) gameState.gameCleared = true
+        com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.ENDING)
+    }
 
     private val isEn = settings.language == "en"
 

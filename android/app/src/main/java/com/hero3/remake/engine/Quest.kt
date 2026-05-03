@@ -124,7 +124,11 @@ class QuestLog(private val gameState: GameState) {
                 gameState.activeQuestIds = gameState.activeQuestIds - id
                 gameState.doneQuestIds   = gameState.doneQuestIds + id
                 if (q.rewardGold > 0) gameState.gold += q.rewardGold
-                q.rewardItemId?.let { inventory.add(it, 1) }
+                q.rewardItemId?.let { itemId ->
+                    if (!inventory.add(itemId, 1)) {
+                        EventBus.push("Bag full — quest item lost ($itemId)")
+                    }
+                }
                 newlyDone += id
                 // 후속 퀘스트 자동 시작
                 q.followUpQuestId?.let { followId ->

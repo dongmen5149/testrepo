@@ -43,6 +43,9 @@ class SaveSlotScene(
             val slot = slots[selected]
             if (mode == Mode.SAVE) {
                 slot.copyFrom(gameState)
+                com.hero3.remake.engine.EventBus.push(
+                    if (currentLanguageIsKorean()) "슬롯 ${selected + 1} 저장 완료"
+                    else "Slot ${selected + 1} saved")
             } else if (!slot.isEmpty()) {
                 gameState.copyFrom(slot)
                 onRequest(MainActivity.SceneRequest.MapWalk)

@@ -5,160 +5,281 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**현재까지 마지막 마일스톤** (2026-05-04, QuestScene 골드 표시):
-- QuestScene 헤더 우측에 현재 소지금 표시 — 보상 검토 시 즉시 비교 가능
+**최신 커밋**: `af5574a feat: 게임 1주차 콘텐츠 완성 + _scn/_cif/_mp 통계 분석` (+ 그 이후 6 추가 폴리시)
 
-**이전 마일스톤** (2026-05-04, 슬롯 copyFrom 누락 필드 보강):
-- 세이브/로드 시 누락되던 필드 모두 복사: gameCleared, tutorialShown, bossesDefeated, defeatedEnemyIds, activeQuestIds, doneQuestIds, openedChestIds, visitedMapIds
-- 이전엔 슬롯 로드 후 도감/보스/퀘스트/상자 상태 모두 사라지던 버그 수정
+## ⚡ 다음 세션 — 시작 전 5분 체크리스트
 
-**이전 마일스톤** (2026-05-04, KEY 아이템 판매 차단):
-- ShopScene SELL 시 KEY 종류 차단 + "열쇠 아이템은 판매 불가" 메시지
-
-**이전 마일스톤** (2026-05-04, BestiaryScene 드롭 목록):
-- 처치한 적 우측 상세에 드롭 아이템 + 확률(%) 표시 ("- 약초 50%")
-
-**이전 마일스톤** (2026-05-04, 인벤 KEY 슬롯 색상):
-- KEY 종류 아이템은 갈색 슬롯 배경으로 일반 아이템과 시각 구분 (드롭도 # 키로 차단되는 것과 일관)
-
-**이전 마일스톤** (2026-05-04, StatusScene 영웅 포트레이트):
-- 캐릭터 정보 박스 우측에 영웅(h00000_bm) 3× scale 포트레이트
-
-**이전 마일스톤** (2026-05-04, 새 게임 클리어 플래그 보존):
-- NewGame 시 이전 `gameCleared` 만 보존 → ★ CLEAR 배지가 회차 시작 후에도 유지
-
-**이전 마일스톤** (2026-05-04, 새 게임 진짜 초기화):
-- TitleScene "새 게임" 이 `SceneRequest.NewGame` 으로 라우팅 → 활성 슬롯(0) `clear()` + 솔티아 (17,12) 리셋. 이전 진행은 다른 슬롯(1~3) 에 저장된 것만 보존됨
-
-**이전 마일스톤** (2026-05-04, HealParty 토스트):
-- 여관/신관 대화 종료 후 회복 결과 EventBus 토스트 ("휴식. -10G" / 부족 시 "골드 부족.")
-
-**이전 마일스톤** (2026-05-04, TitleScene Asset Gallery 라우팅):
-- "자산 갤러리" 항목이 SpriteGallery 직진입 (이전엔 MainMenu 우회)
-
-**이전 마일스톤** (2026-05-04, 미니맵 영웅 방향 표시):
-- 미니맵 hero 점에 방향 화살표(흰색 사각형) 추가 — UP/DOWN/LEFT/RIGHT 즉시 시각화
-
-**이전 마일스톤** (2026-05-04, EndingScene 모드 분리):
-- `markCleared` 플래그 — Ending 진입(클리어)은 `gameCleared=true` + 종료 시 Title, CreditsView 진입은 마킹 없이 단순 Pop
-- MainMenu "크레딧" 은 CreditsView 라우팅 → 미클리어 사용자가 봐도 진척에 영향 없음
-
-**이전 마일스톤** (2026-05-04, MainMenu 크레딧 항목):
-- "크레딧 / Credits" debug 항목 추가 → 게임 클리어 안 해도 EndingScene 직접 진입 가능
-
-**이전 마일스톤** (2026-05-04, Settings 튜토리얼 재생):
-- "튜토리얼 재생" 항목 추가, OK 시 `tutorialShown=false` + EventBus 알림
-- SettingsScene 에 GameState 주입
-
-**이전 마일스톤** (2026-05-04, 미니맵 토글):
-- **Settings.minimapVisible** + UI 토글 ON/OFF
-- MapWalkScene 미니맵 렌더가 토글 따라 보임/숨김
-
-**이전 마일스톤** (2026-05-04, MapWalk 리더 캐시):
-- 매 프레임 `loadParty()` 호출 → JSON 재파싱 비용 → 250ms 캐시 도입. HUD 갱신엔 영향 없으면서 60fps 부담 감소
-
-**이전 마일스톤** (2026-05-04, 영웅 lunge 애니):
-- BattleScene 영웅 공격/스킬 시 sprite 가 ~280ms 동안 우측으로 16px 돌진 후 복귀
-
-**이전 마일스톤** (2026-05-04, SkillScene 효과 텍스트):
-- heal: "Heal: INT×0.5 +30" / dmg: "DMG: ATK×2.0 +20" 형식, 무의미한 mul=1 / flat=0 자동 생략
-
-**이전 마일스톤** (2026-05-04, 퀘스트 시작 토스트):
-- 신규 퀘스트 활성화 시 EventBus "퀘스트 시작: <제목>" 토스트 (한·영). 이미 진행/완료면 토스트 없음
-
-**이전 마일스톤** (2026-05-04, 영웅 방향 sprite):
-- **MapWalkScene** — 영웅 sprite 가 heroFacing(0=DOWN/1=UP/2=LEFT/3=RIGHT) 에 매칭되는 4 frame 사용. 이동 방향이 시각으로 보임
-
-**이전 마일스톤** (2026-05-04, 액세서리 효과 보강):
-- **ring_dest** (Tier-3) — STR +8 ATK 반영 (이전엔 ring_pwr 만)
-- **ring_mana** — INT +5 가 effectiveIntl 로 heal 스킬에 적용
-- BattleScene useSkill heal = effectiveIntl 사용
-
-**이전 마일스톤** (2026-05-04, ShopScene 스크롤):
-- BUY/SELL 모두 12개 초과 시 자동 스크롤 + `n/N` 카운터. Tier-3 잠금 해제 후 14개 stock 모두 노출
-
-**이전 마일스톤** (2026-05-04, BattleScene 영웅 sprite):
-- 좌측에 영웅(h00000_bm) 3× scale sprite 배치 → 적과 1:1 대치 시각화
-
-**이전 마일스톤** (2026-05-04, FastTravel 비용):
-- **TravelScene** — 다른 맵 이동 시 50G 차감, 부족하면 EventBus 토스트로 거부
-
-**이전 마일스톤** (2026-05-04, MainMenu 스크롤):
-- **MainMenuScene** — 15 항목이 화면을 넘어 잘리던 문제 수정. itemH=16 + 자동 스크롤 + `n/N` 카운터
-
-**이전 마일스톤** (2026-05-04, BattleScene Skill 스크롤):
-- **Skill 메뉴 동일 스크롤** — 4개 초과 시 가시 영역 유지 + 카운터 (Lv8 케이 = 3 스킬 모두 노출)
-
-**이전 마일스톤** (2026-05-04, BattleScene Item 스크롤):
-- **Item 메뉴 4개 초과 시 스크롤** — 현재 선택을 항상 가시 영역에 유지, "n/N" 카운터 표시
-
-**이전 마일스톤** (2026-05-04, 빠른 이동):
-- **GameState.visitedMapIds** + MapWalk loadMap 시 자동 markVisited
-- **TravelScene** — 방문한 맵 목록, 선택 시 안전한 진입점에 영웅 배치 + MapWalk 재로딩
-- MainMenu 의 "빠른 이동 / Fast Travel" 항목
-
-**이전 마일스톤** (2026-05-04, NPC 퀘스트 마커):
-- **MapWalkScene** — 퀘스트 발급 NPC 위에 "!"(새 퀘스트, 노랑) / "?"(진행중, 파랑) 부유 마커. 한 눈에 어디로 가야할지 인지
-
-**이전 마일스톤** (2026-05-04, map12 NPC 2명 추가):
-- **수호 영혼 (map12 5,5)** — boss_sealed 처치 전/후 대사 분기
-- **잃어버린 사제 (map12 14,11)** — 좌우 patrol, 천 년 갇힌 사제의 부탁
-
-**이전 마일스톤** (2026-05-04, 첫 진입 튜토리얼 + 세션 종합):
-- **GameState.tutorialShown** + MapWalk 첫 진입 시 6s 검은 페이드 + 컨트롤 안내 (한·영). OK 즉시 닫기
+1. `git log --oneline -3` 로 최신 커밋 확인 (`af5574a` 다음 추가분 있는지)
+2. `git status --short` — 미커밋 변경 있으면 무엇이 진행 중인지 파악
+3. 이 문서 §"현재 상태 스냅샷" + §"다음 진행 후보" 읽기
+4. Android 빌드 가능 환경이면 `cd android && ./gradlew :app:assembleDebug` 로 컴파일 검증 (gradle wrapper 부재 시 system gradle 또는 Android Studio 사용)
+5. `tools/recon/*.py` 의 산출물(`work/*.json`)이 비어있으면 §"재현 명령" 참조해 재실행
 
 ---
 
-**세션 종합** (2026-05-04, 게임 1주차 콘텐츠 + _scn 분석):
+## 📊 현재 상태 스냅샷 (2026-05-04 종료 시점)
 
-### 게임 콘텐츠 (Android 클라이언트)
-- **3 보스 + 5 맵** — boss_guardian (map10), boss_chaos (map11), boss_sealed (map12) 체인. boss_sealed 처치 시 EndingScene 자동 진입
-- **Tier 1/2/3 아이템 16종** — `merchant_bo` 가 보스 처치 따라 점진적 잠금 해제
-- **퀘스트 체인** — guardian_hunt → chaos_lord → sealed_god (자동 followUp). herb_gather (수집형). QuestLog.tickAutoComplete 가 보스/아이템 OR 조건으로 자동 완료 + 보상 지급
-- **NPC 11명** — map0 (촌장/상인보/경비병/아이/여관주인), map1 (방랑자린/농부돌), map10 (학자에드/신관엘리/상인진), map11 (신탁관세라). 4명 patrol path. postBoss / postBoss2 / postBoss3 alt 대사 (1차/2차/진엔딩 단계별 분기)
-- **전투 시스템** — Attack/Skill/Item/Run, 12 스킬 (Lv1~8 게이트), 적 10 + 보스 3, dropTable, popups, 영웅·적 HP/SP 바, 부유/피격 shake/사망 페이드/보스 인트로(1.8s)/처치 플래시(600ms)
-- **랜덤 인카운터** — map1=10%, map10=15%, map11=20%, map12=25%. 그레이스 3s, Settings 배수 0.0/0.5/1.0/2.0
-- **장비** — Character.equipWeapon/Armor/Accessory + InventoryScene 장착, effectiveAttack/Defense() 합산, BattleScene 반영
-- **레벨업** — `level² × 20` 임계, HP/SP 성장 + 풀 회복 + 화이트 플래시
-- **자연 회복** — 5걸음마다 HP+2/SP+1
-- **패배 부활** — HP/SP 25% + map0 (17,12) 워프
-- **여관/신관** — map0 매(10G), map10 엘리(100G) 풀 회복 NPC
-- **보물상자 8개** — ChestRegistry, MapWalk 자동 픽업, 미니맵 황금 마커
-- **세이브 슬롯 3 + slot 0 활성** — 라벨에 ★ 클리어 / Lv / G / HH:MM:SS
-- **Records 화면** — 플레이 시간 / 도감 / 보스 / 상자 / 퀘스트 / 클리어 ★
-- **적 도감 BestiaryScene** — 처치 적 sprite + 스탯, 미처치는 ???
-- **EndingScene** — 한·영 스크롤 크레딧, gameCleared 플래그 set
-- **TitleScene** — ★ CLEAR 배지
+### Android 클라이언트 — 완성도 높은 1주차 게임
 
-### 씬·UX
-- 17 씬: Title/MainMenu/MapWalk/NpcDialogue/SaveSlots/Status/Inventory/DialogueDemo/Settings/SpriteGallery/Map/Battle/Shop/Skill/Quest/Bestiary/Records/EventViewer/Ending
-- MapWalk HUD: 맵명·좌표·Lv/EXP/HP/SP/G·미니맵·활성 퀘스트 라인·NPC인접/보스근접/출구 힌트 cycling
-- EventBus 토스트 시스템 (보스/레벨업/퀘스트/드롭/픽업)
-- StatusScene L 키 = 같은 영웅 내 직업 cycle (5종)
-- InventoryScene # 키 = 1개 버리기, OK = 회복약 사용 (필드)
-- Settings: 언어 / 화질(SD/HD) / 인카운터 배수
-- MapGraph 수동 정의 (map0↔1/10, 10↔11, 11↔12) — extras 디코드 후 자동 생성 예정
+**플레이어 진행 루프** (전부 동작):
+- 새 게임 → 솔티아 마을 → NPC 대화 → 촌장이 가디언 토벌 의뢰 (`guardian_hunt`)
+- 외곽(map1) / 가디언 동굴(map10) 탐험 → 인카운터 / 보물상자 / 자연 회복
+- 보스 1: `boss_guardian` (map10 8,4) → 처치 시 화이트 플래시 + Tier-2 잠금 해제 + `chaos_lord` 자동 활성
+- 혼돈의 영역(map11) → 보스 2: `boss_chaos` (map11 6,6) → Tier-3 잠금 해제 + `sealed_god` 자동 활성
+- 봉인의 사원(map12) → 최종 보스: `boss_sealed` (map12 10,6) → 처치 시 EndingScene 자동 진입 → 한·영 크레딧 → 타이틀 ★ CLEAR
 
-### `_scn` 분석 (Ghidra 없이)
-- **`tools/recon/extract_scn_speakers.py`** — 0x5b...0x5d 화자 태그 105종 추출 (리츠 774, 케이 758)
-- **`tools/converter/convert_scn_v2.py`** — 244 _scn → 화자/모드/대사 트리플 25,818개 JSON, Android assets 통합
-- **dispatch 발견**: 대사 시작 opcode `0x00 [mode]` (mode ∈ {0x7c, 0x27, 0x24, 0x7b}). PROGRESS §4.4 가설 확정
-- **헤더 영역 분리**: 첫 화자 태그 이전 0~1930 byte 가 이벤트 메타 (트리거/플래그) — Ghidra 진입점 우선순위
-- inter-speaker 영역은 단순 마커 (분기 opcode 부재)
-- `work/scn_*.json` 4개 보고서
+**게임 시스템**:
+- 캐릭터: 케이/리츠 각 5 클래스 (StatusScene L 키로 자유 변경)
+- 12 스킬 (Lv 1/5/6/7/8 단계별 잠금 해제), heal/damage 모두 effective stats 반영
+- 16 아이템 (Tier 1/2/3) — 무기/방어구/장신구/소비/재료/열쇠
+- 적 13 (10 일반 + 3 보스), 드롭 테이블, 도감 (BestiaryScene)
+- 8 보물상자, 빠른 이동(50G), 여관 10G/100G
+- 퀘스트 4개, 자동 완료 + 후속 체인, EventBus 토스트
+- 세이브 슬롯 3 + 활성 슬롯 0, 모든 진행 상태 영구 저장
 
-### `_cif` 분석 (Ghidra 없이)
-- **헤더 재해석**: `uint8 slot_count + uint8 category` (기존 uint16 가정 폐기). category 0=hero/boss(8슬롯), 1=enemy(0~7)
+**씬 (20 + Ending) 모두 정식 구현**:
+- Title / MainMenu / MapWalk / NpcDialogue / SaveSlots / Status / Inventory(가방·장비·스킬 탭) / DialogueDemo / Settings / SpriteGallery / Map(heatmap) / Battle / Shop / Skill / Quest / Bestiary / Records / EventViewer / Travel / Ending
+- 미니맵, 활성 퀘스트 라인, 보스 근접 경고, 출구 힌트
+- Battle: 부유 / lunge / hit shake / 데미지 popup / 사망 페이드 / 보스 인트로(1.8s) / 처치 플래시(600ms)
+- 토스트 시스템 (보스/레벨업/퀘스트/드롭/픽업/세이브)
+- 튜토리얼 오버레이 (첫 진입 6s, Settings 에서 재생 가능)
+
+**Settings**: 언어(ko/en) / 화질(SD/HD) / 인카운터 배수(0/0.5/1/2x) / 미니맵 ON/OFF / 튜토리얼 재생
+
+**SfxBus** (사운드 stub, §4.5 후 즉시 활성):
+- TitleScene → Bgm.TITLE / MapWalk → Bgm.FIELD / Battle → Bgm.BATTLE or Bgm.BOSS / Ending → Bgm.ENDING
+- BattleScene HIT / LEVEL_UP / BOSS_INTRO / BOSS_DEFEAT, MapWalk CHEST 호출 wired up
+- `SfxBus.debugToast = true` 면 EventBus 로 어떤 효과음이 트리거되는지 시각화
+
+### 원본 자산 분석 (Ghidra 없이 가능한 한도)
+
+**`_scn` (이벤트 스크립트, 244 파일 / 316KB, 52% 텍스트)**:
+- 화자 태그 105 종 추출 (리츠 4890 / 케이 4599 / 일레느 3064 / ...)
+- 25,818 대사 트리플 → 화자/모드/텍스트 구조화 JSON (244 파일 + summary)
+- "다음 대사" opcode 식별: `0x00 [mode]`, mode ∈ {0x7c, 0x27, 0x24, 0x7b}
+- 헤더 영역 분리: 첫 화자 태그 이전이 0~1930 byte 이벤트 메타 (트리거/플래그) — Ghidra 진입점 우선순위
+- inter-speaker 영역은 단순 마커, 분기 opcode 부재
+
+**`_cif` (애니메이션, 103 파일)**:
+- 헤더 재해석: `uint8 slot_count + uint8 category` (기존 uint16 가정 폐기)
+- category 0 = hero/boss (8슬롯), category 1 = enemy (0~7)
 - `19 19` 마커 = frame size (76% 파일)
-- 9-byte record 가설 약함 — 가변길이 record 추정
-- `tools/recon/analyze_cif.py`, `tools/converter/convert_cif.py` 헤더 패치
+- `tools/converter/convert_cif.py` 헤더 패치 완료. 9-byte record 가설 약함 → 가변 record 추정
 
-### `_mp` extras 분석 (Ghidra 없이)
-- **`tools/recon/analyze_mp_extras.py`** — 134맵 통계. best rec_size 4(60맵)/6(35맵)/12(10맵) 분산 → 단일 fixed-size 가설 부적합
-- 첫 byte 0x80(67) / 0xc0(11) dominant → flag/type
-- 결정적 디코드는 Ghidra 필요
+**`_mp` extras (134 맵)**:
+- best record_size 4(60맵)/6(35맵)/12(10맵) 분산 → 단일 fixed-size 가설 부적합
+- 첫 byte 0x80(67맵)/0xc0(11맵) dominant → flag/type
+- **결정적 디코드는 Ghidra 필요** (현재 MapGraph 수동 정의로 우회)
 
 ---
+
+## 🎯 다음 진행 후보 (우선순위순)
+
+### A) **대사 번역 실행** [블로커: API 키 + 사용자 결정]
+- 비용: ~$0.66 (Claude Haiku 4.5, 9,741 unique). 한 번만 실행
+- 사용자가 "번역은 마지막"이라고 했으므로 게임 콘텐츠가 마무리된 시점에 진행
+- 명령 (in §"재현 명령")
+- 결과: `dialogue_translations_en.json` 자동 배포, NpcDialogueScene 가 settings.language == "en" 일 때 자동 사용
+
+### B) **Ghidra 분석** [블로커: Ghidra 도구 설치]
+1. **§4.1 type 0x0c sparse pixel** — theme/obj 타일 진짜 그래픽 (현재 색상 그리드 placeholder)
+2. **§4.2 _mp extras** — NPC/exit/event 자동 배치 (현재 NpcRegistry, MapGraph, EncounterTable, ChestRegistry 모두 수동)
+3. **§4.3 _cif animation timing** — 진짜 4방향 걷기/공격/사망 애니 (현재 정적 frame 매핑)
+4. **§4.4 _scn opcode** — 분기/이펙트/사운드 명령 (헤더 영역 분석부터 시작 — 통계 단서 확보됨)
+
+진입점 단서 (PROGRESS §4 상세):
+- 비트맵 디코더: `frameBuf is NULL` 문자열 (`0xa61c8`) 부근 PIC xref
+- _cif 애니: `Hero_Free`, `freeBossType` 함수 부근
+- _mp extras: NPC 로딩 함수 (`Event_freeID`, `loadDataID`)
+- _scn opcode: `onEventMessageOkKey`, `eventManager` switch/dispatch
+
+### C) **사운드 (SMAF→OGG)** [블로커: 외부 도구]
+- §4.5 — SMAF 디코더 (`smaf2midi` 또는 KSS/Yamaha SMAF SDK) 또는 33개 수동 변환
+- 변환 후 `engine/SfxBus.kt` 의 `play()` / `playMusic()` 만 구현하면 즉시 활성. 호출처는 이미 wired up
+
+### D) **게임 콘텐츠 확장** [블로커 없음, 작업량만]
+- 추가 보스 / 맵 / NPC / 퀘스트
+- 추가 스킬·아이템·세트 효과
+- 멀티 캐릭터 액티브 파티 (현재 leader 만 전투 참여)
+- 세이브 자동 (currently 슬롯 0 만 자동, 슬롯 1~3 수동)
+- 일본어/중국어 (translate_dialogues.py system prompt 교체)
+
+### E) **빌드/테스트 환경** [블로커 없음]
+- gradle wrapper 추가 (`cd android && gradle wrapper --gradle-version 8.7`)
+- CI 셋업
+- 단위 테스트 (CharacterRegistry / Quest 로직 등)
+- `_scn` 분석 결과를 자동 검증하는 회귀 테스트
+
+---
+
+## 📁 코드 구조 — 어디에 뭐가 있나
+
+### Android 클라이언트 (`android/app/src/main/`)
+
+```
+java/com/hero3/remake/
+├── MainActivity.kt              # SceneRequest 라우팅 + GameState/Settings 주입
+├── engine/                      # 핵심 시스템 (data + logic)
+│   ├── Character.kt             # CharacterRegistry, Stats, effectiveAttack/Defense/Intl
+│   ├── Item.kt                  # ItemRegistry, Inventory(MAX_SLOTS=20)
+│   ├── Skill.kt                 # SkillRegistry (Lv 게이트, 12 스킬)
+│   ├── Enemy.kt                 # EnemyRegistry (10 일반 + 3 보스, dropTable)
+│   ├── Quest.kt                 # QuestRegistry, QuestLog (자동 완료 + followUp 체인)
+│   ├── ChestRegistry.kt         # 8 상자 정적 정의
+│   ├── ShopRegistry.kt          # NPC별 재고 (gameState 따라 잠금 해제)
+│   ├── EncounterTable.kt        # 맵별 인카운터 확률 + 적 풀
+│   ├── MapGraph.kt              # 맵 간 연결 (E/W/N/S edges 수동 정의)
+│   ├── NpcRegistry.kt           # 13 NPC + patrolPath + postBoss 분기 + action(heal)
+│   ├── GameState.kt             # 슬롯별 SharedPreferences (party/inventory/quests/etc)
+│   ├── Settings.kt              # 언어/화질/인카운터/미니맵
+│   ├── EventBus.kt              # 단순 toast 큐
+│   ├── SfxBus.kt                # 사운드 stub
+│   ├── GameView.kt              # SurfaceView 60fps + 키 매핑
+│   ├── InputController.kt       # 비트마스크 입력
+│   ├── VirtualKeypadView.kt     # 가상 키패드 오버레이
+│   ├── Scene.kt                 # 추상 (consumesPoundKey 플래그)
+│   ├── Strings.kt               # i18n 헬퍼
+│   └── UiKit.kt                 # 공용 그리기 (drawBox/drawHeader/drawHints)
+└── scene/                       # 20개 씬
+    ├── TitleScene / MainMenuScene / MapWalkScene / NpcDialogueScene
+    ├── SaveSlotScene / StatusScene / InventoryScene / SkillScene / QuestScene
+    ├── BattleScene / ShopScene / BestiaryScene / RecordsScene
+    ├── TravelScene / EventViewerScene / EndingScene
+    ├── SettingsScene / DialogueDemoScene / SpriteGalleryScene / MapScene
+
+assets/
+├── sprites/         3,131 frame PNG (1×, SD)
+├── sprites_hd/      4× scale4x HD
+├── maps/            134 _mp.json
+├── cif/             103 _cif.json (헤더 패치 적용 — 재변환 필요)
+├── strings/ palettes/
+├── dat/char_dat.json
+├── scn_v2/          245 화자별 대사 JSON (244 + summary)
+├── dialogue_corpus.json + dialogue_top_texts.json + asset_catalog.json
+└── (dialogue_translations_en.json 은 §A 실행 후 생성)
+
+res/values{,-ko}/strings.xml
+```
+
+### 분석 도구 (`tools/`)
+
+```
+recon/                # 정찰
+├── extract_strings.py / disasm_thumb.py / find_pic_xrefs.py / find_f81f.py / find_base.py
+├── analyze_mp_extras.py        # _mp extras 통계
+├── analyze_cif.py              # _cif 헤더/body 통계
+├── analyze_scn_opcodes.py      # _scn byte freq
+├── extract_scn_speakers.py     # _scn 화자 태그 추출
+├── dump_scn_structure.py       # 단일 _scn 구조 덤프
+├── scn_dialogue_opcode.py      # [speaker] 직전 byte → 대사 시작 opcode
+├── scn_inter_speaker.py        # 대사 ~ 다음 화자 사이 byte
+└── scn_header.py               # 첫 화자 이전 영역 (이벤트 메타)
+
+converter/            # 자산 변환
+├── convert_all.py / convert_text.py / convert_palette.py
+├── convert_bm_v2.py / convert_cif.py / convert_mp.py / convert_scn.py / convert_dat.py
+├── convert_scn_v2.py           # 화자별 대사 트리플 추출 (NEW)
+├── build_dialogue_corpus.py
+└── prepare_android_assets.py   # scn_v2/, dat/char_dat 자동 복사 추가
+
+i18n/                 # 번역 인프라
+├── translation_dict.py
+├── generate_string_resources.py
+├── build_asset_catalog.py
+└── translate_dialogues.py      # Claude Haiku 4.5 (§A 실행)
+
+hd/
+├── upscale_poc.py / batch_upscale.py
+```
+
+### 분석 산출물 (`work/`)
+- `extras_summary.json` — _mp extras 통계
+- `cif_anim_summary.json` — _cif 통계
+- `scn_opcode_freq.json` — _scn byte freq
+- `scn_speakers.json` — 105 화자 + 샘플
+- `scn_dialogue_opcode.json` — 대사 시작 opcode
+- `scn_inter_summary.json` — 대사 사이 byte
+- `scn_header_summary.json` — 헤더 영역
+- `converted/scn_v2/` — 244 + summary
+
+---
+
+## 🔧 재현 명령
+
+### 자산 재변환 (필요 시)
+```bash
+cd tools/converter
+PYTHONIOENCODING=utf-8 python convert_all.py ../../work/extracted ../../work/converted
+PYTHONIOENCODING=utf-8 python convert_scn_v2.py ../../work/extracted/event ../../work/converted/scn_v2
+PYTHONIOENCODING=utf-8 python build_dialogue_corpus.py
+PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
+
+cd ../i18n
+PYTHONIOENCODING=utf-8 python generate_string_resources.py
+PYTHONIOENCODING=utf-8 python build_asset_catalog.py
+```
+
+### `_scn` / `_cif` / `_mp` 통계 재실행
+```bash
+cd tools/recon
+PYTHONIOENCODING=utf-8 python analyze_mp_extras.py
+PYTHONIOENCODING=utf-8 python analyze_cif.py
+PYTHONIOENCODING=utf-8 python analyze_scn_opcodes.py
+PYTHONIOENCODING=utf-8 python extract_scn_speakers.py
+PYTHONIOENCODING=utf-8 python scn_dialogue_opcode.py
+PYTHONIOENCODING=utf-8 python scn_inter_speaker.py
+PYTHONIOENCODING=utf-8 python scn_header.py
+```
+
+### 대사 번역 (§A — API 키 필요)
+```bash
+cd tools/i18n
+export ANTHROPIC_API_KEY=...
+PYTHONIOENCODING=utf-8 python translate_dialogues.py --limit 100   # 검증
+PYTHONIOENCODING=utf-8 python translate_dialogues.py               # 전체
+cd ../converter
+PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
+```
+
+### Android 빌드 (gradlew 부재)
+```bash
+cd android
+gradle wrapper --gradle-version 8.7    # 한 번만
+./gradlew :app:assembleDebug
+```
+또는 Android Studio 에서 `android/` 디렉토리 열기.
+
+---
+
+## ⚠️ 알려진 이슈 / TODO
+
+| ID | 이슈 | 워크어라운드 / 액션 |
+|---|---|---|
+| #1 | `map134_mp` 비표준 헤더 (NUL 부재) | 변환 시 1개 에러 보고됨, 무시 가능 |
+| #2 | type 0x0c BM 프레임이 노이즈로 렌더 | 정상. §4.1 (Ghidra) 후 실제 픽셀 디코드 |
+| #3 | 일부 0x0b BM 2~6 byte underrun | 시각 영향 미미 |
+| #4 | hero/boss CIF 인덱스가 BM 파일명과 매칭 안됨 | enemy/map은 직접 매칭 정상 |
+| #5 | `Hero3OptionSave` (32B) XOR 암호화 | 호환 불필요라 무시 |
+| #6 | `_cif` 새 헤더 적용 후 재변환 미실행 | `convert_all.py` 다시 돌리면 반영됨 |
+| #7 | gradle wrapper 부재 | system gradle 또는 Android Studio 사용 |
+| #8 | 멀티 캐릭터 파티는 데이터만 있고 전투 참여 X | leader 만 전투. 향후 BattleScene 확장 필요 |
+| #9 | NPC patrol 이 hero 충돌 무시 | 시각적 겹침만 발생, 게임 로직 영향 없음 |
+| #10 | 사운드 미구현 | SfxBus stub 만 wired up. §4.5 후 활성 |
+
+## 📜 2026-05-04 세션 작업 압축
+
+(상세 마일스톤 38건은 git log `af5574a` 및 그 후속 커밋 참조. 위 §"현재 상태 스냅샷" 이 최종 결과. 아래는 단일 라이너 인덱스)
+
+- 콘텐츠: 3 보스 + Tier 1/2/3 + 퀘스트 체인 + EndingScene + ★ CLEAR 배지 + 회차 보존
+- 시스템: 장비/effective stats + 레벨업 + 자연 회복 + 패배 부활 + 여관/신관 + 보물상자 + 빠른 이동 + 직업 변경
+- 씬 신규: Battle/Shop/Skill/Quest/Bestiary/Records/EventViewer/Travel/Ending
+- UX: 미니맵 + 활성 퀘스트 + 보스 근접/출구 힌트 + 토스트 + 튜토리얼 + 데미지 popup + 부유/lunge/shake/fade/플래시
+- 분석 도구 8개 + 보고서 7개 (`work/scn_*.json`, `work/cif_*.json`, `work/extras_summary.json`)
+- 자산 통합: scn_v2/ 245 JSON, dat/char_dat.json, _cif 헤더 패치
+- 버그 수정: 슬롯 copyFrom 누락 필드, ShopScene early-return, 새 게임 진짜 초기화, 클리어 플래그 보존
+- 사운드 stub: SfxBus + 모든 호출처 wired up
+- 폴리시: HP/SP/EXP 바, 메뉴 스크롤, 슬롯 카운트, NPC 퀘스트 마커, 영웅 방향 sprite, 액세서리 효과
+
 
 **이전 마일스톤** (2026-05-01, NPC + 세이브슬롯 완료):
 - **11개 Android 씬** (Title/MainMenu/MapWalk/NpcDialogue/SaveSlots/Status/Inventory/DialogueDemo/Settings/SpriteGallery/Map)
@@ -173,56 +294,7 @@
 - HD 자산 (3,131 sprite scale4x 4×) + 자산 카탈로그 + 대사 코퍼스 (26,415 lines, 9,741 unique)
 - **dat/ 파일 추가 변환** — char_dat 분석으로 캐릭터 클래스 구조 확인 (리츠/케이 각 5 클래스)
 
-**다음에 할 수 있는 작업** (의존성 없이 골라잡기):
-
-### A) 대사 번역 실행 (스크립트는 준비됨, API 호출 필요)
-
-비용 추정: ~$0.66 (Claude Haiku 4.5, 9,741 unique 대사). 한 번만 실행하면 됨.
-
-```bash
-cd tools/i18n
-export ANTHROPIC_API_KEY=...
-PYTHONIOENCODING=utf-8 python translate_dialogues.py --limit 100   # 먼저 100개로 검증
-PYTHONIOENCODING=utf-8 python translate_dialogues.py               # 전체 실행
-# 결과: work/converted/dialogue_translations_en.json
-cd ../converter
-PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
-```
-
-DialogueDemoScene 은 `settings.language == "en"` 일 때 자동으로 번역본 사용.
-
-### B) Ghidra 본격 투입 — type 0x0c sparse pixel 디코드
-
-타일 그래픽 진짜 렌더링의 키. theme/obj BM 들이 모두 0x0c 라 MapWalkScene 의 색상 그리드를 진짜 게임 그래픽으로 교체할 수 있음.
-
-작업 계획:
-1. Ghidra 설치 (또는 capstone-based 분석 심화)
-2. `client.bin64000` 을 raw ARM Thumb 으로 로드, base address 추정 (필요 시 0x0)
-3. `frameBuf is NULL` 문자열 (file offset `0xa61c8`) 의 PIC xref 추적 → 비트맵 디코더 함수 식별
-4. type 0x0c 분기 코드 분석 — 16-bit 레코드의 정확한 bit layout 확인
-5. `tools/converter/convert_bm_v2.py` 에 0x0c 디코더 추가
-6. theme/obj 타일 재변환 → `MapWalkScene` 의 `colorForTile()` 을 실 sprite drawBitmap 으로 교체
-
-상세는 §4.1 참조.
-
-### C) 더 깊은 게임 로직 (Ghidra 결과와 무관하게 진행 가능)
-
-이미 완료: NPC 시스템 (하드코딩 4명), 대화 트리거, 세이브 슬롯 3개.
-
-다음 단계:
-1. **출구/맵 전환** — `_mp` extras 의 exit 좌표 식별 (§4.2 통계 분석 또는 Ghidra)
-2. **인벤토리/스테이터스 데이터 모델** — Item / Equipment / Skill 클래스 + GameState 에 인벤토리 저장
-3. **char_dat 활용** — 리츠/케이 + 5개 클래스 데이터로 StatusScene mockup 교체
-4. **NPC 자동 배치** — `_mp` extras 파싱 후 NpcRegistry 자동 생성
-5. **상점 시스템** — 상인 NPC + 아이템 구매 UI
-6. **간단한 전투 데모** — 적 sprite + 턴제 전투 (별도 BattleScene)
-
-### 다른 옵션
-
-- **D)** `_cif` animation timing 디코드 → 실제 4방향 걷기 애니 (§4.3)
-- **E)** `_scn` opcode 매핑 — 대사 흐름 + 분기 재현 (§4.4)
-- **F)** SMAF→OGG 사운드 변환 (§4.5)
-- **G)** 일본어/중국어 번역 추가 (translate_dialogues.py 의 system prompt 만 교체)
+_(상세 다음 단계는 본 문서 상단 §"다음 진행 후보" 참조)_
 
 ---
 

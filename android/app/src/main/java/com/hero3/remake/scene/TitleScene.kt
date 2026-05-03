@@ -73,6 +73,8 @@ class TitleScene(
     private val cleared: Boolean = com.hero3.remake.engine.GameState.anySlotCleared(context)
     private var elapsedMs = 0L
 
+    init { com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.TITLE) }
+
     override fun update(deltaMs: Long) {
         elapsedMs += deltaMs
         if (input.pressedOnce(InputController.K_UP))   { selected = (selected - 1 + items.size) % items.size }

@@ -168,10 +168,20 @@ class ShopScene(
             }
         }
 
-        // 메시지
+        // 선택된 아이템 설명 (메시지 영역과 동일 위치, 메시지 우선)
         if (messageTtl > 0 && message.isNotEmpty()) {
             UiKit.drawBox(canvas, 8f, virtualHeight - 60f, virtualWidth - 16f, 22f)
             canvas.drawText(message, 14f, virtualHeight - 46f, UiKit.body)
+        } else {
+            val descItem: com.hero3.remake.engine.Item? = when (mode) {
+                Mode.BUY -> stock.getOrNull(cursor)
+                Mode.SELL -> inventory.get(cursor)?.let { ItemRegistry.get(it.itemId) }
+            }
+            if (descItem != null) {
+                UiKit.drawBox(canvas, 8f, virtualHeight - 60f, virtualWidth - 16f, 22f)
+                val d = (if (isEn) descItem.descEn else descItem.descKo)
+                if (d.isNotEmpty()) canvas.drawText(d, 14f, virtualHeight - 46f, UiKit.muted)
+            }
         }
 
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,

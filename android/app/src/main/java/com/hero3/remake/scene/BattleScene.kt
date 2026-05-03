@@ -76,6 +76,15 @@ class BattleScene(
     private var victory = false
 
     private val bg = Paint().apply { color = Color.rgb(15, 12, 25) }
+
+    init {
+        val bgm = if (forcedEnemyId?.startsWith("boss_") == true)
+            com.hero3.remake.engine.SfxBus.Bgm.BOSS
+        else com.hero3.remake.engine.SfxBus.Bgm.BATTLE
+        com.hero3.remake.engine.SfxBus.playMusic(bgm)
+        if (forcedEnemyId?.startsWith("boss_") == true)
+            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.BOSS_INTRO)
+    }
     private val hpBar = Paint().apply { color = Color.rgb(220, 80, 80) }
     private val spBar = Paint().apply { color = Color.rgb(80, 140, 220) }
     private val hpBarBg = Paint().apply { color = Color.argb(120, 60, 60, 80) }
@@ -232,6 +241,7 @@ class BattleScene(
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 220L
+        com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.HIT)
         popups += Popup("-$dmg", onEnemy = true, ttl = 900L, color = Color.rgb(255, 220, 90))
         pushLog(if (settings.language == "en") "Hero hits for ${dmg}." else "영웅 공격 ${dmg}.")
         if (enemy.hp <= 0) {
@@ -307,12 +317,14 @@ class BattleScene(
         if (enemy.def.id.startsWith("boss_")) {
             gameState.markBossDefeated(enemy.def.id)
             screenFlashMs = 600L
+            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.BOSS_DEFEAT)
             com.hero3.remake.engine.EventBus.push(
                 if (settings.language == "en") "Boss defeated: ${enemy.def.nameEn}"
                 else "보스 처치: ${enemy.def.nameKo}")
         }
         if (resultLevels > 0) {
             screenFlashMs = maxOf(screenFlashMs, 350L)
+            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.LEVEL_UP)
             popups += Popup("LEVEL UP!", onEnemy = false, ttl = 1500L, color = Color.rgb(120, 240, 120))
             com.hero3.remake.engine.EventBus.push(
                 if (settings.language == "en") "LEVEL UP! Lv${hero.level}"

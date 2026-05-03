@@ -104,6 +104,7 @@ class MapWalkScene(
             map?.let { gameState.resetPosition(it.id, it.w / 2, it.h / 2) }
         }
         heroFrames = loadHeroFrames()
+        com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.FIELD)
     }
 
     private fun loadMap(id: Int) {
@@ -224,6 +225,7 @@ class MapWalkScene(
     }
 
     private fun openChest(chest: com.hero3.remake.engine.Chest) {
+        com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.CHEST)
         val inv = gameState.loadInventory()
         val ok = if (chest.itemId.isNotEmpty()) inv.add(chest.itemId, chest.count) else true
         if (ok) {
