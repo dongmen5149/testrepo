@@ -81,7 +81,10 @@
 - 명령 (in §"재현 명령")
 - 결과: `dialogue_translations_en.json` 자동 배포, NpcDialogueScene 가 settings.language == "en" 일 때 자동 사용
 
-### B) **Ghidra 분석** [블로커: Ghidra 도구 설치]
+### B) **Ghidra 분석** [환경 셋업 완료, 사용자 GUI 분석 필요 — [`docs/ghidra-gui-guide.md`](ghidra-gui-guide.md)]
+- 셋업 완료: JDK 21 / Ghidra 12.0.4 / `Hero3.gpr` 프로젝트 자동 분석 + 1470 함수 디컴파일
+- 자동 헤드리스로는 PIC + GOT indirection 추적 한계 → 사용자 GUI 분석 필요
+- GOT base 식별: `0xb2c40`
 1. **§4.1 type 0x0c sparse pixel** — theme/obj 타일 진짜 그래픽 (현재 색상 그리드 placeholder)
 2. **§4.2 _mp extras** — NPC/exit/event 자동 배치 (현재 NpcRegistry, MapGraph, EncounterTable, ChestRegistry 모두 수동)
 3. **§4.3 _cif animation timing** — 진짜 4방향 걷기/공격/사망 애니 (현재 정적 frame 매핑)
@@ -100,15 +103,17 @@
 ### D) **게임 콘텐츠 확장** [블로커 없음, 작업량만]
 - 추가 보스 / 맵 / NPC / 퀘스트
 - 추가 스킬·아이템·세트 효과
-- 멀티 캐릭터 액티브 파티 (현재 leader 만 전투 참여)
-- 세이브 자동 (currently 슬롯 0 만 자동, 슬롯 1~3 수동)
+- ~~멀티 캐릭터 액티브 파티~~ ✅ 완료 (BattleScene 라운드 기반 멀티 파티)
+- ~~세이브 자동 (currently 슬롯 0 만 자동, 슬롯 1~3 수동)~~ ✅ 보스 처치 시 활성 슬롯 flush + 마지막 사용 수동 슬롯(`lastSavedSlot`) 자동 미러링
 - 일본어/중국어 (translate_dialogues.py system prompt 교체)
 
-### E) **빌드/테스트 환경** [블로커 없음]
-- gradle wrapper 추가 (`cd android && gradle wrapper --gradle-version 8.7`)
-- CI 셋업
-- 단위 테스트 (CharacterRegistry / Quest 로직 등)
-- `_scn` 분석 결과를 자동 검증하는 회귀 테스트
+### E) **빌드/테스트 환경** [전부 완료]
+- ~~gradle wrapper 추가~~ ✅ Gradle 8.9 wrapper
+- ~~단위 테스트~~ ✅ 32 통과 (Character 7 / Inventory 6 / Skill 4 / PartyTurnOrder 15)
+- ~~AGP 업그레이드~~ ✅ 8.5.2 → 8.7.2 + Kotlin 2.0.20 (compileSdk 35 경고 해소)
+- ~~컴파일 경고 정리~~ ✅ 0건
+- ~~CI 셋업~~ ✅ [.github/workflows/android.yml](../.github/workflows/android.yml) — push/PR에 testDebugUnitTest + assembleDebug 자동 실행
+- 남은 후순위: `_scn` 분석 결과 회귀 테스트 (Ghidra opcode 해독 후)
 
 ---
 
@@ -241,11 +246,11 @@ cd ../converter
 PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
 ```
 
-### Android 빌드 (gradlew 부재)
+### Android 빌드
 ```bash
 cd android
-gradle wrapper --gradle-version 8.7    # 한 번만
-./gradlew :app:assembleDebug
+./gradlew :app:assembleDebug         # APK
+./gradlew :app:testDebugUnitTest     # 단위 테스트 (현재 17 통과)
 ```
 또는 Android Studio 에서 `android/` 디렉토리 열기.
 
@@ -261,8 +266,8 @@ gradle wrapper --gradle-version 8.7    # 한 번만
 | #4 | hero/boss CIF 인덱스가 BM 파일명과 매칭 안됨 | enemy/map은 직접 매칭 정상 |
 | #5 | `Hero3OptionSave` (32B) XOR 암호화 | 호환 불필요라 무시 |
 | #6 | `_cif` 새 헤더 적용 후 재변환 미실행 | `convert_all.py` 다시 돌리면 반영됨 |
-| #7 | gradle wrapper 부재 | system gradle 또는 Android Studio 사용 |
-| #8 | 멀티 캐릭터 파티는 데이터만 있고 전투 참여 X | leader 만 전투. 향후 BattleScene 확장 필요 |
+| #7 | ~~gradle wrapper 부재~~ | ✅ 2026-05-04 wrapper.jar/gradlew/gradlew.bat 추가 (Gradle 8.7) |
+| #8 | ~~멀티 캐릭터 파티는 데이터만 있고 전투 참여 X~~ | ✅ 2026-05-04 BattleScene 멀티 파티 지원. 살아있는 멤버 전원 라운드 행동, 적은 랜덤 타겟, 힐은 HP 최저 아군 자동 |
 | #9 | NPC patrol 이 hero 충돌 무시 | 시각적 겹침만 발생, 게임 로직 영향 없음 |
 | #10 | 사운드 미구현 | SfxBus stub 만 wired up. §4.5 후 활성 |
 

@@ -76,6 +76,14 @@ class GameState(context: Context, slotId: Int = 0) {
         prefs.edit().putLong(KEY_PLAYTIME, playTimeMs + deltaMs).apply()
     }
 
+    /**
+     * 마지막으로 사용자가 SAVE / LOAD 한 수동 슬롯 번호 (1..3). 0 이면 미설정.
+     * 보스 처치 등 체크포인트에서 자동 미러링 대상으로 사용.
+     */
+    var lastSavedSlot: Int
+        get() = prefs.getInt(KEY_LAST_SAVED_SLOT, 0)
+        set(v) { prefs.edit().putInt(KEY_LAST_SAVED_SLOT, v).apply() }
+
     /** 게임 클리어(봉인된 신 처치) 플래그. EndingScene 진입 시 set. */
     var gameCleared: Boolean
         get() = prefs.getBoolean(KEY_CLEARED, false)
@@ -196,6 +204,25 @@ class GameState(context: Context, slotId: Int = 0) {
         prefs.edit().clear().apply()
     }
 
+    /**
+     * 모든 pending edits 를 디스크에 동기 flush. 보스 처치 직후 같은 체크포인트에서
+     * 앱이 강제 종료되어도 진행 보존되게 한다.
+     */
+    fun flush() {
+        prefs.edit().commit()
+    }
+
+    /**
+     * lastSavedSlot 이 1..3 이면 현 활성 슬롯 상태를 그 수동 슬롯으로 미러링.
+     * 호출자는 GameState(context, slotId=0) (live) 인 인스턴스에서 호출.
+     */
+    fun mirrorToLastSavedSlot(context: Context): Int {
+        val n = lastSavedSlot
+        if (n !in 1..3) return 0
+        GameState(context, slotId = n).also { it.copyFrom(this); it.flush() }
+        return n
+    }
+
     fun copyFrom(other: GameState) {
         val edit = prefs.edit()
             .putInt(KEY_MAP_ID, other.currentMapId)
@@ -236,6 +263,7 @@ class GameState(context: Context, slotId: Int = 0) {
         private const val KEY_PLAYTIME      = "play_time_ms"
         private const val KEY_TUTORIAL      = "tutorial_shown"
         private const val KEY_VISITED       = "visited_maps"
+        private const val KEY_LAST_SAVED_SLOT = "last_saved_slot"
 
         fun formatPlayTime(ms: Long): String {
             val totalSec = ms / 1000

@@ -12,7 +12,7 @@ import org.json.JSONObject
 /**
  * 맵 갤러리 + 미리보기 씬.
  *
- * `assets/maps/*_mp.json` 의 각 맵을 색상-해시 heatmap 으로 렌더하여 구조 시각 확인.
+ * assets/maps/ 의 각 _mp.json 맵을 색상-해시 heatmap 으로 렌더하여 구조 시각 확인.
  * 정식 타일 렌더링은 `map/obj_0_bm` 분석 후 추가 예정.
  *
  * 입력:

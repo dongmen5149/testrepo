@@ -49,8 +49,8 @@ class EventViewerScene(
             (0 until arr.length()).map { i ->
                 val e = arr.getJSONObject(i)
                 Triple(
-                    e.optString("speaker", null).takeUnless { it == "null" || it.isNullOrEmpty() },
-                    e.optString("mode_byte", null).takeUnless { it == "null" || it.isNullOrEmpty() },
+                    e.optString("speaker").takeUnless { it == "null" || it.isEmpty() },
+                    e.optString("mode_byte").takeUnless { it == "null" || it.isEmpty() },
                     e.optString("text", ""),
                 )
             }

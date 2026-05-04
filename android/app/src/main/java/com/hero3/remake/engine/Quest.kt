@@ -109,11 +109,13 @@ class QuestLog(private val gameState: GameState) {
             val canFinish = bossOk || itemOk
             if (!canFinish) continue
             // 아이템 요구 시 차감 (역순으로 안전하게)
-            if (itemOk && q.requiredItemId != null) {
+            val reqId = q.requiredItemId
+            if (itemOk) {
+                requireNotNull(reqId)
                 var remaining = q.requiredItemCount
                 while (remaining > 0) {
                     val all = inventory.all()
-                    val slotIdx = all.indexOfLast { it.itemId == q.requiredItemId }
+                    val slotIdx = all.indexOfLast { it.itemId == reqId }
                     if (slotIdx < 0) break
                     val take = minOf(remaining, all[slotIdx].count)
                     inventory.remove(slotIdx, take)

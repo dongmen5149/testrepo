@@ -43,11 +43,14 @@ class SaveSlotScene(
             val slot = slots[selected]
             if (mode == Mode.SAVE) {
                 slot.copyFrom(gameState)
+                slot.flush()
+                gameState.lastSavedSlot = selected + 1
                 com.hero3.remake.engine.EventBus.push(
                     if (currentLanguageIsKorean()) "슬롯 ${selected + 1} 저장 완료"
                     else "Slot ${selected + 1} saved")
             } else if (!slot.isEmpty()) {
                 gameState.copyFrom(slot)
+                gameState.lastSavedSlot = selected + 1
                 onRequest(MainActivity.SceneRequest.MapWalk)
                 return
             }
@@ -68,7 +71,7 @@ class SaveSlotScene(
             val slot = slots[i]
             val star = if (slot.gameCleared) "★ " else ""
             val label = if (slot.isEmpty()) {
-                if (currentLanguageIsKorean()) "$star슬롯 ${i + 1}: 비어있음"
+                if (currentLanguageIsKorean()) "${star}슬롯 ${i + 1}: 비어있음"
                 else "${star}Slot ${i + 1}: empty"
             } else {
                 val leader = slot.loadParty().firstOrNull()
