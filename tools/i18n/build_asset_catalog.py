@@ -1,7 +1,7 @@
 """
 변환된 자산을 검색·식별하기 쉽게 카탈로그 JSON 으로 정리.
 
-출력: work/converted/asset_catalog.json
+출력: work/<game>/converted/asset_catalog.json (HERO_GAME 환경변수, default h3)
 {
   "characters": {
     "h0": {"name_ko": "리츠?", "name_en": "Ritz?", "type": "hero", "bm_dirs": ["h00000_bm", ...], "cif": "h0_cif", "frame_count": ...},
@@ -21,53 +21,66 @@ from __future__ import annotations
 import json, pathlib, sys
 import collections
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-CONVERTED = ROOT / 'work' / 'converted'
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+CONVERTED = _g.converted_root
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from translation_dict import CHARACTERS, PLACES
+from translation_dict import CHARACTERS, PLACES  # noqa: E402
 
 
 def categorize_sprites():
-    """sprites/<cat>/<bm_dir>/ 들을 카테고리별로 정리."""
+    """sprites/<cat>/<bm_dir>/ 들을 카테고리별로 정리. 게임별 카테고리 자동 인식."""
+    # Hero3: lower-case (event, dat, hero, boss, enemy, npc, ...)
+    # Hero4: UPPER-case (CM, H4, MAP, NPC, OBJ, GMenu, ITM, ...)
+    KNOWN_CATS = {
+        'event', 'dat', 'snd', 'fgi', 'logo', 'map', 'menu', 'comm', 'skill', 'hero', 'boss', 'enemy', 'npc', 'font',
+        'CM', 'H4', 'MAP', 'NPC', 'OBJ', 'GMenu', 'ITM', 'tdf', 'HDAT', 'TILE', 'E', 'FR', 'FT', 'SND', 'DAT', 'l',
+    }
     by_cat: dict[str, list[dict]] = collections.defaultdict(list)
     for cat_dir in CONVERTED.iterdir():
         if not cat_dir.is_dir():
             continue
         cat = cat_dir.name
-        if cat in ('event', 'dat', 'snd', 'fgi', 'logo', 'map', 'menu', 'comm', 'skill', 'hero', 'boss', 'enemy', 'npc', 'font'):
-            for bm_dir in cat_dir.iterdir():
-                if not bm_dir.is_dir():
-                    continue
-                pngs = sorted(p.name for p in bm_dir.glob('*.png'))
-                if not pngs:
-                    continue
-                # 첫 프레임 dimensions
-                first = pngs[0]
-                # frame_NN_WxH_tT.png
-                parts = first.rsplit('.', 1)[0].split('_')
-                dim = parts[2] if len(parts) >= 3 else '?'
-                by_cat[cat].append({
-                    'name': bm_dir.name,
-                    'frame_count': len(pngs),
-                    'first_frame': first,
-                    'first_dim': dim,
-                })
+        if cat not in KNOWN_CATS:
+            continue
+        # 1단계 또는 2단계 깊이의 BM 디렉토리 모두 검사
+        for bm_dir in cat_dir.rglob('*'):
+            if not bm_dir.is_dir():
+                continue
+            pngs = sorted(p.name for p in bm_dir.glob('*.png'))
+            if not pngs:
+                continue
+            first = pngs[0]
+            parts = first.rsplit('.', 1)[0].split('_')
+            dim = parts[2] if len(parts) >= 3 else '?'
+            by_cat[cat].append({
+                'name': str(bm_dir.relative_to(cat_dir)),
+                'frame_count': len(pngs),
+                'first_frame': first,
+                'first_dim': dim,
+            })
     return by_cat
 
 
 def load_maps() -> list[dict]:
-    map_dir = CONVERTED / 'map'
     out = []
-    if not map_dir.exists():
-        return out
-    for jpath in sorted(map_dir.glob('map*_mp.json'), key=lambda p: int(''.join(c for c in p.stem.split('_')[0] if c.isdigit()) or 0)):
-        info = json.loads(jpath.read_text(encoding='utf-8'))
+    # Hero3: map/map*_mp.json,  Hero4: MAP/M/_MAP_M_NNN.json
+    candidates = list(CONVERTED.rglob('map*_mp.json')) + list(CONVERTED.rglob('_MAP_M_*.json'))
+    for jpath in sorted(set(candidates)):
+        try:
+            info = json.loads(jpath.read_text(encoding='utf-8'))
+        except Exception:
+            continue
         ko_name = info.get('name', '')
+        place = info.get('place', '')
         en_name = PLACES.get(ko_name, ko_name)
         out.append({
             'file': jpath.stem,
             'name_ko': ko_name,
+            'place_ko': place,
             'name_en': en_name,
             'width': info.get('width'),
             'height': info.get('height'),
@@ -83,7 +96,8 @@ def main():
     catalog = {
         'meta': {
             'generated_at': '2026-05-01',
-            'source': 'work/converted',
+            'source': str(CONVERTED.relative_to(CONVERTED.parents[2])),
+            'game': _g.id,
         },
         'sprites_by_category': {cat: items for cat, items in sorted(by_cat.items())},
         'maps': maps,

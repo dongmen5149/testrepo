@@ -4,7 +4,12 @@
 from __future__ import annotations
 import sys, pathlib
 
-BIN = pathlib.Path(__file__).parent.parent.parent / 'work' / 'extracted' / 'client.bin64000'
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+BIN = _g.binary_path
+assert BIN is not None, f'{_g.id} has no native binary'
 
 
 def is_printable(b: int) -> bool:

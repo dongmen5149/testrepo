@@ -9,8 +9,13 @@ base address 가정: 0x00000000 (file offset = memory offset). 잘못되면 base
 from __future__ import annotations
 import struct, pathlib
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-BIN = ROOT / 'work' / 'extracted' / 'client.bin64000'
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+BIN = _g.binary_path
+assert BIN is not None, f'{_g.id} has no native binary'
 
 # 추적할 핵심 문자열 위치 (extract_strings.py 결과 기반)
 TARGETS = {

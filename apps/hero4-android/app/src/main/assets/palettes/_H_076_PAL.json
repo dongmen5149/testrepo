@@ -1,0 +1,53 @@
+{
+  "count": 3,
+  "colors": [
+    {
+      "primary": "#2a1c7b",
+      "secondary": "#66543e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        42,
+        28,
+        123,
+        0,
+        102,
+        84,
+        62,
+        0
+      ]
+    },
+    {
+      "primary": "#130561",
+      "secondary": "#4a3a2d",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        19,
+        5,
+        97,
+        0,
+        74,
+        58,
+        45,
+        0
+      ]
+    },
+    {
+      "primary": "#3724a1",
+      "secondary": "#95785e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        55,
+        36,
+        161,
+        0,
+        149,
+        120,
+        94,
+        0
+      ]
+    }
+  ]
+}

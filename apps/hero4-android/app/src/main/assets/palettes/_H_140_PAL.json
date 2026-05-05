@@ -1,0 +1,165 @@
+{
+  "count": 10,
+  "colors": [
+    {
+      "primary": "#301501",
+      "secondary": "#01300a",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        48,
+        21,
+        1,
+        0,
+        1,
+        48,
+        10,
+        0
+      ]
+    },
+    {
+      "primary": "#532702",
+      "secondary": "#025314",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        83,
+        39,
+        2,
+        0,
+        2,
+        83,
+        20,
+        0
+      ]
+    },
+    {
+      "primary": "#783f04",
+      "secondary": "#047824",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        120,
+        63,
+        4,
+        0,
+        4,
+        120,
+        36,
+        0
+      ]
+    },
+    {
+      "primary": "#9a5a0a",
+      "secondary": "#0a9a38",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        154,
+        90,
+        10,
+        0,
+        10,
+        154,
+        56,
+        0
+      ]
+    },
+    {
+      "primary": "#b4730c",
+      "secondary": "#0cb44b",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        180,
+        115,
+        12,
+        0,
+        12,
+        180,
+        75,
+        0
+      ]
+    },
+    {
+      "primary": "#d29715",
+      "secondary": "#15d26a",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        210,
+        151,
+        21,
+        0,
+        21,
+        210,
+        106,
+        0
+      ]
+    },
+    {
+      "primary": "#e3b71c",
+      "secondary": "#1ce388",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        227,
+        183,
+        28,
+        0,
+        28,
+        227,
+        136,
+        0
+      ]
+    },
+    {
+      "primary": "#eece24",
+      "secondary": "#24ee9e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        238,
+        206,
+        36,
+        0,
+        36,
+        238,
+        158,
+        0
+      ]
+    },
+    {
+      "primary": "#f2f727",
+      "secondary": "#27f7ca",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        242,
+        247,
+        39,
+        0,
+        39,
+        247,
+        202,
+        0
+      ]
+    },
+    {
+      "primary": "#d3ff15",
+      "secondary": "#15fff3",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        211,
+        255,
+        21,
+        0,
+        21,
+        255,
+        243,
+        0
+      ]
+    }
+  ]
+}

@@ -5,7 +5,7 @@ dialogue_corpus.json 의 unique 한국어 대사를 Claude Haiku 4.5 로 영어 
   - 캐릭터/지명 사전을 system prompt 에 주입 (일관된 transliteration)
   - 1시간 prompt caching 으로 system prompt 비용 90% 절감
   - 배치당 N개 텍스트 (기본 30) 로 토큰 효율 극대화
-  - 증분 저장 (work/converted/dialogue_translations_en.json)
+  - 증분 저장 (work/<game>/converted/dialogue_translations_en.json, HERO_GAME default h3)
   - 이미 번역된 항목은 skip (idempotent)
 
 비용 추정:
@@ -23,12 +23,15 @@ from __future__ import annotations
 import argparse, json, os, pathlib, sys
 from typing import Iterable
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-CORPUS = ROOT / 'work' / 'converted' / 'dialogue_corpus.json'
-OUT = ROOT / 'work' / 'converted' / 'dialogue_translations_en.json'
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+CORPUS = _g.converted_root / 'dialogue_corpus.json'
+OUT = _g.converted_root / 'dialogue_translations_en.json'
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from translation_dict import CHARACTERS, PLACES, COMMON_WORDS
+from translation_dict import CHARACTERS, PLACES, COMMON_WORDS  # noqa: E402
 
 
 def build_system_prompt() -> str:

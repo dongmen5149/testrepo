@@ -1,0 +1,501 @@
+{
+  "count": 31,
+  "colors": [
+    {
+      "primary": "#656763",
+      "secondary": "#404179",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        101,
+        103,
+        99,
+        0,
+        64,
+        65,
+        121,
+        0
+      ]
+    },
+    {
+      "primary": "#838a92",
+      "secondary": "#5c63a5",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        131,
+        138,
+        146,
+        0,
+        92,
+        99,
+        165,
+        0
+      ]
+    },
+    {
+      "primary": "#524e25",
+      "secondary": "#2f2c3a",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        82,
+        78,
+        37,
+        0,
+        47,
+        44,
+        58,
+        0
+      ]
+    },
+    {
+      "primary": "#252f16",
+      "secondary": "#111729",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        37,
+        47,
+        22,
+        0,
+        17,
+        23,
+        41,
+        0
+      ]
+    },
+    {
+      "primary": "#5d5878",
+      "secondary": "#39348c",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        93,
+        88,
+        120,
+        0,
+        57,
+        52,
+        140,
+        0
+      ]
+    },
+    {
+      "primary": "#758695",
+      "secondary": "#4e5fa6",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        117,
+        134,
+        149,
+        0,
+        78,
+        95,
+        166,
+        0
+      ]
+    },
+    {
+      "primary": "#170f26",
+      "secondary": "#09053b",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        23,
+        15,
+        38,
+        0,
+        9,
+        5,
+        59,
+        0
+      ]
+    },
+    {
+      "primary": "#aeb3c0",
+      "secondary": "#8c93cc",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        174,
+        179,
+        192,
+        0,
+        140,
+        147,
+        204,
+        0
+      ]
+    },
+    {
+      "primary": "#e3eef2",
+      "secondary": "#d4e4f4",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        227,
+        238,
+        242,
+        0,
+        212,
+        228,
+        244,
+        0
+      ]
+    },
+    {
+      "primary": "#89c3c9",
+      "secondary": "#62a7d3",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        137,
+        195,
+        201,
+        0,
+        98,
+        167,
+        211,
+        0
+      ]
+    },
+    {
+      "primary": "#5b2eff",
+      "secondary": "#fed716",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        91,
+        46,
+        255,
+        0,
+        254,
+        215,
+        22,
+        0
+      ]
+    },
+    {
+      "primary": "#51319e",
+      "secondary": "#4a4965",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        81,
+        49,
+        158,
+        0,
+        74,
+        73,
+        101,
+        0
+      ]
+    },
+    {
+      "primary": "#6784c1",
+      "secondary": "#415dcd",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        103,
+        132,
+        193,
+        0,
+        65,
+        93,
+        205,
+        0
+      ]
+    },
+    {
+      "primary": "#3e1871",
+      "secondary": "#281278",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        62,
+        24,
+        113,
+        0,
+        40,
+        18,
+        120,
+        0
+      ]
+    },
+    {
+      "primary": "#525a8c",
+      "secondary": "#2f369e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        82,
+        90,
+        140,
+        0,
+        47,
+        54,
+        158,
+        0
+      ]
+    },
+    {
+      "primary": "#76c1ef",
+      "secondary": "#4fa5f2",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        118,
+        193,
+        239,
+        0,
+        79,
+        165,
+        242,
+        0
+      ]
+    },
+    {
+      "primary": "#5530c0",
+      "secondary": "#a88a36",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        85,
+        48,
+        192,
+        0,
+        168,
+        138,
+        54,
+        0
+      ]
+    },
+    {
+      "primary": "#ccedf3",
+      "secondary": "#b4e3f4",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        204,
+        237,
+        243,
+        0,
+        180,
+        227,
+        244,
+        0
+      ]
+    },
+    {
+      "primary": "#86c3d0",
+      "secondary": "#5fa7d9",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        134,
+        195,
+        208,
+        0,
+        95,
+        167,
+        217,
+        0
+      ]
+    },
+    {
+      "primary": "#6048c3",
+      "secondary": "#917461",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        96,
+        72,
+        195,
+        0,
+        145,
+        116,
+        97,
+        0
+      ]
+    },
+    {
+      "primary": "#8d76eb",
+      "secondary": "#7d66cd",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        141,
+        118,
+        235,
+        0,
+        125,
+        102,
+        205,
+        0
+      ]
+    },
+    {
+      "primary": "#301257",
+      "secondary": "#17066e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        48,
+        18,
+        87,
+        0,
+        23,
+        6,
+        110,
+        0
+      ]
+    },
+    {
+      "primary": "#95bbf0",
+      "secondary": "#6f9df2",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        149,
+        187,
+        240,
+        0,
+        111,
+        157,
+        242,
+        0
+      ]
+    },
+    {
+      "primary": "#74c700",
+      "secondary": "#816841",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        116,
+        199,
+        0,
+        0,
+        129,
+        104,
+        65,
+        0
+      ]
+    },
+    {
+      "primary": "#95ff00",
+      "secondary": "#ae8648",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        149,
+        255,
+        0,
+        0,
+        174,
+        134,
+        72,
+        0
+      ]
+    },
+    {
+      "primary": "#5331ae",
+      "secondary": "#81664e",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        83,
+        49,
+        174,
+        0,
+        129,
+        102,
+        78,
+        0
+      ]
+    },
+    {
+      "primary": "#5436a5",
+      "secondary": "#4f4c6b",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        84,
+        54,
+        165,
+        0,
+        79,
+        76,
+        107,
+        0
+      ]
+    },
+    {
+      "primary": "#311259",
+      "secondary": "#170670",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        49,
+        18,
+        89,
+        0,
+        23,
+        6,
+        112,
+        0
+      ]
+    },
+    {
+      "primary": "#383c1c",
+      "secondary": "#1d1f30",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        56,
+        60,
+        28,
+        0,
+        29,
+        31,
+        48,
+        0
+      ]
+    },
+    {
+      "primary": "#87c3cd",
+      "secondary": "#60a7d7",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        135,
+        195,
+        205,
+        0,
+        96,
+        167,
+        215,
+        0
+      ]
+    },
+    {
+      "primary": "#6c85b2",
+      "secondary": "#465ec0",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        108,
+        133,
+        178,
+        0,
+        70,
+        94,
+        192,
+        0
+      ]
+    }
+  ]
+}

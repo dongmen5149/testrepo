@@ -5,19 +5,66 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋**: `af5574a feat: 게임 1주차 콘텐츠 완성 + _scn/_cif/_mp 통계 분석` (+ 그 이후 6 추가 폴리시)
+**최신 커밋**: `dda87d3 feat:사용자 작업 외 완료` (Gradle wrapper + CI + 단위테스트 32 + 멀티파티 + Ghidra 환경)
+
+**미커밋 변경 (2026-05-06)** — 이번 세션 작업분, 아직 한 커밋으로 묶이지 않음:
+- ✅ **§4.1 type 0x0c 비트맵 디코더 해독 완료** (Ghidra GUI + 함수 디컴파일 패턴 매칭)
+  - 진입점: `FUN_00010fe4 @ 0x10fe4` (cVar2 == '\v' 0x0b 분기 / '\f' 0x0c 분기)
+  - 보조: `FUN_00010ea4 @ 0x10ea4` (팔레트 파서)
+  - 진실: type 0x0c = **8-bit dense palette indexed, byte 0 = 투명** (이전 "sparse encoding" 가설은 오답)
+  - `ch` 필드 정체 = **palette count** (가변, 1~256). cell height 아님.
+  - param_13 (0~7) = 8가지 transformation (h-flip/v-flip/180/90 회전 등)
+- ✅ **convert_bm_v2.py 패치** — `decode_0c` 교체 + 가변 팔레트(`palcnt * 2 bytes`) 처리
+- ✅ **자산 재생성** — 479 BM → 3149 frame (이전 3131에서 +18) → HD 4× 업스케일 → Android `sprites/` + `sprites_hd/` 갱신
+- ✅ **시각 검증** — obj_0/frame02 = 나무 스프라이트 정상 렌더, theme_0 타일 시트 정상, 0x0b regression 없음
+- ✅ **빌드 검증** — `assembleDebug` 1m10s 성공, 단위테스트 32/32 통과
+- ✅ **빌드 환경 확립** — `android/local.properties` 생성 (SDK 경로, gitignored), JDK 21 (`C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot`) 사용
+- 📝 PROGRESS.md 갱신
+
+**다음에 할 일 1순위**: 이 모든 변경 한 번에 커밋 (제안 메시지: `feat: §4.1 비트맵 디코더 해독 + type 0x0c 정상 렌더 + 빌드 환경 검증`)
 
 ## ⚡ 다음 세션 — 시작 전 5분 체크리스트
 
-1. `git log --oneline -3` 로 최신 커밋 확인 (`af5574a` 다음 추가분 있는지)
-2. `git status --short` — 미커밋 변경 있으면 무엇이 진행 중인지 파악
+1. `git log --oneline -3` 로 최신 커밋 확인 (위 미커밋 작업분이 이미 커밋됐는지)
+2. `git status --short` — 추가 미커밋 변경 있는지 파악
 3. 이 문서 §"현재 상태 스냅샷" + §"다음 진행 후보" 읽기
-4. Android 빌드 가능 환경이면 `cd android && ./gradlew :app:assembleDebug` 로 컴파일 검증 (gradle wrapper 부재 시 system gradle 또는 Android Studio 사용)
-5. `tools/recon/*.py` 의 산출물(`work/*.json`)이 비어있으면 §"재현 명령" 참조해 재실행
+4. **Android 빌드 검증** — JAVA_HOME 설정 후 wrapper 실행:
+   ```powershell
+   $env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+   $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+   cd android
+   .\gradlew.bat :app:assembleDebug         # APK
+   .\gradlew.bat :app:testDebugUnitTest     # 32 단위 테스트
+   ```
+   (영구 등록하려면 시스템 환경변수에 JAVA_HOME 박아두기)
+5. `work/h3/converted/`, `work/h3/converted_hd/`, `work/ghidra_out/` 등 산출물 비어있으면 §"재현 명령" 참조
 
 ---
 
-## 📊 현재 상태 스냅샷 (2026-05-04 종료 시점)
+## 📊 현재 상태 스냅샷 (2026-05-06 종료 시점)
+
+### 자산 변환 현황
+
+| 포맷 | 개수 | 상태 |
+|---|---:|---|
+| `_txt` | 9 | ✅ EUC-KR → JSON |
+| `_pa` | 216 | ✅ RGBA8888 JSON |
+| `_bm` (file) | 479 | ✅ 다중프레임 지원 |
+| `_bm` (frame) | **3149** | ✅ type 0x0b + **0x0c (2026-05-06 해독)** |
+| `_cif` | 103 | ⚠️ 헤더만 (animation timing 미해독) |
+| `_mp` | 134/135 | ✅ terrain+collision / ⚠️ extras 미해독 |
+| `_scn` | 244 | ⚠️ 대사 추출 (26,415) / opcode 미해독 |
+| `_dat` | 45 | ✅ EUC-KR 한글 추출 |
+| `_mf` | 33 | 📋 표준 SMAF, 외부 도구로 변환 필요 |
+
+HD 4× 업스케일: **3149 frame** (work/h3/converted_hd/), Android assets 동기화 완료.
+
+### 빌드/테스트 — 검증 완료 (2026-05-06)
+
+- `:app:assembleDebug` ✅ 1m10s 성공 → `app/build/outputs/apk/debug/app-debug.apk`
+- `:app:testDebugUnitTest` ✅ **32/32 통과** (CharacterTest 7 / InventoryTest 6 / PartyTurnOrderTest 15 / SkillTest 4)
+- 빌드 환경: JDK 21 (Adoptium 21.0.11.10) + Gradle 8.9 + AGP 8.7.2 + Kotlin 2.0.20 + compileSdk 35
+- CI: `.github/workflows/android.yml` (push/PR에 자동 실행)
 
 ### Android 클라이언트 — 완성도 높은 1주차 게임
 
@@ -75,30 +122,44 @@
 
 ## 🎯 다음 진행 후보 (우선순위순)
 
-### A) **대사 번역 실행** [블로커: API 키 + 사용자 결정]
+### 0) **이번 세션 변경분 커밋** [즉시] ⭐
+- 미커밋 변경: convert_bm_v2.py 패치 + 3149 PNG (sprites + sprites_hd) + tools/ghidra/* 경로 수정 + docs/h3/PROGRESS.md
+- 제안 메시지: `feat: §4.1 비트맵 디코더 해독 + type 0x0c 정상 렌더 + 빌드 환경 검증`
+- `local.properties`는 gitignore되어 있어 자동 제외. 안전.
+
+### A) **Ghidra §4.2~4.4 분석** [환경 다 갖춰짐, §4.1로 패턴 매칭 방식 검증됨]
+
+#### Ghidra 환경 (이미 셋업 완료)
+- JDK 21 (Adoptium 21.0.11) / Ghidra 12.0.4 / `work/ghidra_proj/Hero3.gpr`
+- 자동 분석 + GOT base(`0xb2c40`) 적용 → **3556 함수** 식별, 전부 디컴파일된 결과: `work/ghidra_out/all_decompiled.c` (16MB)
+- 진입 가이드: [`docs/h3/ghidra-gui-guide.md`](ghidra-gui-guide.md)
+
+#### §4.1 해독 과정에서 배운 것 (§4.2~4.4에 그대로 적용)
+1. **PIC + GOT indirection으로 string xref 자동 추적은 0건** (literal pool 검색도 0건). 문자열 주소가 absolute가 아니라 GOT-relative offset로 저장됨.
+2. **우회 = 함수 패턴 grep**. `all_decompiled.c`를 grep으로 훑어서 진입점 단서 함수들의 시그너처(예: 0x0c → `cVar2 == '\f'`)로 진짜 함수 식별.
+3. **PROGRESS의 가설은 검증 전 추정**일 수 있음 (§4.1 "sparse encoding" 가설이 오답이었듯). 디컴파일 코드 직접 확인이 진실.
+
+#### 남은 3가지 진입점 (우선순위순)
+
+1. **§4.2 `_mp` extras** ⭐ 효과 가장 큼 (134맵 자동화)
+   - 단서: `Event_freeID`(@0xaac7c), `loadDataID`(@0xa6efc) 함수 또는 디버그 문자열 부근
+   - 풀면: NpcRegistry / MapGraph / EncounterTable / ChestRegistry 모두 자동 생성. 현재 솔티아 외 5맵만 수동 정의된 것을 134개 전체 자동화.
+2. **§4.3 `_cif` animation timing** — 시각 임팩트
+   - 단서: `Hero_Free`(@0xa6e8c), `freeBossType`(@0xa6e70) 부근
+   - 풀면: 진짜 4방향 걷기/공격/사망/피격 애니메이션 (현재 정적 frame 매핑)
+3. **§4.4 `_scn` opcode** — 게임 흐름 깊이
+   - 단서: `onEventMessageOkKey`(@0xa6888), `eventManager`(@0xa6ad8) 부근 switch/dispatch
+   - 풀면: 분기/플래그 set/사운드 트리거/컷씬 명령 모두 실행 (현재 대사만 표시)
+
+### B) **사운드 (SMAF→OGG)** [블로커: 외부 도구]
+- §4.5 — SMAF 디코더 (`smaf2midi` 또는 KSS/Yamaha SMAF SDK) 또는 33개 수동 변환
+- 변환 후 `engine/SfxBus.kt` 의 `play()` / `playMusic()` 만 구현하면 즉시 활성. 호출처는 이미 wired up
+
+### C) **대사 번역 실행** [블로커: API 키 + 사용자 결정]
 - 비용: ~$0.66 (Claude Haiku 4.5, 9,741 unique). 한 번만 실행
 - 사용자가 "번역은 마지막"이라고 했으므로 게임 콘텐츠가 마무리된 시점에 진행
 - 명령 (in §"재현 명령")
 - 결과: `dialogue_translations_en.json` 자동 배포, NpcDialogueScene 가 settings.language == "en" 일 때 자동 사용
-
-### B) **Ghidra 분석** [환경 셋업 완료, 사용자 GUI 분석 필요 — [`docs/ghidra-gui-guide.md`](ghidra-gui-guide.md)]
-- 셋업 완료: JDK 21 / Ghidra 12.0.4 / `Hero3.gpr` 프로젝트 자동 분석 + 1470 함수 디컴파일
-- 자동 헤드리스로는 PIC + GOT indirection 추적 한계 → 사용자 GUI 분석 필요
-- GOT base 식별: `0xb2c40`
-1. **§4.1 type 0x0c sparse pixel** — theme/obj 타일 진짜 그래픽 (현재 색상 그리드 placeholder)
-2. **§4.2 _mp extras** — NPC/exit/event 자동 배치 (현재 NpcRegistry, MapGraph, EncounterTable, ChestRegistry 모두 수동)
-3. **§4.3 _cif animation timing** — 진짜 4방향 걷기/공격/사망 애니 (현재 정적 frame 매핑)
-4. **§4.4 _scn opcode** — 분기/이펙트/사운드 명령 (헤더 영역 분석부터 시작 — 통계 단서 확보됨)
-
-진입점 단서 (PROGRESS §4 상세):
-- 비트맵 디코더: `frameBuf is NULL` 문자열 (`0xa61c8`) 부근 PIC xref
-- _cif 애니: `Hero_Free`, `freeBossType` 함수 부근
-- _mp extras: NPC 로딩 함수 (`Event_freeID`, `loadDataID`)
-- _scn opcode: `onEventMessageOkKey`, `eventManager` switch/dispatch
-
-### C) **사운드 (SMAF→OGG)** [블로커: 외부 도구]
-- §4.5 — SMAF 디코더 (`smaf2midi` 또는 KSS/Yamaha SMAF SDK) 또는 33개 수동 변환
-- 변환 후 `engine/SfxBus.kt` 의 `play()` / `playMusic()` 만 구현하면 즉시 활성. 호출처는 이미 wired up
 
 ### D) **게임 콘텐츠 확장** [블로커 없음, 작업량만]
 - 추가 보스 / 맵 / NPC / 퀘스트
@@ -213,15 +274,33 @@ hd/
 
 ### 자산 재변환 (필요 시)
 ```bash
+# 경로: work/h3/extracted (입력) / work/h3/converted (출력) / work/h3/converted_hd (HD 출력)
 cd tools/converter
-PYTHONIOENCODING=utf-8 python convert_all.py ../../work/extracted ../../work/converted
-PYTHONIOENCODING=utf-8 python convert_scn_v2.py ../../work/extracted/event ../../work/converted/scn_v2
+PYTHONIOENCODING=utf-8 python convert_all.py ../../work/h3/extracted ../../work/h3/converted
+PYTHONIOENCODING=utf-8 python convert_scn_v2.py ../../work/h3/extracted/event ../../work/h3/converted/scn_v2
 PYTHONIOENCODING=utf-8 python build_dialogue_corpus.py
-PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
+PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/h3/converted ../../android/app/src/main/assets
+
+cd ../hd
+HERO_GAME=h3 PYTHONIOENCODING=utf-8 python batch_upscale.py    # work/h3/converted_hd 생성 (3분)
+# HD assets 동기화 (prepare_android_assets는 SD만 복사함)
+python -c "import shutil, pathlib; src=pathlib.Path('../../work/h3/converted_hd'); dst=pathlib.Path('../../android/app/src/main/assets/sprites_hd'); shutil.rmtree(dst, ignore_errors=True); n=0
+for png in src.rglob('*.png'):
+    o = dst / png.relative_to(src); o.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(png, o); n+=1
+print(f'{n} HD sprites copied')"
 
 cd ../i18n
 PYTHONIOENCODING=utf-8 python generate_string_resources.py
 PYTHONIOENCODING=utf-8 python build_asset_catalog.py
+```
+
+### Ghidra 분석 산출물 재생성 (§4.2~4.4 진행 시)
+```
+1. ghidraRun.bat 실행 → Hero3.gpr 프로젝트 → client.bin64000 더블클릭
+2. Window → Script Manager → tools/ghidra/ 디렉토리 등록 (이미 등록됐으면 스킵)
+3. SetGotBase.java 실행 (r10 = 0xb2c40 적용 후 재분석, 5~20분 대기)
+4. DecompileAll.java 실행 → c:/gameRemake/testrepo/work/ghidra_out/all_decompiled.c (5~15분)
+5. 그 후 Claude에 "ghidra_out/all_decompiled.c 끝났어" 알리면 패턴 grep 진행
 ```
 
 ### `_scn` / `_cif` / `_mp` 통계 재실행
@@ -246,13 +325,22 @@ cd ../converter
 PYTHONIOENCODING=utf-8 python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
 ```
 
-### Android 빌드
-```bash
+### Android 빌드 (PowerShell)
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 cd android
-./gradlew :app:assembleDebug         # APK
-./gradlew :app:testDebugUnitTest     # 단위 테스트 (현재 17 통과)
+.\gradlew.bat :app:assembleDebug         # APK → app/build/outputs/apk/debug/app-debug.apk
+.\gradlew.bat :app:testDebugUnitTest     # 단위 테스트 (32 통과)
 ```
 또는 Android Studio 에서 `android/` 디렉토리 열기.
+
+**환경 영구 설정 권장**: 시스템 환경변수에 `JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot` 등록.
+
+⚠️ `android/local.properties`는 gitignore돼있어 첫 빌드 시 자동 생성 안 됨. 다른 PC에서 클론하면 SDK 경로 수동 입력 필요:
+```
+sdk.dir=C:\\path\\to\\Android\\Sdk
+```
 
 ---
 
@@ -261,15 +349,47 @@ cd android
 | ID | 이슈 | 워크어라운드 / 액션 |
 |---|---|---|
 | #1 | `map134_mp` 비표준 헤더 (NUL 부재) | 변환 시 1개 에러 보고됨, 무시 가능 |
-| #2 | type 0x0c BM 프레임이 노이즈로 렌더 | 정상. §4.1 (Ghidra) 후 실제 픽셀 디코드 |
-| #3 | 일부 0x0b BM 2~6 byte underrun | 시각 영향 미미 |
-| #4 | hero/boss CIF 인덱스가 BM 파일명과 매칭 안됨 | enemy/map은 직접 매칭 정상 |
+| #2 | ~~type 0x0c BM 프레임이 노이즈로 렌더~~ | ✅ 2026-05-06 해독 완료. 8-bit indexed dense, byte 0 = 투명. `convert_bm_v2.py` 패치 후 91개 정상 |
+| #3 | 일부 0x0b/0x0c BM 2 byte underrun | 시각 영향 미미 (마지막 픽셀 행 일부 누락). 0x0c도 동일 패턴 (theme_0 -2 byte) |
+| #4 | hero/boss CIF 인덱스가 BM 파일명과 매칭 안됨 | enemy/map은 직접 매칭 정상. §4.3 해독 후 자동 매핑 가능 |
 | #5 | `Hero3OptionSave` (32B) XOR 암호화 | 호환 불필요라 무시 |
-| #6 | `_cif` 새 헤더 적용 후 재변환 미실행 | `convert_all.py` 다시 돌리면 반영됨 |
-| #7 | ~~gradle wrapper 부재~~ | ✅ 2026-05-04 wrapper.jar/gradlew/gradlew.bat 추가 (Gradle 8.7) |
+| #6 | ~~`_cif` 새 헤더 적용 후 재변환 미실행~~ | ✅ 2026-05-06 자산 재변환 시 같이 재생성됨 |
+| #7 | ~~gradle wrapper 부재~~ | ✅ 2026-05-04 wrapper.jar/gradlew/gradlew.bat 추가 (Gradle 8.9) |
 | #8 | ~~멀티 캐릭터 파티는 데이터만 있고 전투 참여 X~~ | ✅ 2026-05-04 BattleScene 멀티 파티 지원. 살아있는 멤버 전원 라운드 행동, 적은 랜덤 타겟, 힐은 HP 최저 아군 자동 |
 | #9 | NPC patrol 이 hero 충돌 무시 | 시각적 겹침만 발생, 게임 로직 영향 없음 |
-| #10 | 사운드 미구현 | SfxBus stub 만 wired up. §4.5 후 활성 |
+| #10 | 사운드 미구현 | SfxBus stub 만 wired up. §B (SMAF→OGG) 후 활성 |
+| #11 | `local.properties` gitignored (의도) | 클론한 PC마다 sdk.dir 수동 입력 필요. 본 PC(`C:\Users\viewe\AppData\Local\Android\Sdk`)는 등록됨 |
+| #12 | JAVA_HOME 시스템 환경변수 미설정 | 빌드할 때마다 PowerShell에서 `$env:JAVA_HOME=...` 필요. 영구 등록 권장 |
+
+## 📜 2026-05-06 세션 작업 압축 (Ghidra §4.1 해독)
+
+**목표**: 사용자 PC에서 Ghidra GUI 분석으로 §4.1 type 0x0c 비트맵 디코더 해독. 자동화 한계 도달한 상태에서 사람의 인터랙티브 분석 필요.
+
+**진행 단계**:
+1. **JDK 21 + Ghidra 12.0.4 + Android SDK 환경 셋업** (사용자 PC에 처음으로) → `Hero3.gpr` 프로젝트 생성, ARM:LE:32:v5t로 변환 (Cortex-M 첫 시도 실패 후), 자동 분석으로 3556 함수 식별
+2. **GOT base 0xb2c40 적용** (`tools/ghidra/SetGotBase.java`) → r10 컨텍스트 + 재분석
+3. **string xref 시도 → 실패** (`frameBuf is NULL` @ 0xa61c8 references = 0). PIC + GOT-relative offset 때문에 자동 추적 불가.
+4. **literal pool 검색 시도 → 0건** (`tools/ghidra/FindEntryPoints.java` 결과 모든 needle에서 `literal-pool refs : 0`). 문자열 주소가 절대값이 아닌 GOT 오프셋.
+5. **DecompileAll.java 실행 → 함수 패턴 grep**으로 우회. 16MB `all_decompiled.c` 생성.
+6. **`& 0x3f` (RGB565 그린 채널 마스크) 8건 grep** → `FUN_00010fe4 @ 0x10fe4` 식별. `cVar2 == '\v'` (0x0b) / `cVar2 == '\f'` (0x0c) 분기 발견.
+7. **0x0c 분기 (라인 4834~5060) 분석**:
+   - 8가지 transformation (param_13 0~7)
+   - 핵심 루프: `if (*pbVar1 != 0) *puVar10 = palette[*pbVar1]` → 1 byte/pixel, byte 0 = 투명
+   - **이전 "sparse encoding" 가설 오답 확정**
+
+**해독 후 작업**:
+- `convert_bm_v2.py` `decode_0c` 교체 + 가변 팔레트 처리 (`ch` 필드 = palette count, 1~256)
+- 검증: theme_0/obj_0/h00000 변환 → obj_0/frame_02 = 나무 스프라이트 정상 렌더 ✓
+- 전체 자산 재변환: 479 파일 → 3149 frame (+18) → HD 4× 업스케일 → Android sprites/+sprites_hd/ 갱신
+- 빌드 검증: `:app:assembleDebug` 1m10s 성공, 단위테스트 32/32 통과
+- 빌드 환경 정리: `android/local.properties` 생성 (gitignored)
+
+**핵심 교훈**:
+1. PIC 코드는 string xref 자동화 안 됨 → 패턴 grep 우회가 효율적
+2. PROGRESS의 가설(sparse encoding) ≠ 진실(8-bit dense indexed). 추정과 디컴파일 코드 검증 항상 분리.
+3. `ch` 필드는 cell height 아니라 palette count. 다른 BM 포맷 docs도 검증 필요할 수 있음.
+
+---
 
 ## 📜 2026-05-04 세션 작업 압축
 

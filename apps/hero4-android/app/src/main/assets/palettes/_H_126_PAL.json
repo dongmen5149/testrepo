@@ -1,0 +1,133 @@
+{
+  "count": 8,
+  "colors": [
+    {
+      "primary": "#3d3d73",
+      "secondary": "#395477",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        61,
+        61,
+        115,
+        0,
+        57,
+        84,
+        119,
+        0
+      ]
+    },
+    {
+      "primary": "#1f79b6",
+      "secondary": "#13c2bc",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        31,
+        121,
+        182,
+        0,
+        19,
+        194,
+        188,
+        0
+      ]
+    },
+    {
+      "primary": "#084fa1",
+      "secondary": "#0097a9",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        8,
+        79,
+        161,
+        0,
+        0,
+        151,
+        169,
+        0
+      ]
+    },
+    {
+      "primary": "#262b4d",
+      "secondary": "#233c50",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        38,
+        43,
+        77,
+        0,
+        35,
+        60,
+        80,
+        0
+      ]
+    },
+    {
+      "primary": "#22cfb0",
+      "secondary": "#93f000",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        34,
+        207,
+        176,
+        0,
+        147,
+        240,
+        0,
+        0
+      ]
+    },
+    {
+      "primary": "#00853f",
+      "secondary": "#7f8500",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        0,
+        133,
+        63,
+        0,
+        127,
+        133,
+        0,
+        0
+      ]
+    },
+    {
+      "primary": "#00b673",
+      "secondary": "#92b600",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        0,
+        182,
+        115,
+        0,
+        146,
+        182,
+        0,
+        0
+      ]
+    },
+    {
+      "primary": "#6bb4d6",
+      "secondary": "#62decf",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        107,
+        180,
+        214,
+        0,
+        98,
+        222,
+        207,
+        0
+      ]
+    }
+  ]
+}

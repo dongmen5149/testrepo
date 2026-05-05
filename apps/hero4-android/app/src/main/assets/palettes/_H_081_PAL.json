@@ -1,0 +1,101 @@
+{
+  "count": 6,
+  "colors": [
+    {
+      "primary": "#ab4c25",
+      "secondary": "#252aab",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        171,
+        76,
+        37,
+        0,
+        37,
+        42,
+        171,
+        0
+      ]
+    },
+    {
+      "primary": "#ce6c38",
+      "secondary": "#3a38ce",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        206,
+        108,
+        56,
+        0,
+        58,
+        56,
+        206,
+        0
+      ]
+    },
+    {
+      "primary": "#7a230b",
+      "secondary": "#0b187a",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        122,
+        35,
+        11,
+        0,
+        11,
+        24,
+        122,
+        0
+      ]
+    },
+    {
+      "primary": "#f0aa65",
+      "secondary": "#6e50e8",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        240,
+        170,
+        101,
+        0,
+        110,
+        80,
+        232,
+        0
+      ]
+    },
+    {
+      "primary": "#3724a1",
+      "secondary": "#a15624",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        55,
+        36,
+        161,
+        0,
+        161,
+        86,
+        36,
+        0
+      ]
+    },
+    {
+      "primary": "#5733dc",
+      "secondary": "#dc8233",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        87,
+        51,
+        220,
+        0,
+        220,
+        130,
+        51,
+        0
+      ]
+    }
+  ]
+}

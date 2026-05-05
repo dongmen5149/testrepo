@@ -28,7 +28,7 @@ import java.util.List;
 
 public class FindEntryPoints extends GhidraScript {
 
-    private static final String OUT_DIR = "d:/testrepo/work/ghidra_out";
+    private static final String OUT_DIR = "c:/gameRemake/testrepo/work/ghidra_out";
 
     private static final String[][] TARGETS = {
         {"4.1_bitmap_decoder", "frameBuf is NULL"},

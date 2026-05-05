@@ -10,8 +10,13 @@ import struct, pathlib
 import collections
 from capstone import Cs, CS_ARCH_ARM, CS_MODE_THUMB
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-BIN = ROOT / 'work' / 'extracted' / 'client.bin64000'
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+BIN = _g.binary_path
+assert BIN is not None, f'{_g.id} has no native binary'
 
 
 def main():

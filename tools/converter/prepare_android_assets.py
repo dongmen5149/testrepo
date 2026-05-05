@@ -8,7 +8,8 @@
 사용:
     python prepare_android_assets.py <converted_dir> <android_assets_dir>
 예:
-    python prepare_android_assets.py ../../work/converted ../../android/app/src/main/assets
+    python prepare_android_assets.py ../../work/h3/converted ../../android/app/src/main/assets
+    python prepare_android_assets.py ../../work/h4/converted ../../apps/hero4-android/app/src/main/assets
 """
 from __future__ import annotations
 import sys, shutil, pathlib
@@ -51,16 +52,17 @@ def main(argv: list[str]) -> int:
         shutil.copy2(json_path, dst)
         counts['strings'] += 1
 
-    # _pa JSONs → palettes/
+    # _pa JSONs (Hero3) + _PAL JSONs (Hero4 8byte/color) → palettes/
     palettes_root = out / 'palettes'
     palettes_root.mkdir(parents=True, exist_ok=True)
-    for json_path in converted.rglob('*_pa.json'):
-        rel = json_path.relative_to(converted)
-        dst = palettes_root / rel.name
-        if dst.exists():
-            continue
-        shutil.copy2(json_path, dst)
-        counts['palettes'] += 1
+    for pattern in ('*_pa.json', '*_PAL.json'):
+        for json_path in converted.rglob(pattern):
+            rel = json_path.relative_to(converted)
+            dst = palettes_root / rel.name
+            if dst.exists():
+                continue
+            shutil.copy2(json_path, dst)
+            counts['palettes'] += 1
 
     # 추가 단일 JSON 파일 (대사 코퍼스, 번역, 자산 카탈로그)
     counts['extras'] = 0

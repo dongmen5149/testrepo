@@ -1,17 +1,20 @@
 """
 Hero3 _bm → PNG 변환기 v2 (멀티프레임 지원).
 
-검증된 포맷:
+검증된 포맷 (Ghidra FUN_00010fe4 @ 0x10fe4 + FUN_00010ea4 @ 0x10ea4 분석):
     file_header (6 bytes): count + flag1 + reserved
     frames[count]: 각 프레임은 자체 mini-header + palette + pixels
-        mini_header (9 bytes): type(0b/0c) + w(LE16) + h(LE16) + cw(LE16) + ch(LE16)
-        marker     (2 bytes): 0xf81f (marker)
-        palette   (32 bytes): 16 RGB565 colors LE (palette[0] = 0xf81f magenta=transparent)
-        pixels: type 0x0b uncompressed 4-bit big-nibble-first
+        mini_header (9 bytes): type(0b/0c) + w(LE16) + h(LE16) + cw(LE16) + palcnt(LE16)
+        marker     (2 bytes): 0xf81f (frame boundary marker)
+        palette   (palcnt * 2 bytes): RGB565 colors LE, 가변 크기
+        pixels:
+            type 0x0b: 4-bit big-nibble-first dense, palette[0] = 0xf81f 투명
+            type 0x0c: 8-bit dense palette indexed, byte value 0 = 투명 (skip)
+                       (이전 "sparse encoding" 및 "16색 고정 팔레트" 가설은 오답)
+    palcnt 필드는 우리가 "ch" 라고 부르던 값. 실제로는 팔레트 엔트리 개수.
 
 프레임 경계는 1f f8 마커 위치 + 9 bytes 앞 type 검증으로 식별.
 일부 프레임에서 2-6 바이트 underrun 가능 (정렬 이슈, 시각적 영향 미미).
-type 0x0c 프레임은 다른 포맷 (압축 추정) — 1차 베이스라인은 type 0x0b 와 동일하게 처리.
 
 사용:
     python convert_bm_v2.py <input.bm> <output_dir>
@@ -34,21 +37,14 @@ def find_frame_markers(data: bytes) -> list[int]:
             # 2) 합리적 dimensions (1..512, 0 아닌)
             w = struct.unpack_from('<H', data, i - 8)[0]
             h = struct.unpack_from('<H', data, i - 6)[0]
-            cw = struct.unpack_from('<H', data, i - 4)[0]
-            ch = struct.unpack_from('<H', data, i - 2)[0]
+            palcnt = struct.unpack_from('<H', data, i - 2)[0]
             if not (1 <= w <= 512 and 1 <= h <= 512):
                 i += 1
                 continue
-            # 3) marker 뒤 palette(32 bytes) 공간 있어야 함
-            if i + 2 + 32 > len(data):
+            # 3) marker 뒤 palette(palcnt * 2 bytes) 공간 있어야 함
+            if not (1 <= palcnt <= 256) or i + 2 + palcnt * 2 > len(data):
                 i += 1
                 continue
-            # 4) palette 첫 색이 0xf81f (마젠타) 인지 확인 — 강력한 진짜 마커 신호
-            first_color = struct.unpack_from('<H', data, i + 2)[0]
-            if first_color != 0xf81f:
-                # 1차 휴리스틱: 첫 색이 마젠타가 아니면 의심스러움. 단, 일부 프레임은
-                # 마젠타가 다른 인덱스에 있을 수 있으므로 기각하지 않고 통과시킴.
-                pass
             out.append(i)
             i += 2
         else:
@@ -71,26 +67,44 @@ def render_frame(data: bytes, marker_off: int, pixel_end: int) -> tuple[Image.Im
     w = struct.unpack_from('<H', data, marker_off - 8)[0]
     h = struct.unpack_from('<H', data, marker_off - 6)[0]
     cw = struct.unpack_from('<H', data, marker_off - 4)[0]
-    ch = struct.unpack_from('<H', data, marker_off - 2)[0]
+    palcnt = struct.unpack_from('<H', data, marker_off - 2)[0]
     palette = [rgb565_to_rgba(struct.unpack_from('<H', data, marker_off + 2 + j*2)[0])
-               for j in range(16)]
-    pixels_off = marker_off + 2 + 32
+               for j in range(palcnt)]
+    pixels_off = marker_off + 2 + palcnt * 2
     pixels_avail = max(0, pixel_end - pixels_off)
     pixels_data = data[pixels_off:pixels_off + pixels_avail]
 
     img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
     pix = img.load()
     n = w * h
+
+    if type_byte == 0x0c:
+        # 8-bit palette indexed dense, byte 0 = transparent (skip)
+        # FUN_00010fe4 line 4847-4851: read 1 byte/pixel, if !=0 lookup palette[byte]
+        decoded = 0
+        for i in range(n):
+            if i >= len(pixels_data):
+                break
+            idx = pixels_data[i]
+            if idx == 0:
+                continue  # transparent
+            if idx < palcnt:
+                pix[i % w, i // w] = palette[idx]
+                decoded += 1
+        return img, {'type': type_byte, 'w': w, 'h': h, 'cw': cw, 'palcnt': palcnt,
+                     'pixels_avail': pixels_avail, 'pixels_needed': n,
+                     'pixels_decoded': decoded}
+    # type 0x0b — 4-bit big-nibble-first dense
     for i in range(n):
         bi = i // 2
         if bi >= len(pixels_data):
             break
         b = pixels_data[bi]
         idx = (b >> 4) if (i % 2 == 0) else (b & 0x0f)
-        if idx < 16:
+        if idx < palcnt:
             pix[i % w, i // w] = palette[idx]
 
-    return img, {'type': type_byte, 'w': w, 'h': h, 'cw': cw, 'ch': ch,
+    return img, {'type': type_byte, 'w': w, 'h': h, 'cw': cw, 'palcnt': palcnt,
                  'pixels_avail': pixels_avail, 'pixels_needed': (n + 1) // 2}
 
 

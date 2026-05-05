@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 
 public class DecompileAll extends GhidraScript {
 
-    private static final String OUT = "d:/testrepo/work/ghidra_out/all_decompiled.c";
+    private static final String OUT = "c:/gameRemake/testrepo/work/ghidra_out/all_decompiled.c";
 
     @Override
     protected void run() throws Exception {

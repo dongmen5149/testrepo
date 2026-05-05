@@ -1,18 +1,24 @@
 """모든 sprite frame PNG 를 scale4x 로 일괄 업스케일.
 
-입력:  work/converted/<cat>/<bm>/frame_*.png
-출력:  work/converted_hd/<cat>/<bm>/frame_*.png
+입력:  work/<game>/converted/<cat>/<bm>/frame_*.png
+출력:  work/<game>/converted_hd/<cat>/<bm>/frame_*.png
+게임 선택: HERO_GAME 환경변수 (default h3)
 
 scale4x 는 픽셀 아트 스타일 보존 + 대각선 매끄럽게.
 """
 from __future__ import annotations
 import pathlib, sys
 from PIL import Image
-sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from upscale_poc import scale4x
 
-CONVERTED = pathlib.Path(__file__).parent.parent.parent / 'work' / 'converted'
-HD_OUT = pathlib.Path(__file__).parent.parent.parent / 'work' / 'converted_hd'
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from upscale_poc import scale4x  # noqa: E402
+
+_g = select()
+CONVERTED = _g.converted_root
+HD_OUT = _g.converted_hd_root
 
 
 def main():

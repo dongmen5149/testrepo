@@ -9,8 +9,13 @@
 from __future__ import annotations
 import struct, pathlib, collections
 
-ROOT = pathlib.Path(__file__).parent.parent.parent
-BIN = ROOT / 'work' / 'extracted' / 'client.bin64000'
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from _game import select  # noqa: E402
+
+_g = select()
+BIN = _g.binary_path
+assert BIN is not None, f'{_g.id} has no native binary'
 
 # 다중 known offset 으로 base 후보 검증
 TARGETS = [

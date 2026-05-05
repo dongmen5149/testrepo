@@ -1,0 +1,133 @@
+{
+  "count": 8,
+  "colors": [
+    {
+      "primary": "#001a69",
+      "secondary": "#0e4235",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        0,
+        26,
+        105,
+        0,
+        14,
+        66,
+        53,
+        0
+      ]
+    },
+    {
+      "primary": "#030648",
+      "secondary": "#072021",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        3,
+        6,
+        72,
+        0,
+        7,
+        32,
+        33,
+        0
+      ]
+    },
+    {
+      "primary": "#1f79b6",
+      "secondary": "#23996a",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        31,
+        121,
+        182,
+        0,
+        35,
+        153,
+        106,
+        0
+      ]
+    },
+    {
+      "primary": "#083e92",
+      "secondary": "#176d55",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        8,
+        62,
+        146,
+        0,
+        23,
+        109,
+        85,
+        0
+      ]
+    },
+    {
+      "primary": "#00853f",
+      "secondary": "#854800",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        0,
+        133,
+        63,
+        0,
+        133,
+        72,
+        0,
+        0
+      ]
+    },
+    {
+      "primary": "#6bb4d6",
+      "secondary": "#68b685",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        107,
+        180,
+        214,
+        0,
+        104,
+        182,
+        133,
+        0
+      ]
+    },
+    {
+      "primary": "#22cfb0",
+      "secondary": "#e8cd08",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        34,
+        207,
+        176,
+        0,
+        232,
+        205,
+        8,
+        0
+      ]
+    },
+    {
+      "primary": "#00b673",
+      "secondary": "#b67e00",
+      "primary_alpha": 0,
+      "secondary_alpha": 0,
+      "bytes": [
+        0,
+        182,
+        115,
+        0,
+        182,
+        126,
+        0,
+        0
+      ]
+    }
+  ]
+}

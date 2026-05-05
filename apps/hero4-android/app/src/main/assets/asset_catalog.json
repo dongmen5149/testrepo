@@ -1,0 +1,1125 @@
+{
+  "meta": {
+    "generated_at": "2026-05-01",
+    "source": "work\\h4\\converted",
+    "game": "h4"
+  },
+  "sprites_by_category": {
+    "CM": [
+      {
+        "name": "ENDING_0_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_240x200_tc.png",
+        "first_dim": "240x200"
+      },
+      {
+        "name": "ENDING_1_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_240x200_tc.png",
+        "first_dim": "240x200"
+      },
+      {
+        "name": "GRADE_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_36x44_tb.png",
+        "first_dim": "36x44"
+      },
+      {
+        "name": "GRADE_V_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_40x50_tb.png",
+        "first_dim": "40x50"
+      },
+      {
+        "name": "_MMENU_BM",
+        "frame_count": 30,
+        "first_frame": "frame_00_14x24_tb.png",
+        "first_dim": "14x24"
+      },
+      {
+        "name": "_MMENU_CHAR_0_BM",
+        "frame_count": 6,
+        "first_frame": "frame_00_8x12_tb.png",
+        "first_dim": "8x12"
+      },
+      {
+        "name": "_MMENU_CHAR_1_BM",
+        "frame_count": 7,
+        "first_frame": "frame_00_6x11_tb.png",
+        "first_dim": "6x11"
+      },
+      {
+        "name": "_MMENU_CHAR_2_BM",
+        "frame_count": 15,
+        "first_frame": "frame_00_24x28_tb.png",
+        "first_dim": "24x28"
+      },
+      {
+        "name": "_MMENU_CHAR_3_BM",
+        "frame_count": 10,
+        "first_frame": "frame_00_24x28_tb.png",
+        "first_dim": "24x28"
+      }
+    ],
+    "GMenu": [
+      {
+        "name": "_GMENU_COMM_BM",
+        "frame_count": 9,
+        "first_frame": "frame_00_6x5_tb.png",
+        "first_dim": "6x5"
+      },
+      {
+        "name": "_GMENU_ONLY_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_92x13_tb.png",
+        "first_dim": "92x13"
+      }
+    ],
+    "MAP": [
+      {
+        "name": "EFFECT\\_EVT_EFF_BM",
+        "frame_count": 11,
+        "first_frame": "frame_00_8x14_tb.png",
+        "first_dim": "8x14"
+      }
+    ],
+    "NPC": [
+      {
+        "name": "FACE_0_BM",
+        "frame_count": 11,
+        "first_frame": "frame_00_74x66_tc.png",
+        "first_dim": "74x66"
+      },
+      {
+        "name": "FACE_10_BM",
+        "frame_count": 5,
+        "first_frame": "frame_00_87x97_tc.png",
+        "first_dim": "87x97"
+      },
+      {
+        "name": "FACE_11_BM",
+        "frame_count": 6,
+        "first_frame": "frame_00_91x64_tc.png",
+        "first_dim": "91x64"
+      },
+      {
+        "name": "FACE_12_BM",
+        "frame_count": 5,
+        "first_frame": "frame_00_93x97_tc.png",
+        "first_dim": "93x97"
+      },
+      {
+        "name": "FACE_13_BM",
+        "frame_count": 4,
+        "first_frame": "frame_00_93x97_tc.png",
+        "first_dim": "93x97"
+      },
+      {
+        "name": "FACE_14_BM",
+        "frame_count": 5,
+        "first_frame": "frame_00_100x100_tc.png",
+        "first_dim": "100x100"
+      },
+      {
+        "name": "FACE_15_BM",
+        "frame_count": 4,
+        "first_frame": "frame_00_92x101_tc.png",
+        "first_dim": "92x101"
+      },
+      {
+        "name": "FACE_1_BM",
+        "frame_count": 4,
+        "first_frame": "frame_00_60x89_tc.png",
+        "first_dim": "60x89"
+      },
+      {
+        "name": "FACE_2_BM",
+        "frame_count": 12,
+        "first_frame": "frame_00_71x73_tc.png",
+        "first_dim": "71x73"
+      },
+      {
+        "name": "FACE_3_BM",
+        "frame_count": 6,
+        "first_frame": "frame_00_86x58_tc.png",
+        "first_dim": "86x58"
+      },
+      {
+        "name": "FACE_4_BM",
+        "frame_count": 10,
+        "first_frame": "frame_00_81x63_tc.png",
+        "first_dim": "81x63"
+      },
+      {
+        "name": "FACE_5_BM",
+        "frame_count": 4,
+        "first_frame": "frame_00_64x91_tc.png",
+        "first_dim": "64x91"
+      },
+      {
+        "name": "FACE_6_BM",
+        "frame_count": 10,
+        "first_frame": "frame_00_54x57_tc.png",
+        "first_dim": "54x57"
+      },
+      {
+        "name": "FACE_7_BM",
+        "frame_count": 4,
+        "first_frame": "frame_00_97x96_tc.png",
+        "first_dim": "97x96"
+      },
+      {
+        "name": "FACE_8_BM",
+        "frame_count": 9,
+        "first_frame": "frame_00_100x96_tc.png",
+        "first_dim": "100x96"
+      },
+      {
+        "name": "FACE_9_BM",
+        "frame_count": 5,
+        "first_frame": "frame_00_100x96_tc.png",
+        "first_dim": "100x96"
+      }
+    ],
+    "OBJ": [
+      {
+        "name": "SPR\\_OBJ_SPR_000_BM",
+        "frame_count": 2,
+        "first_frame": "frame_00_30x32_tb.png",
+        "first_dim": "30x32"
+      }
+    ],
+    "tdf": [
+      {
+        "name": "TITLE_BM",
+        "frame_count": 1,
+        "first_frame": "frame_00_290x199_tc.png",
+        "first_dim": "290x199"
+      }
+    ]
+  },
+  "maps": [
+    {
+      "file": "_MAP_M_000",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "선착장",
+      "name_en": "수레바퀴섬",
+      "width": 20,
+      "height": 20,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_001",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "필드1",
+      "name_en": "수레바퀴섬",
+      "width": 50,
+      "height": 50,
+      "palette_count": 6
+    },
+    {
+      "file": "_MAP_M_002",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "필드2",
+      "name_en": "수레바퀴섬",
+      "width": 40,
+      "height": 35,
+      "palette_count": 10
+    },
+    {
+      "file": "_MAP_M_003",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "인간주둔지",
+      "name_en": "수레바퀴섬",
+      "width": 25,
+      "height": 40,
+      "palette_count": 24
+    },
+    {
+      "file": "_MAP_M_004",
+      "name_ko": "이름없는섬",
+      "place_ko": "선착장",
+      "name_en": "이름없는섬",
+      "width": 20,
+      "height": 20,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_005",
+      "name_ko": "이름없는섬",
+      "place_ko": "필드1",
+      "name_en": "이름없는섬",
+      "width": 40,
+      "height": 50,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_006",
+      "name_ko": "이름없는섬",
+      "place_ko": "크래드의집",
+      "name_en": "이름없는섬",
+      "width": 20,
+      "height": 20,
+      "palette_count": 29
+    },
+    {
+      "file": "_MAP_M_007",
+      "name_ko": "이름없는섬",
+      "place_ko": "필드2",
+      "name_en": "이름없는섬",
+      "width": 40,
+      "height": 35,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_008",
+      "name_ko": "검은바위섬",
+      "place_ko": "선착장",
+      "name_en": "검은바위섬",
+      "width": 20,
+      "height": 20,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_009",
+      "name_ko": "검은바위섬",
+      "place_ko": "필드1",
+      "name_en": "검은바위섬",
+      "width": 35,
+      "height": 40,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_010",
+      "name_ko": "검은바위섬",
+      "place_ko": "필드2",
+      "name_en": "검은바위섬",
+      "width": 50,
+      "height": 30,
+      "palette_count": 10
+    },
+    {
+      "file": "_MAP_M_011",
+      "name_ko": "검은바위섬",
+      "place_ko": "인간주둔지",
+      "name_en": "검은바위섬",
+      "width": 35,
+      "height": 25,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_012",
+      "name_ko": "검은바위섬",
+      "place_ko": "선주주둔지",
+      "name_en": "검은바위섬",
+      "width": 25,
+      "height": 35,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_013",
+      "name_ko": "팔리아스",
+      "place_ko": "선착장",
+      "name_en": "팔리아스",
+      "width": 20,
+      "height": 20,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_014",
+      "name_ko": "팔리아스",
+      "place_ko": "선주마을",
+      "name_en": "팔리아스",
+      "width": 25,
+      "height": 20,
+      "palette_count": 18
+    },
+    {
+      "file": "_MAP_M_015",
+      "name_ko": "팔리아스",
+      "place_ko": "필드1",
+      "name_en": "팔리아스",
+      "width": 60,
+      "height": 25,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_016",
+      "name_ko": "팔리아스",
+      "place_ko": "필드2",
+      "name_en": "팔리아스",
+      "width": 30,
+      "height": 30,
+      "palette_count": 9
+    },
+    {
+      "file": "_MAP_M_017",
+      "name_ko": "팔리아스",
+      "place_ko": "필드3",
+      "name_en": "팔리아스",
+      "width": 30,
+      "height": 30,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_018",
+      "name_ko": "뮤리아스",
+      "place_ko": "인간점령도시",
+      "name_en": "뮤리아스",
+      "width": 24,
+      "height": 45,
+      "palette_count": 31
+    },
+    {
+      "file": "_MAP_M_019",
+      "name_ko": "뮤리아스",
+      "place_ko": "필드3",
+      "name_en": "뮤리아스",
+      "width": 50,
+      "height": 25,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_020",
+      "name_ko": "뮤리아스",
+      "place_ko": "필드1",
+      "name_en": "뮤리아스",
+      "width": 35,
+      "height": 35,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_021",
+      "name_ko": "뮤리아스",
+      "place_ko": "필드2",
+      "name_en": "뮤리아스",
+      "width": 30,
+      "height": 40,
+      "palette_count": 21
+    },
+    {
+      "file": "_MAP_M_022",
+      "name_ko": "핀디아스",
+      "place_ko": "선착장",
+      "name_en": "핀디아스",
+      "width": 20,
+      "height": 20,
+      "palette_count": 18
+    },
+    {
+      "file": "_MAP_M_023",
+      "name_ko": "핀디아스",
+      "place_ko": "필드1",
+      "name_en": "핀디아스",
+      "width": 30,
+      "height": 45,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_024",
+      "name_ko": "핀디아스",
+      "place_ko": "필드2",
+      "name_en": "핀디아스",
+      "width": 40,
+      "height": 40,
+      "palette_count": 16
+    },
+    {
+      "file": "_MAP_M_025",
+      "name_ko": "핀디아스",
+      "place_ko": "필드3",
+      "name_en": "핀디아스",
+      "width": 30,
+      "height": 30,
+      "palette_count": 18
+    },
+    {
+      "file": "_MAP_M_026",
+      "name_ko": "아눈섬",
+      "place_ko": "선주도시",
+      "name_en": "아눈섬",
+      "width": 30,
+      "height": 35,
+      "palette_count": 42
+    },
+    {
+      "file": "_MAP_M_027",
+      "name_ko": "아눈섬",
+      "place_ko": "필드1",
+      "name_en": "아눈섬",
+      "width": 50,
+      "height": 20,
+      "palette_count": 9
+    },
+    {
+      "file": "_MAP_M_028",
+      "name_ko": "아눈섬",
+      "place_ko": "필드2",
+      "name_en": "아눈섬",
+      "width": 25,
+      "height": 35,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_029",
+      "name_ko": "아눈섬",
+      "place_ko": "필드3",
+      "name_en": "아눈섬",
+      "width": 25,
+      "height": 35,
+      "palette_count": 9
+    },
+    {
+      "file": "_MAP_M_030",
+      "name_ko": "성지",
+      "place_ko": "선착장",
+      "name_en": "성지",
+      "width": 20,
+      "height": 20,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_031",
+      "name_ko": "성지",
+      "place_ko": "필드1",
+      "name_en": "성지",
+      "width": 20,
+      "height": 45,
+      "palette_count": 16
+    },
+    {
+      "file": "_MAP_M_032",
+      "name_ko": "성지",
+      "place_ko": "필드2",
+      "name_en": "성지",
+      "width": 60,
+      "height": 20,
+      "palette_count": 22
+    },
+    {
+      "file": "_MAP_M_033",
+      "name_ko": "성지",
+      "place_ko": "필드3",
+      "name_en": "성지",
+      "width": 30,
+      "height": 30,
+      "palette_count": 17
+    },
+    {
+      "file": "_MAP_M_034",
+      "name_ko": "해적소굴",
+      "place_ko": "선착장",
+      "name_en": "해적소굴",
+      "width": 20,
+      "height": 20,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_035",
+      "name_ko": "해적소굴",
+      "place_ko": "필드1",
+      "name_en": "해적소굴",
+      "width": 50,
+      "height": 25,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_036",
+      "name_ko": "해적소굴",
+      "place_ko": "주둔지",
+      "name_en": "해적소굴",
+      "width": 25,
+      "height": 20,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_037",
+      "name_ko": "매도우힐",
+      "place_ko": "필드1",
+      "name_en": "매도우힐",
+      "width": 50,
+      "height": 30,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_038",
+      "name_ko": "매도우힐",
+      "place_ko": "필드2",
+      "name_en": "매도우힐",
+      "width": 40,
+      "height": 40,
+      "palette_count": 17
+    },
+    {
+      "file": "_MAP_M_039",
+      "name_ko": "매도우힐",
+      "place_ko": "필드3",
+      "name_en": "매도우힐",
+      "width": 30,
+      "height": 30,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_040",
+      "name_ko": "매도우힐",
+      "place_ko": "도시",
+      "name_en": "매도우힐",
+      "width": 20,
+      "height": 33,
+      "palette_count": 34
+    },
+    {
+      "file": "_MAP_M_041",
+      "name_ko": "매도우힐",
+      "place_ko": "인간주둔지",
+      "name_en": "매도우힐",
+      "width": 25,
+      "height": 25,
+      "palette_count": 23
+    },
+    {
+      "file": "_MAP_M_042",
+      "name_ko": "성지",
+      "place_ko": "던전1",
+      "name_en": "성지",
+      "width": 24,
+      "height": 34,
+      "palette_count": 6
+    },
+    {
+      "file": "_MAP_M_043",
+      "name_ko": "성지",
+      "place_ko": "던전2",
+      "name_en": "성지",
+      "width": 50,
+      "height": 27,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_044",
+      "name_ko": "성지",
+      "place_ko": "던전3",
+      "name_en": "성지",
+      "width": 36,
+      "height": 28,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_045",
+      "name_ko": "성지",
+      "place_ko": "던전4_A,B",
+      "name_en": "성지",
+      "width": 20,
+      "height": 24,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_046",
+      "name_ko": "성지",
+      "place_ko": "던전5_C",
+      "name_en": "성지",
+      "width": 20,
+      "height": 24,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_047",
+      "name_ko": "팔리아스",
+      "place_ko": "던전1-1",
+      "name_en": "팔리아스",
+      "width": 50,
+      "height": 33,
+      "palette_count": 5
+    },
+    {
+      "file": "_MAP_M_048",
+      "name_ko": "팔리아스",
+      "place_ko": "던전1-2",
+      "name_en": "팔리아스",
+      "width": 50,
+      "height": 33,
+      "palette_count": 5
+    },
+    {
+      "file": "_MAP_M_049",
+      "name_ko": "팔리아스",
+      "place_ko": "던전1-3",
+      "name_en": "팔리아스",
+      "width": 44,
+      "height": 28,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_050",
+      "name_ko": "팔리아스",
+      "place_ko": "던전2-1",
+      "name_en": "팔리아스",
+      "width": 40,
+      "height": 33,
+      "palette_count": 6
+    },
+    {
+      "file": "_MAP_M_051",
+      "name_ko": "팔리아스",
+      "place_ko": "던전2-2",
+      "name_en": "팔리아스",
+      "width": 35,
+      "height": 30,
+      "palette_count": 5
+    },
+    {
+      "file": "_MAP_M_052",
+      "name_ko": "팔리아스",
+      "place_ko": "던전2-3",
+      "name_en": "팔리아스",
+      "width": 35,
+      "height": 30,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_053",
+      "name_ko": "핀디아스1",
+      "place_ko": "던전1층",
+      "name_en": "핀디아스1",
+      "width": 44,
+      "height": 40,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_054",
+      "name_ko": "핀디아스1",
+      "place_ko": "던전2층",
+      "name_en": "핀디아스1",
+      "width": 40,
+      "height": 36,
+      "palette_count": 5
+    },
+    {
+      "file": "_MAP_M_055",
+      "name_ko": "핀디아스1",
+      "place_ko": "던전3층",
+      "name_en": "핀디아스1",
+      "width": 40,
+      "height": 36,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_056",
+      "name_ko": "핀디아스2",
+      "place_ko": "던전1",
+      "name_en": "핀디아스2",
+      "width": 25,
+      "height": 20,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_057",
+      "name_ko": "핀디아스2",
+      "place_ko": "던전2",
+      "name_en": "핀디아스2",
+      "width": 25,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "_MAP_M_058",
+      "name_ko": "핀디아스2",
+      "place_ko": "던전3",
+      "name_en": "핀디아스2",
+      "width": 25,
+      "height": 20,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_059",
+      "name_ko": "아눈섬",
+      "place_ko": "던전1",
+      "name_en": "아눈섬",
+      "width": 36,
+      "height": 23,
+      "palette_count": 10
+    },
+    {
+      "file": "_MAP_M_060",
+      "name_ko": "아눈섬",
+      "place_ko": "던전2",
+      "name_en": "아눈섬",
+      "width": 26,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "_MAP_M_061",
+      "name_ko": "아눈섬",
+      "place_ko": "던전3",
+      "name_en": "아눈섬",
+      "width": 26,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "_MAP_M_062",
+      "name_ko": "뮤리아스",
+      "place_ko": "포로수용소_1층_a",
+      "name_en": "뮤리아스",
+      "width": 40,
+      "height": 24,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_063",
+      "name_ko": "뮤리아스",
+      "place_ko": "포로수용소_1층_b",
+      "name_en": "뮤리아스",
+      "width": 40,
+      "height": 29,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_064",
+      "name_ko": "뮤리아스",
+      "place_ko": "포로수용소_2층",
+      "name_en": "뮤리아스",
+      "width": 60,
+      "height": 30,
+      "palette_count": 10
+    },
+    {
+      "file": "_MAP_M_065",
+      "name_ko": "뮤리아스",
+      "place_ko": "포로수용소_지하1층",
+      "name_en": "뮤리아스",
+      "width": 50,
+      "height": 38,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_066",
+      "name_ko": "뮤리아스",
+      "place_ko": "포로수용소_지하2층",
+      "name_en": "뮤리아스",
+      "width": 20,
+      "height": 20,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_067",
+      "name_ko": "매도우힐1",
+      "place_ko": "지하1층",
+      "name_en": "매도우힐1",
+      "width": 40,
+      "height": 30,
+      "palette_count": 13
+    },
+    {
+      "file": "_MAP_M_068",
+      "name_ko": "매도우힐1",
+      "place_ko": "지하2층",
+      "name_en": "매도우힐1",
+      "width": 36,
+      "height": 26,
+      "palette_count": 16
+    },
+    {
+      "file": "_MAP_M_069",
+      "name_ko": "매도우힐1",
+      "place_ko": "지하3층",
+      "name_en": "매도우힐1",
+      "width": 50,
+      "height": 36,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_070",
+      "name_ko": "매도우힐2",
+      "place_ko": "던전1층",
+      "name_en": "매도우힐2",
+      "width": 60,
+      "height": 36,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_071",
+      "name_ko": "매도우힐2",
+      "place_ko": "던전2층",
+      "name_en": "매도우힐2",
+      "width": 34,
+      "height": 40,
+      "palette_count": 20
+    },
+    {
+      "file": "_MAP_M_072",
+      "name_ko": "매도우힐2",
+      "place_ko": "던전3층",
+      "name_en": "매도우힐2",
+      "width": 60,
+      "height": 40,
+      "palette_count": 17
+    },
+    {
+      "file": "_MAP_M_073",
+      "name_ko": "검은바위섬1",
+      "place_ko": "던전1층",
+      "name_en": "검은바위섬1",
+      "width": 50,
+      "height": 26,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_074",
+      "name_ko": "검은바위섬1",
+      "place_ko": "던전2층",
+      "name_en": "검은바위섬1",
+      "width": 50,
+      "height": 26,
+      "palette_count": 15
+    },
+    {
+      "file": "_MAP_M_075",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "던전_지하1층",
+      "name_en": "수레바퀴섬",
+      "width": 45,
+      "height": 35,
+      "palette_count": 12
+    },
+    {
+      "file": "_MAP_M_076",
+      "name_ko": "수레바퀴섬",
+      "place_ko": "던전_지하2층",
+      "name_en": "수레바퀴섬",
+      "width": 45,
+      "height": 40,
+      "palette_count": 9
+    },
+    {
+      "file": "_MAP_M_077",
+      "name_ko": "이름없는섬",
+      "place_ko": "비밀통로1",
+      "name_en": "이름없는섬",
+      "width": 30,
+      "height": 50,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_078",
+      "name_ko": "이름없는섬",
+      "place_ko": "비밀통로2",
+      "name_en": "이름없는섬",
+      "width": 30,
+      "height": 50,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_079",
+      "name_ko": "보스룸",
+      "place_ko": "1",
+      "name_en": "보스룸",
+      "width": 30,
+      "height": 22,
+      "palette_count": 6
+    },
+    {
+      "file": "_MAP_M_080",
+      "name_ko": "보스룸",
+      "place_ko": "2",
+      "name_en": "보스룸",
+      "width": 30,
+      "height": 22,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_081",
+      "name_ko": "보스룸",
+      "place_ko": "3",
+      "name_en": "보스룸",
+      "width": 30,
+      "height": 22,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_082",
+      "name_ko": "보스룸",
+      "place_ko": "4",
+      "name_en": "보스룸",
+      "width": 30,
+      "height": 22,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_083",
+      "name_ko": "보스룸",
+      "place_ko": "5",
+      "name_en": "보스룸",
+      "width": 30,
+      "height": 22,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_084",
+      "name_ko": "실내",
+      "place_ko": "1_크래드의집",
+      "name_en": "실내",
+      "width": 20,
+      "height": 20,
+      "palette_count": 24
+    },
+    {
+      "file": "_MAP_M_085",
+      "name_ko": "실내",
+      "place_ko": "2",
+      "name_en": "실내",
+      "width": 20,
+      "height": 20,
+      "palette_count": 21
+    },
+    {
+      "file": "_MAP_M_086",
+      "name_ko": "실내",
+      "place_ko": "3",
+      "name_en": "실내",
+      "width": 20,
+      "height": 20,
+      "palette_count": 17
+    },
+    {
+      "file": "_MAP_M_087",
+      "name_ko": "실내",
+      "place_ko": "4",
+      "name_en": "실내",
+      "width": 20,
+      "height": 20,
+      "palette_count": 19
+    },
+    {
+      "file": "_MAP_M_088",
+      "name_ko": "실내",
+      "place_ko": "5",
+      "name_en": "실내",
+      "width": 24,
+      "height": 20,
+      "palette_count": 16
+    },
+    {
+      "file": "_MAP_M_089",
+      "name_ko": "선박 내부",
+      "place_ko": "인간",
+      "name_en": "선박 내부",
+      "width": 27,
+      "height": 20,
+      "palette_count": 11
+    },
+    {
+      "file": "_MAP_M_090",
+      "name_ko": "선박 내부",
+      "place_ko": "선주",
+      "name_en": "선박 내부",
+      "width": 27,
+      "height": 20,
+      "palette_count": 8
+    },
+    {
+      "file": "_MAP_M_091",
+      "name_ko": "보스이벤트룸",
+      "place_ko": "1",
+      "name_en": "보스이벤트룸",
+      "width": 20,
+      "height": 20,
+      "palette_count": 3
+    },
+    {
+      "file": "_MAP_M_092",
+      "name_ko": "보스이벤트룸",
+      "place_ko": "2",
+      "name_en": "보스이벤트룸",
+      "width": 20,
+      "height": 20,
+      "palette_count": 2
+    },
+    {
+      "file": "_MAP_M_093",
+      "name_ko": "보스이벤트룸",
+      "place_ko": "3",
+      "name_en": "보스이벤트룸",
+      "width": 20,
+      "height": 20,
+      "palette_count": 7
+    },
+    {
+      "file": "_MAP_M_094",
+      "name_ko": "보스이벤트룸",
+      "place_ko": "4",
+      "name_en": "보스이벤트룸",
+      "width": 20,
+      "height": 20,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_095",
+      "name_ko": "보스이벤트룸",
+      "place_ko": "5",
+      "name_en": "보스이벤트룸",
+      "width": 20,
+      "height": 20,
+      "palette_count": 4
+    },
+    {
+      "file": "_MAP_M_096",
+      "name_ko": "최종",
+      "place_ko": "보스룸",
+      "name_en": "최종",
+      "width": 30,
+      "height": 22,
+      "palette_count": 0
+    }
+  ],
+  "translations": {
+    "characters": {
+      "케이": "Kei",
+      "리츠": "Ritz",
+      "리치": "Litch",
+      "일레느": "Ilene",
+      "시엔": "Sien",
+      "레아": "Lea",
+      "엘지스": "Elgis",
+      "케네스": "Kenneth",
+      "이안": "Ian",
+      "멜페토": "Melpheto",
+      "토레즈": "Torez",
+      "듀크": "Duke"
+    },
+    "places": {
+      "솔티아": "Soltia",
+      "NEOSOLTIA": "Neo Soltia",
+      "SECRET_ROOM": "Secret Room",
+      "BOSS_TOWN": "Boss Town",
+      "RETIREMENT": "Retirement",
+      "CORE_OF_RUIN": "Core of Ruin",
+      "GUARDIAN_CAVE_1": "Guardian Cave 1",
+      "GUARDIAN_CAVE_2": "Guardian Cave 2",
+      "GUARDIAN_CAVE_3": "Guardian Cave 3",
+      "GUARDIAN_CAVE_4": "Guardian Cave 4",
+      "GUARDIAN_CAVE_5": "Guardian Cave 5",
+      "GUARDIAN_CAVE_6": "Guardian Cave 6",
+      "GUARDIAN_CAVE_7": "Guardian Cave 7",
+      "RUINED_DESERT_1": "Ruined Desert 1",
+      "RUINED_DESERT_2": "Ruined Desert 2",
+      "RUINED_DESERT_3": "Ruined Desert 3",
+      "GULBEIG_RUIN_5": "Gulbeig Ruin 5",
+      "GULBEIG_RUIN_6": "Gulbeig Ruin 6",
+      "GULBEIG_RUIN_7": "Gulbeig Ruin 7",
+      "GULBEIG_ROOM": "Gulbeig Room",
+      "WAR_OF_RUIN_1": "War of Ruin 1",
+      "WAR_OF_RUIN_2": "War of Ruin 2",
+      "NEMESIS_FOREST_5": "Nemesis Forest 5",
+      "BEAST_FOREST_1": "Beast Forest 1",
+      "BEAST_FOREST_2": "Beast Forest 2",
+      "BEAST_FOREST_3": "Beast Forest 3",
+      "UNDER_CAVE_1": "Under Cave 1",
+      "UNDER_CAVE_2": "Under Cave 2",
+      "UNDER_CAVE_3": "Under Cave 3",
+      "SMALL_CAVE_1": "Small Cave 1",
+      "SMALL_FACTORY_4": "Small Factory 4"
+    }
+  }
+}
