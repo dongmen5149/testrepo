@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-06 — Phase 1(자산 추출) 완료.
+업데이트: 2026-05-06 — Phase 1 완료 + Phase 2-A.1 (포맷 호환성 프로브) 완료.
 
 ---
 
@@ -47,9 +47,10 @@
 
 근거: `MIDASKernelManager::getAssetSizeFromVFS` 디컴프 (`work/h5/analysis/key_funcs.c` 라인 440~). `loadAssetFromVFS` 도 단순 `fread` — VFS 레벨에서는 암호화 없음.
 
-**언팩 결과**:
+**언팩 결과** (2026-05-06 sniffer 보정 후):
 - 총 2,189 entries / 16,399,297 bytes 모두 소진 (잔여 0)
-- ogg 42 / txt 1 / bin 2,146 (Midas 자체 포맷)
+- ogg 42 / **smaf 42** / txt 1 / bin 2,104 (Midas 자체 포맷)
+- 초기 sniffer 가 `MMMD` 미인식 → 사운드가 84개임이 드러남 (Hero3 의 `_mf` 와 동일한 SMAF/MMF)
 
 재실행: `python tools/h5_vfs_unpack.py`
 
@@ -70,15 +71,33 @@ VFS 자체는 평문이지만 **별개 레이어에 DES**가 있음:
 
 ## 5. 다음 단계 (우선순위 순)
 
-### Phase 2-A. .bin 포맷 정체 파악 (즉시 시작 가능, ROI 최고)
-2,146개 bin 은 Midas 포맷 (sprite/anim/map/font/particle). Hero3/4 에 이미 컨버터가 있다면 그대로 통할 가능성 매우 높음.
+### Phase 2-A. .bin 포맷 정체 파악
 
-```
-1. tools/converter/ 의 Hero3/4 컨버터 식별
-2. work/h5/vfs_entries/00000_*.bin 처음 50개를 Hero3/4 컨버터로 시도
-3. 성공/실패 매트릭스 작성 → 포맷 호환 여부 확정
-4. 미호환 포맷이면 Hero3 작업하던 Ghidra 워크플로우로 reader 함수 디컴프
-```
+#### 2-A.1 호환성 프로브 — ✅ 완료 (2026-05-06)
+
+`tools/h5_bin_probe.py` 가 2,104개 .bin 에 Hero3/4 파서를 try-except 적용.
+
+산출:
+- `work/h5/analysis/bin_probe_matrix.tsv` (파일별 hit 매트릭스)
+- `work/h5/analysis/bin_probe_summary.txt` (집계 + 매직 분포)
+
+결과 요약:
+| 포맷 | hit | 비고 |
+|---|---:|---|
+| smaf (`MMMD`) | 42 | ✅ Hero3 와 동일, 변환 그대로 적용 가능 |
+| _pa (팔레트) | 557 | ⚠ 후보 강함. `count*4+1==len` 이 다양한 size(53/41/49…)에서 통계적으로 매칭. 색 인코딩(RGBA8888 vs RGB565)은 시각 검증 필요 |
+| _cif | 144 | ⚠ 약한 시그니처(`19 19` 마커). false-positive 비율 별도 검증 필요 |
+| _mp | 63 | ⚠ 첫 바이트 0x02/0x03 만으로 매칭. parse_mp 가 통과했다면 layout 은 호환 가능성 있음 |
+| _txt | 0 | Hero5 스트링은 다른 포맷 |
+| _bm | 0 | ❌ Hero3/4 의 `0x1f 0xf8` 프레임 마커 부재 → 스프라이트는 별도 reverse 필요 |
+| **미매칭** | **1,341 (62%)** | Hero5 자체 포맷 (스프라이트/애니/맵/폰트 등). 지배 매직 `07 00 00 00`, `0d 00 00 00`, `01 00 01 00` → uint32 entry-count container 추정 |
+
+#### 2-A.2 다음 단계 (우선순위 순)
+
+1. **_pa hit 시각 검증** — `convert_palette` 출력으로 PNG 스와치 생성, 색 분포가 게임 자산다운지 확인. 256색 후보가 RGB565인지 RGBA8888인지 결정.
+2. **_mp/_cif 정밀 검증** — 매칭된 63/144개를 실제 변환해보고 width/height/이름 필드가 sane 한지 확인.
+3. **미매칭 1,341개 클러스터링** — 첫 4바이트 매직별로 그룹핑(`07000000` 70개 등) 후 각 클러스터 1개씩 hexdump → 공통 헤더 구조 추정. 후보 헤더 형식: `uint32 count + (entries × record_size)`.
+4. **Ghidra 분석 재개** — `MIDASKernelManager::loadAssetFromVFS` 호출자 추적해서 `(asset_id) → reader_fn` 디스패치 테이블 찾기. Hero5 는 심볼 보존되어 함수명으로 포맷 판별 쉬움 (`_loadSprite`, `_loadAnim`, `_loadMap` 등 추정).
 
 ### Phase 2-B. 자산 파일명 복원
 현재는 `00000_<hash>.bin` 형태. 원본 이름 복원하려면:

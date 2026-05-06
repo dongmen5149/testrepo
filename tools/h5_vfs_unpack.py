@@ -17,6 +17,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 MAGIC_SNIFFERS = {
     b"\x89PNG\r\n\x1a\n": "png",
     b"OggS": "ogg",
+    b"MMMD": "smaf",
     b"PK\x03\x04": "zip",
     b"RIFF": "wav_or_riff",
     b"\xff\xd8\xff": "jpg",
