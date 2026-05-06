@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-06 — Phase 1 완료 + Phase 2-A.1 (포맷 호환성 프로브) 완료.
+업데이트: 2026-05-06 — Phase 1 완료 + Phase 2-A.1~3 (프로브 + _pa 확정 + 미매칭 클러스터링) 완료.
 
 ---
 
@@ -92,12 +92,47 @@ VFS 자체는 평문이지만 **별개 레이어에 DES**가 있음:
 | _bm | 0 | ❌ Hero3/4 의 `0x1f 0xf8` 프레임 마커 부재 → 스프라이트는 별도 reverse 필요 |
 | **미매칭** | **1,341 (62%)** | Hero5 자체 포맷 (스프라이트/애니/맵/폰트 등). 지배 매직 `07 00 00 00`, `0d 00 00 00`, `01 00 01 00` → uint32 entry-count container 추정 |
 
-#### 2-A.2 다음 단계 (우선순위 순)
+#### 2-A.2 _pa 인코딩 확정 — ✅ 완료 (2026-05-06)
 
-1. **_pa hit 시각 검증** — `convert_palette` 출력으로 PNG 스와치 생성, 색 분포가 게임 자산다운지 확인. 256색 후보가 RGB565인지 RGBA8888인지 결정.
-2. **_mp/_cif 정밀 검증** — 매칭된 63/144개를 실제 변환해보고 width/height/이름 필드가 sane 한지 확인.
-3. **미매칭 1,341개 클러스터링** — 첫 4바이트 매직별로 그룹핑(`07000000` 70개 등) 후 각 클러스터 1개씩 hexdump → 공통 헤더 구조 추정. 후보 헤더 형식: `uint32 count + (entries × record_size)`.
-4. **Ghidra 분석 재개** — `MIDASKernelManager::loadAssetFromVFS` 호출자 추적해서 `(asset_id) → reader_fn` 디스패치 테이블 찾기. Hero5 는 심볼 보존되어 함수명으로 포맷 판별 쉬움 (`_loadSprite`, `_loadAnim`, `_loadMap` 등 추정).
+도구: `tools/h5_pa_swatch.py` (시각화) + 4-byte 위치별 엔트로피 분석.
+
+**결정**: Hero5 _pa = `uint8 count + count × (RGB565 LE pair)` = 총 `2*count` 색.
+- 근거: byte[0]/byte[2] (low byte) 와 byte[1]/byte[3] (high byte) 의 분포가 짝지어진 LE uint16 패턴.
+- 검증: 557/557 candidate 모두 파싱 성공, 자연스러운 게임 팔레트 (블루-퍼플, 빨강 그라디언트 등).
+- Hero3 의 RGBA8888 와는 다른 인코딩 → 별도 파서 `tools/converter/convert_h5_pa.py` 추가.
+
+산출:
+- `tools/converter/convert_h5_pa.py` — 정식 파서
+- `work/h5/analysis/pa_swatches/_index.html` — 202 샘플 컨택트시트
+
+#### 2-A.3 _mp/_cif 거짓양성 / 미매칭 클러스터링 — ✅ 완료 (2026-05-06)
+
+**_mp 거짓양성 확정**: 63 매칭 중 sane 20개, 그러나 **이름 있는 게 0개**. Hero3 _mp 는 항상 ASCII 맵 이름(NEOSOLTIA 등)을 가짐. → Hero5 맵은 별도 포맷.
+
+**미매칭 1,341개 → 578 distinct magic 으로 클러스터링** (`tools/h5_unknown_cluster.py`, 산출 `work/h5/analysis/unknown_clusters.txt`).
+
+지배 클러스터들의 공통 헤더 구조 (큰 발견):
+```
+uint32 frame_count        // magic = LE 표현 → 1/4/6/7/12/13/17 등
+uint32 total_length
+uint8  0x14               // sprite-like 클러스터 거의 전부에서 상수
+uint8  variant            // 0x0b — 0x10 (bit-depth / palette index 추정)
+uint16 width   LE
+uint16 height  LE
+... pixel data ...
+```
+
+**Hero3 `_bm` 와의 관계**:
+- magic `0d000000` 샘플 00760 의 offset 14 에 Hero3 의 frame marker `1f f8` 그대로 존재
+- Hero5 sprite = **8-byte outer wrapper (count+length) + Hero3 _bm 계열 inner format**
+- 단, Hero5 는 팔레트가 분리되어 별도 _pa 파일로 존재 (Hero3 는 frame 내부에 팔레트 임베디드)
+
+#### 2-A.4 다음 단계 (우선순위 순)
+
+1. **Hero5 sprite 디코더 작성** — outer wrapper 8 byte 스킵 후, frame 별 `(0x14, variant, w, h)` 헤더를 파싱하고 pixel 데이터를 별도 _pa 파일과 결합해 PNG 출력. 대상 클러스터: `07/0d/04/11/0c/06/01000000` (200+ 파일).
+2. **sprite ↔ palette 매칭 규칙** — 같은 인덱스 그룹? hash 인접성? 게임 코드의 `getUniqueAssetNameFromID` 로 매핑 복원.
+3. **소수 클러스터 분류** — `01640201`(27), `02000100`(21), `01000100`(43) 등 작은 사이즈 그룹은 애니메이션 스크립트 / 폰트 / 데이터 테이블 후보.
+4. **Ghidra 분석 재개** — `MIDASKernelManager::loadAssetFromVFS` 호출자 추적해서 `(asset_id) → reader_fn` 디스패치 테이블. Hero5 는 심볼 보존되어 함수명으로 포맷 판별 쉬움.
 
 ### Phase 2-B. 자산 파일명 복원
 현재는 `00000_<hash>.bin` 형태. 원본 이름 복원하려면:
