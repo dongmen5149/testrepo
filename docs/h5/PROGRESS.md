@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-06 — Phase 1 완료 + Phase 2-A.1~3 (프로브 + _pa 확정 + 미매칭 클러스터링) 완료.
+업데이트: 2026-05-06 — Phase 1 완료 + Phase 2-A.1~4 완료 (sprite 디코더 동작 — 4,186 frame 중 3,517개 렌더링).
 
 ---
 
@@ -127,12 +127,49 @@ uint16 height  LE
 - Hero5 sprite = **8-byte outer wrapper (count+length) + Hero3 _bm 계열 inner format**
 - 단, Hero5 는 팔레트가 분리되어 별도 _pa 파일로 존재 (Hero3 는 frame 내부에 팔레트 임베디드)
 
-#### 2-A.4 다음 단계 (우선순위 순)
+#### 2-A.4 sprite 디코더 — ✅ 완료 (2026-05-06)
 
-1. **Hero5 sprite 디코더 작성** — outer wrapper 8 byte 스킵 후, frame 별 `(0x14, variant, w, h)` 헤더를 파싱하고 pixel 데이터를 별도 _pa 파일과 결합해 PNG 출력. 대상 클러스터: `07/0d/04/11/0c/06/01000000` (200+ 파일).
-2. **sprite ↔ palette 매칭 규칙** — 같은 인덱스 그룹? hash 인접성? 게임 코드의 `getUniqueAssetNameFromID` 로 매핑 복원.
-3. **소수 클러스터 분류** — `01640201`(27), `02000100`(21), `01000100`(43) 등 작은 사이즈 그룹은 애니메이션 스크립트 / 폰트 / 데이터 테이블 후보.
-4. **Ghidra 분석 재개** — `MIDASKernelManager::loadAssetFromVFS` 호출자 추적해서 `(asset_id) → reader_fn` 디스패치 테이블. Hero5 는 심볼 보존되어 함수명으로 포맷 판별 쉬움.
+`tools/h5_frame_inspect.py` 의 bpp 분석으로 인코딩 확정:
+
+**Outer 구조** (모든 sprite-like 클러스터 100% 일관, 409 파일 검증):
+```
+u32 frame_count
+per frame: u32 frame_length + frame_payload[frame_length]
+```
+
+**Frame payload (type=0x14)**:
+```
+u8  type        // 0x14 = 표준 sprite frame
+u8  palcnt      // = variant byte (0x02..0x10) — 팔레트 색 개수
+u16 width  LE
+u16 height LE
+bytes palette[palcnt * 2]              // RGB565 LE, index 0 = 투명
+bytes pixels[ ceil(w/2) * h ]          // 4-bit packed, high nibble first, 행단위 패딩
+```
+
+**검증**:
+- `01252 frame[0]` w=16 h=19 var=0x0f → palette 30B + pixels 152B = 182B ✓
+- `00181 frame[0]` w=65 h=22 var=0x0b → palette 22B + pixels 726B = 748B ✓
+- 일괄 디코딩 결과: 409 파일 / 4,186 frame / **3,517 렌더링 (84%)** / 0 에러
+- 샘플 검증: `frame_00_16x19_pal15.png` → 284/304 opaque, 15 unique colors (palcnt 일치)
+
+**미해독 잔여 (skipped 669개)**:
+- `type=0x14 var=0x01 w=h=1`: 더미/터미네이터 (~450개)
+- `type=0x18`: 별도 인코딩 (큰 sprite, 미해독)
+
+산출:
+- `tools/converter/convert_h5_sprite.py` — 정식 디코더
+- `work/h5/converted/sprites/<file>/frame_NN_*.png` — 3,517 프레임
+- `tools/h5_frame_inspect.py` — bpp/variant 분석기
+- `work/h5/analysis/frame_bpp_distribution.txt`
+
+#### 2-A.5 다음 단계 (우선순위 순)
+
+1. **type=0x18 frame 인코딩 해독** — 큰 sprite (24×17 ~ 55×54) 에서 사용, 약 200+ frame. RGB565 raw 또는 RLE 후보. variant 가 0x7a, 0xd8 등 큰 값 → palcnt 가설 안 맞음.
+2. **embedded _pa 파일 인덱스 분리** — _pa 후보 557개가 sprite frame 내부 팔레트와 다른 용도일 수 있음 (글로벌/캐릭터 팔레트 vs 프레임별 팔레트). hash 인접성 분석.
+3. **소수 클러스터 분류** — `01640201`(27), `02000100`(21), `01000100`(43) 등 작은 사이즈 그룹 = 애니/폰트/데이터 후보.
+4. **자산 이름 복원** — `AndroidService::getUniqueAssetNameFromID` 디컴파일.
+5. **Ghidra 분석 재개** — `MIDASKernelManager::loadAssetFromVFS` 호출자 추적해서 reader 디스패치 테이블.
 
 ### Phase 2-B. 자산 파일명 복원
 현재는 `00000_<hash>.bin` 형태. 원본 이름 복원하려면:
