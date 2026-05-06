@@ -18,9 +18,11 @@ import java.io.PrintWriter;
 import java.util.regex.Pattern;
 
 public class DecompileHero5Keys extends GhidraScript {
-    private static final String OUT = "d:/testrepo/hero5/analysis/key_funcs.c";
+    private static final String OUT = "d:/testrepo/work/h5/analysis/key_funcs.c";
     private static final Pattern PAT = Pattern.compile(
-        "(MX_des|DES|KEY4|__DES_KEY__|loadAssetFromVFS|getAssetSizeFromVFS|loadMusicFromVFS|loadSoundFromVFS|nativeInitVFS|nativeInitKernel|JNI_OnLoad|LoadDecryptFile|SaveEncryptFile|LoadResDecrypt|setVFSInfo|MIDASKernelManager.*[Ii]nit|MIDASKernelManagerC[12]Ev|AndroidService.*loadAsset|StaticUtil)"
+        "(MX_des|DES|KEY4|__DES_KEY__|loadAssetFromVFS|getAssetSizeFromVFS|loadMusicFromVFS|loadSoundFromVFS|nativeInitVFS|nativeInitKernel|JNI_OnLoad|LoadDecryptFile|SaveEncryptFile|LoadResDecrypt|setVFSInfo|MIDASKernelManager.*[Ii]nit|MIDASKernelManagerC[12]Ev|AndroidService.*loadAsset|StaticUtil"
+        + "|^hash$|MIDASKernelManager.*hash|18MIDASKernelManager4hash|getUniqueAssetNameFromID|getAssetNameFromID|18AndroidService"
+        + ")"
     );
 
     @Override
