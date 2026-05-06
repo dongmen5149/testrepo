@@ -32,13 +32,24 @@ def is_pa(d: bytes) -> bool:
     return 0 < c <= 64 and len(d) == c * 4 + 1
 
 
+def is_hangul_lead(b: int) -> bool:
+    """EUC-KR 한글 음절 lead byte 영역 (0xB0-0xC8)."""
+    return 0xB0 <= b <= 0xC8
+
+
+def is_eucrkr_trail(b: int) -> bool:
+    return 0xA1 <= b <= 0xFE
+
+
 def extract_korean(d: bytes, min_chars: int = 3) -> list[dict]:
+    """순수 한글 음절(가-힣) 시퀀스만 추출. 한자(0xCA+) 영역 제외."""
     out = []
     i = 0
-    while i < len(d) - 1:
-        if 0xa1 <= d[i] <= 0xfe and 0xa1 <= d[i+1] <= 0xfe:
+    n = len(d)
+    while i < n - 1:
+        if is_hangul_lead(d[i]) and is_eucrkr_trail(d[i+1]):
             j = i
-            while j < len(d) - 1 and 0xa1 <= d[j] <= 0xfe and 0xa1 <= d[j+1] <= 0xfe:
+            while j < n - 1 and is_hangul_lead(d[j]) and is_eucrkr_trail(d[j+1]):
                 j += 2
             if (j - i) // 2 >= min_chars:
                 try:
