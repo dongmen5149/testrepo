@@ -234,11 +234,10 @@ def hash_hero5(name: str) -> int:
 4. **`loadAssetFromVFS` caller 분석** — `assetID` 가 어디서 어떤 컨텍스트로 오는지 → 파일 용도 분류.
 5. **Phase 3 진입** — 엔진 결정 (Unity 권장) + 자산 임포트 파이프라인.
 
-### Phase 2-B. 자산 파일명 복원
-현재는 `00000_<hash>.bin` 형태. 원본 이름 복원하려면:
-- `AndroidService::getUniqueAssetNameFromID` 디컴파일 → 이름 테이블 위치
-- `_midas_*` 문자열 섹션 dump → 매핑 후보
-- hash 함수 재현 (`MIDASKernelManager::hash` 디컴파일) → 이름 추측 시 검증용
+### Phase 2-B. 자산 파일명 복원 — ⚠ 부분 완료
+- ✅ Hash 함수 복원 (DJB2-like, 2-A.7 참조)
+- ✅ `AndroidService::getUniqueAssetNameFromID` 디컴파일 (JNI 브리지로 확인)
+- ❌ 이름 테이블은 Java DEX 내부 → **jadx/baksmali 필요**
 
 ### Phase 2-C. JNI 호출 흐름 → 게임 루프 정리
 `Java_..._nativeLoop` 와 `MIDASKernelManager::timerLoop` 부터 시작. 60fps tick / event handling / render 호출 순서를 그래프로.
@@ -252,24 +251,122 @@ def hash_hero5(name: str) -> int:
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-```
-1. cd d:/testrepo && python tools/h5_vfs_unpack.py     # 결과 확인
-2. cat work/h5/vfs_catalog.tsv | head                  # 카탈로그 점검
-3. less work/h5/analysis/key_funcs.c                   # 디컴파일 17개
-4. less work/h5/analysis/so_quick.txt                  # 심볼/JNI 목록
+### 6.1 현재 상태 한눈에 (2026-05-07 기준)
+
+| 영역 | 상태 | 산출물 |
+|---|---|---|
+| VFS 언팩 | ✅ 2,189/2,189 (100%) | `work/h5/vfs_entries/` + `vfs_catalog.tsv` |
+| 사운드 (ogg + SMAF) | ✅ 84/84 | `*.ogg`, `*.smaf` (SMAF→OGG 변환 추후) |
+| 팔레트 _pa | ✅ 557 파싱 (RGB565 LE pair) | `tools/converter/convert_h5_pa.py` |
+| 스프라이트 | ✅ 426 파일 / 3,798 PNG (유효 100%) | `tools/converter/convert_h5_sprite.py`, `work/h5/converted/sprites/` |
+| 한글 코퍼스 | ✅ 18,837 unique strings | `work/h5/converted/text/_corpus.txt` |
+| Hash 함수 | ✅ DJB2 (init=0x1505, mul=0x21) | `tools/h5_recover_names.py` |
+| 자산 이름 복원 | ⏳ 0% (DEX 메소드 분석 대기) | jadx/baksmali 미설치 |
+| TINY_META 파서 | ⏳ 가설만 | 2-A.6 참조 |
+| Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
+
+### 6.2 다음 즉시 작업 — 우선순위 순
+
+**[P1] DEX 디컴파일러 도입 → 자산 이름 복원** (가장 큰 unlock)
+```bash
+# Option A: jadx (GUI + CLI)
+#   https://github.com/skylot/jadx/releases  → jadx-1.5.x.zip 압축 해제
+#   jadx work/h5/extracted/classes.dex -d work/h5/dex_decompiled
+# Option B: baksmali (smali bytecode)
+#   wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
+#   java -jar baksmali-2.5.2.jar d work/h5/extracted/classes.dex -o work/h5/smali
+
+# 추출 후:
+grep -rn "getUniqueAssetNameFromID" work/h5/dex_decompiled/  # 또는 smali/
+# → 메소드 본문에서 이름 테이블 / switch 케이스 추출
+# → tools/h5_recover_names.py 의 candidate 리스트에 주입 후 재실행
+python tools/h5_recover_names.py  # 매칭 완료 시 work/h5/analysis/asset_names.tsv 갱신
 ```
 
-Ghidra GUI 로 보고 싶으면:
-```
-D:/ghidra_12.0.4_PUBLIC/ghidraRun.bat
-→ Open project → D:/testrepo/work/h5/ghidra_project/Hero5
+**[P2] TINY_META 7-byte record 파서**
+```bash
+# 가설: (u16 count, u16 N) + prefix record + count×7-byte main record
+# 후보 record: `05 00 XX XX XX XX XX` with 0x2A-0x2D 마커
+# 검증 데이터: 104 파일 (work/h5/vfs_entries/ 중 5-50B, _pa 제외)
+ls work/h5/vfs_entries/ | head
+# 우선 5–10개 파일 hexdump 비교 → record 의미 추정
+# → tools/converter/convert_h5_meta.py 작성 (예정)
+# → Ghidra: 'MIDASKernelManager::loadFrameMeta' 등 함수 검색해서 디컴파일 추가
 ```
 
-추가 함수 디컴파일 필요시 `tools/ghidra/DecompileHero5Keys.java` 의 `PAT` 정규식 확장 후:
+**[P3] 19 19 마커 의미 (스크립트 디스어셈블)**
+```bash
+# MID_SCRIPT 31 + LARGE_ANIM 177 파일에서 0x19 0x19 가 청크 분리자로 사용
+# 우선 00055_641e44fa.bin (메인 대사 22KB) 의 19 19 위치 분포 분석
+python -c "
+import pathlib
+d=pathlib.Path('work/h5/vfs_entries/00055_641e44fa.bin').read_bytes()
+hits=[i for i in range(len(d)-1) if d[i]==0x19 and d[i+1]==0x19]
+print(f'{len(hits)} markers, first deltas: {[hits[i+1]-hits[i] for i in range(min(20,len(hits)-1))]}')
+"
+# → 청크 길이 패턴으로 record 구조 추정
 ```
-D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat \
-  D:/testrepo/work/h5/ghidra_project Hero5 \
+
+**[P4] Phase 3 진입 (엔진 결정)**
+- Unity 2022 LTS vs Godot 4 vs 자체 Kotlin/Compose 비교
+- 결정 후 `apps/hero5-android/` 또는 `apps/hero5-unity/` 스캐폴드
+- Hero3 의 `android/` 디렉토리 구조를 참고
+
+### 6.3 환경 / 도구 빠른 참조
+
+```bash
+# VFS 재언팩 (catalog 깨졌을 때만)
+python tools/h5_vfs_unpack.py
+
+# 스프라이트 일괄 디코딩
+python tools/h5_decode_sprites.py
+
+# 한글 텍스트 일괄 추출
+python tools/h5_extract_text.py
+
+# 잔여 카테고리화 / 클러스터링
+python tools/h5_residual_classify.py
+python tools/h5_residual_cluster.py
+```
+
+```bash
+# Ghidra 추가 함수 디컴파일
+#   tools/ghidra/DecompileHero5Keys.java 의 PAT 정규식에 함수명 추가 후:
+"D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat" \
+  "D:/testrepo/work/h5/ghidra_project" Hero5 \
   -process libHeroesLore5.so -noanalysis \
-  -scriptPath D:/testrepo/tools/ghidra \
+  -scriptPath "D:/testrepo/tools/ghidra" \
   -postScript DecompileHero5Keys.java
+# → work/h5/analysis/key_funcs.c 갱신
+
+# Ghidra GUI (수동 분석)
+"D:/ghidra_12.0.4_PUBLIC/ghidraRun.bat"
+# → Open project → D:/testrepo/work/h5/ghidra_project/Hero5
+```
+
+### 6.4 핵심 산출물 인덱스
+
+| 무엇 | 어디 |
+|---|---|
+| VFS catalog | `work/h5/vfs_catalog.tsv` |
+| 디컴파일 코드 (19 함수) | `work/h5/analysis/key_funcs.c` |
+| 심볼/JNI/문자열 dump | `work/h5/analysis/so_quick.txt` |
+| 스프라이트 PNG | `work/h5/converted/sprites/<file>/frame_NN_*.png` |
+| 한글 코퍼스 | `work/h5/converted/text/_corpus.txt` |
+| 잔여 카테고리 리포트 | `work/h5/analysis/residual_categories.txt` |
+| 미매칭 클러스터 dump | `work/h5/analysis/unknown_clusters.txt` |
+| _pa 시각화 컨택트시트 | `work/h5/analysis/pa_swatches/_index.html` |
+| 자산 이름 매칭 (1건 FP) | `work/h5/analysis/asset_names.tsv` |
+
+### 6.5 최근 커밋 히스토리 (작업 추적)
+
+```
+89a4fdc  Ghidra hash 함수 복원 (DJB2-like)
+79759b8  한글 추출 필터 개선 (한자 false-positive 제거)
+637b164  잔여 분류 + 한글 텍스트 75,284개 추출
+c011eae  sprite 디코더 type=0x04/0x08/0x18 추가 (유효 frame 100%)
+fbfaebe  Phase 2-A.4 sprite 디코더 (84% 프레임 렌더링)
+8aec053  Phase 2-A.2~3 _pa 인코딩 확정 + 미매칭 클러스터링
+c57be91  Phase 2-A.1 bin 포맷 호환성 프로브
+6a1c78a  영웅서기5 리메이크 대기중 (Phase 1 시작점)
 ```
