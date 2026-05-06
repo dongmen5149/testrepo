@@ -9,9 +9,11 @@ import android.graphics.Paint
 import android.graphics.Rect
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
+import com.hero3.remake.engine.SfxBus
 import com.hero3.remake.engine.UiKit
 
 /**
@@ -70,10 +72,10 @@ class TitleScene(
         context.assets.open("$dir/${files.first()}").use { BitmapFactory.decodeStream(it) }
     }.getOrNull()
 
-    private val cleared: Boolean = com.hero3.remake.engine.GameState.anySlotCleared(context)
+    private val cleared: Boolean = GameState.anySlotCleared(context)
     private var elapsedMs = 0L
 
-    init { com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.TITLE) }
+    init { SfxBus.playMusic(SfxBus.Bgm.TITLE) }
 
     override fun update(deltaMs: Long) {
         elapsedMs += deltaMs

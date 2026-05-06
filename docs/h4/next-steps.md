@@ -2,6 +2,24 @@
 
 Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Claude) 가 진행해야 할 작업을 우선순위 순으로 정리.
 
+> 사용자 컨텍스트: "리메이크" 정의는 [`../REMAKE_METHODOLOGY.md`](../REMAKE_METHODOLOGY.md) 참조 — 최종 산출물은 Play Store + App Store 직배포.
+
+---
+
+## ⏭ "영웅서기4 이어서 진행해줘" 라고 했을 때 — 빠른 셀렉터
+
+다음 세션에서 사용자가 별다른 지시 없이 "Hero4 이어서" 라고만 말하면 **이 순서로 판단**:
+
+1. **API 키 (`ANTHROPIC_API_KEY`) 가 환경에 있나?** → **A1 (대사 영어 번역)** 즉시 진행 (~30분, ~$0.30, 자동)
+2. **Mac + Ghidra 환경 사용자가 대기 중인가?** → **A2 (Ghidra 프로젝트 셋업)** 안내 후 **Phase B** 진입
+3. **둘 다 아니면** → **A3 (Hero4 캐릭터 사전 보강)** 자동 진행. 이건 코드 작성만으로 끝나고 즉시 검증 가능 → 그 다음 사용자에게 다음 결정 요청 (Mac/iOS 가능 여부)
+4. **사용자가 "Phase C 시작" 명시** → [Phase C](#c-phase-c--hero3-엔진-kmm-분리--hero4-콘텐츠-wiring) 의 1단계 (Hero3 engine 디렉터리 검토 + KMM 모듈 스켈레톤 생성)
+
+이미 풀린 (= 다시 안 해도 되는) 항목:
+
+- ~~A4 (recon game-aware)~~ ✅ 완료 — 2026-05-07
+- ~~A5 (`_TILE_030`)~~ ✅ 완료 — 2026-05-07
+
 ---
 
 ## 🟢 즉시 자동 가능 (사용자 트리거만 필요)
@@ -56,19 +74,16 @@ PLACES_H4 = {
 
 Hero3 PLACES 와 합치거나 게임별 분리 (`select(game).places`).
 
-### A4. `tools/recon/find_xrefs.py` Hero4 용 TARGETS 갱신
+### ~~A4. `tools/recon/find_xrefs.py` Hero4 용 TARGETS 갱신~~ ✅ 완료 (2026-05-07)
 
-현재 `find_xrefs.py`, `find_pic_xrefs.py`, `find_base.py` 의 `TARGETS` 가 Hero3 string offset 이라 Hero4 에 noise. 자동화 추가:
+[extract_strings.py](../../tools/recon/extract_strings.py) `--json` 옵션 + [_targets.py](../../tools/recon/_targets.py) 헬퍼로 풀림. 3 스크립트 모두 game-aware. 발견:
+- code/data 경계 ≈ 0x77000
+- 핵심 라벨 4개: `frameBuf is NULL`, `Alpha Palette Index Not Found`, `java/lang/NullPointerException`, `(null)`
+- **Hero4 binary 는 LDR+ADD T1 인접 PIC 패턴이 거의 없음** → Phase B 에서 다른 추적 전략 (32-bit LDR.W 또는 Ghidra 자체 xref) 필요
 
-1. `tools/recon/extract_strings.py` 가 결과를 JSON 으로 dump 하도록 옵션 추가
-2. file path string (`/H4/...`, `/MAP/...`) 들의 offset 자동 추출
-3. game-aware TARGETS 로 변환
+### ~~A5. `_TILE_030` 분석~~ ✅ 완료 (2026-05-07)
 
-이렇게 하면 Hero4 GOT base 도 자동 추정 가능 → Phase B GUI 작업의 1단계 자동화.
-
-### A5. `_TILE_030` 분석
-
-다른 헤더 prefix (`01 00 00 00 8d 00 00 00` + frame header) 인 단일 파일. file header 8 byte 추가 컨테이너로 추정. 헤더 디코드 후 일반 single-frame BM 디코더로 처리 가능.
+컨테이너 prefix `01 00 00 00 <size LE32>` 감지. [convert_h4_tile.py](../../tools/converter/convert_h4_tile.py) 의 `decode_h4_tile` 에서 prefix stripping 후 inner BM 으로 재진입. 결과: 16×16 dark blue placeholder. h4_tile=276→277.
 
 ---
 
@@ -161,20 +176,22 @@ Hero3 도 동일 보류 상태. 두 게임 동시 진행하면 효율적.
 
 ---
 
-## 📋 권장 진행 순서
+## 📋 권장 진행 순서 (2026-05-07 갱신)
 
-다음 권장 순서 (의존관계 + 가치 큰 것 부터):
+| # | 작업 | 자동/수동 | 시간 | 상태 |
+|---|---|---|---|---|
+| 1 | **A4** (recon game-aware) | 자동 | 30분 | ✅ 완료 |
+| 2 | **A5** (`_TILE_030`) | 자동 | 30분 | ✅ 완료 |
+| 3 | **A1** (대사 번역) | 자동 (API 키) | 30분 | ⏳ 대기 |
+| 4 | **A3** (Hero4 dictionary) | 자동 | 15분 | ⏳ 대기 (A1 전에 권장) |
+| 5 | **A2** (Ghidra 프로젝트 셋업) | 사용자 GUI | 30분 | ⏳ 대기 |
+| 6 | **B** (Ghidra 분석) | 사용자 + Claude | 1~2주 | ⏳ 대기 |
+| 7 | **C+D 결정** (Mac/KMM 시점) | 사용자 결정 | — | ⏳ 대기 |
+| 8 | **C** (KMM 리팩터) | Claude | 2~4주 | ⏳ Hero3 와 묶임 |
+| 9 | **D** (iOS 출시) | 사용자 + Claude | 1주 | ⏳ 출시 인프라 |
+| 10 | **E** (SMAF→OGG 변환) | 외부 도구 | — | ⏳ Phase D 전까지 |
 
-1. ✅ **A1** (대사 번역) — API 키만 있으면 30분
-2. ✅ **A4** (find_xrefs game-aware) — 자동 30분
-3. ✅ **A2** (Ghidra 프로젝트 셋업) — 사용자 GUI 30분
-4. **B** (Ghidra 분석) — _PAL secondary 우선, 그 다음 _EXD/_MAP_M_extras (1~2주)
-5. **C+D 결정** — Mac 보유 여부 + Phase C 시작 시기 결정
-6. **C** (KMM 리팩터, 2~4주)
-7. **D** (iOS, 1주)
-8. **E** (SMAF 변환) — Phase D 출시 전까지 진행
-
-A5 (`_TILE_030`), A3 (Hero4 dictionary) 는 시간 날 때 짬.
+다음 자동 진행 가능 한 것 = **A3** (코드만으로 가능). 그 다음 사용자 결정 필요.
 
 ---
 

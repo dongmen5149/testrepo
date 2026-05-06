@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Inventory
@@ -39,6 +40,9 @@ class InventoryScene(
     private val inventory: Inventory = gameState.loadInventory()
     private val party = gameState.loadParty().toMutableList()
     private val hero get() = party.getOrNull(0)
+
+    private val isEn: Boolean get() = settings.isEn
+    private fun lang(ko: String, en: String): String = settings.lang(ko, en)
 
     private val bg = Paint().apply { color = Color.rgb(15, 18, 30) }
     private val slotEmpty = Paint().apply { color = Color.argb(120, 80, 80, 100) }
@@ -93,9 +97,7 @@ class InventoryScene(
                 if (item != null && item.kind != ItemKind.KEY) {
                     inventory.remove(invIdx, 1)
                     gameState.saveInventory(inventory)
-                    com.hero3.remake.engine.EventBus.push(
-                        if (settings.language == "en") "Dropped: ${item.nameEn}"
-                        else "버림: ${item.nameKo}")
+                    EventBus.push(lang("버림: ${item.nameKo}", "Dropped: ${item.nameEn}"))
                 }
             }
         }
@@ -107,38 +109,31 @@ class InventoryScene(
             val item = ItemRegistry.get(slot.itemId) ?: return
             when (tabIdx) {
                 0 -> if (item.kind == ItemKind.CONSUMABLE) {
-                    val leader = hero
-                    if (leader == null) return
-                    val isEn = settings.language == "en"
-                    val nm = if (isEn) item.nameEn else item.nameKo
+                    val leader = hero ?: return
+                    val nm = lang(item.nameKo, item.nameEn)
                     when (item.id) {
                         "potion_s", "potion_m", "potion_l" -> {
                             if (leader.hp >= leader.hpMax) {
-                                com.hero3.remake.engine.EventBus.push(
-                                    if (isEn) "HP already full." else "HP 가 이미 최대입니다.")
+                                EventBus.push(lang("HP 가 이미 최대입니다.", "HP already full."))
                                 return
                             }
                             val healed = (leader.hpMax - leader.hp).coerceAtMost(item.power)
                             leader.hp += healed
                             gameState.saveParty(party)
-                            com.hero3.remake.engine.EventBus.push(
-                                if (isEn) "$nm +$healed HP" else "$nm +$healed HP")
+                            EventBus.push("$nm +$healed HP")
                         }
                         "ether_s", "ether_m" -> {
                             if (leader.sp >= leader.spMax) {
-                                com.hero3.remake.engine.EventBus.push(
-                                    if (isEn) "SP already full." else "SP 가 이미 최대입니다.")
+                                EventBus.push(lang("SP 가 이미 최대입니다.", "SP already full."))
                                 return
                             }
                             val gained = (leader.spMax - leader.sp).coerceAtMost(item.power)
                             leader.sp += gained
                             gameState.saveParty(party)
-                            com.hero3.remake.engine.EventBus.push(
-                                if (isEn) "$nm +$gained SP" else "$nm +$gained SP")
+                            EventBus.push("$nm +$gained SP")
                         }
                         else -> {
-                            com.hero3.remake.engine.EventBus.push(
-                                if (isEn) "Cannot use here." else "여기서 사용 불가.")
+                            EventBus.push(lang("여기서 사용 불가.", "Cannot use here."))
                             return
                         }
                     }
@@ -179,7 +174,6 @@ class InventoryScene(
         canvas.drawText("$visCount/$totalSlots", virtualWidth - 40f, 42f, UiKit.muted)
 
         val visible = visibleSlots()
-        val isEn = settings.language == "en"
 
         val gridTop = 56f
         val slotSize = 36f
@@ -208,7 +202,7 @@ class InventoryScene(
                 if (invIdx != null) {
                     val slot = inventory.get(invIdx)!!
                     val item = ItemRegistry.get(slot.itemId)
-                    val short = (if (isEn) item?.nameEn else item?.nameKo) ?: slot.itemId
+                    val short = item?.let { lang(it.nameKo, it.nameEn) } ?: slot.itemId
                     val label = if (short.length > 5) short.substring(0, 5) else short
                     canvas.drawText(label, sx + slotSize / 2f, sy + slotSize / 2f + 3f, itemNamePaint)
                     if (slot.count > 1) {
@@ -230,8 +224,8 @@ class InventoryScene(
         if (invIdx != null) {
             val slot = inventory.get(invIdx)!!
             val item = ItemRegistry.get(slot.itemId)
-            val name = (if (isEn) item?.nameEn else item?.nameKo) ?: slot.itemId
-            val desc = (if (isEn) item?.descEn else item?.descKo) ?: ""
+            val name = item?.let { lang(it.nameKo, it.nameEn) } ?: slot.itemId
+            val desc = item?.let { lang(it.descKo, it.descEn) } ?: ""
             canvas.drawText("$name ×${slot.count}", 14f, virtualHeight - 44f, UiKit.body)
             canvas.drawText(desc, 14f, virtualHeight - 30f, UiKit.muted)
         } else {
@@ -239,7 +233,7 @@ class InventoryScene(
             canvas.drawText("Slot ${slotIdx + 1}/$totalSlots", 14f, virtualHeight - 30f, UiKit.muted)
         }
 
-        val drop = if (tabIdx == 0) (if (isEn) "# drop  " else "# 버림  ") else ""
+        val drop = if (tabIdx == 0) lang("# 버림  ", "# drop  ") else ""
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,
             "L tab  $drop${context.getString(R.string.hint_dpad_navigate)}  ${context.getString(R.string.hint_back_cancel)}")
     }

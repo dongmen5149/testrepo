@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
@@ -45,8 +46,7 @@ class TravelScene(
             // 같은 맵이면 비용 0, 다른 맵 = 50G
             val cost = if (e.mapId == gameState.currentMapId) 0 else 50
             if (gameState.gold < cost) {
-                com.hero3.remake.engine.EventBus.push(
-                    if (settings.language == "en") "Not enough gold (50G)." else "골드 부족 (50G).")
+                EventBus.push(settings.lang("골드 부족 (50G).", "Not enough gold (50G)."))
                 return
             }
             gameState.gold -= cost
@@ -58,11 +58,10 @@ class TravelScene(
 
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
-        UiKit.drawHeader(canvas, virtualWidth,
-            if (settings.language == "en") "FAST TRAVEL" else "빠른 이동")
+        UiKit.drawHeader(canvas, virtualWidth, settings.lang("빠른 이동", "FAST TRAVEL"))
 
         if (entries.isEmpty()) {
-            canvas.drawText(if (settings.language == "en") "(no visited maps)" else "(방문한 맵 없음)",
+            canvas.drawText(settings.lang("(방문한 맵 없음)", "(no visited maps)"),
                 16f, 60f, UiKit.muted)
         } else {
             UiKit.drawBox(canvas, 8f, 32f, virtualWidth - 16f, 18f * entries.size + 12f)
@@ -76,8 +75,7 @@ class TravelScene(
             }
         }
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,
-            if (settings.language == "en") "▲▼  OK travel (50G)  R back"
-            else                            "▲▼  OK 이동 (50G)  R 뒤로")
+            settings.lang("▲▼  OK 이동 (50G)  R 뒤로", "▲▼  OK travel (50G)  R back"))
     }
 
     private fun safeSpot(mapId: Int): Pair<Int, Int> = when (mapId) {

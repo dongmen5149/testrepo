@@ -34,6 +34,12 @@ class Settings(context: Context) {
     /** 현재 품질에 따른 sprite asset 디렉토리. */
     fun spritesDir(): String = if (qualityHd) "sprites_hd" else "sprites"
 
+    /** 현재 언어가 영어인지. */
+    val isEn: Boolean get() = language == "en"
+
+    /** 한·영 분기 헬퍼. 한국어가 기본 언어이므로 ko 인자가 앞. */
+    fun lang(ko: String, en: String): String = if (isEn) en else ko
+
     companion object {
         private const val KEY_LANGUAGE = "language"
         private const val KEY_QUALITY_HD = "quality_hd"

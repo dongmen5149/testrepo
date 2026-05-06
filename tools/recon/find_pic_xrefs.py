@@ -14,27 +14,11 @@ import struct, pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from _game import select  # noqa: E402
+from recon._targets import load_targets  # noqa: E402
 
 _g = select()
 BIN = _g.binary_path
 assert BIN is not None, f'{_g.id} has no native binary'
-
-TARGETS = {
-    0x0a61c8: 'frameBuf is NULL',
-    0x0a5d94: '/hero/h00000_bm',
-    0x0a5d84: '/hero/h0_cif',
-    0x0a5db4: '/boss/boss9000_bm',
-    0x0a5da4: '/boss/boss0_cif',
-    0x0a5d64: '/boss/bossh_dat',
-    0x0a8c28: '/enemy/e1000_bm',
-    0x0aac6c: '/map/map0_mp',
-    0x0a7f88: '/font/table',
-    0x0a7f64: '[HFontError] Font data not loaded.',
-    0x0a6888: 'onEventMessageOkKey()',
-    0x0a8c18: '/enemy/e000_cif',
-    0x0a91a0: '/dat/i0_dat',
-    0x0aac58: '/event/e0000_scn',
-}
 
 
 def is_add_rn_pc(instr16: int, rn: int) -> bool:
@@ -85,8 +69,9 @@ def find_xrefs(data: bytes, target_offset: int):
 
 
 def main():
+    TARGETS, _ = load_targets()  # PIC xref 는 모든 path-like + 라벨 대상
     data = BIN.read_bytes()
-    print(f'Loaded: {len(data)} bytes\n')
+    print(f'[{_g.id}] Loaded {BIN.name}: {len(data)} bytes ({len(TARGETS)} targets)\n')
 
     # 각 target 마다 xref 찾기
     total = 0
@@ -105,7 +90,8 @@ def main():
     print(f'\nTotal xrefs found: {total}')
 
     # 'frameBuf is NULL' 의 xref 가 핵심. 그 주변 컨텍스트 출력
-    framebuf_hits = all_hits.get(0x0a61c8, [])
+    framebuf_addr = next((a for a, lbl in TARGETS.items() if 'framebuf' in lbl.lower()), None)
+    framebuf_hits = all_hits.get(framebuf_addr, []) if framebuf_addr else []
     if framebuf_hits:
         from capstone import Cs, CS_ARCH_ARM, CS_MODE_THUMB
         md = Cs(CS_ARCH_ARM, CS_MODE_THUMB)

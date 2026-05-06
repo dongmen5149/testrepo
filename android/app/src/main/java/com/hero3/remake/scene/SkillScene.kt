@@ -57,7 +57,7 @@ class SkillScene(
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
         UiKit.drawHeader(canvas, virtualWidth, context.getString(R.string.txt_010))   // SKILL
-        val isEn = settings.language == "en"
+        val isEn = settings.isEn
         val ch = party.getOrNull(memberIdx)
         if (ch == null) {
             canvas.drawText("(no party)", 16f, 60f, UiKit.muted); return

@@ -7,10 +7,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.EventBus
+import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
 import com.hero3.remake.engine.UiKit
+import kotlin.math.abs
 
 /**
  * 환경설정 — 언어 / 화질 토글.
@@ -21,7 +24,7 @@ class SettingsScene(
     private val context: Context,
     private val input: InputController,
     private val settings: Settings,
-    private val gameState: com.hero3.remake.engine.GameState,
+    private val gameState: GameState,
     private val onRequest: (MainActivity.SceneRequest) -> Unit,
 ) : Scene {
 
@@ -67,16 +70,16 @@ class SettingsScene(
                 settings.qualityHd = !settings.qualityHd
             }
             Type.ENCOUNTER -> {
-                val cur = encounterValues.indexOfFirst { kotlin.math.abs(it - settings.encounterMultiplier) < 0.01f }
+                val cur = encounterValues.indexOfFirst { abs(it - settings.encounterMultiplier) < 0.01f }
                 val next = (cur + 1).let { if (it < 0 || it >= encounterValues.size) 0 else it }
                 settings.encounterMultiplier = encounterValues[next]
             }
             Type.MINIMAP -> { settings.minimapVisible = !settings.minimapVisible }
             Type.REPLAY_TUTORIAL -> {
                 gameState.tutorialShown = false
-                com.hero3.remake.engine.EventBus.push(
-                    if (settings.language == "en") "Tutorial will replay on next map walk."
-                    else "다음 맵 진입 시 튜토리얼 재생.")
+                EventBus.push(settings.lang(
+                    "다음 맵 진입 시 튜토리얼 재생.",
+                    "Tutorial will replay on next map walk."))
             }
             Type.BACK -> {}
         }
@@ -97,14 +100,13 @@ class SettingsScene(
                 Type.ENCOUNTER -> {
                     val v = settings.encounterMultiplier
                     when {
-                        v == 0.0f -> if (settings.language == "en") "OFF" else "꺼짐"
+                        v == 0.0f -> settings.lang("꺼짐", "OFF")
                         else -> "%.1fx".format(v)
                     }
                 }
-                Type.MINIMAP -> if (settings.minimapVisible)
-                    (if (settings.language == "en") "ON" else "켜짐")
-                    else (if (settings.language == "en") "OFF" else "꺼짐")
-                Type.REPLAY_TUTORIAL -> if (settings.language == "en") "(OK)" else "(OK)"
+                Type.MINIMAP -> if (settings.minimapVisible) settings.lang("켜짐", "ON")
+                                else                          settings.lang("꺼짐", "OFF")
+                Type.REPLAY_TUTORIAL -> "(OK)"
                 Type.BACK -> ""
             }
             val label = if (item.type == Type.BACK) name else "$name : ◀ $value ▶"

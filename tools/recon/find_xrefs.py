@@ -1,10 +1,13 @@
-"""client.bin64000 의 PC-relative 32-bit literal 풀에서 known string 주소를 찾아 xref 식별.
+"""client.bin* 의 PC-relative 32-bit literal 풀에서 known string 주소를 찾아 xref 식별.
 
 Thumb-2 LDR rN, [pc, #imm] : 4-byte aligned (pc = (cur+4) & ~3), imm 0..1020 (10-bit).
 Thumb-2 32-bit LDR (T4)   : range ±4095.
 일단 모든 32-bit 워드를 스캔해 known string offsets 와 매칭.
 
 base address 가정: 0x00000000 (file offset = memory offset). 잘못되면 base 후보를 바꿔가며 재시도.
+
+TARGETS 와 code_end 는 게임별 string_offsets.json 에서 자동 로드.
+사전준비: HERO_GAME=<id> python tools/recon/extract_strings.py --json work/<id>/converted/string_offsets.json --quiet
 """
 from __future__ import annotations
 import struct, pathlib
@@ -12,34 +15,25 @@ import struct, pathlib
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from _game import select  # noqa: E402
+from recon._targets import load_targets  # noqa: E402
 
 _g = select()
 BIN = _g.binary_path
 assert BIN is not None, f'{_g.id} has no native binary'
 
-# 추적할 핵심 문자열 위치 (extract_strings.py 결과 기반)
-TARGETS = {
-    0x0a61c8: 'frameBuf is NULL',
-    0x0a5d94: '/hero/h00000_bm',
-    0x0a5d84: '/hero/h0_cif',
-    0x0a5db4: '/boss/boss9000_bm',
-    0x0a5da4: '/boss/boss0_cif',
-    0x0a8c28: '/enemy/e1000_bm',
-    0x0aac6c: '/map/map0_mp',
-    0x0a7f88: '/font/table',
-    0x0a7f64: '[HFontError] Font data not loaded.',
-    0x0a6888: 'onEventMessageOkKey()',
-    0x0a6a50: 'eventIdx -----:: ',
-}
-
 
 def main():
+    # priority_only=True: frameBuf/Font/NULL 같은 핵심 라벨만 (xref 보고 noise 줄임)
+    TARGETS, code_end_auto = load_targets(priority_only=True)
+    if not TARGETS:
+        # 폴백: priority 라벨이 없으면 전체 path-like
+        TARGETS, code_end_auto = load_targets()
     data = BIN.read_bytes()
-    print(f'Loaded {BIN.name}: {len(data)} bytes (0x{len(data):x})')
+    print(f'[{_g.id}] Loaded {BIN.name}: {len(data)} bytes (0x{len(data):x})')
+    print(f'[{_g.id}] {len(TARGETS)} TARGETS loaded (priority labels)')
 
-    # 코드 vs 데이터 경계 추정: 첫 ASCII 문자열 클러스터 시작 (0xa5d60 부근)
-    # 보수적으로 0xa5800 까지를 코드+데이터 영역으로 보고 모든 32-bit 워드 스캔
-    code_end = 0x0a5800
+    # 코드 vs 데이터 경계: extract_strings.py 가 추정한 첫 path-like offset (4KB align)
+    code_end = code_end_auto or (len(data) // 2)
     print(f'\nScanning 32-bit words in [0x0, 0x{code_end:x}) for string xrefs...')
 
     found = {addr: [] for addr in TARGETS}
@@ -61,9 +55,10 @@ def main():
                 print(f'    literal pool entry @ {r:#08x}')
 
     # 이제 가장 흥미로운 것: 'frameBuf is NULL' 의 xref 위치 주변에서 함수 시작 찾기
-    framebuf_refs = found.get(0x0a61c8, [])
+    framebuf_addr = next((a for a, lbl in TARGETS.items() if 'framebuf' in lbl.lower()), None)
+    framebuf_refs = found.get(framebuf_addr, []) if framebuf_addr else []
     if framebuf_refs:
-        print(f'\n=== "frameBuf is NULL" literal pool entries → tracing back to LDR instructions ===')
+        print(f'\n=== {TARGETS[framebuf_addr]!r} literal pool entries → tracing back to LDR instructions ===')
         # LDR rN, [pc, #imm] 인코딩: 0x4800-0x4FFF (T1 16-bit)
         # 또는 LDR.W rN, [pc, #imm] (T4 32-bit)
         for lit_off in framebuf_refs:

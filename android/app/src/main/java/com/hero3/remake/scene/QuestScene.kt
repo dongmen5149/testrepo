@@ -48,7 +48,7 @@ class QuestScene(
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
         UiKit.drawHeader(canvas, virtualWidth, context.getString(R.string.txt_011))   // QUEST
-        val isEn = settings.language == "en"
+        val isEn = settings.isEn
         canvas.drawText("${gameState.gold} G", virtualWidth - 60f, 20f,
             Paint(UiKit.body).apply { color = Color.rgb(255, 220, 90) })
 

@@ -11,6 +11,7 @@ import com.hero3.remake.MainActivity
 import com.hero3.remake.engine.EnemyRegistry
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
+import com.hero3.remake.engine.ItemRegistry
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
 import com.hero3.remake.engine.UiKit
@@ -51,7 +52,7 @@ class BestiaryScene(
 
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
-        val isEn = settings.language == "en"
+        val isEn = settings.isEn
         UiKit.drawHeader(canvas, virtualWidth, if (isEn) "BESTIARY" else "도감")
 
         val unlocked = gameState.defeatedEnemyIds
@@ -88,7 +89,7 @@ class BestiaryScene(
                 canvas.drawText(if (isEn) "Drops:" else "드롭:", 142f, statsTop + 76f, UiKit.muted)
                 var dy = statsTop + 88f
                 for ((id, p) in sel.dropTable) {
-                    val nm = com.hero3.remake.engine.ItemRegistry.get(id)?.let {
+                    val nm = ItemRegistry.get(id)?.let {
                         if (isEn) it.nameEn else it.nameKo
                     } ?: id
                     canvas.drawText("- $nm  ${(p * 100).toInt()}%", 142f, dy, UiKit.muted)

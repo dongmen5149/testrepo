@@ -19,43 +19,50 @@ class GameState(context: Context, slotId: Int = 0) {
         context.getSharedPreferences("hero3_gamestate_slot$slotId", Context.MODE_PRIVATE)
     val slotId: Int = slotId
 
+    private inline fun edit(block: SharedPreferences.Editor.() -> Unit) {
+        prefs.edit().apply(block).apply()
+    }
+
+    private fun stringSet(key: String): Set<String> =
+        prefs.getStringSet(key, emptySet()) ?: emptySet()
+
     /** 현재 맵 ID (예: 0 → map0_mp, 100 → map100_mp). 기본 = 0 (NEOSOLTIA). */
     var currentMapId: Int
         get() = prefs.getInt(KEY_MAP_ID, 0)
-        set(v) { prefs.edit().putInt(KEY_MAP_ID, v).apply() }
+        set(v) = edit { putInt(KEY_MAP_ID, v) }
 
     /** 영웅 타일 좌표. 기본 = 맵 중앙 부근. */
     var heroX: Int
         get() = prefs.getInt(KEY_HERO_X, -1)
-        set(v) { prefs.edit().putInt(KEY_HERO_X, v).apply() }
+        set(v) = edit { putInt(KEY_HERO_X, v) }
 
     var heroY: Int
         get() = prefs.getInt(KEY_HERO_Y, -1)
-        set(v) { prefs.edit().putInt(KEY_HERO_Y, v).apply() }
+        set(v) = edit { putInt(KEY_HERO_Y, v) }
 
     /** 영웅 바라보는 방향: 0=DOWN, 1=UP, 2=LEFT, 3=RIGHT. */
     var heroFacing: Int
         get() = prefs.getInt(KEY_HERO_FACING, FACING_DOWN)
-        set(v) { prefs.edit().putInt(KEY_HERO_FACING, v).apply() }
+        set(v) = edit { putInt(KEY_HERO_FACING, v) }
 
     /** 파티 리더 캐릭터 ID (현재는 단일 영웅 = 0). */
     var partyLeader: Int
         get() = prefs.getInt(KEY_PARTY_LEADER, 0)
-        set(v) { prefs.edit().putInt(KEY_PARTY_LEADER, v).apply() }
+        set(v) = edit { putInt(KEY_PARTY_LEADER, v) }
 
     /** 활성/완료 퀘스트 id 집합 (StringSet 영구). */
     var activeQuestIds: Set<String>
-        get() = prefs.getStringSet(KEY_QUESTS_ACTIVE, emptySet()) ?: emptySet()
-        set(v) { prefs.edit().putStringSet(KEY_QUESTS_ACTIVE, v).apply() }
+        get() = stringSet(KEY_QUESTS_ACTIVE)
+        set(v) = edit { putStringSet(KEY_QUESTS_ACTIVE, v) }
 
     var doneQuestIds: Set<String>
-        get() = prefs.getStringSet(KEY_QUESTS_DONE, emptySet()) ?: emptySet()
-        set(v) { prefs.edit().putStringSet(KEY_QUESTS_DONE, v).apply() }
+        get() = stringSet(KEY_QUESTS_DONE)
+        set(v) = edit { putStringSet(KEY_QUESTS_DONE, v) }
 
     /** 방문한 맵 id 집합 (fast travel 후보). */
     var visitedMapIds: Set<Int>
-        get() = (prefs.getStringSet(KEY_VISITED, emptySet()) ?: emptySet()).map { it.toIntOrNull() ?: 0 }.toSet()
-        set(v) { prefs.edit().putStringSet(KEY_VISITED, v.map { it.toString() }.toSet()).apply() }
+        get() = stringSet(KEY_VISITED).map { it.toIntOrNull() ?: 0 }.toSet()
+        set(v) = edit { putStringSet(KEY_VISITED, v.map { it.toString() }.toSet()) }
 
     fun markVisited(mapId: Int) {
         visitedMapIds = visitedMapIds + mapId
@@ -64,16 +71,16 @@ class GameState(context: Context, slotId: Int = 0) {
     /** 첫 MapWalk 진입 튜토리얼 노출 여부. */
     var tutorialShown: Boolean
         get() = prefs.getBoolean(KEY_TUTORIAL, false)
-        set(v) { prefs.edit().putBoolean(KEY_TUTORIAL, v).apply() }
+        set(v) = edit { putBoolean(KEY_TUTORIAL, v) }
 
     /** 누적 플레이 시간 (ms). MapWalkScene 등이 deltaMs 만큼 누적. */
     var playTimeMs: Long
         get() = prefs.getLong(KEY_PLAYTIME, 0L)
-        set(v) { prefs.edit().putLong(KEY_PLAYTIME, v).apply() }
+        set(v) = edit { putLong(KEY_PLAYTIME, v) }
 
     fun addPlayTime(deltaMs: Long) {
         if (deltaMs <= 0) return
-        prefs.edit().putLong(KEY_PLAYTIME, playTimeMs + deltaMs).apply()
+        playTimeMs += deltaMs
     }
 
     /**
@@ -82,41 +89,42 @@ class GameState(context: Context, slotId: Int = 0) {
      */
     var lastSavedSlot: Int
         get() = prefs.getInt(KEY_LAST_SAVED_SLOT, 0)
-        set(v) { prefs.edit().putInt(KEY_LAST_SAVED_SLOT, v).apply() }
+        set(v) = edit { putInt(KEY_LAST_SAVED_SLOT, v) }
 
     /** 게임 클리어(봉인된 신 처치) 플래그. EndingScene 진입 시 set. */
     var gameCleared: Boolean
         get() = prefs.getBoolean(KEY_CLEARED, false)
-        set(v) { prefs.edit().putBoolean(KEY_CLEARED, v).apply() }
+        set(v) = edit { putBoolean(KEY_CLEARED, v) }
 
     /** 연 보물상자 id 집합. */
     var openedChestIds: Set<String>
-        get() = prefs.getStringSet(KEY_CHESTS, emptySet()) ?: emptySet()
-        set(v) { prefs.edit().putStringSet(KEY_CHESTS, v).apply() }
+        get() = stringSet(KEY_CHESTS)
+        set(v) = edit { putStringSet(KEY_CHESTS, v) }
 
     /** 한 번이라도 처치한 적 id 집합 (도감용). */
     var defeatedEnemyIds: Set<String>
-        get() = prefs.getStringSet(KEY_DEFEATED, emptySet()) ?: emptySet()
-        set(v) { prefs.edit().putStringSet(KEY_DEFEATED, v).apply() }
+        get() = stringSet(KEY_DEFEATED)
+        set(v) = edit { putStringSet(KEY_DEFEATED, v) }
 
     fun markEnemyDefeated(id: String) {
         defeatedEnemyIds = defeatedEnemyIds + id
     }
 
     /** 처치한 보스 id 집합. */
-    fun isBossDefeated(id: String): Boolean =
-        prefs.getStringSet(KEY_BOSSES, emptySet())?.contains(id) == true
+    var bossesDefeated: Set<String>
+        get() = stringSet(KEY_BOSSES)
+        set(v) = edit { putStringSet(KEY_BOSSES, v) }
+
+    fun isBossDefeated(id: String): Boolean = id in bossesDefeated
 
     fun markBossDefeated(id: String) {
-        val s = (prefs.getStringSet(KEY_BOSSES, emptySet()) ?: emptySet()).toMutableSet()
-        s.add(id)
-        prefs.edit().putStringSet(KEY_BOSSES, s).apply()
+        bossesDefeated = bossesDefeated + id
     }
 
     /** 소지금. 새 게임 = 200G. */
     var gold: Int
         get() = prefs.getInt(KEY_GOLD, 200)
-        set(v) { prefs.edit().putInt(KEY_GOLD, v).apply() }
+        set(v) = edit { putInt(KEY_GOLD, v) }
 
     /** 파티 멤버 목록 (영구). 비어있으면 기본 파티 반환. */
     fun loadParty(): List<Character> {
@@ -154,7 +162,7 @@ class GameState(context: Context, slotId: Int = 0) {
                 .put("eqA", c.equipArmor ?: "")
                 .put("eqR", c.equipAccessory ?: ""))
         }
-        prefs.edit().putString(KEY_PARTY, arr.toString()).apply()
+        edit { putString(KEY_PARTY, arr.toString()) }
     }
 
     /** 인벤토리 (가방). 비어있으면 starter() 반환. */
@@ -177,17 +185,17 @@ class GameState(context: Context, slotId: Int = 0) {
         for (s in inv.all()) {
             arr.put(JSONObject().put("itemId", s.itemId).put("count", s.count))
         }
-        prefs.edit().putString(KEY_INVENTORY, arr.toString()).apply()
+        edit { putString(KEY_INVENTORY, arr.toString()) }
     }
 
     /** 위치 초기화 (새 게임 또는 맵 전환 시). */
     fun resetPosition(mapId: Int, x: Int, y: Int, facing: Int = FACING_DOWN) {
-        prefs.edit()
-            .putInt(KEY_MAP_ID, mapId)
-            .putInt(KEY_HERO_X, x)
-            .putInt(KEY_HERO_Y, y)
-            .putInt(KEY_HERO_FACING, facing)
-            .apply()
+        edit {
+            putInt(KEY_MAP_ID, mapId)
+            putInt(KEY_HERO_X, x)
+            putInt(KEY_HERO_Y, y)
+            putInt(KEY_HERO_FACING, facing)
+        }
     }
 
     fun toJson(): JSONObject = JSONObject().apply {
@@ -201,7 +209,7 @@ class GameState(context: Context, slotId: Int = 0) {
     fun isEmpty(): Boolean = heroX < 0 && heroY < 0
 
     fun clear() {
-        prefs.edit().clear().apply()
+        edit { clear() }
     }
 
     /**
@@ -224,25 +232,13 @@ class GameState(context: Context, slotId: Int = 0) {
     }
 
     fun copyFrom(other: GameState) {
-        val edit = prefs.edit()
-            .putInt(KEY_MAP_ID, other.currentMapId)
-            .putInt(KEY_HERO_X, other.heroX)
-            .putInt(KEY_HERO_Y, other.heroY)
-            .putInt(KEY_HERO_FACING, other.heroFacing)
-            .putInt(KEY_PARTY_LEADER, other.partyLeader)
-            .putInt(KEY_GOLD, other.gold)
-            .putLong(KEY_PLAYTIME, other.playTimeMs)
-            .putBoolean(KEY_CLEARED, other.gameCleared)
-            .putBoolean(KEY_TUTORIAL, other.tutorialShown)
-        other.prefs.getString(KEY_PARTY, null)?.let { edit.putString(KEY_PARTY, it) }
-        other.prefs.getString(KEY_INVENTORY, null)?.let { edit.putString(KEY_INVENTORY, it) }
-        edit.putStringSet(KEY_BOSSES,        other.prefs.getStringSet(KEY_BOSSES, emptySet()))
-        edit.putStringSet(KEY_DEFEATED,      other.prefs.getStringSet(KEY_DEFEATED, emptySet()))
-        edit.putStringSet(KEY_QUESTS_ACTIVE, other.prefs.getStringSet(KEY_QUESTS_ACTIVE, emptySet()))
-        edit.putStringSet(KEY_QUESTS_DONE,   other.prefs.getStringSet(KEY_QUESTS_DONE, emptySet()))
-        edit.putStringSet(KEY_CHESTS,        other.prefs.getStringSet(KEY_CHESTS, emptySet()))
-        edit.putStringSet(KEY_VISITED,       other.prefs.getStringSet(KEY_VISITED, emptySet()))
-        edit.apply()
+        edit {
+            for (key in INT_KEYS)        putInt(key, other.prefs.getInt(key, 0))
+            for (key in LONG_KEYS)       putLong(key, other.prefs.getLong(key, 0L))
+            for (key in BOOL_KEYS)       putBoolean(key, other.prefs.getBoolean(key, false))
+            for (key in STRING_SET_KEYS) putStringSet(key, other.prefs.getStringSet(key, emptySet()))
+            for (key in STRING_KEYS)     other.prefs.getString(key, null)?.let { putString(key, it) }
+        }
     }
 
     companion object {
@@ -264,6 +260,19 @@ class GameState(context: Context, slotId: Int = 0) {
         private const val KEY_TUTORIAL      = "tutorial_shown"
         private const val KEY_VISITED       = "visited_maps"
         private const val KEY_LAST_SAVED_SLOT = "last_saved_slot"
+
+        /** copyFrom 이 슬롯 간 미러링할 키 그룹. 새 필드 추가 시 해당 타입 그룹에 등록. */
+        private val INT_KEYS = listOf(
+            KEY_MAP_ID, KEY_HERO_X, KEY_HERO_Y, KEY_HERO_FACING,
+            KEY_PARTY_LEADER, KEY_GOLD,
+        )
+        private val LONG_KEYS = listOf(KEY_PLAYTIME)
+        private val BOOL_KEYS = listOf(KEY_CLEARED, KEY_TUTORIAL)
+        private val STRING_SET_KEYS = listOf(
+            KEY_BOSSES, KEY_DEFEATED, KEY_QUESTS_ACTIVE, KEY_QUESTS_DONE,
+            KEY_CHESTS, KEY_VISITED,
+        )
+        private val STRING_KEYS = listOf(KEY_PARTY, KEY_INVENTORY)
 
         fun formatPlayTime(ms: Long): String {
             val totalSec = ms / 1000

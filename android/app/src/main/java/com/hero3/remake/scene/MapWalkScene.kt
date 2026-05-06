@@ -9,17 +9,26 @@ import android.graphics.Paint
 import android.graphics.Rect
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.Character
+import com.hero3.remake.engine.Chest
 import com.hero3.remake.engine.ChestRegistry
 import com.hero3.remake.engine.EncounterTable
-import com.hero3.remake.engine.ItemRegistry
+import com.hero3.remake.engine.EnemyRegistry
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
+import com.hero3.remake.engine.ItemRegistry
 import com.hero3.remake.engine.MapGraph
 import com.hero3.remake.engine.Npc
 import com.hero3.remake.engine.NpcRegistry
+import com.hero3.remake.engine.QuestRegistry
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
+import com.hero3.remake.engine.SfxBus
 import com.hero3.remake.engine.UiKit
+import kotlin.math.abs
+import kotlin.math.sin
+import kotlin.random.Random
 import org.json.JSONObject
 
 /**
@@ -71,15 +80,18 @@ class MapWalkScene(
     private var playtimeAccumMs: Long = 0L
     private var stepsSinceSave: Int = 0
     private var tutorialMs: Long = if (!gameState.tutorialShown) 6000L else 0L
-    private var leaderCache: com.hero3.remake.engine.Character? = null
+    private var leaderCache: Character? = null
     private var leaderCacheStamp: Long = -1L
-    private fun cachedLeader(): com.hero3.remake.engine.Character? {
+    private fun cachedLeader(): Character? {
         if (leaderCacheStamp != elapsedMs / 250L) {
             leaderCache = gameState.loadParty().firstOrNull()
             leaderCacheStamp = elapsedMs / 250L
         }
         return leaderCache
     }
+
+    private val isEn: Boolean get() = settings.isEn
+    private fun lang(ko: String, en: String): String = settings.lang(ko, en)
 
     private var moveTimer = 0L
     private var animFrame = 0
@@ -104,7 +116,7 @@ class MapWalkScene(
             map?.let { gameState.resetPosition(it.id, it.w / 2, it.h / 2) }
         }
         heroFrames = loadHeroFrames()
-        com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.FIELD)
+        SfxBus.playMusic(SfxBus.Bgm.FIELD)
     }
 
     private fun loadMap(id: Int) {
@@ -214,7 +226,7 @@ class MapWalkScene(
                 return
             }
             if (encounterGraceMs <= 0 && settings.encounterMultiplier > 0f &&
-                EncounterTable.shouldEncounter(m.id, kotlin.random.Random.nextFloat() / settings.encounterMultiplier)) {
+                EncounterTable.shouldEncounter(m.id, Random.nextFloat() / settings.encounterMultiplier)) {
                 val enemy = EncounterTable.rollEnemy(m.id)
                 if (enemy != null) {
                     encounterGraceMs = 3000L
@@ -224,23 +236,21 @@ class MapWalkScene(
         }
     }
 
-    private fun openChest(chest: com.hero3.remake.engine.Chest) {
-        com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.CHEST)
+    private fun openChest(chest: Chest) {
+        SfxBus.play(SfxBus.Sfx.CHEST)
         val inv = gameState.loadInventory()
         val ok = if (chest.itemId.isNotEmpty()) inv.add(chest.itemId, chest.count) else true
         if (ok) {
             gameState.saveInventory(inv)
             gameState.openedChestIds = gameState.openedChestIds + chest.id
             if (chest.gold > 0) gameState.gold += chest.gold
-            val isEn = settings.language == "en"
             val item = ItemRegistry.get(chest.itemId)
-            val nm = (if (isEn) item?.nameEn else item?.nameKo) ?: chest.itemId
-            val gold = if (chest.gold > 0) " +${chest.gold}G" else ""
-            com.hero3.remake.engine.EventBus.push(
-                if (isEn) "Chest: $nm ×${chest.count}$gold" else "보물상자: $nm ×${chest.count}$gold")
+            val nm = item?.let { lang(it.nameKo, it.nameEn) } ?: chest.itemId
+            val goldStr = if (chest.gold > 0) " +${chest.gold}G" else ""
+            EventBus.push(lang("보물상자: $nm ×${chest.count}$goldStr",
+                              "Chest: $nm ×${chest.count}$goldStr"))
         } else {
-            com.hero3.remake.engine.EventBus.push(
-                if (settings.language == "en") "Bag full — chest skipped." else "가방 가득 — 상자 패스.")
+            EventBus.push(lang("가방 가득 — 상자 패스.", "Bag full — chest skipped."))
         }
     }
 
@@ -271,7 +281,7 @@ class MapWalkScene(
         // 토스트 큐 폴링
         if (toastTtl > 0) toastTtl -= deltaMs
         if (toastTtl <= 0) {
-            val next = com.hero3.remake.engine.EventBus.pop()
+            val next = EventBus.pop()
             if (next != null) { toastText = next; toastTtl = 2500L }
             else { toastText = "" }
         }
@@ -414,7 +424,7 @@ class MapWalkScene(
                 val done   = gameState.doneQuestIds.contains(q)
                 val mark = when { !active && !done -> "!"; active && !done -> "?"; else -> null }
                 if (mark != null) {
-                    val bob = (kotlin.math.sin(elapsedMs / 220.0) * 2.0).toFloat()
+                    val bob = (sin(elapsedMs / 220.0) * 2.0).toFloat()
                     val mp = Paint().apply {
                         color = if (mark == "!") Color.rgb(255, 220, 80) else Color.rgb(120, 200, 255)
                         textSize = 12f; isFakeBoldText = true; textAlign = Paint.Align.CENTER
@@ -514,8 +524,8 @@ class MapWalkScene(
         // 활성 퀘스트 한 줄 (최상단 active quest)
         val activeId = gameState.activeQuestIds.firstOrNull()
         if (activeId != null) {
-            val q = com.hero3.remake.engine.QuestRegistry.get(activeId)
-            val title = q?.let { if (settings.language == "en") it.titleEn else it.titleKo } ?: activeId
+            val q = QuestRegistry.get(activeId)
+            val title = q?.let { lang(it.titleKo, it.titleEn) } ?: activeId
             val tp = Paint(UiKit.muted).apply { color = Color.rgb(255, 220, 130); textSize = 9f }
             canvas.drawText("◆ $title", 4f, 23f, tp)
         }
@@ -527,11 +537,11 @@ class MapWalkScene(
         val bossWarn: String? = run {
             val nearest = bossTriggersFor(m.id).firstOrNull { bt ->
                 !gameState.isBossDefeated(bt.bossId) &&
-                kotlin.math.abs(bt.x - gameState.heroX) + kotlin.math.abs(bt.y - gameState.heroY) <= 3
+                abs(bt.x - gameState.heroX) + abs(bt.y - gameState.heroY) <= 3
             } ?: return@run null
-            val def = com.hero3.remake.engine.EnemyRegistry.get(nearest.bossId)
-            val name = def?.let { if (settings.language == "en") it.nameEn else it.nameKo } ?: nearest.bossId
-            if (settings.language == "en") "⚠ Boss nearby: $name" else "⚠ 보스 근처: $name"
+            val def = EnemyRegistry.get(nearest.bossId)
+            val name = def?.let { lang(it.nameKo, it.nameEn) } ?: nearest.bossId
+            lang("⚠ 보스 근처: $name", "⚠ Boss nearby: $name")
         }
         val edgeHint: String? = run {
             val sides = mutableListOf<String>()
@@ -540,13 +550,12 @@ class MapWalkScene(
             if (gameState.heroY == 0          && MapGraph.neighborOf(m.id, MapGraph.Side.N) != null) sides += "▲"
             if (gameState.heroY == m.h - 1    && MapGraph.neighborOf(m.id, MapGraph.Side.S) != null) sides += "▼"
             if (sides.isEmpty()) null
-            else if (settings.language == "en") "Exit: ${sides.joinToString(" ")}"
-            else                                "출구: ${sides.joinToString(" ")}"
+            else lang("출구: ${sides.joinToString(" ")}", "Exit: ${sides.joinToString(" ")}")
         }
         val hint = when {
             nearbyNpc != null -> {
-                val name = if (settings.language == "en") nearbyNpc.nameEn else nearbyNpc.nameKo
-                if (settings.language == "en") "OK ▶ Talk to $name" else "OK ▶ ${name} 와(과) 대화"
+                val name = lang(nearbyNpc.nameKo, nearbyNpc.nameEn)
+                lang("OK ▶ $name 와(과) 대화", "OK ▶ Talk to $name")
             }
             bossWarn != null -> bossWarn
             edgeHint != null -> edgeHint
@@ -560,7 +569,6 @@ class MapWalkScene(
             canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(),
                 Paint().apply { color = Color.argb(a, 0, 0, 0) })
             val tp = Paint(UiKit.body).apply { color = Color.rgb(255, 235, 200); textSize = 11f }
-            val isEn = settings.language == "en"
             val lines = if (isEn) listOf(
                 "Welcome to Hero3 Remake.",
                 "",

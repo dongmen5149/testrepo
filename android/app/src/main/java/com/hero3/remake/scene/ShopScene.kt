@@ -9,6 +9,7 @@ import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Inventory
 import com.hero3.remake.engine.Item
+import com.hero3.remake.engine.ItemKind
 import com.hero3.remake.engine.ItemRegistry
 import com.hero3.remake.engine.NpcRegistry
 import com.hero3.remake.engine.Scene
@@ -75,20 +76,20 @@ class ShopScene(
     private fun tryBuy() {
         val item = stock.getOrNull(cursor) ?: return
         if (gameState.gold < item.price) {
-            flash(if (settings.language == "en") "Not enough gold." else "골드가 부족합니다.")
+            flash(settings.lang("골드가 부족합니다.", "Not enough gold."))
             return
         }
         gameState.gold -= item.price
         inventory.add(item.id, 1)
         gameState.saveInventory(inventory)
-        flash(if (settings.language == "en") "Bought ${item.nameEn}." else "${item.nameKo} 구입.")
+        flash(settings.lang("${item.nameKo} 구입.", "Bought ${item.nameEn}."))
     }
 
     private fun trySell() {
         val slot = inventory.get(cursor) ?: return
         val item = ItemRegistry.get(slot.itemId) ?: return
-        if (item.kind == com.hero3.remake.engine.ItemKind.KEY) {
-            flash(if (settings.language == "en") "Cannot sell key items." else "열쇠 아이템은 판매 불가.")
+        if (item.kind == ItemKind.KEY) {
+            flash(settings.lang("열쇠 아이템은 판매 불가.", "Cannot sell key items."))
             return
         }
         val price = ShopRegistry.sellPrice(item)
@@ -96,21 +97,20 @@ class ShopScene(
         inventory.remove(cursor, 1)
         gameState.saveInventory(inventory)
         if (cursor >= inventory.size && cursor > 0) cursor--
-        flash(if (settings.language == "en") "Sold ${item.nameEn} (+${price}G)."
-              else "${item.nameKo} 판매 (+${price}G).")
+        flash(settings.lang("${item.nameKo} 판매 (+${price}G).",
+                            "Sold ${item.nameEn} (+${price}G)."))
     }
 
     private fun flash(s: String) { message = s; messageTtl = 1500L }
 
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
-        val isEn = settings.language == "en"
-        val title = (if (isEn) npc?.nameEn else npc?.nameKo) ?: "SHOP"
+        val title = npc?.let { settings.lang(it.nameKo, it.nameEn) } ?: "SHOP"
         UiKit.drawHeader(canvas, virtualWidth, title)
 
         // 탭 + 골드
-        val buyLabel  = if (isEn) "BUY"  else "구입"
-        val sellLabel = if (isEn) "SELL" else "판매"
+        val buyLabel  = settings.lang("구입", "BUY")
+        val sellLabel = settings.lang("판매", "SELL")
         UiKit.drawMenuItem(canvas, 8f, 28f, 60f, 18f, buyLabel,  mode == Mode.BUY)
         UiKit.drawMenuItem(canvas, 72f, 28f, 60f, 18f, sellLabel, mode == Mode.SELL)
         canvas.drawText("${gameState.gold} G", virtualWidth - 60f, 42f, goldPaint)
@@ -124,7 +124,7 @@ class ShopScene(
         when (mode) {
             Mode.BUY -> {
                 if (stock.isEmpty()) {
-                    canvas.drawText(if (isEn) "(out of stock)" else "(재고 없음)",
+                    canvas.drawText(settings.lang("(재고 없음)", "(out of stock)"),
                         16f, listTop + 12f, UiKit.muted)
                 }
                 val end = minOf(stock.size, scrollStart + visibleRows)
@@ -134,8 +134,7 @@ class ShopScene(
                     if (i == cursor) {
                         canvas.drawRect(10f, y - 11f, virtualWidth - 18f, y + 2f, rowSelected)
                     }
-                    val name = if (isEn) item.nameEn else item.nameKo
-                    canvas.drawText(name, 16f, y, UiKit.body)
+                    canvas.drawText(settings.lang(item.nameKo, item.nameEn), 16f, y, UiKit.body)
                     canvas.drawText("${item.price} G", virtualWidth - 60f, y, UiKit.body)
                 }
                 if (stock.size > visibleRows) {
@@ -146,7 +145,7 @@ class ShopScene(
             Mode.SELL -> {
                 val slots = inventory.all()
                 if (slots.isEmpty()) {
-                    canvas.drawText(if (isEn) "(empty)" else "(비어 있음)",
+                    canvas.drawText(settings.lang("(비어 있음)", "(empty)"),
                         16f, listTop + 12f, UiKit.muted)
                 }
                 val end = minOf(slots.size, scrollStart + visibleRows)
@@ -157,7 +156,7 @@ class ShopScene(
                     if (i == cursor) {
                         canvas.drawRect(10f, y - 11f, virtualWidth - 18f, y + 2f, rowSelected)
                     }
-                    val name = if (isEn) item.nameEn else item.nameKo
+                    val name = settings.lang(item.nameKo, item.nameEn)
                     canvas.drawText("$name ×${slot.count}", 16f, y, UiKit.body)
                     canvas.drawText("${ShopRegistry.sellPrice(item)} G", virtualWidth - 60f, y, UiKit.body)
                 }
@@ -173,18 +172,18 @@ class ShopScene(
             UiKit.drawBox(canvas, 8f, virtualHeight - 60f, virtualWidth - 16f, 22f)
             canvas.drawText(message, 14f, virtualHeight - 46f, UiKit.body)
         } else {
-            val descItem: com.hero3.remake.engine.Item? = when (mode) {
+            val descItem: Item? = when (mode) {
                 Mode.BUY -> stock.getOrNull(cursor)
                 Mode.SELL -> inventory.get(cursor)?.let { ItemRegistry.get(it.itemId) }
             }
             if (descItem != null) {
                 UiKit.drawBox(canvas, 8f, virtualHeight - 60f, virtualWidth - 16f, 22f)
-                val d = (if (isEn) descItem.descEn else descItem.descKo)
+                val d = settings.lang(descItem.descKo, descItem.descEn)
                 if (d.isNotEmpty()) canvas.drawText(d, 14f, virtualHeight - 46f, UiKit.muted)
             }
         }
 
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,
-            "L tab  OK ${if (isEn) "trade" else "거래"}  R back")
+            "L tab  OK ${settings.lang("거래", "trade")}  R back")
     }
 }

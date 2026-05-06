@@ -9,7 +9,10 @@ Hero4 single-frame BM 디코더 (TILE/, OBJ/{000,001,002}/ 공용).
   - 0x0c: 8-bit dense palette indexed (1 byte = 1 pixel, index 0 = 투명 skip)
 
 multi-frame _bm 와 차이는 file header (6 bytes) 가 없다는 점.
-일부 파일 (예: _TILE_030) 은 다른 헤더 prefix — skip.
+
+컨테이너 변형 (예: _TILE_030):
+    [01 00 00 00][payload_size LE32][위 inner BM ...]
+    → 앞 8 bytes 를 stripping 하고 동일 디코더로 처리.
 """
 from __future__ import annotations
 import struct, sys, pathlib
@@ -26,6 +29,13 @@ def rgb565_to_rgba(v: int) -> tuple[int, int, int, int]:
 
 
 def decode_h4_tile(data: bytes) -> Image.Image | None:
+    # 컨테이너 prefix `01 00 00 00 <size LE32>` 감지 → inner 로 재진입
+    if len(data) >= 8 and data[:4] == b'\x01\x00\x00\x00':
+        payload_size = struct.unpack_from('<I', data, 4)[0]
+        if 8 + payload_size <= len(data) and len(data) - 8 >= 11 + 32:
+            inner = data[8:8 + payload_size]
+            if inner and inner[0] in (0x0b, 0x0c):
+                data = inner
     if len(data) < 11 + 32:
         return None
     type_b = data[0]

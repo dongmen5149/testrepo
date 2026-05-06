@@ -10,18 +10,26 @@ import android.graphics.Rect
 import com.hero3.remake.MainActivity
 import com.hero3.remake.engine.Character
 import com.hero3.remake.engine.CharacterRegistry
-import com.hero3.remake.engine.EnemyDef
 import com.hero3.remake.engine.EnemyInstance
 import com.hero3.remake.engine.EnemyRegistry
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Inventory
 import com.hero3.remake.engine.ItemKind
 import com.hero3.remake.engine.ItemRegistry
+import com.hero3.remake.engine.PartyTurnOrder
+import com.hero3.remake.engine.QuestLog
+import com.hero3.remake.engine.QuestRegistry
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
+import com.hero3.remake.engine.SfxBus
+import com.hero3.remake.engine.Skill
+import com.hero3.remake.engine.SkillRegistry
 import com.hero3.remake.engine.UiKit
+import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.sin
 import kotlin.random.Random
 
 /**
@@ -47,8 +55,14 @@ class BattleScene(
     }
     private var actorIdx: Int = firstAliveFrom(0)
     private fun currentActor(): Character = party[actorIdx]
-    private fun currentSkills(): List<com.hero3.remake.engine.Skill> =
-        com.hero3.remake.engine.SkillRegistry.forClass(currentActor().classId, currentActor().level)
+    private fun currentSkills(): List<Skill> =
+        SkillRegistry.forClass(currentActor().classId, currentActor().level)
+
+    private val isEn: Boolean get() = settings.isEn
+    private fun lang(ko: String, en: String): String = settings.lang(ko, en)
+    private fun pushEvent(ko: String, en: String) = EventBus.push(settings.lang(ko, en))
+    private val partyHeight: Float get() = 18f * party.size + 6f
+    private val menuTop: Float get() = 130f + partyHeight + 6f
 
     private val inventory: Inventory = gameState.loadInventory()
 
@@ -83,43 +97,33 @@ class BattleScene(
     private val bg = Paint().apply { color = Color.rgb(15, 12, 25) }
 
     init {
-        val bgm = if (forcedEnemyId?.startsWith("boss_") == true)
-            com.hero3.remake.engine.SfxBus.Bgm.BOSS
-        else com.hero3.remake.engine.SfxBus.Bgm.BATTLE
-        com.hero3.remake.engine.SfxBus.playMusic(bgm)
-        if (forcedEnemyId?.startsWith("boss_") == true)
-            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.BOSS_INTRO)
+        val isBoss = forcedEnemyId?.startsWith("boss_") == true
+        SfxBus.playMusic(if (isBoss) SfxBus.Bgm.BOSS else SfxBus.Bgm.BATTLE)
+        if (isBoss) SfxBus.play(SfxBus.Sfx.BOSS_INTRO)
     }
     private val hpBar = Paint().apply { color = Color.rgb(220, 80, 80) }
     private val spBar = Paint().apply { color = Color.rgb(80, 140, 220) }
     private val hpBarBg = Paint().apply { color = Color.argb(120, 60, 60, 80) }
     private val activeMarker = Paint().apply { color = Color.rgb(255, 220, 90) }
     private val deadOverlay = Paint().apply { color = Color.argb(160, 30, 10, 10) }
-    private val enemySprite: Bitmap? = loadEnemySprite()
-    private val heroSprite: Bitmap? = loadHeroSprite()
+    private val enemySprite: Bitmap? = loadFirstSprite(enemy.def.spriteDir)
+    private val heroSprite: Bitmap? = loadFirstSprite("hero/h00000_bm")
 
-    private fun loadHeroSprite(): Bitmap? = runCatching {
-        val root = "${settings.spritesDir()}/hero/h00000_bm"
-        val files = context.assets.list(root)?.filter { it.endsWith(".png") }?.sorted() ?: return@runCatching null
-        if (files.isEmpty()) return@runCatching null
-        context.assets.open("$root/${files.first()}").use { BitmapFactory.decodeStream(it) }
-    }.getOrNull()
-
-    private fun loadEnemySprite(): Bitmap? = runCatching {
-        val root = "${settings.spritesDir()}/${enemy.def.spriteDir}"
-        val files = context.assets.list(root)?.filter { it.endsWith(".png") }?.sorted() ?: return@runCatching null
-        if (files.isEmpty()) return@runCatching null
-        context.assets.open("$root/${files.first()}").use { BitmapFactory.decodeStream(it) }
+    private fun loadFirstSprite(relPath: String): Bitmap? = runCatching {
+        val root = "${settings.spritesDir()}/$relPath"
+        val first = context.assets.list(root)?.filter { it.endsWith(".png") }?.sorted()?.firstOrNull()
+            ?: return@runCatching null
+        context.assets.open("$root/$first").use { BitmapFactory.decodeStream(it) }
     }.getOrNull()
 
     private fun firstAliveFrom(start: Int): Int =
-        com.hero3.remake.engine.PartyTurnOrder.firstAliveFrom(party, start)
+        PartyTurnOrder.firstAliveFrom(party, start)
 
     private fun aliveCount(): Int =
-        com.hero3.remake.engine.PartyTurnOrder.aliveCount(party)
+        PartyTurnOrder.aliveCount(party)
 
     private fun lowestHpAliveAlly(): Int =
-        com.hero3.remake.engine.PartyTurnOrder.lowestHpAliveAlly(party, fallback = actorIdx)
+        PartyTurnOrder.lowestHpAliveAlly(party, fallback = actorIdx)
 
     override fun update(deltaMs: Long) {
         renderClockMs += deltaMs
@@ -165,7 +169,7 @@ class BattleScene(
         val skills = currentSkills()
         if (input.pressedOnce(InputController.K_SOFT2)) { phase = Phase.COMMAND; return }
         if (skills.isEmpty()) {
-            pushLog(if (settings.language == "en") "No skills." else "스킬 없음.")
+            pushLog(lang("스킬 없음.", "No skills."))
             phase = Phase.COMMAND; return
         }
         if (input.pressedOnce(InputController.K_UP))   skillPickIdx = (skillPickIdx - 1 + skills.size) % skills.size
@@ -174,18 +178,17 @@ class BattleScene(
             val s = skills[skillPickIdx]
             val actor = currentActor()
             if (actor.sp < s.spCost) {
-                pushLog(if (settings.language == "en") "Not enough SP." else "SP 부족.")
+                pushLog(lang("SP 부족.", "Not enough SP."))
                 return
             }
             useSkill(s)
         }
     }
 
-    private fun useSkill(s: com.hero3.remake.engine.Skill) {
+    private fun useSkill(s: Skill) {
         val actor = currentActor()
         actor.sp -= s.spCost
-        val isEn = settings.language == "en"
-        val name = if (isEn) s.nameEn else s.nameKo
+        val name = lang(s.nameKo, s.nameEn)
         if (s.heal) {
             val targetIdx = lowestHpAliveAlly()
             val target = party[targetIdx]
@@ -193,8 +196,7 @@ class BattleScene(
             val healed = ((intl * s.powerMul).toInt() + s.flatBonus).coerceAtMost(target.hpMax - target.hp)
             target.hp += healed
             popups += Popup("+$healed", onEnemy = false, targetIdx = targetIdx, ttl = 900L, color = Color.rgb(120, 240, 120))
-            val tName = displayName(target, isEn)
-            pushLog(if (isEn) "$name → $tName +${healed} HP" else "$name → $tName +${healed} HP")
+            pushLog("$name → ${displayName(target, isEn)} +${healed} HP")
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
@@ -204,7 +206,7 @@ class BattleScene(
         hitFlashMs = 220L
         heroLungeMs = 280L
         popups += Popup("-$dmg", onEnemy = true, targetIdx = -1, ttl = 900L, color = Color.rgb(255, 200, 100))
-        pushLog(if (isEn) "$name → ${dmg}" else "$name → ${dmg}")
+        pushLog("$name → $dmg")
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
@@ -219,7 +221,7 @@ class BattleScene(
         if (input.pressedOnce(InputController.K_SOFT2)) { phase = Phase.COMMAND; return }
         val list = consumables()
         if (list.isEmpty()) {
-            pushLog(if (settings.language == "en") "No items." else "아이템 없음.")
+            pushLog(lang("아이템 없음.", "No items."))
             phase = Phase.COMMAND
             return
         }
@@ -234,8 +236,7 @@ class BattleScene(
     private fun useConsumable(invIdx: Int) {
         val slot = inventory.get(invIdx) ?: return
         val item = ItemRegistry.get(slot.itemId) ?: return
-        val isEn = settings.language == "en"
-        val itemName = if (isEn) item.nameEn else item.nameKo
+        val itemName = lang(item.nameKo, item.nameEn)
         when (item.id) {
             "potion_s", "potion_m" -> {
                 val targetIdx = lowestHpAliveAlly()
@@ -252,7 +253,7 @@ class BattleScene(
                 pushLog("$itemName +${gained} SP")
             }
             else -> {
-                pushLog(if (isEn) "Cannot use." else "사용 불가.")
+                pushLog(lang("사용 불가.", "Cannot use."))
                 phase = Phase.COMMAND
                 return
             }
@@ -269,10 +270,9 @@ class BattleScene(
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 220L
-        com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.HIT)
+        SfxBus.play(SfxBus.Sfx.HIT)
         popups += Popup("-$dmg", onEnemy = true, targetIdx = -1, ttl = 900L, color = Color.rgb(255, 220, 90))
-        val isEn = settings.language == "en"
-        pushLog(if (isEn) "${displayName(actor, true)} hits for ${dmg}." else "${displayName(actor, false)} 공격 ${dmg}.")
+        pushLog(lang("${displayName(actor, false)} 공격 $dmg.", "${displayName(actor, true)} hits for $dmg."))
         if (enemy.hp <= 0) {
             enemy.hp = 0
             beginVictory()
@@ -283,10 +283,10 @@ class BattleScene(
 
     private fun tryRun() {
         if (Random.nextFloat() < 0.6f) {
-            pushLog(if (settings.language == "en") "Escaped!" else "도망쳤다!")
+            pushLog(lang("도망쳤다!", "Escaped!"))
             persistAndExit(victory = false, ranAway = true)
         } else {
-            pushLog(if (settings.language == "en") "Cannot escape!" else "도망칠 수 없다!")
+            pushLog(lang("도망칠 수 없다!", "Cannot escape!"))
             // 도망 실패 → 모든 파티 행동 스킵하고 적 턴
             phase = Phase.ENEMY_TURN; animTtl = 600L
         }
@@ -316,7 +316,7 @@ class BattleScene(
     }
 
     private fun nextActorAfter(cur: Int): Int =
-        com.hero3.remake.engine.PartyTurnOrder.nextAliveAfter(party, cur)
+        PartyTurnOrder.nextAliveAfter(party, cur)
 
     private fun updateEnemyTurn(deltaMs: Long) {
         animTtl -= deltaMs
@@ -340,10 +340,8 @@ class BattleScene(
         val dmg = damage(enemy.def.atk, CharacterRegistry.effectiveDefense(target))
         target.hp = (target.hp - dmg).coerceAtLeast(0)
         popups += Popup("-$dmg", onEnemy = false, targetIdx = pick.index, ttl = 900L, color = Color.rgb(255, 80, 80))
-        val isEn = settings.language == "en"
-        val name = if (isEn) enemy.def.nameEn else enemy.def.nameKo
-        pushLog(if (isEn) "${name} → ${displayName(target, true)} ${dmg}."
-                else      "${name} → ${displayName(target, false)} ${dmg}.")
+        val name = lang(enemy.def.nameKo, enemy.def.nameEn)
+        pushLog("$name → ${displayName(target, isEn)} $dmg.")
     }
 
     private fun damage(atk: Int, def: Int): Int {
@@ -369,13 +367,11 @@ class BattleScene(
             if (Random.nextFloat() < prob) {
                 if (inventory.add(itemId, 1)) {
                     resultDrops += itemId
-                    val item = com.hero3.remake.engine.ItemRegistry.get(itemId)
-                    val nm = (if (settings.language == "en") item?.nameEn else item?.nameKo) ?: itemId
-                    com.hero3.remake.engine.EventBus.push(
-                        if (settings.language == "en") "Got: $nm" else "획득: $nm")
+                    val item = ItemRegistry.get(itemId)
+                    val nm = item?.let { lang(it.nameKo, it.nameEn) } ?: itemId
+                    pushEvent("획득: $nm", "Got: $nm")
                 } else {
-                    com.hero3.remake.engine.EventBus.push(
-                        if (settings.language == "en") "Bag full, item lost." else "가방 가득, 아이템 잃음.")
+                    pushEvent("가방 가득, 아이템 잃음.", "Bag full, item lost.")
                 }
             }
         }
@@ -384,39 +380,27 @@ class BattleScene(
         if (enemy.def.id.startsWith("boss_")) {
             gameState.markBossDefeated(enemy.def.id)
             screenFlashMs = 600L
-            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.BOSS_DEFEAT)
-            com.hero3.remake.engine.EventBus.push(
-                if (settings.language == "en") "Boss defeated: ${enemy.def.nameEn}"
-                else "보스 처치: ${enemy.def.nameKo}")
+            SfxBus.play(SfxBus.Sfx.BOSS_DEFEAT)
+            pushEvent("보스 처치: ${enemy.def.nameKo}", "Boss defeated: ${enemy.def.nameEn}")
             // 자동 세이브 — 활성 슬롯 flush + 마지막 사용 수동 슬롯 미러링
             gameState.saveParty(party)
             gameState.saveInventory(inventory)
             gameState.flush()
             val mirrored = gameState.mirrorToLastSavedSlot(context)
-            if (mirrored > 0) {
-                com.hero3.remake.engine.EventBus.push(
-                    if (settings.language == "en") "Auto-saved → Slot $mirrored"
-                    else "자동 저장 → 슬롯 $mirrored")
-            } else {
-                com.hero3.remake.engine.EventBus.push(
-                    if (settings.language == "en") "Auto-saved" else "자동 저장됨")
-            }
+            if (mirrored > 0) pushEvent("자동 저장 → 슬롯 $mirrored", "Auto-saved → Slot $mirrored")
+            else              pushEvent("자동 저장됨",            "Auto-saved")
         }
         if (resultLevels > 0) {
             screenFlashMs = maxOf(screenFlashMs, 350L)
-            com.hero3.remake.engine.SfxBus.play(com.hero3.remake.engine.SfxBus.Sfx.LEVEL_UP)
+            SfxBus.play(SfxBus.Sfx.LEVEL_UP)
             popups += Popup("LEVEL UP!", onEnemy = false, targetIdx = 0, ttl = 1500L, color = Color.rgb(120, 240, 120))
-            com.hero3.remake.engine.EventBus.push(
-                if (settings.language == "en") "LEVEL UP!"
-                else "레벨업!")
+            pushEvent("레벨업!", "LEVEL UP!")
         }
-        completedQuestIds = com.hero3.remake.engine.QuestLog(gameState).tickAutoComplete(inventory)
+        completedQuestIds = QuestLog(gameState).tickAutoComplete(inventory)
         for (qid in completedQuestIds) {
-            val q = com.hero3.remake.engine.QuestRegistry.get(qid)
-            val title = q?.let { if (settings.language == "en") it.titleEn else it.titleKo } ?: qid
-            com.hero3.remake.engine.EventBus.push(
-                if (settings.language == "en") "Quest done: $title"
-                else "퀘스트 완료: $title")
+            val q = QuestRegistry.get(qid)
+            val title = q?.let { lang(it.titleKo, it.titleEn) } ?: qid
+            pushEvent("퀘스트 완료: $title", "Quest done: $title")
         }
         phase = Phase.DEATH
         deathTtl = deathDuration
@@ -445,9 +429,7 @@ class BattleScene(
                 c.sp = (c.spMax * 0.25f).toInt().coerceAtLeast(0)
             }
             gameState.resetPosition(0, 17, 12)
-            com.hero3.remake.engine.EventBus.push(
-                if (settings.language == "en") "Knocked out... revived in Soltia."
-                else "쓰러졌다... 솔티아에서 부활.")
+            pushEvent("쓰러졌다... 솔티아에서 부활.", "Knocked out... revived in Soltia.")
         }
         gameState.saveParty(party)
         onRequest(MainActivity.SceneRequest.Pop)
@@ -466,10 +448,8 @@ class BattleScene(
 
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
-        val isEn = settings.language == "en"
 
-        val eName = if (isEn) enemy.def.nameEn else enemy.def.nameKo
-        UiKit.drawHeader(canvas, virtualWidth, eName)
+        UiKit.drawHeader(canvas, virtualWidth, lang(enemy.def.nameKo, enemy.def.nameEn))
 
         // 적 sprite (중앙 상단) — 부유 + 피격 흔들림 + 사망 페이드
         enemySprite?.let { bmp ->
@@ -477,8 +457,8 @@ class BattleScene(
             val dw = bmp.width * scale
             val dh = bmp.height * scale
             val cx = virtualWidth / 2 - dw / 2
-            val bob = (kotlin.math.sin(renderClockMs / 280.0) * 3.0).toInt()
-            val shake = if (hitFlashMs > 0) ((kotlin.math.sin(renderClockMs / 30.0) * 4.0).toInt()) else 0
+            val bob = (sin(renderClockMs / 280.0) * 3.0).toInt()
+            val shake = if (hitFlashMs > 0) (sin(renderClockMs / 30.0) * 4.0).toInt() else 0
             val deathAlpha = if (phase == Phase.DEATH)
                 (deathTtl.toFloat() / deathDuration * 255f).toInt().coerceIn(0, 255)
             else 255
@@ -501,7 +481,7 @@ class BattleScene(
             val dh = bmp.height * scale
             val lunge = if (heroLungeMs > 0) {
                 val frac = heroLungeMs / 280f
-                ((1f - kotlin.math.abs(frac - 0.5f) * 2f) * 16f).toInt()
+                ((1f - abs(frac - 0.5f) * 2f) * 16f).toInt()
             } else 0
             canvas.drawBitmap(bmp, Rect(0, 0, bmp.width, bmp.height),
                 Rect(8 + lunge, 80, 8 + dw + lunge, 80 + dh), null)
@@ -539,7 +519,7 @@ class BattleScene(
                 .toInt().coerceIn(0, 240)
             canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(),
                 Paint().apply { color = Color.argb(a, 0, 0, 0) })
-            val title = (if (isEn) "BOSS: " else "보스: ") + (if (isEn) enemy.def.nameEn else enemy.def.nameKo)
+            val title = lang("보스: ", "BOSS: ") + lang(enemy.def.nameKo, enemy.def.nameEn)
             val tp = Paint(UiKit.body).apply {
                 color = Color.rgb(255, 220, 90); textSize = 22f; isFakeBoldText = true
                 alpha = a
@@ -556,13 +536,13 @@ class BattleScene(
 
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,
             when (phase) {
-                Phase.COMMAND     -> if (isEn) "▲▼ select  OK confirm" else "▲▼ 선택  OK 확정"
-                Phase.ITEM_PICK   -> if (isEn) "▲▼ pick  OK use  R back" else "▲▼ 선택  OK 사용  R 뒤로"
-                Phase.SKILL_PICK  -> if (isEn) "▲▼ pick  OK cast  R back" else "▲▼ 선택  OK 시전  R 뒤로"
+                Phase.COMMAND     -> lang("▲▼ 선택  OK 확정",        "▲▼ select  OK confirm")
+                Phase.ITEM_PICK   -> lang("▲▼ 선택  OK 사용  R 뒤로", "▲▼ pick  OK use  R back")
+                Phase.SKILL_PICK  -> lang("▲▼ 선택  OK 시전  R 뒤로", "▲▼ pick  OK cast  R back")
                 Phase.ANIMATE     -> "..."
                 Phase.ENEMY_TURN  -> "..."
                 Phase.DEATH       -> "..."
-                Phase.RESULT      -> if (isEn) "OK continue" else "OK 계속"
+                Phase.RESULT      -> lang("OK 계속", "OK continue")
             })
     }
 
@@ -590,7 +570,7 @@ class BattleScene(
 
             if (c.hp <= 0) {
                 canvas.drawRect(10f, y - 1f, virtualWidth - 18f, y + rowH - 3f, deadOverlay)
-                canvas.drawText(if (isEn) "KO" else "기절",
+                canvas.drawText(lang("기절", "KO"),
                     virtualWidth - 40f, y + 11f,
                     Paint(UiKit.body).apply { color = Color.rgb(255, 120, 120) })
             }
@@ -604,107 +584,97 @@ class BattleScene(
         return (virtualWidth - 70) to (top + 4 + safeIdx * rowH + 11)
     }
 
+    private fun drawMenuFrame(canvas: Canvas) {
+        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
+    }
+
     private fun renderCommand(canvas: Canvas, isEn: Boolean) {
         val labels = if (isEn) listOf("ATTACK", "SKILL", "ITEM", "RUN")
                      else      listOf("공격",   "스킬",  "아이템","도망")
-        val partyHeight = 18f * party.size + 6f
-        val menuTop = 130f + partyHeight + 6f
         val nm = displayName(currentActor(), isEn)
-        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
-        canvas.drawText(if (isEn) "$nm's turn" else "$nm 차례", 14f, menuTop + 12f, UiKit.muted)
+        drawMenuFrame(canvas)
+        canvas.drawText(lang("$nm 차례", "$nm's turn"), 14f, menuTop + 12f, UiKit.muted)
         for ((i, label) in labels.withIndex()) {
             UiKit.drawMenuItem(canvas, 16f, menuTop + 16f + i * 14f, virtualWidth - 32f, 12f, label, i == menuIdx)
         }
     }
 
-    private fun renderSkillPick(canvas: Canvas, isEn: Boolean) {
-        val partyHeight = 18f * party.size + 6f
-        val menuTop = 130f + partyHeight + 6f
-        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
-        val skills = currentSkills()
-        if (skills.isEmpty()) {
-            canvas.drawText(if (isEn) "(no skills)" else "(스킬 없음)", 16f, menuTop + 20f, UiKit.muted)
+    /** 페이지네이션된 픽 메뉴 공통 렌더. [empty]가 비어있으면 placeholder 출력. */
+    private fun <T> renderPickList(
+        canvas: Canvas,
+        items: List<T>,
+        selectedIdx: Int,
+        emptyText: String,
+        rowOffset: Float,
+        label: (T) -> String,
+    ) {
+        drawMenuFrame(canvas)
+        if (items.isEmpty()) {
+            canvas.drawText(emptyText, 16f, menuTop + 20f, UiKit.muted)
             return
         }
         val visible = 4
-        val scrollStart = (skillPickIdx - visible + 1).coerceAtLeast(0)
-        val end = minOf(skills.size, scrollStart + visible)
+        val scrollStart = (selectedIdx - visible + 1).coerceAtLeast(0)
+        val end = minOf(items.size, scrollStart + visible)
         for (i in scrollStart until end) {
-            val s = skills[i]
-            val name = if (isEn) s.nameEn else s.nameKo
-            UiKit.drawMenuItem(canvas, 16f, menuTop + 6f + (i - scrollStart) * 16f, virtualWidth - 32f, 14f,
-                "$name  SP ${s.spCost}", i == skillPickIdx)
+            UiKit.drawMenuItem(canvas, 16f, menuTop + rowOffset + (i - scrollStart) * 16f, virtualWidth - 32f, 14f,
+                label(items[i]), i == selectedIdx)
         }
-        if (skills.size > visible) {
-            canvas.drawText("${skillPickIdx + 1}/${skills.size}",
-                virtualWidth - 36f, menuTop + 70f, UiKit.muted)
+        if (items.size > visible) {
+            canvas.drawText("${selectedIdx + 1}/${items.size}", virtualWidth - 36f, menuTop + 70f, UiKit.muted)
+        }
+    }
+
+    private fun renderSkillPick(canvas: Canvas, isEn: Boolean) {
+        renderPickList(canvas, currentSkills(), skillPickIdx,
+            emptyText = lang("(스킬 없음)", "(no skills)"), rowOffset = 6f) { s ->
+            "${lang(s.nameKo, s.nameEn)}  SP ${s.spCost}"
         }
     }
 
     private fun renderItemPick(canvas: Canvas, isEn: Boolean) {
-        val partyHeight = 18f * party.size + 6f
-        val menuTop = 130f + partyHeight + 6f
-        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
-        val list = consumables()
-        if (list.isEmpty()) {
-            canvas.drawText(if (isEn) "(no consumables)" else "(소비 아이템 없음)", 16f, menuTop + 20f, UiKit.muted)
-            return
-        }
-        val visible = 4
-        val scrollStart = (itemPickIdx - visible + 1).coerceAtLeast(0)
-        val end = minOf(list.size, scrollStart + visible)
-        for (i in scrollStart until end) {
-            val invIdx = list[i]
+        renderPickList(canvas, consumables(), itemPickIdx,
+            emptyText = lang("(소비 아이템 없음)", "(no consumables)"), rowOffset = 8f) { invIdx ->
             val slot = inventory.get(invIdx)!!
             val item = ItemRegistry.get(slot.itemId)
-            val name = (if (isEn) item?.nameEn else item?.nameKo) ?: slot.itemId
-            UiKit.drawMenuItem(canvas, 16f, menuTop + 8f + (i - scrollStart) * 16f, virtualWidth - 32f, 14f,
-                "$name ×${slot.count}", i == itemPickIdx)
-        }
-        if (list.size > visible) {
-            canvas.drawText("${itemPickIdx + 1}/${list.size}",
-                virtualWidth - 36f, menuTop + 70f, UiKit.muted)
+            val name = item?.let { lang(it.nameKo, it.nameEn) } ?: slot.itemId
+            "$name ×${slot.count}"
         }
     }
 
     private fun renderLog(canvas: Canvas) {
-        val partyHeight = 18f * party.size + 6f
-        val menuTop = 130f + partyHeight + 6f
-        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
+        drawMenuFrame(canvas)
         for ((i, line) in log.withIndex()) {
             canvas.drawText(line, 16f, menuTop + 14f + i * 14f, UiKit.body)
         }
     }
 
     private fun renderResult(canvas: Canvas, isEn: Boolean) {
-        val partyHeight = 18f * party.size + 6f
-        val menuTop = 130f + partyHeight + 6f
-        UiKit.drawBox(canvas, 8f, menuTop, virtualWidth - 16f, 70f)
+        drawMenuFrame(canvas)
         if (victory) {
-            canvas.drawText(if (isEn) "VICTORY!" else "승리!", 16f, menuTop + 16f, UiKit.body)
-            canvas.drawText(if (isEn) "EXP +${resultExp}" else "경험치 +${resultExp}", 16f, menuTop + 32f, UiKit.body)
-            canvas.drawText("GOLD +${resultGold}", 16f, menuTop + 48f, UiKit.body)
+            canvas.drawText(lang("승리!", "VICTORY!"), 16f, menuTop + 16f, UiKit.body)
+            canvas.drawText(lang("경험치 +$resultExp", "EXP +$resultExp"), 16f, menuTop + 32f, UiKit.body)
+            canvas.drawText("GOLD +$resultGold", 16f, menuTop + 48f, UiKit.body)
             if (resultLevels > 0) {
-                canvas.drawText(if (isEn) "LEVEL UP!" else "레벨업!", 140f, menuTop + 32f, UiKit.body)
+                canvas.drawText(lang("레벨업!", "LEVEL UP!"), 140f, menuTop + 32f, UiKit.body)
             }
             if (completedQuestIds.isNotEmpty()) {
-                val q = com.hero3.remake.engine.QuestRegistry.get(completedQuestIds.first())
-                val title = if (q == null) completedQuestIds.first()
-                            else if (isEn) q.titleEn else q.titleKo
-                canvas.drawText((if (isEn) "QUEST DONE: " else "퀘스트 완료: ") + title,
+                val first = completedQuestIds.first()
+                val q = QuestRegistry.get(first)
+                val title = q?.let { lang(it.titleKo, it.titleEn) } ?: first
+                canvas.drawText(lang("퀘스트 완료: ", "QUEST DONE: ") + title,
                     16f, menuTop + 64f, UiKit.body)
             }
             if (resultDrops.isNotEmpty()) {
-                val dropNames = resultDrops.mapNotNull {
-                    val it_ = com.hero3.remake.engine.ItemRegistry.get(it)
-                    if (isEn) it_?.nameEn else it_?.nameKo
+                val dropNames = resultDrops.mapNotNull { id ->
+                    ItemRegistry.get(id)?.let { lang(it.nameKo, it.nameEn) }
                 }
-                canvas.drawText((if (isEn) "DROP: " else "드롭: ") + dropNames.joinToString(", "),
+                canvas.drawText(lang("드롭: ", "DROP: ") + dropNames.joinToString(", "),
                     16f, menuTop + 48f, UiKit.muted)
             }
         } else {
-            canvas.drawText(if (isEn) "DEFEATED..." else "패배...", 16f, menuTop + 16f, UiKit.body)
-            canvas.drawText(if (isEn) "Returning to title." else "타이틀로 돌아갑니다.", 16f, menuTop + 32f, UiKit.muted)
+            canvas.drawText(lang("패배...", "DEFEATED..."), 16f, menuTop + 16f, UiKit.body)
+            canvas.drawText(lang("타이틀로 돌아갑니다.", "Returning to title."), 16f, menuTop + 32f, UiKit.muted)
         }
     }
 }

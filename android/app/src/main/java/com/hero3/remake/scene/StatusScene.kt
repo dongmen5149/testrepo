@@ -84,13 +84,12 @@ class StatusScene(
 
         val ch = party.getOrNull(idx)
         val cls = ch?.let { CharacterRegistry.classOf(it.classId) }
-        val isEn = settings.language == "en"
         val charName = when (ch?.id) {
-            "kei"  -> if (isEn) "Kei"  else "케이"
-            "ritz" -> if (isEn) "Ritz" else "리츠"
+            "kei"  -> settings.lang("케이", "Kei")
+            "ritz" -> settings.lang("리츠", "Ritz")
             else   -> ch?.id ?: "-"
         }
-        val className = if (isEn) cls?.nameEn ?: "-" else cls?.nameKo ?: "-"
+        val className = cls?.let { settings.lang(it.nameKo, it.nameEn) } ?: "-"
 
         // 캐릭터 정보 박스
         UiKit.drawBox(canvas, 8f, 32f, virtualWidth - 16f, 80f)
@@ -163,12 +162,12 @@ class StatusScene(
         if (ch != null) {
             UiKit.drawBox(canvas, 8f, 254f, virtualWidth - 16f, 60f)
             fun itemName(id: String?): String {
-                val it = id?.let { ItemRegistry.get(it) } ?: return if (isEn) "(none)" else "(없음)"
-                return if (isEn) it.nameEn else it.nameKo
+                val it = id?.let { ItemRegistry.get(it) } ?: return settings.lang("(없음)", "(none)")
+                return settings.lang(it.nameKo, it.nameEn)
             }
-            canvas.drawText((if (isEn) "Weapon: " else "무기: ")    + itemName(ch.equipWeapon),    16f, 268f, UiKit.body)
-            canvas.drawText((if (isEn) "Armor:  " else "방어: ")    + itemName(ch.equipArmor),     16f, 282f, UiKit.body)
-            canvas.drawText((if (isEn) "Accy:   " else "장신: ")    + itemName(ch.equipAccessory), 16f, 296f, UiKit.body)
+            canvas.drawText(settings.lang("무기: ", "Weapon: ") + itemName(ch.equipWeapon),    16f, 268f, UiKit.body)
+            canvas.drawText(settings.lang("방어: ", "Armor:  ") + itemName(ch.equipArmor),     16f, 282f, UiKit.body)
+            canvas.drawText(settings.lang("장신: ", "Accy:   ") + itemName(ch.equipAccessory), 16f, 296f, UiKit.body)
             val ea = CharacterRegistry.effectiveAttack(ch)
             val ed = CharacterRegistry.effectiveDefense(ch)
             canvas.drawText("ATK $ea  DEF $ed", virtualWidth - 100f, 296f, UiKit.body)
@@ -176,6 +175,6 @@ class StatusScene(
 
         val nav = if (party.size > 1) "◀▶ ${idx + 1}/${party.size}  " else ""
         UiKit.drawHints(canvas, virtualWidth, virtualHeight,
-            nav + (if (isEn) "L class  " else "L 직업  ") + context.getString(R.string.hint_back_cancel))
+            nav + settings.lang("L 직업  ", "L class  ") + context.getString(R.string.hint_back_cancel))
     }
 }

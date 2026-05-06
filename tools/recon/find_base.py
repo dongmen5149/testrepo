@@ -12,30 +12,29 @@ import struct, pathlib, collections
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from _game import select  # noqa: E402
+from recon._targets import load_targets  # noqa: E402
 
 _g = select()
 BIN = _g.binary_path
 assert BIN is not None, f'{_g.id} has no native binary'
 
-# 다중 known offset 으로 base 후보 검증
-TARGETS = [
-    0x0a61c8,  # frameBuf is NULL
-    0x0a5d94,  # /hero/h00000_bm
-    0x0a5db4,  # /boss/boss9000_bm
-    0x0a8c28,  # /enemy/e1000_bm
-    0x0aac6c,  # /map/map0_mp
-    0x0a7f88,  # /font/table
-    0x0a6888,  # onEventMessageOkKey()
-    0x0a8c18,  # /enemy/e000_cif
-]
-
 
 def main():
+    targets_dict, code_end_auto = load_targets()
+    # base 추정은 representative offset 8개 정도면 충분 — path-like 먼저, 골고루 분포되도록
+    sorted_offs = sorted(targets_dict.keys())
+    if len(sorted_offs) > 8:
+        step = len(sorted_offs) // 8
+        TARGETS = [sorted_offs[i * step] for i in range(8)]
+    else:
+        TARGETS = sorted_offs
     data = BIN.read_bytes()
-    print(f'Loaded: {len(data)} bytes (0x{len(data):x})')
+    print(f'[{_g.id}] Loaded {BIN.name}: {len(data)} bytes (0x{len(data):x})')
+    print(f'[{_g.id}] base 후보 검증 TARGETS: {[hex(t) for t in TARGETS]}')
 
     # 모든 4-byte aligned 32-bit 값 수집 (코드 영역 후보)
-    code_end = 0x0a5000
+    # extract_strings.py 추정 code_end - 1 page (보수적으로 코드만)
+    code_end = max(0x1000, code_end_auto - 0x800) if code_end_auto else 0x0a5000
     values = []
     for off in range(0, min(code_end, len(data) - 4), 4):
         v = struct.unpack_from('<I', data, off)[0]

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
@@ -45,7 +46,7 @@ class SaveSlotScene(
                 slot.copyFrom(gameState)
                 slot.flush()
                 gameState.lastSavedSlot = selected + 1
-                com.hero3.remake.engine.EventBus.push(
+                EventBus.push(
                     if (currentLanguageIsKorean()) "슬롯 ${selected + 1} 저장 완료"
                     else "Slot ${selected + 1} saved")
             } else if (!slot.isEmpty()) {

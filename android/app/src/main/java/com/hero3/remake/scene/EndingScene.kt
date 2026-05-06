@@ -5,9 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
+import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
+import com.hero3.remake.engine.SfxBus
 import com.hero3.remake.engine.UiKit
 
 /**
@@ -18,17 +20,17 @@ class EndingScene(
     private val context: Context,
     private val input: InputController,
     private val settings: Settings,
-    private val gameState: com.hero3.remake.engine.GameState,
+    private val gameState: GameState,
     private val onRequest: (MainActivity.SceneRequest) -> Unit,
     private val markCleared: Boolean = true,
 ) : Scene {
 
     init {
         if (markCleared) gameState.gameCleared = true
-        com.hero3.remake.engine.SfxBus.playMusic(com.hero3.remake.engine.SfxBus.Bgm.ENDING)
+        SfxBus.playMusic(SfxBus.Bgm.ENDING)
     }
 
-    private val isEn = settings.language == "en"
+    private val isEn: Boolean get() = settings.isEn
 
     private val creditsKo = listOf(
         "",

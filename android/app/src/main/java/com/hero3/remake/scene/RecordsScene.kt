@@ -34,7 +34,7 @@ class RecordsScene(
 
     override fun render(canvas: Canvas) {
         canvas.drawRect(0f, 0f, virtualWidth.toFloat(), virtualHeight.toFloat(), bg)
-        val isEn = settings.language == "en"
+        val isEn = settings.isEn
         UiKit.drawHeader(canvas, virtualWidth, if (isEn) "RECORDS" else "기록")
 
         val totalEnemies = EnemyRegistry.all.size

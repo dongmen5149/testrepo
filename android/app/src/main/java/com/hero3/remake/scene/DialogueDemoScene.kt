@@ -165,7 +165,7 @@ class DialogueDemoScene(
 
     /** 현재 언어 설정에 맞는 표시 텍스트 (영어 모드 + 번역 있으면 번역, 아니면 원본 한국어). */
     private fun displayText(line: Line): String {
-        return if (settings.language == "en") {
+        return if (settings.isEn) {
             translations[line.text] ?: line.text
         } else {
             line.text

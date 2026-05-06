@@ -15,7 +15,7 @@
 
 ---
 
-## 📊 현재 상태 스냅샷 (2026-05-06)
+## 📊 현재 상태 스냅샷 (2026-05-07 갱신)
 
 ### Phase A — 자산 변환 ✅ **종료**
 
@@ -154,11 +154,12 @@ cd apps/hero4-android
 
 ## ⚠️ 알려진 이슈 / 보류
 
-- **`_TILE_030`** — 다른 헤더 prefix (file header 8 byte 추가). 30개 중 1개만 — 향후 [`formats/bm-tile-obj.md`](formats/bm-tile-obj.md) 참조
+- ~~**`_TILE_030`**~~ ✅ **풀림 (2026-05-07)**: 컨테이너 prefix `01 00 00 00 <size LE32>` 감지 → inner BM 으로 재진입. [convert_h4_tile.py](../../tools/converter/convert_h4_tile.py) 에 반영. h4_tile=276→**277**, skipped=564→563
 - **work/h3/ghidra_proj/*.lock** — Hero3 Ghidra 프로젝트 락이 걸려있어 work/h3/ 일부 이동 못 함. Ghidra 닫고 락 정리 필요
-- **`tools/recon/find_xrefs.py`, `find_pic_xrefs.py`, `find_base.py`** — TARGETS 가 Hero3 string offset hardcoded → Hero4 에 noise. game-aware 리팩터 필요 (`next-steps.md` A4)
+- ~~**`tools/recon/find_xrefs.py`, `find_pic_xrefs.py`, `find_base.py`** — hardcoded TARGETS~~ ✅ **풀림 (2026-05-07)**: [extract_strings.py](../../tools/recon/extract_strings.py) `--json` 옵션 + [_targets.py](../../tools/recon/_targets.py) 헬퍼 도입. 3 스크립트 모두 game-aware. h3/h4 양쪽 검증
 - **`_PAL` secondary RGB 의미** — 미확정. 가장 유력한 가설은 alpha mask. Phase B 에서 확정
 - **_EXD payload, _MAP_M_ extras, HDAT entry layout** — 모두 Phase B 후 확정
+- **Hero4 binary 의 string xref 추적** — h3 와 다른 addressing (PIC LDR+ADD T1 인접 패턴 거의 없음). Phase B Ghidra GUI 에서는 32-bit LDR.W (T4) 또는 다른 sequence 추적 필요
 
 ---
 
@@ -178,3 +179,30 @@ cd apps/hero4-android
 12. **문서 재구성** — `formats/` (5+1), `binary/` (1), `next-steps.md`, 메인 PROGRESS
 
 errors=0 양 게임 모두. 다음: [`next-steps.md`](next-steps.md) 의 Phase B 또는 A1/A4 자동 작업.
+
+---
+
+## 📜 세션 (2026-05-07) 작업 압축
+
+1. **A4 — recon 도구 game-aware 리팩토링 완료**
+   - [extract_strings.py](../../tools/recon/extract_strings.py): `--json OUT` / `--game` / `--quiet` 옵션. path-like + 라벨을 자동 추출, `code_end_estimate` 도 path-like 최소 offset 으로 자동 산출
+   - [_targets.py](../../tools/recon/_targets.py) 신규: `load_targets(priority_only=...)` 게임별 JSON 로더
+   - [find_xrefs.py](../../tools/recon/find_xrefs.py), [find_pic_xrefs.py](../../tools/recon/find_pic_xrefs.py), [find_base.py](../../tools/recon/find_base.py) 의 hardcoded TARGETS 모두 제거
+   - 산출: `work/h3/converted/string_offsets.json` (105 targets), `work/h4/converted/string_offsets.json` (93 targets)
+   - Hero4 정찰로 발견: code/data 경계 ≈ **0x77000**, 핵심 라벨 4개 (`====> Alpha Palette Index Not Found` @0x820dc, `====> frameBuf is NULL` @0x82104, `java/lang/NullPointerException`, `(null)`)
+
+2. **A5 — `_TILE_030` 풀림**
+   - 컨테이너 포맷: `01 00 00 00` (count?) + size LE32 (0x8d=141) + inner BM
+   - [convert_h4_tile.py](../../tools/converter/convert_h4_tile.py) 의 `decode_h4_tile` 에 prefix 감지 분기 추가
+   - 결과: 16×16 dark blue placeholder tile. h4_tile 카운트 +1
+   - `01 00 00 00` prefix 가 있는 파일은 TILE/OBJ 통틀어 단 1개 (`_TILE_030`) — 일회성 케이스
+
+3. **인프라 정리**
+   - Hero3 layout 마이그레이션: `work/extracted/` → `work/h3/extracted/` (`_game.py` 가 기대하는 nested 레이아웃)
+   - Hero4 JAR 추출: `work/h4/extracted/client.bin387872`
+
+4. **문서**
+   - [docs/REMAKE_METHODOLOGY.md](../REMAKE_METHODOLOGY.md) 신규 — "리메이크" 의 정의 + JAR/APK 케이스별 작업 방식 + 시리즈 진행 기록
+   - [Readme.md](../../Readme.md) 상단에 방법론 문서 링크 추가
+
+다음 작업: [next-steps.md](next-steps.md) 의 **A3 → A2 → B** 순서 권장. 자세한 "이어서 진행해줘" 시나리오는 동 문서 §⏭ 참조.

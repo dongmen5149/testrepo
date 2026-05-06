@@ -8,11 +8,15 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import com.hero3.remake.MainActivity
+import com.hero3.remake.engine.EventBus
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.NpcRegistry
+import com.hero3.remake.engine.QuestLog
+import com.hero3.remake.engine.QuestRegistry
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
+import com.hero3.remake.engine.ShopRegistry
 import com.hero3.remake.engine.UiKit
 
 /**
@@ -51,20 +55,13 @@ class NpcDialogueScene(
 
     private fun lines(): List<String> {
         val n = npc ?: return emptyList()
-        val isEn = settings.language == "en"
-        if (n.postBoss3Id != null && gameState.isBossDefeated(n.postBoss3Id)) {
-            val alt = if (isEn) n.dialoguesEnAfter3 else n.dialoguesKoAfter3
+        // 시간순으로 늦게 처치된 보스의 대사가 우선 — 역순 탐색.
+        for (pb in n.postBoss.asReversed()) {
+            if (!gameState.isBossDefeated(pb.bossId)) continue
+            val alt = if (settings.isEn) pb.en else pb.ko
             if (alt.isNotEmpty()) return alt
         }
-        if (n.postBoss2Id != null && gameState.isBossDefeated(n.postBoss2Id)) {
-            val alt = if (isEn) n.dialoguesEnAfter2 else n.dialoguesKoAfter2
-            if (alt.isNotEmpty()) return alt
-        }
-        if (n.postBossId != null && gameState.isBossDefeated(n.postBossId)) {
-            val alt = if (isEn) n.dialoguesEnAfter else n.dialoguesKoAfter
-            if (alt.isNotEmpty()) return alt
-        }
-        return if (isEn) n.dialoguesEn else n.dialoguesKo
+        return if (settings.isEn) n.dialoguesEn else n.dialoguesKo
     }
 
     override fun update(deltaMs: Long) {
@@ -85,28 +82,23 @@ class NpcDialogueScene(
                 if (lineIdx >= ls.size) {
                     val n = npc
                     if (n?.startsQuestId != null) {
-                        val log = com.hero3.remake.engine.QuestLog(gameState)
+                        val log = QuestLog(gameState)
                         val wasActive = log.isActive(n.startsQuestId) || log.isDone(n.startsQuestId)
                         log.start(n.startsQuestId)
                         if (!wasActive) {
-                            val q = com.hero3.remake.engine.QuestRegistry.get(n.startsQuestId)
-                            val title = q?.let {
-                                if (settings.language == "en") it.titleEn else it.titleKo
-                            } ?: n.startsQuestId
-                            com.hero3.remake.engine.EventBus.push(
-                                if (settings.language == "en") "Quest started: $title"
-                                else "퀘스트 시작: $title")
+                            val q = QuestRegistry.get(n.startsQuestId)
+                            val title = q?.let { settings.lang(it.titleKo, it.titleEn) } ?: n.startsQuestId
+                            EventBus.push(settings.lang("퀘스트 시작: $title", "Quest started: $title"))
                         }
                     }
                     // 대화마다 아이템 수집형 퀘스트 자동 완료 검사
-                    com.hero3.remake.engine.QuestLog(gameState)
-                        .tickAutoComplete(gameState.loadInventory())
+                    QuestLog(gameState).tickAutoComplete(gameState.loadInventory())
                     when {
                         n?.action == "heal" -> {
                             onRequest(MainActivity.SceneRequest.Pop)
                             onRequest(MainActivity.SceneRequest.HealParty(n.actionCost))
                         }
-                        n != null && com.hero3.remake.engine.ShopRegistry.stock(n.id, gameState).isNotEmpty() -> {
+                        n != null && ShopRegistry.stock(n.id, gameState).isNotEmpty() -> {
                             onRequest(MainActivity.SceneRequest.Pop)
                             onRequest(MainActivity.SceneRequest.Shop(n.id))
                         }
@@ -141,11 +133,10 @@ class NpcDialogueScene(
 
         val ls = lines()
         val cur = ls.getOrNull(lineIdx)
-        val name = if (settings.language == "en") n.nameEn else n.nameKo
+        val name = settings.lang(n.nameKo, n.nameEn)
 
         if (cur == null) {
-            UiKit.drawDialogueBox(canvas, virtualWidth, virtualHeight, name,
-                listOf(if (settings.language == "en") "..." else "..."))
+            UiKit.drawDialogueBox(canvas, virtualWidth, virtualHeight, name, listOf("..."))
         } else {
             val shown = cur.substring(0, minOf(revealedChars, cur.length))
             val wrapped = wrap(shown, 30)

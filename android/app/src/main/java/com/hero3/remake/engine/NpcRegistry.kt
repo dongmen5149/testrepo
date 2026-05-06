@@ -1,5 +1,7 @@
 package com.hero3.remake.engine
 
+import kotlin.math.abs
+
 /**
  * 맵별 NPC 정의 — 임시 하드코딩 (Ghidra 후 _mp extras 파싱으로 자동화 예정).
  *
@@ -11,6 +13,13 @@ package com.hero3.remake.engine
  *  - nameKo / nameEn: 화자 이름
  *  - dialoguesKo / dialoguesEn: 대사 라인 (OK 키 누를 때마다 다음 라인)
  */
+/** 특정 보스 처치 후 대체 대사. 여러 단계 진행은 [Npc.postBoss] 리스트로 시간순 선언. */
+data class PostBossDialogue(
+    val bossId: String,
+    val ko: List<String>,
+    val en: List<String>,
+)
+
 data class Npc(
     val id: String,
     val mapId: Int,
@@ -25,18 +34,8 @@ data class Npc(
     val action: String? = null,
     /** action 비용 (gold). action != null 일 때만 의미 있음. */
     val actionCost: Int = 0,
-    /** 보스 처치 후 표시할 대체 대사. id 매칭. null 이면 변경 없음. */
-    val postBossId: String? = null,
-    val dialoguesKoAfter: List<String> = emptyList(),
-    val dialoguesEnAfter: List<String> = emptyList(),
-    /** 더 늦은 보스 처치 시 우선되는 두 번째 단계 대사. */
-    val postBoss2Id: String? = null,
-    val dialoguesKoAfter2: List<String> = emptyList(),
-    val dialoguesEnAfter2: List<String> = emptyList(),
-    /** 세 번째 단계 (최종 보스 후). */
-    val postBoss3Id: String? = null,
-    val dialoguesKoAfter3: List<String> = emptyList(),
-    val dialoguesEnAfter3: List<String> = emptyList(),
+    /** 보스 처치 후 대체 대사. 시간순(이른 보스→늦은 보스)으로 선언; 가장 늦게 처치된 보스의 대사가 우선. */
+    val postBoss: List<PostBossDialogue> = emptyList(),
     /** 순찰 경로 — 빈 리스트면 정적. 매 1.5s 마다 다음 칸. */
     val patrolPath: List<Pair<Int, Int>> = emptyList(),
     /** 대화 종료 시 시작할 퀘스트 id. 이미 active/done 이면 무시. */
@@ -63,39 +62,47 @@ object NpcRegistry {
                 "The peace of Soltia depends on you.",
                 "The wheel of destiny has begun to turn...",
             ),
-            postBossId = "boss_guardian",
-            dialoguesKoAfter = listOf(
-                "가디언을 쓰러뜨렸다고? 정말 대단하군!",
-                "솔티아의 영웅이여, 자네에게 감사를 표한다.",
-                "이제 운명의 수레바퀴는 자네 손에 달렸네.",
-            ),
-            dialoguesEnAfter = listOf(
-                "You defeated the Guardian? Astonishing!",
-                "Hero of Soltia, accept our gratitude.",
-                "The wheel of destiny is now in your hands.",
-            ),
             startsQuestId = "guardian_hunt",
-            postBoss2Id = "boss_chaos",
-            dialoguesKoAfter2 = listOf(
-                "혼돈의 군주마저 쓰러뜨렸군...",
-                "솔티아의 진정한 영웅이 누구인지 모두가 알게 되었네.",
-                "운명의 수레바퀴는 자네의 손에 멈춰 섰다.",
-            ),
-            dialoguesEnAfter2 = listOf(
-                "Even the Chaos Lord has fallen to you...",
-                "All shall now know who Soltia's true hero is.",
-                "The wheel of destiny has stopped in your hand.",
-            ),
-            postBoss3Id = "boss_sealed",
-            dialoguesKoAfter3 = listOf(
-                "봉인된 신마저... 그대는 이미 신화의 영역에 있다.",
-                "솔티아는 영원히 그대의 이름을 노래할 것이다.",
-                "이제 운명의 수레바퀴는 멈추고, 새 시대가 열렸다.",
-            ),
-            dialoguesEnAfter3 = listOf(
-                "Even the Sealed God... you walk in the realm of legend.",
-                "Soltia shall sing your name forever.",
-                "The wheel of destiny rests; a new age has begun.",
+            postBoss = listOf(
+                PostBossDialogue(
+                    bossId = "boss_guardian",
+                    ko = listOf(
+                        "가디언을 쓰러뜨렸다고? 정말 대단하군!",
+                        "솔티아의 영웅이여, 자네에게 감사를 표한다.",
+                        "이제 운명의 수레바퀴는 자네 손에 달렸네.",
+                    ),
+                    en = listOf(
+                        "You defeated the Guardian? Astonishing!",
+                        "Hero of Soltia, accept our gratitude.",
+                        "The wheel of destiny is now in your hands.",
+                    ),
+                ),
+                PostBossDialogue(
+                    bossId = "boss_chaos",
+                    ko = listOf(
+                        "혼돈의 군주마저 쓰러뜨렸군...",
+                        "솔티아의 진정한 영웅이 누구인지 모두가 알게 되었네.",
+                        "운명의 수레바퀴는 자네의 손에 멈춰 섰다.",
+                    ),
+                    en = listOf(
+                        "Even the Chaos Lord has fallen to you...",
+                        "All shall now know who Soltia's true hero is.",
+                        "The wheel of destiny has stopped in your hand.",
+                    ),
+                ),
+                PostBossDialogue(
+                    bossId = "boss_sealed",
+                    ko = listOf(
+                        "봉인된 신마저... 그대는 이미 신화의 영역에 있다.",
+                        "솔티아는 영원히 그대의 이름을 노래할 것이다.",
+                        "이제 운명의 수레바퀴는 멈추고, 새 시대가 열렸다.",
+                    ),
+                    en = listOf(
+                        "Even the Sealed God... you walk in the realm of legend.",
+                        "Soltia shall sing your name forever.",
+                        "The wheel of destiny rests; a new age has begun.",
+                    ),
+                ),
             ),
         ),
         Npc(
@@ -112,23 +119,29 @@ object NpcRegistry {
                 "Welcome! I have great items.",
                 "I sell potions and weapons.",
             ),
-            postBossId = "boss_guardian",
-            dialoguesKoAfter = listOf(
-                "가디언이 사라졌으니 이제 안심하고 거래할 수 있군.",
-                "강철검 같은 더 좋은 무기를 들여왔어.",
-            ),
-            dialoguesEnAfter = listOf(
-                "Now that the Guardian is gone, trade is safe.",
-                "I've stocked finer gear like the steel sword.",
-            ),
-            postBoss2Id = "boss_chaos",
-            dialoguesKoAfter2 = listOf(
-                "혼돈의 군주마저 잡혔다고? 자네에게 어울리는 신성한 장비를 갖췄네.",
-                "성검과 용비늘갑옷, 살펴보게.",
-            ),
-            dialoguesEnAfter2 = listOf(
-                "The Chaos Lord too? I have sacred gear worthy of you.",
-                "Holy sword and dragon scale — take a look.",
+            postBoss = listOf(
+                PostBossDialogue(
+                    bossId = "boss_guardian",
+                    ko = listOf(
+                        "가디언이 사라졌으니 이제 안심하고 거래할 수 있군.",
+                        "강철검 같은 더 좋은 무기를 들여왔어.",
+                    ),
+                    en = listOf(
+                        "Now that the Guardian is gone, trade is safe.",
+                        "I've stocked finer gear like the steel sword.",
+                    ),
+                ),
+                PostBossDialogue(
+                    bossId = "boss_chaos",
+                    ko = listOf(
+                        "혼돈의 군주마저 잡혔다고? 자네에게 어울리는 신성한 장비를 갖췄네.",
+                        "성검과 용비늘갑옷, 살펴보게.",
+                    ),
+                    en = listOf(
+                        "The Chaos Lord too? I have sacred gear worthy of you.",
+                        "Holy sword and dragon scale — take a look.",
+                    ),
+                ),
             ),
             patrolPath = listOf(22 to 10, 23 to 10, 22 to 10, 21 to 10),
         ),
@@ -269,14 +282,18 @@ object NpcRegistry {
                 "The wheel of destiny began here.",
                 "Be careful...",
             ),
-            postBossId = "boss_guardian",
-            dialoguesKoAfter = listOf(
-                "가디언이 잠들었군... 자네가 해냈어.",
-                "이 유적의 비밀이 곧 풀릴 것이네.",
-            ),
-            dialoguesEnAfter = listOf(
-                "The Guardian has fallen... you did it.",
-                "The secrets of this ruin will soon unravel.",
+            postBoss = listOf(
+                PostBossDialogue(
+                    bossId = "boss_guardian",
+                    ko = listOf(
+                        "가디언이 잠들었군... 자네가 해냈어.",
+                        "이 유적의 비밀이 곧 풀릴 것이네.",
+                    ),
+                    en = listOf(
+                        "The Guardian has fallen... you did it.",
+                        "The secrets of this ruin will soon unravel.",
+                    ),
+                ),
             ),
         ),
     )
@@ -299,25 +316,31 @@ object NpcRegistry {
                 "The Chaos Lord will swallow all light.",
                 "Go deeper when you are ready.",
             ),
-            postBossId = "boss_chaos",
-            dialoguesKoAfter = listOf(
-                "혼돈은 잠들었다. 빛이 다시 흐르네.",
-                "그대의 이름은 별이 되어 영원히 빛나리.",
-            ),
-            dialoguesEnAfter = listOf(
-                "Chaos sleeps. The light flows once more.",
-                "Your name shall shine as a star, forever.",
-            ),
-            postBoss2Id = "boss_sealed",
-            dialoguesKoAfter2 = listOf(
-                "봉인된 신... 그것이 진짜 운명이었다.",
-                "그대는 모든 예언을 넘어섰다.",
-                "이 세계는 그대 덕에 새로 태어났다.",
-            ),
-            dialoguesEnAfter2 = listOf(
-                "The Sealed God... that was the true destiny.",
-                "You have surpassed every prophecy.",
-                "This world is reborn because of you.",
+            postBoss = listOf(
+                PostBossDialogue(
+                    bossId = "boss_chaos",
+                    ko = listOf(
+                        "혼돈은 잠들었다. 빛이 다시 흐르네.",
+                        "그대의 이름은 별이 되어 영원히 빛나리.",
+                    ),
+                    en = listOf(
+                        "Chaos sleeps. The light flows once more.",
+                        "Your name shall shine as a star, forever.",
+                    ),
+                ),
+                PostBossDialogue(
+                    bossId = "boss_sealed",
+                    ko = listOf(
+                        "봉인된 신... 그것이 진짜 운명이었다.",
+                        "그대는 모든 예언을 넘어섰다.",
+                        "이 세계는 그대 덕에 새로 태어났다.",
+                    ),
+                    en = listOf(
+                        "The Sealed God... that was the true destiny.",
+                        "You have surpassed every prophecy.",
+                        "This world is reborn because of you.",
+                    ),
+                ),
             ),
             patrolPath = listOf(4 to 8, 4 to 9, 5 to 9, 5 to 8),
         ),
@@ -341,14 +364,18 @@ object NpcRegistry {
                 "The Sealed God slumbers within.",
                 "Whether you are truly worthy to wake him...",
             ),
-            postBossId = "boss_sealed",
-            dialoguesKoAfter = listOf(
-                "신은 잠들었다... 영원히.",
-                "그대의 길은 신화가 되어 전해질 것이다.",
-            ),
-            dialoguesEnAfter = listOf(
-                "The God has slept... forever.",
-                "Your path will be told as legend.",
+            postBoss = listOf(
+                PostBossDialogue(
+                    bossId = "boss_sealed",
+                    ko = listOf(
+                        "신은 잠들었다... 영원히.",
+                        "그대의 길은 신화가 되어 전해질 것이다.",
+                    ),
+                    en = listOf(
+                        "The God has slept... forever.",
+                        "Your path will be told as legend.",
+                    ),
+                ),
             ),
         ),
         Npc(
@@ -383,8 +410,8 @@ object NpcRegistry {
     fun adjacent(mapId: Int, x: Int, y: Int, elapsedMs: Long = 0L): Npc? {
         return forMap(mapId).firstOrNull { npc ->
             val (nx, ny) = effectivePos(npc, elapsedMs)
-            val dx = kotlin.math.abs(nx - x)
-            val dy = kotlin.math.abs(ny - y)
+            val dx = abs(nx - x)
+            val dy = abs(ny - y)
             (dx + dy) == 1   // Manhattan 거리 1 (인접 4방향)
         }
     }
