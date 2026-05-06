@@ -6,23 +6,29 @@ Hero5 sprite (.bin, sprite-like) → PNG 디코더.
     u32 frame_count
     per frame: u32 frame_length + frame_payload[frame_length]
 
-  frame payload (type=0x14, variant ∈ 0x02..0x10 = 팔레트 색 개수):
-    u8  type        // 0x14
+  frame payload:
+    u8  type        // 0x04, 0x14 = 4-bit packed
+                    // 0x08, 0x18 = 8-bit indexed
+                    // (high nibble 0x1 vs 0x0 의 의미는 미확정 — UI vs character 추정)
     u8  palcnt      // 팔레트 엔트리 수 (RGB565 LE)
     u16 width  LE
     u16 height LE
-    bytes palette[palcnt * 2]              // RGB565 LE
-    bytes pixels[ ceil(w/2) * h ]          // 4-bit packed, high nibble first
-                                           // 행 단위 패딩 (행마다 ceil(w/2) bytes)
-                                           // 인덱스 0 = 투명
+    bytes palette[palcnt * 2]              // RGB565 LE, index 0 = 투명
+    bytes pixels:
+      type=0x14:  ceil(w/2) * h bytes   // 4-bit packed (high nibble first), 행단위 패딩
+      type=0x18:  w * h bytes           // 8-bit indexed (byte-aligned)
 
   특수 케이스:
     type=0x14 var=0x01 w=h=1 frame_len=9  → 더미/터미네이터 프레임 (스킵)
-    type=0x18 var=*                        → 별도 인코딩 (미해독, 스킵)
 
 검증:
-  01252_ed3ad1c9.bin frame[0]: w=16 h=19 var=0x0f → palette 30B + pixels 152B = 182B ✓
-  00181_c0167aba.bin frame[0]: w=65 h=22 var=0x0b → palette 22B + pixels 726B = 748B ✓
+  type=0x14:
+    01252 frame[0] w=16 h=19 var=0x0f → palette 30B + pixels 152B = 182B ✓
+    00181 frame[0] w=65 h=22 var=0x0b → palette 22B + pixels 726B = 748B ✓
+  type=0x18:
+    00177 frame[0]  var=122 120x27 → 244 + 3240 = 3484B ✓
+    00177 frame[2]  var=29  80x16  → 58  + 1280 = 1338B ✓
+    00177 frame[41] var=59  18x18  → 118 + 324  = 442B  ✓
 
 사용:
     python convert_h5_sprite.py <input.bin> <output_dir>
@@ -54,7 +60,7 @@ def decode_frame(payload: bytes) -> tuple[Image.Image | None, dict]:
     if t == 0x14 and var == 0x01 and w == 1 and h == 1:
         info['reason'] = 'dummy 1x1 stub'
         return None, info
-    if t != 0x14:
+    if t not in (0x04, 0x08, 0x14, 0x18):
         info['reason'] = f'unsupported type 0x{t:02x}'
         return None, info
     if w == 0 or h == 0:
@@ -63,7 +69,11 @@ def decode_frame(payload: bytes) -> tuple[Image.Image | None, dict]:
 
     palcnt = var
     pal_bytes = palcnt * 2
-    row_bytes = (w + 1) // 2
+    is_4bit = t in (0x04, 0x14)
+    if is_4bit:
+        row_bytes = (w + 1) // 2  # 4-bit packed, row-padded
+    else:
+        row_bytes = w  # 8-bit indexed
     need = pal_bytes + row_bytes * h
     if len(payload) < 6 + need:
         info['reason'] = f'payload too short: need {need} got {len(payload)-6}'
@@ -80,8 +90,11 @@ def decode_frame(payload: bytes) -> tuple[Image.Image | None, dict]:
     for y in range(h):
         row_off = pix_off + y * row_bytes
         for x in range(w):
-            b = payload[row_off + (x >> 1)]
-            idx = (b >> 4) if (x & 1) == 0 else (b & 0xf)
+            if is_4bit:
+                b = payload[row_off + (x >> 1)]
+                idx = (b >> 4) if (x & 1) == 0 else (b & 0xf)
+            else:
+                idx = payload[row_off + x]
             if idx < palcnt:
                 px[x, y] = palette[idx]
             # else leave transparent
