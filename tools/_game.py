@@ -74,7 +74,7 @@ GAMES: dict[str, Game] = {
         name='영웅서기5',
         src_dir=ROOT / 'Hero5',
         archive_path=ROOT / 'Hero5' / '영웅서기5(최신폰전용).apk',
-        binary_name=None,  # APK 안의 lib/armeabi/libHeroesLore5.so 별도 처리
+        binary_name='lib/armeabi/libHeroesLore5.so',
         work_root=ROOT / 'work' / 'h5',
         android_module='hero5-android',
     ),

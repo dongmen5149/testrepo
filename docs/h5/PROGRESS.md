@@ -1,36 +1,121 @@
 # Hero5 (영웅서기5) 진행 상황
 
-> Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 64-bit 폰 미지원.
+> Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
+> 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 원본
-- `Hero5/영웅서기5(최신폰전용).apk` (17 MB, 2020-11-03)
-- 이미 Android 포팅된 버전 (한빛소프트가 직접 했거나 외주). 단:
-  - **`lib/armeabi/libHeroesLore5.so` 만 존재** (32-bit ARMv5)
-  - v7a / v8a 미포함 → 현대 64-bit Android 폰에서 실행 불가
-  - 대상 SDK 매우 낮음 (2020년 시점, ARMv5 호환성 우선)
-- `classes.dex` + `libHeroesLore5.so` 분리 구조 (Java 진입점 + 네이티브 게임 로직)
-- `assets/data.vfs.mp3` (16 MB) — 자산 VFS (mp3 라벨링이지만 obfuscated 컨테이너)
+업데이트: 2026-05-06 — Phase 1(자산 추출) 완료.
 
-## 가능한 경로
+---
 
-### A. **콘텐츠만 추출 + 엔진 재구현** (Hero3/4와 동일 전략)
-- `data.vfs.mp3` VFS 포맷 리버싱 → 자산 추출
-- `libHeroesLore5.so` 게임 로직 분석 (참조용)
-- 공유 엔진 위에 Hero5 콘텐츠 추가 (engine-h5 또는 동일 engine)
+## 1. 원본 / 폴더 레이아웃
 
-### B. **`.so` 재컴파일 / ABI 추가** (소스 없으므로 사실상 불가)
-- 원본 C/C++ 소스 없음 → 무리
+| 경로 | 내용 |
+|---|---|
+| `Hero5/영웅서기5(최신폰전용).apk` | 원본 APK (17 MB, 2020-11-03) — **수정 금지** |
+| `work/h5/extracted/` | APK unzip 결과 (DEX, .so, assets) |
+| `work/h5/vfs_entries/` | **VFS 언팩 결과 2189개** (00000_xxxx.ogg/bin/txt) |
+| `work/h5/vfs_catalog.tsv` | 인덱스 / 오프셋 / 해시 / 길이 / 타입 |
+| `work/h5/analysis/` | Ghidra 로그, 디컴파일 결과, 분석 스크립트 |
+| `work/h5/ghidra_project/Hero5.gpr` | Ghidra 프로젝트 (재실행 시 -overwrite 주의) |
+| `tools/h5_vfs_unpack.py` | VFS 언팩커 |
+| `tools/ghidra/DecompileHero5Keys.java` | 핵심 함수만 디컴프 (재실행 가능) |
 
-### C. **호환 레이어** (armeabi → arm64 라이브러리 wrapping)
-- houdini 같은 binary translation은 모바일에서 사용 불가
-- 비추
+`tools/_game.py` 의 `h5.binary_name` 은 `lib/armeabi/libHeroesLore5.so` 로 갱신됨.
 
-→ **A 경로** 가 유일한 합리적 선택.
+---
 
-## 다음 마일스톤
-- [ ] APK 추출 → `work/h5/extracted/`
-- [ ] `data.vfs.mp3` 헤더 분석 (시그니처, 인덱스 테이블)
-- [ ] `classes.dex` 분석 (Smali → Java 디컴파일) — VFS 로딩 함수 식별
-- [ ] `libHeroesLore5.so` IDA/Ghidra import (참조용)
+## 2. 바이너리 핵심 사실
 
-Hero5 작업은 Hero3/4 자산 변환이 안정화된 후 시작.
+- **엔진**: Midas (한빛 / EA Mobile Korea 자체엔진) — Hero3/4와 동일 계보
+- **APK 패키지**: `co.kr.eamobile.HeroesLore5` v01.00.08, minSdk=23 (Android 6.0)
+- **JNI 진입 클래스**: `co.kr.eamobile.CletEntry` (DEX 의 MidasActivity 는 래퍼/라이프사이클)
+- **JNI exports (18개)**: nativeInitKernel → nativeInitVFS → nativeInitDisplay → nativeStartApp → nativeLoop … (완전 표준)
+- **그래픽**: `libGLESv1_CM` = **OpenGL ES 1.x 고정 파이프라인** (DEX 쪽 EGL_OPENGL_ES2_BIT 는 EGL config 일 뿐)
+- **ABI**: armeabi (ARMv5TE) 32-bit only — 현대 Android (특히 14+) 차단
+- **debug_info / 심볼 보존**: stripped 안 됨 → Ghidra 가 함수명 그대로 인식 (Hero3/4 보다 분석 쉬움)
+- **DRM**: SKT TAD SDK + 통신사 IAP — **리메이크 시 전부 제거**
+
+---
+
+## 3. VFS (`assets/data.vfs.mp3`) — 100% 풀림
+
+**포맷** (little-endian, no header, no encryption):
+```
+[entry] uint32 hash | uint32 length | bytes data[length]
+… 끝까지 반복
+```
+
+근거: `MIDASKernelManager::getAssetSizeFromVFS` 디컴프 (`work/h5/analysis/key_funcs.c` 라인 440~). `loadAssetFromVFS` 도 단순 `fread` — VFS 레벨에서는 암호화 없음.
+
+**언팩 결과**:
+- 총 2,189 entries / 16,399,297 bytes 모두 소진 (잔여 0)
+- ogg 42 / txt 1 / bin 2,146 (Midas 자체 포맷)
+
+재실행: `python tools/h5_vfs_unpack.py`
+
+---
+
+## 4. DES 키 / 암호화 위치 (열려 있는 채널)
+
+VFS 자체는 평문이지만 **별개 레이어에 DES**가 있음:
+- 심볼: `KEY4ENCRYPT` `KEY4REAL` `__DES_KEY__` (모두 .bss → 런타임 초기화)
+- 함수: `MX_desInit` / `MX_desEncrypt[PKCS7]` / `MX_desDecrypt[PKCS7]`
+- 호출 진입점: `StaticUtil::LoadDecryptFile` / `SaveEncryptFile` / `LoadResDecrypt`
+
+용도 추정: 세이브 파일, 일부 보호된 리소스, 네트워크. 자산 추출 자체에는 **현재 불필요**.
+
+키 추출이 필요해지면: `MX_desInit(char*)` 호출자 추적 → 인자 문자열 찾기 (Ghidra `References to MX_desInit`).
+
+---
+
+## 5. 다음 단계 (우선순위 순)
+
+### Phase 2-A. .bin 포맷 정체 파악 (즉시 시작 가능, ROI 최고)
+2,146개 bin 은 Midas 포맷 (sprite/anim/map/font/particle). Hero3/4 에 이미 컨버터가 있다면 그대로 통할 가능성 매우 높음.
+
+```
+1. tools/converter/ 의 Hero3/4 컨버터 식별
+2. work/h5/vfs_entries/00000_*.bin 처음 50개를 Hero3/4 컨버터로 시도
+3. 성공/실패 매트릭스 작성 → 포맷 호환 여부 확정
+4. 미호환 포맷이면 Hero3 작업하던 Ghidra 워크플로우로 reader 함수 디컴프
+```
+
+### Phase 2-B. 자산 파일명 복원
+현재는 `00000_<hash>.bin` 형태. 원본 이름 복원하려면:
+- `AndroidService::getUniqueAssetNameFromID` 디컴파일 → 이름 테이블 위치
+- `_midas_*` 문자열 섹션 dump → 매핑 후보
+- hash 함수 재현 (`MIDASKernelManager::hash` 디컴파일) → 이름 추측 시 검증용
+
+### Phase 2-C. JNI 호출 흐름 → 게임 루프 정리
+`Java_..._nativeLoop` 와 `MIDASKernelManager::timerLoop` 부터 시작. 60fps tick / event handling / render 호출 순서를 그래프로.
+
+### Phase 3. 리메이크 엔진 결정 + 재구현
+- **권장 Unity 2022 LTS** (Android arm64 + iOS 동시 빌드)
+- ES 1.x → Unity URP 변환 시 fixed-function 컬러/조명 재현 주의
+- IAP / SDK 의존성 전부 제거 후 Unity IAP 로 교체
+
+---
+
+## 6. 다음 세션 즉시 재개 체크리스트
+
+```
+1. cd d:/testrepo && python tools/h5_vfs_unpack.py     # 결과 확인
+2. cat work/h5/vfs_catalog.tsv | head                  # 카탈로그 점검
+3. less work/h5/analysis/key_funcs.c                   # 디컴파일 17개
+4. less work/h5/analysis/so_quick.txt                  # 심볼/JNI 목록
+```
+
+Ghidra GUI 로 보고 싶으면:
+```
+D:/ghidra_12.0.4_PUBLIC/ghidraRun.bat
+→ Open project → D:/testrepo/work/h5/ghidra_project/Hero5
+```
+
+추가 함수 디컴파일 필요시 `tools/ghidra/DecompileHero5Keys.java` 의 `PAT` 정규식 확장 후:
+```
+D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat \
+  D:/testrepo/work/h5/ghidra_project Hero5 \
+  -process libHeroesLore5.so -noanalysis \
+  -scriptPath D:/testrepo/tools/ghidra \
+  -postScript DecompileHero5Keys.java
+```
