@@ -5,108 +5,103 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋**: `c24c447 feat:영웅서기3 §4.2 _mp extras 97% 해독 + 데코 마커 렌더` (이전 세션까지 반영)
+**최신 커밋 시점**: 2026-05-07 — §4.3 _cif walk-cycle 자동화까지 완료. 자동 진행 가능한 고우선순위 항목 모두 처리됨.
 
-### A5) §4.3 _cif cell layout 4-byte stride 검증 (2026-05-07 후반) ✅ 부분
-- [tools/recon/analyze_cif.py](../../tools/recon/analyze_cif.py) 신설 — h0_cif 113 frame 자동 추출, group/lead 분포 통계.
-- **셀 stride 확정**: group1(`0a 02 0b` 41-byte 레코드, 8 frame) 의 R0→R2/R4→R6 byte-delta 분석 결과 — y-bobbing 변동이 정확히 4-byte 주기 offset 1 위치(4, 8, 16, 20, 24, 28, 32, 36, 40)에서만 ±1 발생.
-- **셀 포맷 (가설 검증됨)**: `[x_s8, y_s8, bm_ref_u8, flag_u8]` 4 byte × 9 cells, offset 3..38. 트레일러 2 byte (offset 39..40) 미해독.
-- **shadow cell 식별**: cell 2 (offset 11..14) 는 bobbing 안함 → 그림자 셀로 추정 (지면 고정).
-- group1 R0 디코드 결과: cell0~8 모두 BM ref 0x00~0x27 범위 — h0_cif indices=[1,2,3,10,17,19,16,8] 와 직접 매칭 안됨. 글로벌 multi-frame BM 인덱스로 해석 필요 (이슈 #4 와 동일 패턴).
-- **미해결**: ① count byte(0x0b=11) vs 실측 9 cells 불일치 — count 의미 재해석 필요, ② 트레일러 2 byte 정체, ③ ref→BM 매핑 — §4.1 글로벌 인덱스 테이블 풀어야 함, ④ 4방향(UP/DOWN/LEFT/RIGHT) 매핑은 group1/group2/...별 sprite 시각 매칭 필요.
+### 한 줄 요약 (현재 상태)
 
-**A6) 그룹 분류 + 방향 매핑 가설 (2026-05-07 추가) ✅ 부분**
-- analyze_cif.py 가 113 frame 을 25 lead group 으로 분류. → [work/h3/h0_cif_groups.json](../../work/h3/h0_cif_groups.json)
-- **렌더 후보 그룹 (작은 ref/좌표, 4-byte cell layout 적합)**: `0a020b`(16), `0a0208`(19), `0a2208`(17), `0a2306`(5), `0a0302`(1), `0a2500`(2), `0a0500`(2) — 합계 62 frames.
-- **방향 매핑 가설**: type byte (offset 1) 의 bit 5 (=0x20) 가 horizontal flip 플래그.
-  - `0a 02 0b` cell0 x=-5 / `0a 22 08` cell0 x=+4 → 같은 액션의 LEFT/RIGHT mirror 추정
-  - `0a 02 08` (UP/DOWN 후보) / `0a 23 06` (다른 방향)
-- 비-렌더 그룹들 (`0a 84 04`, `0a 80 00`, `0a e8 19` 등 51 frames) — 좌표가 ±90, ±125 같은 큰 값 → hitbox/이벤트/사운드 메타데이터 프레임 추정. 렌더링과 무관할 가능성.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임**. 자산 변환 거의 완료, hero walk-cycle 9 캐릭터 자동 베이크되어 MapWalkScene 에 wire 됨. 남은 큰 진척은 **사용자 입력**(Ghidra GUI / 디바이스 검증 / 외부 도구 / 디자인 결정) 에 묶여 있음.
 
-**A7) Placeholder PNG 렌더로 4-byte cell layout 시각 검증 ✅ (2026-05-07 추가)**
-- [tools/recon/render_cif_frame.py](../../tools/recon/render_cif_frame.py) 신설 — 96×96 캔버스에 ref 별 색상의 16px 박스로 cell 0~8 그림
-- 4 lead group 출력 → [work/h3/cif_render/](../../work/h3/cif_render/) 4 PNG
-  - `0a020b @12`: 휴머노이드 클러스터 ✓
-  - `0a2208 @1039`: 같은 모양이 **horizontal mirror** ✓ — bit 5 flip 가설 확정
-  - `0a0208 @670`, `0a2306 @3125`: 다른 방향/액션의 다른 클러스터 형태
-- **결론**: 4-byte cell layout `[x_s8, y_s8, ref, flag]` 시각 검증 완료. 가설 확정.
-- 모든 hero cif (h0~h11) 의 indices 가 h1XXXX_bm 시리즈만 참조함을 확인 (header 분석). 슬롯들은 공유 BM atlas 의 일부.
+### 이번 세션 산출물 (2026-05-07) — 모두 커밋됨
 
-**A8) ref → h1XXXX_bm 매핑 해독 ✅ (2026-05-07 확정)**
-- [tools/recon/composite_cif_frame.py](../../tools/recon/composite_cif_frame.py) 신설 — cumulative pool 가설 검증.
-- **확정 매핑**: `ref → h1{ref//3:04d}_bm/frame_{ref%3:02d}`. 3 frames/file, 69 frame 글로벌 풀.
-- 실제 BM 합성 결과 → [work/h3/cif_render_real/](../../work/h3/cif_render_real/)
-  - `0a020b @12`: **명확한 휴머노이드 영웅 sprite** ✓ 머리/몸/무기 식별 가능
-  - `0a2306 @3125`: 다른 자세의 영웅 sprite ✓
-  - `0a2208 @1039` (mirror): 일부 cell ref 0x82/0xeb 가 풀 범위 초과 → 9-cell 고정 가정이 over-fit. 실제 cell count 가변, 후행 byte 는 메타.
-- **결정사항**: cell 0~8 중 ref ≤ 0x44 인 것만 렌더 cell, 그 외는 메타데이터. 정확한 cell count 인코딩은 추후 (count byte 0x0b 의미 재해석 필요).
+**§4.3 _cif animation 완전 해독** (시리즈 핵심 작업):
+- [tools/recon/analyze_cif.py](../../tools/recon/analyze_cif.py) — h0_cif 113 frame 자동 추출, 25 lead group 분류
+- **셀 포맷 확정**: `[x_s8, y_s8, ref_u8, flag_u8]` 4 byte × 9 cells, offset 3..38, 트레일러 2 byte
+- **ref → BM 매핑 확정**: `ref → h1{ref//3:04d}_bm/frame_{ref%3:02d}` (3 frames/file, 69 frame cumulative pool)
+- [tools/recon/composite_cif_frame.py](../../tools/recon/composite_cif_frame.py) — 실제 BM 합성으로 영웅 sprite 시각 검증 ✅
+- [tools/converter/bake_hero_walkcycle.py](../../tools/converter/bake_hero_walkcycle.py) — 9 hero × 32 PNG = **288 PNG** + `dir_mapping.json` 자동 출력
+  - 매핑은 픽셀 symmetry 로 검출 (mirror pair 가 캐릭터마다 다름: h0/5/11=(2,3) / h6/7/8/10=(1,2) / h4=(0,2) / h9=(1,3))
+- [tools/recon/verify_walk_symmetry.py](../../tools/recon/verify_walk_symmetry.py) — flip 비교 자동 검증 도구
+- [MapWalkScene.kt](../../android/app/src/main/java/com/hero3/remake/scene/MapWalkScene.kt) `loadHeroWalk` + `loadDirMapping` — placeholder 4-frame → 32 frame walk-cycle 로 교체. 정규식 JSON 파서 (kotlinx.serialization 의존성 회피)
+- [tools/recon/test_analyze_cif.py](../../tools/recon/test_analyze_cif.py) — cif 디코더 단위 테스트 6/6 통과 (회귀 방지)
+- h1/h2/h3 cif 는 32 frame 미달 → portrait 로 베이크 (74 PNG), NPC/cinematic 용 추정
+- boss/enemy cif 는 hero 와 다른 인코딩 확정 — boss0=`7f00ffff` sentinel(229회), e000=17byte stride, e001=`8000` sentinel. 각각 별도 디코더 필요. 전투 시스템 구현 시점에 처리.
 
-**A9) 4방향 walk-cycle PNG 베이킹 ✅ (2026-05-07 완료)**
-- [tools/converter/bake_hero_walkcycle.py](../../tools/converter/bake_hero_walkcycle.py) — h0_cif 첫 4 그룹 × 8 frame = 32 PNG 베이킹.
-- 산출: [android/app/src/main/assets/sprites/hero/h0_walk/dir{0..3}_{0..7}.png](../../android/app/src/main/assets/sprites/hero/h0_walk/)
-- 각 방향(0=group1@12, 1=group2@341, 2=group3@670, 3=group4@1039)에서 영웅 sprite 가 시각 확인됨. 일부 cell 은 메타라 떨어져 보이지만 main body 는 일관됨.
+**§4.4 _scn 통계** — opcode 거의 없음 확인:
+- [tools/recon/analyze_scn_segments.py](../../tools/recon/analyze_scn_segments.py)
+- 244 파일, opcode-segment 1~3 byte 가 압도적. 대부분 punctuation. **분기/플래그/사운드 트리거 opcode 는 _scn 외부(Java MIDlet)** 에 있을 가능성. Ghidra `eventManager` 분석 필요.
 
-**A10) MapWalkScene walk-cycle 와이어 ✅ (2026-05-07 완료)**
-- `loadHeroFrames` → `loadHeroWalk` 로 교체. `List<List<Bitmap>>` (4 dir × 8 anim) 로딩.
-- 영웅 렌더 분기: `heroWalk[facing][animFrame % 8]`. 8 frame walk-cycle 자동 cycling.
-- 매핑: dir0=DOWN, dir1=UP, dir2=LEFT, dir3=RIGHT (FACING 순서와 동일 가정 — 디바이스에서 시각 검증 필요).
-- 빌드: `:app:assembleDebug` + `:app:testDebugUnitTest` 모두 BUILD SUCCESSFUL.
+**리팩토링** (이전 세션 + 이번 세션):
+- MainActivity SceneRequest 라우팅 — 23 when 분기 단축, healParty/popScene 분리, DEMO_CYCLE 상수화
+- (이전 세션) Settings.lang/isEn / GameState edit / NpcRegistry postBoss / 23 파일 i18n 정리
 
-**A11) walk_sheet 시각 분석 + dirOrder 가설 적용 ✅ (2026-05-07 완료)**
-- 4×8 walk-cycle 비교 시트 생성 → [docs/h3/walk_sheet.png](walk_sheet.png)
-- 시각 관찰: dir0 / dir3 가 명확한 좌우 mirror 쌍 → 각각 LEFT, RIGHT. dir1 / dir2 는 DOWN, UP 후보.
-- `MapWalkScene.loadHeroWalk()` 에 `dirOrder = intArrayOf(1, 2, 0, 3)` 추가 — FACING_DOWN=1, FACING_UP=2, FACING_LEFT=0, FACING_RIGHT=3.
-- 빌드+테스트 BUILD SUCCESSFUL.
+**부수 발견**:
+- type byte bit 5 (0x20) = horizontal flip 플래그 — sprite 시각 검증으로 확정
+- shadow cell (cell idx 2): bobbing 안하고 지면 고정
+- flag byte (0x00~0x03 cluster) = draw_order/layer 후보, 큰값(0x19/0x5a/0x84)은 메타 잔존
 
-**A14) §4.4 _scn 세그먼트 통계 — opcode 영역 협소함 확인 (2026-05-07 추가)**
-- [tools/recon/analyze_scn_segments.py](../../tools/recon/analyze_scn_segments.py) 신설 — 텍스트/태그 영역 명확히 격리한 'opcode segment' 만 분석.
-- 244 파일, opcode-segment 총 143,556 byte. 세그먼트 길이 분포: **17,173 segments × 1 byte / 6,212 × 2 / 3,740 × 3** — 압도적으로 1~3 byte 짧은 갭.
-- 빈도 1위 trigram `2e 2e 20`(1280) / `2e 2e 2e`(1145) — 마침표/줄임표 (punctuation). 실제 opcode 가 아님.
-- 의미있는 마커: `0x00 0x7c|0x27|0x24|0x7b|0x7d` — sentence-end mode bytes. 이미 convert_scn_v2.py 가 처리 중.
-- **`{...}` 중괄호 247개 unique 디코딩**: 아이템명 `[부활의...]`, 금액 `5000G`, 수량 `5|6`, 퀘스트 라벨. → **스크립트 변수 / 보상 데이터 / 선택지** 임. 컨트롤 플로우 opcode 아님.
-- **결론**: _scn 은 대부분 (52% 한국어 + 30% 마크업/punctuation + ~ 18% short markers) 로 구성된 dialogue/script 데이터. 분기/플래그/사운드 트리거 같은 게임 흐름 opcode 는 _scn 안이 아니라 **외부 (Java MIDlet 코드 또는 별도 binary)** 에 있을 가능성. Ghidra 분석 시 `eventManager` / `onEventMessageOkKey` 함수 디스패치 코드 확인 필요.
+### 빌드/테스트 — 검증 완료
 
-**A18) cif flag byte 분포 분석 (2026-05-07)**
-- 9463 cells (ref ≤0x44) 의 flag byte 통계: 0x00(1035), 0x01(949), 0x02(709), 0x03(412), 0xff(630), 0x19(774), 0x5a(210), 0x84(218) 등.
-- 작은 값 (0x00~0x03) 이 cluster — **draw_order / layer index** 후보. 큰 값(0x19=25, 0x5a=90, 0x84=132)은 메타 잔존 (좌표가 ref 영역으로 넘친 것).
-- cell idx 별로 분포 비교 시 cell 6 은 0x19 dominant — 무기/effect overlay cell 추정. 정확한 의미는 Ghidra 디스어셈으로 확인 필요.
-- 현재 렌더는 flag 무시해도 시각적으로 OK — z-order 가 cell 인덱스 순서와 일치한 결과.
+- `:app:assembleDebug` ✅ BUILD SUCCESSFUL
+- `:app:testDebugUnitTest` ✅ **32/32 통과** (Kotlin) + Python `tools/recon/test_analyze_cif.py` 6/6 통과
+- 환경: JDK 21 (Microsoft 21.0.11) / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 
-**A16) 9 hero walk-cycle 일괄 베이킹 ✅ (2026-05-07)**
-- `bake_hero_walkcycle.py` 일반화 → `h*_cif` 자동 처리.
-- 성공: h0/h4/h5/h6/h7/h8/h9/h10/h11 (9 캐릭터) × 32 PNG = **288 PNG** → `sprites/hero/h{N}_walk/`.
-- 미처리: h1_cif(23 frames), h2_cif(30), h3_cif(21) — 32 frame 미만이라 스킵. 프레임 offset 도 불규칙(stride 41 아님). NPC/cinematic 용 추정.
-- h4_cif (201 frames, 41KB) 는 거대 캐릭터 — 추가 액션(공격/사망 등) 다수.
+### 다음 세션 — 우선순위 (블로커별)
 
-**A17) MainActivity SceneRequest 라우팅 리팩토링 ✅ (2026-05-07)**
-- 23 when 분기에서 반복되던 `(this, ::handleSceneRequest)` → `ctx`/`cb` 로 단축.
-- `healParty()` / `popScene()` 별도 메서드, `DEMO_CYCLE` companion 상수화, `settings.lang()` 적용.
-- 빌드+테스트 SUCCESSFUL — 동작 100% 보존.
+**자동 진행 가능 (가치 낮음, 굳이 하면)**
+| # | 작업 | 예상 시간 | 비고 |
+|---|---|---|---|
+| 1 | enemy cif 디코더 진척 (e000 17-byte stride 활용) | 2시간 | 전투 시스템 시점에 더 적합 |
+| 2 | h4_cif 추가 액션 (공격/사망 169 frames) 베이크 | 1시간 | 라벨링은 디바이스 검증 후 |
+| 3 | analyze_mp_extras / convert_scn 단위 테스트 추가 | 1시간 | 회귀 방지 |
+| 4 | 일본어 부분 i18n (UI 핵심 50~100 string) | 2시간 | 사용자 검수 전제 |
 
-**A15) boss/enemy cif 구조 추가 분석 (2026-05-07)**
-- boss0_cif (10KB): `7f00ffff` sentinel **229회** 등장. 프레임 구분자로 추정. sentinel 사이 가변 길이 cell list.
-- enemy e000_cif (1.7KB): sentinel 없음. 6-byte 헤더 후 ~17 byte 가변 stride 반복 (byte[3] 가 frame counter f7/f8/f9 등). 단일 sprite × 다수 frame.
-- enemy e001_cif (1.3KB): `8000` 12회 — 다른 sentinel.
-- **결론**: boss/enemy/cif 가 각각 다른 인코딩. boss = sentinel-delimited variable-length, enemy = fixed-stride frame list. 통합 decoder 보다는 각각 별도 함수가 적합. 전투 시스템 구현 시점에 enemy 부터 우선 (단순함).
+**사용자 입력 필요 (블로커)**
+- ⚠️ **디바이스/에뮬레이터 walk-cycle 시각 검증** — DOWN↔UP 어긋나면 `dir_mapping.json` 의 `facing_to_dir` 첫 두 항목 swap. mirror pair 는 자동 검출 정확.
+- ⚠️ **Ghidra GUI 분석** (`eventManager` / `onEventMessageOkKey` / `Hero_Free`) — §4.4 opcode + boss/enemy cif decoder 진입점. 자동 grep 으로는 한계 도달.
+- ⚠️ **SMAF→OGG** 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 — §4.5
+- ⚠️ **대사 LLM 번역 실행** (~$0.66, "마지막에" 결정) — §4.6
+- ⚠️ **추가 게임 콘텐츠** (보스/맵/퀘스트) — 디자인 결정
 
-**A12) boss/enemy cif 구조 비교 → 별도 인코딩 확정 (2026-05-07)**
-- boss0_cif (slot_count=1, indices=[8], 10084 byte) / e000_cif (slot_count=1, indices=[4], 1697 byte) 헤더 분석.
-- **결론**: hero cif 의 `0a XX YY` 41-byte 프레임 구조가 boss/enemy 에는 **적용되지 않음**.
-  - boss0_cif post-header: `01 09 12 7f 00 ff ff 20 05 d5 cb ...` — `7f 00 ff ff` 패턴이 cell 종료 sentinel 로 추정.
-  - enemy 는 더 짧고(1.6~1.8KB) 구조 미해독.
-- hero cif 는 8 slot multipart 합성용 (캐릭터 합성), boss/enemy 는 단일 sprite slot 으로 단순 frame list 추정. 별도 디코더 필요.
+### 다음 세션 시작 전 체크리스트 (5분)
 
-**A13) 흩어진 cell 의 정체 ✅ 분석 완료**
-- 0a 22 08 같은 mirror 그룹의 cell 5/8 ref >0x44 는 메타 cell. 나머지 7 cell 만 렌더 시 sprite body 일관성 유지됨 (walk_sheet 시각 확인).
-- "흩어진" 인상은 실제 sprite parts (무기/아이템 overlay) 포함된 자연스러운 모습. 추가 정리 불필요.
+1. `git log --oneline -5` 로 최신 커밋 확인
+2. `git status --short` — 추가 미커밋 변경 있는지 파악
+3. 이 문서 §"이번 세션 산출물" + §"다음 세션 — 우선순위" 읽기
+4. **Android 빌드 검증** (선택):
+   ```powershell
+   $env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot'
+   $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+   & "d:\testrepo\android\gradlew.bat" -p "d:\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
+   ```
+5. **cif 디코더 회귀 테스트** (선택): `python -m unittest tools/recon/test_analyze_cif.py`
+6. 산출물 비어있으면 §"재현 명령" 참조
 
-**다음 세션 첫 작업** (1~2시간):
-1. 디바이스/에뮬레이터 실행해 dirOrder 시각 검증. DOWN↔UP 어긋나면 `intArrayOf(2,1,0,3)` 으로 swap.
-2. boss/enemy cif 별도 디코더 작성 (sentinel `7f00ffff` 기반 frame split). [HIGH 우선순위는 아님 — 전투 시스템 구현 시점에 필요]
-3. flag byte 의미 분석 — 0x00 vs 0x01 vs 0x08 패턴 (frame draw_order 추정).
-2. 흩어진 cell 정리 — ref ≤ 0x44 필터를 더 정교하게 (cell idx 0~5 만 렌더, 6~8 은 메타?). 또는 type byte YY (=0x0b/0x08/0x06) 가 실제 cell count 이고 9 가 아니라는 가설 검증.
-3. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
-4. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
+---
+
+### 이번 세션 상세 로그 (2026-05-07) — 참고용 펼치기
+
+<details>
+<summary>A5~A18 시간순 진행 로그 (커밋 메시지로 추적 가능)</summary>
+
+- **A5** §4.3 cell 4-byte stride 검증 (commit `021df49`) — y-bobbing diff 분석으로 stride 확정
+- **A6** 25 lead group 분류 + 방향 매핑 가설 (`55a69fd`) — bit5 flip
+- **A7** Placeholder 박스 시각 검증 (`a30f048`) — 4 lead group humanoid cluster 확인
+- **A8** ref→BM cumulative 매핑 해독 (`67937b4`) — composite_cif_frame.py, 실제 sprite 합성 성공
+- **A9** 4방향 walk-cycle 32 PNG 베이킹 (`55939da`) — h0_walk/dir{0..3}_{0..7}.png
+- **A10** MapWalkScene wire (`394389d`) — loadHeroWalk
+- **A11** walk_sheet 시각 + dirOrder 가설 (`ee3188d`) — initial intArrayOf(1,2,0,3)
+- **A12~13** boss/enemy 별도 인코딩 확정 + 흩어진 cell 결론 (`a373d75`)
+- **A14** _scn 세그먼트 통계 (`6566958`) — opcode 협소 확인
+- **A15** boss/enemy 추가 관찰 (`8552ea0`) — sentinel/stride 다름
+- **A16** 9 hero 일괄 베이킹 (`7b6b455`) — 288 PNG (h0/h4-h11)
+- **A17** MainActivity 리팩토링 (`703677d`)
+- **A18** flag byte 분포 분석 (`79640dd`) — draw_order 후보
+- **A19** dirOrder 픽셀 symmetry 자동 검증 (`c224fd5`) — verify_walk_symmetry.py
+- **A20** per-hero dir_mapping.json + MapWalkScene 로더 (`7040707`) — 캐릭터마다 mirror pair 다름
+- **A21** h1/h2/h3 portrait 베이크 (`c6e5c0f`) — 74 PNG
+- **A22** analyze_cif 단위 테스트 6/6 (`56c9a22`)
+
+</details>
 
 ---
 
@@ -218,7 +213,7 @@
 | `_pa` | 216 | ✅ RGBA8888 JSON |
 | `_bm` (file) | 479 | ✅ 다중프레임 지원 |
 | `_bm` (frame) | **3149** | ✅ type 0x0b + **0x0c (2026-05-06 해독)** |
-| `_cif` | 103 | ✅ hero 9 캐릭터 walk-cycle 32 frame 베이크 (288 PNG) / boss·enemy 별도 인코딩 미해독 |
+| `_cif` | 103 | ✅ **2026-05-07 해독** — hero 9 캐릭터 walk-cycle 32 frame 베이크 (288 PNG) + dir_mapping.json / h1/h2/h3 portrait 74 PNG / boss·enemy 별도 인코딩 (전투 시스템 시점 처리) |
 | `_mp` | 134/135 | ✅ terrain+collision / ✅ extras 97% (데코 마커 7,620개, NPC는 §4.4 의존) |
 | `_scn` | 244 | ⚠️ 대사 추출 (26,415) / opcode 미해독 |
 | `_dat` | 45 | ✅ EUC-KR 한글 추출 |

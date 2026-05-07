@@ -8,17 +8,29 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 
 ## ⏭ "영웅서기4 이어서 진행해줘" 라고 했을 때 — 빠른 셀렉터
 
+> **2026-05-07 갱신**: A1/A3/A4/A5 자동 영역 모두 종결. 1순위 차단은 **DES key (Phase B Ghidra)**. 자동 brute-force 한계 도달 — 사용자 GUI 작업 필수.
+
 다음 세션에서 사용자가 별다른 지시 없이 "Hero4 이어서" 라고만 말하면 **이 순서로 판단**:
 
-1. **API 키 (`ANTHROPIC_API_KEY`) 가 환경에 있나?** → **A1 (대사 영어 번역)** 즉시 진행 (~30분, ~$0.30, 자동)
-2. **Mac + Ghidra 환경 사용자가 대기 중인가?** → **A2 (Ghidra 프로젝트 셋업)** 안내 후 **Phase B** 진입
-3. **둘 다 아니면** → **A3 (Hero4 캐릭터 사전 보강)** 자동 진행. 이건 코드 작성만으로 끝나고 즉시 검증 가능 → 그 다음 사용자에게 다음 결정 요청 (Mac/iOS 가능 여부)
-4. **사용자가 "Phase C 시작" 명시** → [Phase C](#c-phase-c--hero3-엔진-kmm-분리--hero4-콘텐츠-wiring) 의 1단계 (Hero3 engine 디렉터리 검토 + KMM 모듈 스켈레톤 생성)
+1. **사용자가 DES key 8 bytes 를 손에 들고 옴 (Ghidra 작업 후)** → 즉시 자동 진행:
+   ```bash
+   python tools/converter/decrypt_h4_scn.py --key <KEY> --batch
+   # SC 만 일괄 복호화 → 350 file 생성 → corpus 재빌드 → A1 번역 (~30분, ~$0.30)
+   ```
+2. **사용자가 Ghidra GUI 환경 준비 완료** (JDK 21 + Ghidra 12.x) → **A2 (Ghidra 프로젝트 셋업)** 안내 + Phase B 1순위 함수 = `/DAT/_DAT_DES` (string @ 0x86ecc) xref 추적
+3. **둘 다 아닌 일반 진행** → 다른 우선순위로 전환:
+   - **Phase C 시작** (Hero3 엔진 KMM 분리 + Hero4 콘텐츠 wiring) — 큰 리팩토링, [Phase C](#c-phase-c--hero3-엔진-kmm-분리--hero4-콘텐츠-wiring) 1단계 진입
+   - **Hero3 잔여 작업** (`docs/h3/PROGRESS.md` 참조)
+   - **Hero5 트랙** (`docs/h5/PROGRESS.md`)
+4. **부수 자동 작업 (DES 무관)** — 더 이상 자동 진행 가능 항목 없음. A1/A3/A4/A5 모두 종결, B/C/D 모두 사용자 결정/GUI 필요
 
 이미 풀린 (= 다시 안 해도 되는) 항목:
 
 - ~~A4 (recon game-aware)~~ ✅ 완료 — 2026-05-07
 - ~~A5 (`_TILE_030`)~~ ✅ 완료 — 2026-05-07
+- ~~A3 (translation_dict.py game-aware + Hero4 zone prefill)~~ ✅ 완료 — 2026-05-07
+- ~~Hero4 SCN 암호화 정체 파악~~ ✅ 완료 — 2026-05-07 (표준 DES, ECB 거의 확실)
+- ~~DES key 자동 brute-force~~ ✅ 시도 완료 — ASCII (2,311) + sliding-window (59,556) 둘 다 키 미발견. Ghidra 필요
 
 ---
 
@@ -39,7 +51,7 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 
 > ⛔ **현재 차단**: Hero4 SCN 이 DES 암호화 되어 있어 corpus 가 garbage. Phase B 에서 DES key 8 bytes 발굴 → SCN re-decrypt → corpus 재생성 후에 번역해야 의미 있음. 자세한 내용은 [Phase B](#b-phase-b--ghidra-gui-분석) 참조.
 
-### A2. Ghidra 프로젝트 락 해제 + Hero4 프로젝트 생성
+### A2. ⭐ Hero4 Ghidra 프로젝트 셋업 — **현재 1순위**
 
 `work/h3/ghidra_proj/*.lock` 파일이 잠겨 있어서 작업 중 work/ 이동 불가. Ghidra 가 열려있으면 닫고:
 
@@ -55,26 +67,26 @@ File > Import > work/h4/extracted/client.bin387872
 Language: ARM:LE:32:Cortex (gcc)
 ```
 
-### A3. Hero4 caracter 사전 보강 (선택)
+**A2 직후 1순위 추적** (B-1):
+- string `/DAT/_DAT_DES` @ 0x86ecc xref 검색
+- 그 string 을 사용하는 함수 = `_DAT_DES` 파일 로더 = SCN decryption setup 진입점
+- 그 함수 호출자 또는 인접 코드에서 8-byte 키 literal / 키 파생 input 추출
+- 키 형태 후보: ASCII 8 bytes / 16 hex chars / binary 8 bytes / longer string의 prefix
+- 발견 즉시 `tools/converter/decrypt_h4_scn.py --key <KEY> --batch` 로 검증
 
-`tools/i18n/translation_dict.py` 에 Hero4 zone 이름 추가 (translate_dialogues 가 잘 번역하도록):
-```python
-PLACES_H4 = {
-    '수레바퀴섬': 'Wheel Island',  # 또는 'Cartwheel Isle'
-    '매도우힐': 'Meadow Hill',
-    '이름없는섬': 'Nameless Isle',
-    '뮤리아스': 'Murias',           # 켈트 신화 도시 그대로
-    '핀디아스': 'Findias',
-    '팔리아스': 'Falias',
-    '아눈섬': 'Annwn Isle',
-    '검은바위섬': 'Blackrock Isle',
-    '은바위섬': 'Silverrock Isle',
-    '해적소굴': 'Pirate Den',
-    # ...
-}
+### ~~A3. Hero4 character 사전 보강~~ ✅ 완료 (2026-05-07)
+
+[translation_dict.py](../../tools/i18n/translation_dict.py): `CHARACTERS_H3/H4`, `PLACES_H3/H4` 분리 + `for_game(id)` API 추가. Hero4 zone 12개 prefill (Murias/Findias/Falias/Gorias 켈트 4 보물 도시 + 수레바퀴섬/매도우힐/이름없는섬/아눈섬/검은바위섬/은바위섬/해적소굴/환영의검). 기존 `CHARACTERS/PLACES` 는 H3 alias 보존.
+
+[translate_dialogues.py](../../tools/i18n/translate_dialogues.py): `build_system_prompt` 가 `_g.id` 기반 자동 게임 헤더 (`GAME_HEADERS`) + dict 선택. `--dry-run` 이 corpus 부재시에도 동작.
+
+**검증 명령**:
+```bash
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py --dry-run    # Hero4 system prompt 출력
+HERO_GAME=h3 python tools/i18n/translate_dialogues.py --dry-run    # Hero3 회귀 없음 확인
 ```
 
-Hero3 PLACES 와 합치거나 게임별 분리 (`select(game).places`).
+CHARACTERS_H4 는 corpus 풀린 후 채울 placeholder. Hero3 회귀 0 (249 항목 그대로).
 
 ### ~~A4. `tools/recon/find_xrefs.py` Hero4 용 TARGETS 갱신~~ ✅ 완료 (2026-05-07)
 
@@ -181,20 +193,27 @@ Hero3 도 동일 보류 상태. 두 게임 동시 진행하면 효율적.
 
 ---
 
-## 📋 권장 진행 순서 (2026-05-07 갱신)
+## 📋 권장 진행 순서 (2026-05-07 후속 갱신)
 
 | # | 작업 | 자동/수동 | 시간 | 상태 |
 |---|---|---|---|---|
 | 1 | **A4** (recon game-aware) | 자동 | 30분 | ✅ 완료 |
 | 2 | **A5** (`_TILE_030`) | 자동 | 30분 | ✅ 완료 |
-| 3 | **A1** (대사 번역) | 자동 (API 키) | 30분 | ⏳ 대기 |
-| 4 | **A3** (Hero4 dictionary) | 자동 | 15분 | ⏳ 대기 (A1 전에 권장) |
-| 5 | **A2** (Ghidra 프로젝트 셋업) | 사용자 GUI | 30분 | ⏳ 대기 |
-| 6 | **B** (Ghidra 분석) | 사용자 + Claude | 1~2주 | ⏳ 대기 |
-| 7 | **C+D 결정** (Mac/KMM 시점) | 사용자 결정 | — | ⏳ 대기 |
-| 8 | **C** (KMM 리팩터) | Claude | 2~4주 | ⏳ Hero3 와 묶임 |
-| 9 | **D** (iOS 출시) | 사용자 + Claude | 1주 | ⏳ 출시 인프라 |
-| 10 | **E** (SMAF→OGG 변환) | 외부 도구 | — | ⏳ Phase D 전까지 |
+| 3 | **A3** (translation_dict game-aware + Hero4 prefill) | 자동 | 15분 | ✅ 완료 |
+| 4 | **DES 진단 + brute-force 도구화** | 자동 | 1시간 | ✅ 완료 (키 미발견) |
+| 5 | **A2** (Hero4 Ghidra 프로젝트 셋업) | 사용자 GUI | 30분 | ⏳ **현재 1순위** |
+| 6 | **B-1** (DES key 발굴 = `/DAT/_DAT_DES` xref 추적) | 사용자 + Claude | 1~3시간 | ⏳ A2 다음 |
+| 7 | **B-2** (`_PAL` / `_EXD` / `_MAP_M_` extras 등) | 사용자 + Claude | 1~2주 | ⏳ B-1 후 |
+| 8 | **A1** (대사 번역) | 자동 (API 키) | 30분 | ⏳ B-1 (DES key) 후 자동 |
+| 9 | **C+D 결정** (Mac/KMM 시점) | 사용자 결정 | — | ⏳ 대기 |
+| 10 | **C** (KMM 리팩터) | Claude | 2~4주 | ⏳ Hero3 와 묶임 |
+| 11 | **D** (iOS 출시) | 사용자 + Claude | 1주 | ⏳ 출시 인프라 |
+| 12 | **E** (SMAF→OGG 변환) | 외부 도구 | — | ⏳ Phase D 전까지 |
+
+### Quick start — 다음 세션에서 가장 먼저
+
+사용자: **A2 → B-1 (Ghidra)** 또는 키 발견 후 자동 파이프라인.
+Claude (자동만): 더 이상 진행 가능한 Hero4 자동 항목 없음. **Hero3/Hero5 트랙**으로 전환하거나 사용자 결정 (C/D) 대기.
 
 다음 자동 진행 가능 한 것 = **A3** (코드만으로 가능). 그 다음 사용자 결정 필요.
 
