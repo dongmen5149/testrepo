@@ -5,76 +5,117 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-07 — §4.3 _cif walk-cycle 자동화까지 완료. 자동 진행 가능한 고우선순위 항목 모두 처리됨.
+**최신 커밋 시점**: 2026-05-08 후반 — P0 디바이스 검증 완료 + Ghidra 세션 (§4.3 boss decoder 발견, §4.4 자동 식별 한계 확정) + h4-h11 broken bake 정리 + 단위 테스트 35건 추가 + broken 자산 264 파일 cleanup.
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임**. 자산 변환 거의 완료, hero walk-cycle 9 캐릭터 자동 베이크되어 MapWalkScene 에 wire 됨. 남은 큰 진척은 **사용자 입력**(Ghidra GUI / 디바이스 검증 / 외부 도구 / 디자인 결정) 에 묶여 있음.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임**. 자산 변환 + h0 walk-cycle wire 완료. 자동 진행으로 풀 수 있는 항목 거의 소진 → **남은 진척은 모두 사용자 입력 블로커** (Ghidra GUI / 외부 도구 / 디자인 결정).
 
-### 이번 세션 산출물 (2026-05-07) — 모두 커밋됨
+### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-**§4.3 _cif animation 완전 해독** (시리즈 핵심 작업):
-- [tools/recon/analyze_cif.py](../../tools/recon/analyze_cif.py) — h0_cif 113 frame 자동 추출, 25 lead group 분류
-- **셀 포맷 확정**: `[x_s8, y_s8, ref_u8, flag_u8]` 4 byte × 9 cells, offset 3..38, 트레일러 2 byte
-- **ref → BM 매핑 확정**: `ref → h1{ref//3:04d}_bm/frame_{ref%3:02d}` (3 frames/file, 69 frame cumulative pool)
-- [tools/recon/composite_cif_frame.py](../../tools/recon/composite_cif_frame.py) — 실제 BM 합성으로 영웅 sprite 시각 검증 ✅
-- [tools/converter/bake_hero_walkcycle.py](../../tools/converter/bake_hero_walkcycle.py) — 9 hero × 32 PNG = **288 PNG** + `dir_mapping.json` 자동 출력
-  - 매핑은 픽셀 symmetry 로 검출 (mirror pair 가 캐릭터마다 다름: h0/5/11=(2,3) / h6/7/8/10=(1,2) / h4=(0,2) / h9=(1,3))
-- [tools/recon/verify_walk_symmetry.py](../../tools/recon/verify_walk_symmetry.py) — flip 비교 자동 검증 도구
-- [MapWalkScene.kt](../../android/app/src/main/java/com/hero3/remake/scene/MapWalkScene.kt) `loadHeroWalk` + `loadDirMapping` — placeholder 4-frame → 32 frame walk-cycle 로 교체. 정규식 JSON 파서 (kotlinx.serialization 의존성 회피)
-- [tools/recon/test_analyze_cif.py](../../tools/recon/test_analyze_cif.py) — cif 디코더 단위 테스트 6/6 통과 (회귀 방지)
-- h1/h2/h3 cif 는 32 frame 미달 → portrait 로 베이크 (74 PNG), NPC/cinematic 용 추정
-- boss/enemy cif 는 hero 와 다른 인코딩 확정 — boss0=`7f00ffff` sentinel(229회), e000=17byte stride, e001=`8000` sentinel. 각각 별도 디코더 필요. 전투 시스템 구현 시점에 처리.
-
-**§4.4 _scn 통계** — opcode 거의 없음 확인:
-- [tools/recon/analyze_scn_segments.py](../../tools/recon/analyze_scn_segments.py)
-- 244 파일, opcode-segment 1~3 byte 가 압도적. 대부분 punctuation. **분기/플래그/사운드 트리거 opcode 는 _scn 외부(Java MIDlet)** 에 있을 가능성. Ghidra `eventManager` 분석 필요.
-
-**리팩토링** (이전 세션 + 이번 세션):
-- MainActivity SceneRequest 라우팅 — 23 when 분기 단축, healParty/popScene 분리, DEMO_CYCLE 상수화
-- (이전 세션) Settings.lang/isEn / GameState edit / NpcRegistry postBoss / 23 파일 i18n 정리
-
-**부수 발견**:
-- type byte bit 5 (0x20) = horizontal flip 플래그 — sprite 시각 검증으로 확정
-- shadow cell (cell idx 2): bobbing 안하고 지면 고정
-- flag byte (0x00~0x03 cluster) = draw_order/layer 후보, 큰값(0x19/0x5a/0x84)은 메타 잔존
-
-### 빌드/테스트 — 검증 완료
-
-- `:app:assembleDebug` ✅ BUILD SUCCESSFUL
-- `:app:testDebugUnitTest` ✅ **32/32 통과** (Kotlin) + Python `tools/recon/test_analyze_cif.py` 6/6 통과
-- 환경: JDK 21 (Microsoft 21.0.11) / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
+1. **이 섹션** + 아래 §"다음 세션 — 우선순위" 읽기
+2. `git log --oneline -5` — 최신 커밋 확인
+3. `git status --short` — 미커밋 잔여 확인
+4. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 다음 세션 — 우선순위 (블로커별)
 
-**자동 진행 가능 (가치 낮음, 굳이 하면)**
-| # | 작업 | 예상 시간 | 비고 |
+> ⭐ = 권장 다음 작업
+
+**🔴 사용자 입력 블로커 (실질 진척 여기서)**
+
+| 우선 | 작업 | 비고 |
+|---|---|---|
+| ⭐ **1** | **Ghidra GUI §4.4 dispatcher caller-chain 거꾸로 분석** | 자동 식별 불가능 확정 (2026-05-08 세션). main loop / event pump 에서 시작해 좁혀야. [상세 walkthrough](ghidra-scn-opcode-walkthrough.md) — Step 5 (Symbol Tree 키워드 검색 + Function Call Trees) 부분 다시 읽기. 풀면 _scn opcode 분기/플래그/사운드 트리거 + NPC 위치 동시 unblocking |
+| 2 | SMAF→OGG 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 | §4.5 — BGM/SFX 활성. 게임 체감 큼 |
+| 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
+| 4 | 추가 게임 콘텐츠 (보스/맵/퀘스트) 디자인 결정 | 1주차 콘텐츠는 완성. 확장 여부 미정 |
+
+**🟡 자동 진행 가능 (가치 낮음, 채울 거리)**
+
+| # | 작업 | 예상 | 비고 |
 |---|---|---|---|
-| 1 | enemy cif 디코더 진척 (e000 17-byte stride 활용) | 2시간 | 전투 시스템 시점에 더 적합 |
-| 2 | h4_cif 추가 액션 (공격/사망 169 frames) 베이크 | 1시간 | 라벨링은 디바이스 검증 후 |
-| 3 | analyze_mp_extras / convert_scn 단위 테스트 추가 | 1시간 | 회귀 방지 |
-| 4 | 일본어 부분 i18n (UI 핵심 50~100 string) | 2시간 | 사용자 검수 전제 |
+| 5 | 일본어 부분 i18n (UI 핵심 50~100 string) | 2시간 | 자동 영문 추가 가능, 일본어/한국어 매핑은 사용자 검수 전제 |
+| 6 | h4-h11 walk-cycle 인코딩 추가 분석 | 4시간+ | cif 헤더 / 외부 인덱스 필요. Ghidra 진척 의존. 게임 영향 없음 (h0 만 wire) |
+| 7 | enemy/boss cif 디코더 (`FUN_00098ef8` 알고리즘 적용) | 2시간 | 전투 sprite 베이킹 시점에 적합 — 그 외엔 가치 X |
 
-**사용자 입력 필요 (블로커)**
-- ⚠️ **디바이스/에뮬레이터 walk-cycle 시각 검증** — DOWN↔UP 어긋나면 `dir_mapping.json` 의 `facing_to_dir` 첫 두 항목 swap. mirror pair 는 자동 검출 정확.
-- ⚠️ **Ghidra GUI 분석** (`eventManager` / `onEventMessageOkKey` / `Hero_Free`) — §4.4 opcode + boss/enemy cif decoder 진입점. 자동 grep 으로는 한계 도달.
-- ⚠️ **SMAF→OGG** 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 — §4.5
-- ⚠️ **대사 LLM 번역 실행** (~$0.66, "마지막에" 결정) — §4.6
-- ⚠️ **추가 게임 콘텐츠** (보스/맵/퀘스트) — 디자인 결정
+### 핵심 진입 문서
 
-### 다음 세션 시작 전 체크리스트 (5분)
+- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 Ghidra 세션 종합 결과 (16개 함수 분석, dispatcher 자동 식별 한계 확정)
+- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 dispatcher detailed walkthrough (사용자 GUI 작업용)
+- [ghidra-gui-guide.md](ghidra-gui-guide.md) — Ghidra 일반 가이드 (환경 + 4 진입점 단서표)
+- [asset-formats.md](asset-formats.md) — 자산 포맷 사양
 
-1. `git log --oneline -5` 로 최신 커밋 확인
-2. `git status --short` — 추가 미커밋 변경 있는지 파악
-3. 이 문서 §"이번 세션 산출물" + §"다음 세션 — 우선순위" 읽기
-4. **Android 빌드 검증** (선택):
-   ```powershell
-   $env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot'
-   $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
-   & "d:\testrepo\android\gradlew.bat" -p "d:\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
-   ```
-5. **cif 디코더 회귀 테스트** (선택): `python -m unittest tools/recon/test_analyze_cif.py`
-6. 산출물 비어있으면 §"재현 명령" 참조
+### 빌드/테스트 — 재현 명령
+
+```powershell
+# 환경 (PC별 JDK 경로 다름)
+# 현재 PC (집): Eclipse Adoptium
+$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+# 다른 PC: Microsoft (옛 작업 환경)
+# $env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+
+# Android 빌드 + 테스트 (32/32 Kotlin 테스트)
+& "C:\gameRemake\testrepo\android\gradlew.bat" -p "C:\gameRemake\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
+
+# Python 회귀 테스트 (44 test: cif 9 + mp 18 + scn 17)
+python -m unittest tools.recon.test_analyze_cif tools.converter.test_convert_mp tools.converter.test_convert_scn
+```
+
+### 환경
+
+- JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
+- 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-08 세션 작업 압축
+
+**테마**: P0 디바이스 검증 → §4.4 dispatcher 자동 식별 시도 (실패) → §4.3 boss decoder 발견 → 자동 가능 cleanup 마무리.
+
+**A. P0 디바이스/에뮬레이터 walk-cycle 시각 검증** ✅
+- 컨택트 시트 (`work/h3/walk_check/h0_sheet.png`) 시각 분석으로 h0 매핑 확정.
+- dir 0 = DOWN (face 가시), dir 1 = UP (후면), dir 2/3 = LEFT/RIGHT mirror.
+- `facing_to_dir=[0,1,2,3]` 올바름. swap 불필요.
+
+**B. h4-h11 broken bake 발견 + 정리**
+- 부수 발견: h4-h11 의 dir_mapping.json 들이 모두 garbage 데이터.
+  - h0: cells ref ≤ 39, x/y ∈ [-19, 25] — 정상.
+  - h4-h11: ref=255, x=-124, flag=0xfd 등 — non-walk-cycle 프레임 잘못 추출.
+- 원인: cif 구조가 h0 와 다름. h0 = 4 group × 8 frame 동일-lead 구조 (`0a020b`×8, `0a0501`×8, `0a0208`×8, `0a2208`×8). h4-h11 = 4-5 frame 짧은 그룹들 흩어짐.
+- 시도한 가설들 (모두 빗나감):
+  - boss-style 0x7f sentinel decoder → h4-h11 sentinel 거의 없음 (h4=3, h9=15, 나머지 0)
+  - 첫 32 frame 가정 → h4 frame 4 부터 valid cell 시작
+- 조치: [bake_hero_walkcycle.py](../../tools/converter/bake_hero_walkcycle.py) 에 `has_h0_walkcycle_structure()` check 추가. h4-h11 자동 skip → broken PNG 미생성. 단위 테스트 3건 추가 (h0 통과 / h4 / h11 차단).
+- 자산 cleanup: 8 폴더 × 33 파일 = 264 broken 자산 삭제. h0_walk 만 잔존.
+
+**C. Ghidra GUI 세션** — §4.4 dispatcher 추적
+- 진입 단서: `onEventMessageOkKey @ 0xa6888`, `eventManager @ 0xa6ad8` 등.
+- 시도 결과:
+  - debug string xref → 0건 (PIC + GOT indirection, §4.1 풀 때와 동일)
+  - 5 후보 GUI 검증 (FUN_182c4 / 186c8 / 18d08 / 190f8 / 98ef8) → 모두 sprite drawer/UI 류, dispatcher 0건
+  - Python 휴리스틱 강화 (renderer 강 필터, byte read, callee size, UNRECOVERED_JUMPTABLE) → 최강 후보 FUN_00019b5a 도 4-bit sprite drawer
+- **결론**: Hero3 binary 는 sprite engine 코드가 dominant. _scn dispatcher 자동 식별 **불가능 확정**. GUI 인터랙티브 caller-chain 분석 필요.
+- 부수 발견 (실질 ROI):
+  - **§4.3 boss/enemy cif decoder = `FUN_00098ef8 @ 0x98ef8`** — 0x7f sentinel skip + 4-byte cell stride. PROGRESS §4.3 미해독 항목과 정확히 일치. 향후 enemy/boss sprite 베이킹 진입점.
+  - **§4.1 후속 (HD blender) = `FUN_00014e68`** — RGB565 mask + palette 이중 lookup. sprites_hd 자동 생성 진입점.
+  - **animation tick handler = `UndefinedFunction_00041172`** — `frame_idx++` per tick + frame_count wrap.
+
+**D. 단위 테스트 35건 추가**
+- [test_convert_mp.py](../../tools/converter/test_convert_mp.py) — 18 test (parse_extras 4 strategy + edge cases + parse_mp + real-file regression)
+- [test_convert_scn.py](../../tools/converter/test_convert_scn.py) — 17 test (extract_euckr_strings + parse_scn + parse_scn_v2 speaker/mode + real-file regression)
+- 기존 [test_analyze_cif.py](../../tools/recon/test_analyze_cif.py) — 9 test (s8/parse_cells/find_frames/walk_cycle_structure)
+- **총 44 Python test 통과** + Android 32 Kotlin test = 76 test.
+
+**E. 신규 문서**
+- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — Ghidra 세션 종합 결과 (16개 함수 분석)
+- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 detailed walkthrough (다음 세션 사용자 GUI 작업용)
+
+**핵심 교훈 (이전 세션과 비교)**:
+1. PIC indirect call 이 dominant 한 binary 에서는 자동 grep/패턴 식별이 sprite engine 함수에 휘둘림 — 사용자 GUI caller-chain 분석 외 답 없음.
+2. cif animation 인코딩은 hero 별로 구조 다름 (h0 = 8-frame 동일 lead, h4-h11 = 4-5 frame 짧은 그룹). 단일 휴리스틱으로 일괄 처리 불가.
+3. 단위 테스트는 자동 진행 가능 항목 중 가장 가치 높음 — 향후 변경 회귀 방지 + 사양 문서화 기능.
 
 ---
 

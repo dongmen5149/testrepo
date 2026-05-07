@@ -42,35 +42,37 @@
 
 이미 셋업 완료 (다음 세션에서 다시 깔 필요 없음):
 
-| 항목 | 상태 |
+| 항목 | 실제 경로 (2026-05-08 갱신) |
 |---|---|
-| JDK 21 | `C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot\` (시스템 `JAVA_HOME`) |
-| Ghidra 12.0.4 | `D:\ghidra_12.0.4_PUBLIC\` (시스템 `GHIDRA_INSTALL_DIR`) |
-| 분석할 바이너리 | `d:\testrepo\work\extracted\client.bin64000` (735KB) |
-| Ghidra 프로젝트 | `d:\testrepo\work\ghidra_proj\Hero3.gpr` (자동 분석 완료, 1470 함수 식별) |
-| 헤드리스 스크립트 | `d:\testrepo\tools\ghidra\` (Java 스크립트 4종) |
-| 전체 디컴파일 결과 | `d:\testrepo\work\ghidra_out\all_decompiled.c` (2.5MB, 참고용) |
+| JDK 21 | `C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\` |
+| Ghidra 12.0.4 | `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\` |
+| 분석할 바이너리 | `c:\gameRemake\testrepo\work\h3\extracted\client.bin64000` (719KB) |
+| Ghidra 프로젝트 | `c:\gameRemake\testrepo\work\ghidra_proj\Hero3.gpr` (자동 분석 완료, 1470 함수 식별) |
+| 헤드리스 스크립트 | `c:\gameRemake\testrepo\tools\ghidra\` (Java 스크립트 다수) |
+| 전체 디컴파일 결과 | `c:\gameRemake\testrepo\work\ghidra_out\all_decompiled.c` (469k 줄, 참고용) |
+
+> 환경변수 `$env:GHIDRA_INSTALL_DIR` 가 옛날 경로(`...20260303`)로 잡혀있을 수 있음. 실제 `ghidraRun.bat` 은 그 안의 `ghidra_12.0.4_PUBLIC` 하위 폴더에 있음.
 
 ### Ghidra 실행 방법
 
 ```
-D:\ghidra_12.0.4_PUBLIC\ghidraRun.bat
+C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\ghidraRun.bat
 ```
 
-더블클릭 → Ghidra 메인 창 (Project Manager) 5~30초 로딩.
+더블클릭 → Ghidra 메인 창 (Project Manager) 5~30초 로딩. 첫 실행 시 JDK 경로 묻는 다이얼로그 뜨면 `C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot` 선택.
 
 ---
 
-## 3. 목표 — 4가지 진입점 단서
+## 3. 목표 — 4가지 진입점 단서 (2026-05-08 갱신)
 
-| 우선순위 | 진입점 단서 (디버그 문자열 / 함수 이름) | 위치 (file offset) | 풀면 해결되는 것 |
+| 우선순위 | 진입점 단서 (디버그 문자열 / 함수 이름) | 위치 (file offset) | 상태 |
 |---|---|---|---|
-| **§4.1 (가장 추천)** | `frameBuf is NULL` | `0xa61c8` | type 0x0c sparse pixel 포맷 (가장 시각 영향 큼) |
-| §4.2 | `Event_freeID`, `loadDataID` | `0xa6e54`, `0xa6efc` | _mp extras 자동 NPC/exit 배치 |
-| §4.3 | `Hero_Free`, `freeBossType` | `0xa6e8c`, `0xa6e70` | _cif 4방향 애니메이션 timing |
-| §4.4 | `onEventMessageOkKey`, `eventManager` | `0xa6888`, `0xa6ad8` | _scn 이벤트 스크립트 opcode dispatch |
+| ✅ §4.1 | `frameBuf is NULL` | `0xa61c8` | **해결됨** (2026-05-06). 디코더 = `FUN_00010fe4`. type 0x0b/0x0c → 4-bit/8-bit dense palette. `convert_bm_v2.py` 반영 완료 |
+| §4.2 | `Event_freeID`, `loadDataID` | `0xa6e54`, `0xa6efc` | 부분 해결 (97% 자동 파싱). NPC 좌표는 `_scn` 안에 있을 가능성 — §4.4 풀면 자동 unblocking |
+| §4.3 | `Hero_Free`, `freeBossType` | `0xa6e8c`, `0xa6e70` | h0 walk-cycle 풀림. **2026-05-08: boss/enemy cif decoder 발견** (`FUN_00098ef8 @ 0x98ef8`, 0x7f sentinel + 4-byte stride). h4-h11 도 같은 디코더로 재베이크 가능 → [findings doc](ghidra-findings-2026-05-08.md) |
+| §4.4 | `onEventMessageOkKey`, `eventManager` | `0xa6888`, `0xa6ad8` | **미해결.** 2026-05-08 Ghidra 세션에서 5개 후보 모두 dispatcher 아님 (renderer/decoder). 다음 시도: caller chain 거꾸로 / `FindOpcodeDispatch.java` 헤드리스 / _scn byte 통계 매칭 |
 
-→ **§4.1 부터 시도.** 가장 시각 영향 크고, 비트맵 디코더는 패턴이 명확함 (RGB565 + row/col 루프).
+→ **§4.4 부터 시도** ([상세 walkthrough → ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md)). §4.1 은 이미 해결되어 더 이상 진입점 아님.
 
 ---
 
@@ -79,7 +81,7 @@ D:\ghidra_12.0.4_PUBLIC\ghidraRun.bat
 ### Step 1: 프로젝트 열기
 
 1. `ghidraRun.bat` 실행 → Ghidra 메인 창
-2. 좌측 트리에 `Hero3` 프로젝트가 보이면 펼치기 (없으면 `File → Open Project → d:\testrepo\work\ghidra_proj\Hero3.gpr`)
+2. 좌측 트리에 `Hero3` 프로젝트가 보이면 펼치기 (없으면 `File → Open Project → c:\gameRemake\testrepo\work\ghidra_proj\Hero3.gpr`)
 3. `client.bin64000` 더블클릭 → **CodeBrowser** 창이 열림 (메인 분석 창)
 4. "Analyze?" 다이얼로그가 뜨면 **No** (이미 분석 완료됨)
 
@@ -185,7 +187,7 @@ void FUN_xxxxx(int *frameBuf, byte *src, int width, int height) {
 
 **접근 3: 비슷한 동작 패턴 함수 훑기**
 
-`d:\testrepo\work\ghidra_out\all_decompiled.c` (1470 함수 모두 디컴파일됨, 2.5MB) 를 텍스트 에디터로 열어서:
+`c:\gameRemake\testrepo\work\ghidra_out\all_decompiled.c` (1470 함수 모두 디컴파일됨, 469k 줄) 를 텍스트 에디터로 열어서:
 - `for` 루프 nested
 - 16비트 마스크 (`& 0xffff`, `>> 8`)
 - 매개변수 4개 정도 (frameBuf, src, width, height 추정)
@@ -229,7 +231,7 @@ void FUN_xxxxx(int *frameBuf, byte *src, int width, int height) {
 
 ## 7. 학습 자료 (Ghidra 처음이면)
 
-- 공식 Beginner 튜토리얼: `D:\ghidra_12.0.4_PUBLIC\docs\GhidraClass\Beginner\` 폴더 (PDF 여러 개)
+- 공식 Beginner 튜토리얼: `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\docs\GhidraClass\Beginner\` 폴더 (PDF 여러 개)
 - Ghidra Snippets: https://github.com/HackOvert/GhidraSnippets/blob/master/README.md
 - 핵심 단축키만 외워도 됨:
   - `G` — Go to address

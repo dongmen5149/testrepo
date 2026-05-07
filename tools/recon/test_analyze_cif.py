@@ -49,7 +49,7 @@ class TestFindFramesH0(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.cif_path = pathlib.Path('work/extracted/hero/h0_cif')
+        cls.cif_path = pathlib.Path('work/h3/extracted/hero/h0_cif')
         if not cls.cif_path.exists():
             raise unittest.SkipTest('h0_cif not extracted')
         cls.data = cls.cif_path.read_bytes()
@@ -68,6 +68,41 @@ class TestFindFramesH0(unittest.TestCase):
         frames = find_frames(self.data)
         leads = {self.data[off:off+3].hex() for off in frames[:8]}
         self.assertIn('0a020b', leads, 'group1 lead 0a020b 누락')
+
+
+class TestWalkCycleStructure(unittest.TestCase):
+    """h0 4x8 walk-cycle 구조 검증 (h4-h11 은 다른 인코딩 사용 — 2026-05-08 발견)."""
+
+    def setUp(self):
+        sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'converter'))
+        from bake_hero_walkcycle import has_h0_walkcycle_structure
+        self.check = has_h0_walkcycle_structure
+
+    def test_h0_matches(self):
+        p = pathlib.Path('work/h3/extracted/hero/h0_cif')
+        if not p.exists():
+            self.skipTest('h0_cif not extracted')
+        data = p.read_bytes()
+        frames = find_frames(data)
+        self.assertTrue(self.check(data, frames), 'h0 must match 4x8 walk-cycle structure')
+
+    def test_h4_does_not_match(self):
+        p = pathlib.Path('work/h3/extracted/hero/h4_cif')
+        if not p.exists():
+            self.skipTest('h4_cif not extracted')
+        data = p.read_bytes()
+        frames = find_frames(data)
+        self.assertFalse(self.check(data, frames),
+                         'h4 must NOT match — uses different walk-cycle encoding')
+
+    def test_h11_does_not_match(self):
+        p = pathlib.Path('work/h3/extracted/hero/h11_cif')
+        if not p.exists():
+            self.skipTest('h11_cif not extracted')
+        data = p.read_bytes()
+        frames = find_frames(data)
+        self.assertFalse(self.check(data, frames),
+                         'h11 must NOT match — uses different walk-cycle encoding')
 
 
 if __name__ == '__main__':

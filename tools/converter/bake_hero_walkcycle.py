@@ -47,14 +47,38 @@ def composite(rec: bytes, canvas: int = 64) -> Image.Image:
     return img
 
 
+def has_h0_walkcycle_structure(data: bytes, frames: list[int]) -> bool:
+    """h0 식별: 처음 32 frame 이 4 그룹 × 8 frame (각 그룹 동일 lead) 구조인지 확인.
+
+    h4-h11 cif 는 동일한 4×8 구조 가 아니라 4-5 frame 짧은 그룹들이 흩어져 있음
+    (각 hero 별 walk-cycle frame 위치 가 cif 헤더 또는 외부 인덱스 에 있을 것 으로 추정).
+    구조 미일치 시 베이크 거부 → broken PNG 생성 방지.
+    """
+    if len(frames) < 32:
+        return False
+    leads = [data[off:off+3] for off in frames[:32]]
+    for d in range(4):
+        group = leads[d * 8:(d + 1) * 8]
+        if len(set(group)) != 1:  # 8 frame 모두 동일 lead 여야
+            return False
+    return True
+
+
 def bake_one(cif_path: pathlib.Path, out_dir: pathlib.Path) -> int:
-    """단일 hero cif 베이크. 첫 4 그룹 × 8 frame = 32 PNG + dir_mapping.json."""
+    """단일 hero cif 베이크. 첫 4 그룹 × 8 frame = 32 PNG + dir_mapping.json.
+
+    h0 식별 구조 (4×8 동일-lead 그룹) 가 아니면 거부 — h4-h11 은 다른 walk-cycle
+    인코딩 사용 (frame-group 레이아웃 다름). 다음 세션 이전 까지 미해독.
+    """
     import json
     from PIL import ImageChops
     data = cif_path.read_bytes()
     frames = find_frames(data)
     if len(frames) < 32:
         print(f'! {cif_path.name}: only {len(frames)} frames, skipping')
+        return 0
+    if not has_h0_walkcycle_structure(data, frames):
+        print(f'! {cif_path.name}: not h0 4x8 structure, walk-cycle encoding undecoded -- skipping')
         return 0
     out_dir.mkdir(parents=True, exist_ok=True)
     written = 0
@@ -108,7 +132,7 @@ def _facing_mapping(mirror: tuple[int, int]) -> list[int]:
 
 
 def main() -> int:
-    hero_dir = ROOT / 'work/extracted/hero'
+    hero_dir = ROOT / 'work/h3/extracted/hero'
     cifs = sorted(p for p in hero_dir.glob('h*_cif') if p.name != 'commeffect_cif')
     total = 0
     for cif in cifs:
