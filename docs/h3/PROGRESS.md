@@ -7,9 +7,22 @@
 
 **최신 커밋**: `6a1c78a feat:영웅서기5 리메이크 대기중` (이전 세션까지 반영)
 
-**미커밋 변경 (2026-05-07)** — 이번 세션 작업분, 아직 한 커밋으로 묶이지 않음:
+**미커밋 변경 (2026-05-07 후반)** — §4.2 _mp extras **부분 해독 + 데코 마커 렌더 완료**:
 
-### A) §4.2 _mp extras 해독 시도 — **블로킹 상태로 결론**
+### A2) §4.2 _mp extras 해독 — **97% 자동 파싱 성공** ✅
+- 사용자 Ghidra GUI 분석 시도 → string xref 막혀 보류 후 **경험적 디코딩으로 전환**
+- 6 byte fixed-stride 레코드 포맷 확정: `[type_u8] [id_u8] [x_u16_LE] [y_u16_LE]` (좌표는 픽셀, /16 = tile)
+- 헤더 변형 3가지 자동 감지: `h2_s6` (flag+count, 62맵) / `h1_s6` (count only, 54맵) / `multi` (2섹션, 14맵). 잔여 4맵은 sentinel/empty.
+- **134/135 맵, 7,620 레코드** 추출 → `work/h3/converted/maps/*.json` 의 `extras_records` 필드
+- [tools/converter/convert_mp.py](../../tools/converter/convert_mp.py) 에 파서 통합. `parse_extras()` 가 strategy/records/leftover 반환.
+- **레코드 정체 판별**: 풀/덤불/가구 같은 시각 데코레이션 (NPC 아님). id 0x3e/0x3f 가 1567건 (~20%) 으로 풀 데코로 추정. type byte 0x00/0x80 ≈ 50/50 → facing/state 플래그 추정.
+- NPC 위치는 _mp 안에 없고 `_scn` opcode 스트림에 있을 것으로 추정 — §4.4 미해독에 묶임. NpcRegistry/MapGraph 자동화는 §4.4 해독 후로 연기.
+
+### A3) MapWalkScene 데코 마커 렌더 ✅
+- [MapWalkScene.kt](../../android/app/src/main/java/com/hero3/remake/scene/MapWalkScene.kt) 에 `DecoMarker` + `colorForDecoId()` 추가. id 별 색상으로 작은 점 표시 (풀=녹색, 가구=갈색, 특수=빨강 등). §4.1 sprite 디코딩 풀리면 진짜 그림으로 교체.
+- 검증: `:app:assembleDebug` + `:app:testDebugUnitTest` 모두 BUILD SUCCESSFUL.
+
+### A1) §4.2 자동 grep 시도 — **블로킹 상태로 결론** (참고용)
 - `work/ghidra_out/all_decompiled.c` (76,876줄, 3,556 함수) 패턴 grep 으로 _mp 파서 함수 추적 시도
 - 결과: PIC + GOT-relative offset 때문에 string xref 없음. `Event_freeID`/`loadDataID` 등 PROGRESS의 심볼명은 디컴파일 출력에 `FUN_xxxx` 형태로만 존재.
 - `& 0xc0`, `>> 6` 같은 상위 비트 마스크 grep — 0건 매칭 (extras TLV 가설 검증 불가)
@@ -72,7 +85,7 @@
 | `_bm` (file) | 479 | ✅ 다중프레임 지원 |
 | `_bm` (frame) | **3149** | ✅ type 0x0b + **0x0c (2026-05-06 해독)** |
 | `_cif` | 103 | ⚠️ 헤더만 (animation timing 미해독) |
-| `_mp` | 134/135 | ✅ terrain+collision / ⚠️ extras 미해독 |
+| `_mp` | 134/135 | ✅ terrain+collision / ✅ extras 97% (데코 마커 7,620개, NPC는 §4.4 의존) |
 | `_scn` | 244 | ⚠️ 대사 추출 (26,415) / opcode 미해독 |
 | `_dat` | 45 | ✅ EUC-KR 한글 추출 |
 | `_mf` | 33 | 📋 표준 SMAF, 외부 도구로 변환 필요 |

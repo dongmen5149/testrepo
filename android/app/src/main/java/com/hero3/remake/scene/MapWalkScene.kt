@@ -59,6 +59,8 @@ class MapWalkScene(
     private val onRequest: (MainActivity.SceneRequest) -> Unit,
 ) : Scene {
 
+    private data class DecoMarker(val tx: Int, val ty: Int, val id: Int, val type: Int)
+
     private data class MapData(
         val id: Int,
         val name: String,
@@ -67,6 +69,7 @@ class MapWalkScene(
         val palette: List<Int>,
         val layer0: List<Int>,
         val layer1: List<Int>,
+        val decorations: List<DecoMarker> = emptyList(),
     )
 
     private val tilePx = 16
@@ -126,6 +129,12 @@ class MapWalkScene(
             val o = JSONObject(text)
             val w = o.optInt("width")
             val h = o.optInt("height")
+            val decoArr = o.optJSONArray("extras_records")
+            val decos = if (decoArr == null) emptyList() else List(decoArr.length()) { i ->
+                val r = decoArr.getJSONObject(i)
+                val tile = r.getJSONArray("tile")
+                DecoMarker(tile.getInt(0), tile.getInt(1), r.getInt("id"), r.getInt("type"))
+            }
             map = MapData(
                 id = id,
                 name = o.optString("name", "?"),
@@ -133,6 +142,7 @@ class MapWalkScene(
                 palette = jsonIntArray(o.optJSONArray("palette")),
                 layer0 = jsonIntArray(o.optJSONArray("layer_0")),
                 layer1 = jsonIntArray(o.optJSONArray("layer_1")),
+                decorations = decos,
             )
             gameState.markVisited(id)
         }
@@ -388,6 +398,16 @@ class MapWalkScene(
             }
         }
 
+        // 데코레이션 마커 (_mp extras 해독, 2026-05-07) — id 별 색상으로 작은 점 표시.
+        // §4.1 sprite 디코딩 풀리면 진짜 그림으로 교체.
+        for (d in m.decorations) {
+            if (d.tx !in tx0..tx1 || d.ty !in ty0..ty1) continue
+            tilePaint.color = colorForDecoId(d.id)
+            val cx = d.tx * tilePx - camX + tilePx / 2
+            val cy = d.ty * tilePx - camY + hudOffsetY + tilePx / 2
+            canvas.drawCircle(cx.toFloat(), cy.toFloat(), 2.5f, tilePaint)
+        }
+
         // 보물상자 (안 열린 것만)
         for (chest in ChestRegistry.forMap(m.id)) {
             if (chest.id in gameState.openedChestIds) continue
@@ -624,5 +644,24 @@ class MapWalkScene(
         }
         if (r < 50) r = 50; if (g < 50) g = 50; if (b < 50) b = 50
         return Color.rgb(r, g, b)
+    }
+
+    /** id 별 데코 마커 색상 — 0x3e/0x3f(풀) 녹색, 0x40~0x42 갈색, 그 외 hash 기반. */
+    private fun colorForDecoId(id: Int): Int = when (id) {
+        0x02 -> Color.rgb(255, 120, 120)        // 특수 마커 (드물게 등장)
+        0x3e, 0x3f -> Color.rgb(120, 200, 120)  // 풀/덤불 (가장 흔함)
+        0x40, 0x41, 0x42 -> Color.rgb(180, 140, 90)  // 가구류
+        0x6f, 0x7a, 0x7b, 0x7c -> Color.rgb(180, 180, 90)
+        0x95, 0x96 -> Color.rgb(150, 150, 200)
+        0x99, 0x9a, 0x9b -> Color.rgb(200, 150, 200)
+        0xaa -> Color.rgb(220, 200, 100)
+        0xc6, 0xc7 -> Color.rgb(100, 200, 200)
+        0xd1, 0xd2, 0xd3, 0xd4 -> Color.rgb(200, 100, 200)
+        else -> {
+            val h = (id * 2654435761L).toInt()
+            Color.rgb(((h shr 16) and 0xff).coerceIn(80, 255),
+                      ((h shr 8) and 0xff).coerceIn(80, 255),
+                      (h and 0xff).coerceIn(80, 255))
+        }
     }
 }

@@ -812,5 +812,7 @@
     128
   ],
   "extras_size": 24,
-  "extras_hex_preview": "800001200008001000000300010203000d0a010a0702060c"
+  "extras_strategy": "unparsed",
+  "extras_leftover": 24,
+  "extras_records": []
 }
