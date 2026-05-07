@@ -458,6 +458,10 @@ isolated bins. 후속 작업으로 보류.
 | Damage popup | ✅ Tween 으로 -N 숫자 떠오름 + 페이드아웃 | `damage_popup.gd` |
 | Dialog 선택지 | ✅ show_choices() + Quest 트리거 (NPC 분기 데모) | `dialog_box.gd::show_choices` |
 | Scene → Hero 위치 | ✅ scene 헤더 startX/Y 로 캐릭터 tile 좌표 자동 배치 + BGM 전환 | `demo.gd::_apply_scene` |
+| 상점 UI | ✅ ShopPanel — 무기 4 슬롯 × 4 offer 구매/판매 + 골드 차감 | `apps/hero5-godot/scripts/ui/shop_panel.gd` |
+| 레벨업 자동 | ✅ STR/DEX/INT/CON 클래스별 분배 + lvl 5/10/15... 스킬 해금 | `game_state.gd::add_battle_reward` |
+| NPC 가까움 감지 | ✅ Manhattan 거리 기반 nearest_npc(px, py, dist) | `map_renderer.gd::nearest_npc` |
+| 다중 세이브 슬롯 | ✅ Title 에 slot 버튼 자동 생성 + Demo 1-8 저장 / Shift+1-8 로드 | `title.gd`, `demo.gd` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

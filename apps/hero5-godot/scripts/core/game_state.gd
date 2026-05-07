@@ -22,6 +22,16 @@ var max_sp: int = 50
 var level: int = 1
 var exp: int = 0
 var gold: int = 1000
+
+# 클래스 + 능력치
+var class_id: int = 0   # 0=워리어, 1=로그, 2=건슬링어, 3=나이트, 4=소서러
+var stat_str: int = 12
+var stat_dex: int = 8
+var stat_int: int = 10
+var stat_con: int = 6
+
+# 해금된 스킬 (skill_id 리스트)
+var unlocked_skills: Array[int] = [0]  # 첫 스킬 (basic attack) 시작부터
 var inventory: Array = []
 var flags: Dictionary = {}
 
@@ -110,13 +120,44 @@ func quick_load(slot: int = 0) -> bool:
 
 
 ## 전투 결과 적용.
+signal level_up(new_level: int, gained_skills: Array)
+
 func add_battle_reward(exp_gain: int, gold_gain: int) -> void:
 	exp += exp_gain
 	gold += gold_gain
-	# 간이 레벨업: 100 EXP/level
 	while exp >= level * 100:
 		exp -= level * 100
 		level += 1
-		max_hp += 10; hp = max_hp
-		max_sp += 5; sp = max_sp
+		# stat 자동 분배 (클래스별 기본 분포 따라)
+		_apply_levelup_stats()
+		max_hp += 10 + stat_con
+		hp = max_hp
+		max_sp += 5 + stat_int / 2
+		sp = max_sp
+		# 스킬 해금: lvl 5/10/15/20/25 마다 새 스킬
+		var newly_unlocked: Array = []
+		for tier in [5, 10, 15, 20, 25, 30, 35, 40]:
+			if level == tier:
+				var skill_idx = unlocked_skills.size()
+				if skill_idx < 43:  # 클래스당 43 스킬
+					unlocked_skills.append(skill_idx)
+					newly_unlocked.append(skill_idx)
+		level_up.emit(level, newly_unlocked)
 	state_changed.emit()
+
+
+func _apply_levelup_stats() -> void:
+	# 클래스별 분포: 워리어 STR>INT>DEX>CON, 로그 DEX>CON, ...
+	match class_id:
+		0:  # 워리어
+			stat_str += 2; stat_int += 1; stat_dex += 1
+		1:  # 로그
+			stat_dex += 2; stat_con += 2
+		2:  # 건슬링어
+			stat_dex += 2; stat_str += 1; stat_int += 1
+		3:  # 나이트
+			stat_str += 1; stat_int += 2; stat_dex += 1
+		4:  # 소서러
+			stat_int += 2; stat_con += 2
+		_:
+			stat_str += 1; stat_dex += 1; stat_int += 1; stat_con += 1

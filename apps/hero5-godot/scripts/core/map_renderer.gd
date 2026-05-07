@@ -61,9 +61,32 @@ func _load_collision() -> void:
 	_col_data = col_f.get_buffer(col_f.get_length())
 
 
+## 스폰된 NPC 위치 캐시 (인터랙션 거리 체크용).
+##   {idx, tile_x, tile_y, sprite_id}
+var spawned_npcs: Array = []
+
+
+## (px, py) 의 N tile 이내 가장 가까운 NPC 반환 (없으면 -1).
+func nearest_npc(px: int, py: int, max_tile_dist: int = 2) -> int:
+	if spawned_npcs.is_empty(): return -1
+	var tx = px / TILE_SIZE
+	var ty = py / TILE_SIZE
+	var best_dist = max_tile_dist + 1
+	var best_idx = -1
+	for npc in spawned_npcs:
+		var dx = abs(int(npc.tile_x) - tx)
+		var dy = abs(int(npc.tile_y) - ty)
+		var d = dx + dy  # Manhattan
+		if d < best_dist:
+			best_dist = d
+			best_idx = int(npc.idx)
+	return best_idx
+
+
 ## NPC 스폰 (npc_table.json 의 flags[2..3] = tile x,y).
 ##   현재 mapID 와 무관하게 첫 N 개 valid NPC 를 표시 (demo).
 func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
+	spawned_npcs.clear()
 	# 기존 NPC 제거
 	for c in parent.get_children():
 		if c.name.begins_with("NPC_"):
@@ -95,6 +118,11 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 		lbl.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE - 12)
 		lbl.add_theme_font_size_override("font_size", 9)
 		parent.add_child(lbl)
+		spawned_npcs.append({
+			"idx": int(r.get("idx", 0)),
+			"tile_x": tx, "tile_y": ty,
+			"sprite_id": sprite_id,
+		})
 		spawned += 1
 
 

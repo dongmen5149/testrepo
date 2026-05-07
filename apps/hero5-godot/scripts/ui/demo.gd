@@ -19,6 +19,7 @@ var _dialog: CanvasLayer
 var _interp: H5Interpreter
 var _status: CanvasLayer
 var _battle_ui: CanvasLayer
+var _shop: CanvasLayer
 
 
 func _ready() -> void:
@@ -57,6 +58,8 @@ func _ready() -> void:
 				GameState.add_battle_reward(exp, gold))
 	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
 	add_child(_battle_ui)
+	_shop = preload("res://scenes/shop_panel.tscn").instantiate()
+	add_child(_shop)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
@@ -91,12 +94,17 @@ func _on_narration(args: PackedByteArray) -> void:
 
 
 func _npc_talk() -> void:
-	# 가장 가까운 NPC 와 대화 (시뮬레이션). npc_table 의 첫 valid 사용.
 	var npc_data = _load_npc_table()
 	if npc_data.is_empty():
 		_dialog.show_dialog("System", "NPC 데이터 없음")
 		return
-	var npc = npc_data[_scene_idx % npc_data.size()]
+	# 가까운 NPC 자동 감지 (스폰됐으면 좌표 기반)
+	var nearest = _map.nearest_npc(int(_hero.position.x), int(_hero.position.y), 2)
+	var npc: Dictionary
+	if nearest >= 0 and nearest < npc_data.size():
+		npc = npc_data[nearest]
+	else:
+		npc = npc_data[_scene_idx % npc_data.size()]
 	var name = "NPC #%d" % npc.get("idx", 0)
 	# 선택지 데모: 매 3번째 NPC 는 선택지 표시
 	if _scene_idx % 3 == 0:
@@ -180,6 +188,20 @@ func _input(event: InputEvent) -> void:
 			KEY_T:
 				# T: dialog 테스트
 				_on_dialog_text(PackedByteArray([_scene_idx % 3]))
+			KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8:
+				# 1-8: 빠른 저장 슬롯 (Shift+숫자 = 로드)
+				var slot = event.keycode - KEY_1
+				if Input.is_key_pressed(KEY_SHIFT):
+					if GameState.quick_load(slot):
+						_scene_idx = GameState.current_scene_id
+						_apply_scene()
+						_dialog.show_dialog("System", "슬롯 %d 로드" % slot)
+				else:
+					GameState.current_scene_id = _scene_idx
+					GameState.player_x = int(_hero.position.x)
+					GameState.player_y = int(_hero.position.y)
+					GameState.quick_save(slot)
+					_dialog.show_dialog("System", "슬롯 %d 저장" % slot)
 			KEY_E:
 				# E: NPC 인터랙션 (npc_table.json 의 stat1 을 dialogID 로 사용)
 				_npc_talk()
@@ -200,6 +222,9 @@ func _input(event: InputEvent) -> void:
 			KEY_P:
 				# P: NPC 마커 스폰 (npc_table 좌표 기반)
 				_map.spawn_npcs(_map, 12)
+			KEY_S:
+				# S: 상점 열기
+				_shop.open_shop(0)
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
