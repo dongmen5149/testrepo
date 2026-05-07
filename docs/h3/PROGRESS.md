@@ -66,6 +66,12 @@
 - **`{...}` 중괄호 247개 unique 디코딩**: 아이템명 `[부활의...]`, 금액 `5000G`, 수량 `5|6`, 퀘스트 라벨. → **스크립트 변수 / 보상 데이터 / 선택지** 임. 컨트롤 플로우 opcode 아님.
 - **결론**: _scn 은 대부분 (52% 한국어 + 30% 마크업/punctuation + ~ 18% short markers) 로 구성된 dialogue/script 데이터. 분기/플래그/사운드 트리거 같은 게임 흐름 opcode 는 _scn 안이 아니라 **외부 (Java MIDlet 코드 또는 별도 binary)** 에 있을 가능성. Ghidra 분석 시 `eventManager` / `onEventMessageOkKey` 함수 디스패치 코드 확인 필요.
 
+**A15) boss/enemy cif 구조 추가 분석 (2026-05-07)**
+- boss0_cif (10KB): `7f00ffff` sentinel **229회** 등장. 프레임 구분자로 추정. sentinel 사이 가변 길이 cell list.
+- enemy e000_cif (1.7KB): sentinel 없음. 6-byte 헤더 후 ~17 byte 가변 stride 반복 (byte[3] 가 frame counter f7/f8/f9 등). 단일 sprite × 다수 frame.
+- enemy e001_cif (1.3KB): `8000` 12회 — 다른 sentinel.
+- **결론**: boss/enemy/cif 가 각각 다른 인코딩. boss = sentinel-delimited variable-length, enemy = fixed-stride frame list. 통합 decoder 보다는 각각 별도 함수가 적합. 전투 시스템 구현 시점에 enemy 부터 우선 (단순함).
+
 **A12) boss/enemy cif 구조 비교 → 별도 인코딩 확정 (2026-05-07)**
 - boss0_cif (slot_count=1, indices=[8], 10084 byte) / e000_cif (slot_count=1, indices=[4], 1697 byte) 헤더 분석.
 - **결론**: hero cif 의 `0a XX YY` 41-byte 프레임 구조가 boss/enemy 에는 **적용되지 않음**.
