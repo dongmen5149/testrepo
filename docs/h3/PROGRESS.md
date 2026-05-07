@@ -66,6 +66,12 @@
 - **`{...}` 중괄호 247개 unique 디코딩**: 아이템명 `[부활의...]`, 금액 `5000G`, 수량 `5|6`, 퀘스트 라벨. → **스크립트 변수 / 보상 데이터 / 선택지** 임. 컨트롤 플로우 opcode 아님.
 - **결론**: _scn 은 대부분 (52% 한국어 + 30% 마크업/punctuation + ~ 18% short markers) 로 구성된 dialogue/script 데이터. 분기/플래그/사운드 트리거 같은 게임 흐름 opcode 는 _scn 안이 아니라 **외부 (Java MIDlet 코드 또는 별도 binary)** 에 있을 가능성. Ghidra 분석 시 `eventManager` / `onEventMessageOkKey` 함수 디스패치 코드 확인 필요.
 
+**A18) cif flag byte 분포 분석 (2026-05-07)**
+- 9463 cells (ref ≤0x44) 의 flag byte 통계: 0x00(1035), 0x01(949), 0x02(709), 0x03(412), 0xff(630), 0x19(774), 0x5a(210), 0x84(218) 등.
+- 작은 값 (0x00~0x03) 이 cluster — **draw_order / layer index** 후보. 큰 값(0x19=25, 0x5a=90, 0x84=132)은 메타 잔존 (좌표가 ref 영역으로 넘친 것).
+- cell idx 별로 분포 비교 시 cell 6 은 0x19 dominant — 무기/effect overlay cell 추정. 정확한 의미는 Ghidra 디스어셈으로 확인 필요.
+- 현재 렌더는 flag 무시해도 시각적으로 OK — z-order 가 cell 인덱스 순서와 일치한 결과.
+
 **A16) 9 hero walk-cycle 일괄 베이킹 ✅ (2026-05-07)**
 - `bake_hero_walkcycle.py` 일반화 → `h*_cif` 자동 처리.
 - 성공: h0/h4/h5/h6/h7/h8/h9/h10/h11 (9 캐릭터) × 32 PNG = **288 PNG** → `sprites/hero/h{N}_walk/`.
@@ -212,7 +218,7 @@
 | `_pa` | 216 | ✅ RGBA8888 JSON |
 | `_bm` (file) | 479 | ✅ 다중프레임 지원 |
 | `_bm` (frame) | **3149** | ✅ type 0x0b + **0x0c (2026-05-06 해독)** |
-| `_cif` | 103 | ⚠️ 헤더만 (animation timing 미해독) |
+| `_cif` | 103 | ✅ hero 9 캐릭터 walk-cycle 32 frame 베이크 (288 PNG) / boss·enemy 별도 인코딩 미해독 |
 | `_mp` | 134/135 | ✅ terrain+collision / ✅ extras 97% (데코 마커 7,620개, NPC는 §4.4 의존) |
 | `_scn` | 244 | ⚠️ 대사 추출 (26,415) / opcode 미해독 |
 | `_dat` | 45 | ✅ EUC-KR 한글 추출 |
