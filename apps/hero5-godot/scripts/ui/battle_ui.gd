@@ -84,17 +84,22 @@ func _on_started(name: String) -> void:
 
 
 const DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+const EffectAnim = preload("res://scripts/ui/effect_anim.gd")
 var _last_enemy_hp: int = 0
 var _last_player_hp: int = 0
 
 
 func _on_log(msg: String) -> void:
 	log_box.append_text(msg + "\n")
-	# 데미지 차이 popup
+	# 데미지 차이 popup + 이펙트
 	if _battle.enemy_hp < _last_enemy_hp:
 		var dmg = _last_enemy_hp - _battle.enemy_hp
 		DamagePopup.spawn(bg, enemy_label.position + Vector2(160, 30),
 			"-%d" % dmg, Color(1, 0.4, 0.2))
+		# 이펙트: c/sp/imgcom/eff.mgr 첫 frame sequence
+		var eff_dir = AssetLoader.sprite_dir("c/sp/imgcom/eff.mgr")
+		if not eff_dir.is_empty() and enemy_sprite.texture:
+			EffectAnim.spawn_at(bg, enemy_sprite.position, eff_dir, 12.0)
 	if _battle.player_hp < _last_player_hp:
 		var dmg = _last_player_hp - _battle.player_hp
 		DamagePopup.spawn(bg, player_label.position + Vector2(160, 30),

@@ -33,6 +33,7 @@ const FRAME_PER_TURN := 1   # 1 turn = 1 second equiv (간소화)
 
 
 func start_battle(monster_id: int = 0) -> void:
+	_monster_id = monster_id
 	# enemy_table.json 에서 실제 stats
 	var stats = GameData.enemy_stats(monster_id)
 	enemy_name = "Monster #%d" % monster_id
@@ -134,11 +135,16 @@ func _skill_data(skill_id: int) -> Dictionary:
 	return {"name": name, "mp_cost": 5, "cooldown": 1, "damage_pct": 150}
 
 
+var _monster_id: int = 0
+
+
 func _finish(victory: bool) -> void:
 	if victory:
 		var exp := 10 + randi() % 20
 		var gold := 5 + randi() % 50
 		log_message.emit("승리! EXP +%d  Gold +%d" % [exp, gold])
+		# Quest 처치 카운트 갱신
+		Quest.on_enemy_killed(_monster_id)
 		battle_ended.emit(true, exp, gold)
 	else:
 		battle_ended.emit(false, 0, 0)

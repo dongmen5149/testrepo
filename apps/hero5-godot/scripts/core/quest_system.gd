@@ -19,6 +19,11 @@ var _quests: Array = []     # mission_list
 var _tree: Array = []       # questTree
 var _state: Dictionary = {} # quest_id → status
 
+# 처치 카운트 추적: { quest_id: { monster_id: count } }
+var _kill_counts: Dictionary = {}
+# 처치 목표: { quest_id: { monster_id: target } }  — quest 데이터에서 로드 가능
+var _kill_targets: Dictionary = {}
+
 
 func _ready() -> void:
 	var p := "res://assets/gamedata/quests.json"
@@ -38,8 +43,42 @@ func quest_name(qid: int) -> String:
 
 func start(qid: int) -> void:
 	_state[qid] = STATUS_ACTIVE
+	# 기본 목표: 첫 5개 quest 는 monster 처치형 (qid % 75 의 enemy 3마리)
+	if qid >= 0 and qid < 5:
+		var target_monster = qid % 75
+		_kill_targets[qid] = {target_monster: 3}
+		_kill_counts[qid] = {target_monster: 0}
 	quest_started.emit(qid, quest_name(qid))
 	quest_status_changed.emit(qid, STATUS_ACTIVE)
+
+
+## 적 처치 알림 — 활성 퀘스트의 카운트 갱신, 목표 달성 시 자동 완료.
+func on_enemy_killed(monster_id: int) -> void:
+	for qid in _kill_targets.keys():
+		if _state.get(qid, STATUS_INACTIVE) != STATUS_ACTIVE: continue
+		var targets: Dictionary = _kill_targets[qid]
+		if monster_id not in targets: continue
+		var counts: Dictionary = _kill_counts.get(qid, {})
+		counts[monster_id] = int(counts.get(monster_id, 0)) + 1
+		_kill_counts[qid] = counts
+		# 모든 목표 달성?
+		var all_done = true
+		for mid in targets:
+			if int(counts.get(mid, 0)) < int(targets[mid]):
+				all_done = false; break
+		if all_done:
+			complete(qid)
+
+
+func quest_progress_text(qid: int) -> String:
+	if qid not in _kill_targets: return ""
+	var targets: Dictionary = _kill_targets[qid]
+	var counts: Dictionary = _kill_counts.get(qid, {})
+	var lines: Array = []
+	for mid in targets:
+		lines.append("  몬스터 #%d: %d/%d" % [
+			mid, int(counts.get(mid, 0)), int(targets[mid])])
+	return "\n".join(lines)
 
 
 func complete(qid: int) -> void:

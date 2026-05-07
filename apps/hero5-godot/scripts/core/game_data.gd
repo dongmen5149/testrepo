@@ -64,6 +64,27 @@ func menu_text(idx: int) -> String:
 	return ""
 
 
+## quest_NN.dat 의 한글 대사 (453 records 중 idx 번째 의 첫 한글 발췌).
+##   episode 0/1/2 에 해당.
+var _quest_text_cache: Array = []
+
+func quest_dialogue(idx: int, episode: int = 0) -> String:
+	if _quest_text_cache.is_empty():
+		var p := "res://assets/gamedata/quests_text.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_quest_text_cache = JSON.parse_string(f.get_as_text()) or []
+	if episode >= _quest_text_cache.size(): return ""
+	var ep = _quest_text_cache[episode]
+	var records = ep.get("records", [])
+	if idx < 0 or idx >= records.size(): return ""
+	var korean: Array = records[idx].get("korean", [])
+	if korean.is_empty(): return ""
+	# 첫 두 한글 발췌 (전체는 너무 길어 dialog 한 줄 분량으로 자름)
+	var combined = " ".join(korean[:3])
+	return combined.substr(0, 80)
+
+
 ## 인게임 텍스트 (시스템 메시지 등).
 func ingame_text(idx: int) -> String:
 	var arr = names("c/csv/ingame_text.dat")

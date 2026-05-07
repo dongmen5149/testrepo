@@ -180,6 +180,28 @@ func collision_at(px: int, py: int) -> int:
 	return v
 
 
+## warp tile 감지 — collision value 가 0x40+ 범위면 다음 scene id (간이 룰).
+##   원본은 별도 warp table 사용하지만, 우리는 high collision 값을 warp 마커로.
+signal warp_triggered(target_scene: int)
+
+
+func check_warp(px: int, py: int) -> int:
+	if _col_data.is_empty(): return -1
+	var tx := px / TILE_SIZE
+	var ty := py / TILE_SIZE
+	if tx < 0 or tx >= _col_width or ty < 0 or ty >= _col_height:
+		return -1
+	var idx := ty * _col_width + tx
+	if idx >= _col_data.size(): return -1
+	var v := _col_data[idx]
+	# 0x40-0x7F 범위 = warp marker (룰 가설)
+	if v >= 0x40 and v < 0x80:
+		var target_scene = v - 0x40
+		warp_triggered.emit(target_scene)
+		return target_scene
+	return -1
+
+
 func _try_load(prefix: String, idx: int) -> Texture2D:
 	for digits in [3, 2]:  # try 3-digit then 2-digit
 		var fmt := "res://assets/gbm/map/%s_%0*d.png" % [prefix, digits, idx]

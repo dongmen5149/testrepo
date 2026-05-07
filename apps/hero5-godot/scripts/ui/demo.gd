@@ -59,6 +59,10 @@ func _ready() -> void:
 				GameState.add_battle_reward(exp, gold))
 	# 레벨업 popup
 	GameState.level_up.connect(_on_level_up)
+	# warp 감지: hero 가 이동하면 check_warp
+	if _hero.has_signal("moved"):
+		_hero.moved.connect(_on_hero_moved)
+	_map.warp_triggered.connect(_on_warp)
 	# 아이템 사용 알림
 	if _status.has_signal("item_used"):
 		_status.item_used.connect(func(name):
@@ -122,14 +126,16 @@ func _npc_talk() -> void:
 		if not _dialog.choice_selected.is_connected(_on_npc_choice):
 			_dialog.choice_selected.connect(_on_npc_choice)
 		return
-	var dlg_id = int(npc.get("stat1", 0))
-	if dlg_id != 65535:
-		var msg = GameData.ingame_text(dlg_id)
-		if msg.is_empty():
-			msg = "안녕하시오, 모험가여."
-		_dialog.show_dialog(name, msg)
-	else:
-		_dialog.show_dialog(name, "...")
+	# quest_text 우선 시도, 없으면 ingame_text fallback
+	var npc_idx = int(npc.get("idx", 0))
+	var msg = GameData.quest_dialogue(npc_idx, _scene_idx % 3)
+	if msg.is_empty():
+		var dlg_id = int(npc.get("stat1", 0))
+		if dlg_id != 65535:
+			msg = GameData.ingame_text(dlg_id)
+	if msg.is_empty():
+		msg = "안녕하시오, 모험가여."
+	_dialog.show_dialog(name, msg)
 
 
 func _on_npc_choice(idx: int) -> void:
@@ -146,6 +152,17 @@ func _on_npc_choice(idx: int) -> void:
 func _on_change_bgm(args: PackedByteArray) -> void:
 	if args.size() >= 1:
 		Audio.play_bgm(args[0])
+
+
+func _on_hero_moved(new_pos: Vector2) -> void:
+	_map.check_warp(int(new_pos.x), int(new_pos.y))
+
+
+func _on_warp(target_scene: int) -> void:
+	if target_scene < 0 or target_scene >= _scene_index.size(): return
+	_scene_idx = target_scene
+	_apply_scene()
+	_dialog.show_dialog("System", "이동: scene #%d" % target_scene)
 
 
 func _on_level_up(new_level: int, gained_skills: Array) -> void:

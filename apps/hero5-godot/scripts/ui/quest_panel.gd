@@ -46,7 +46,17 @@ func _refresh() -> void:
 
 
 func _on_active_selected(idx: int) -> void:
-	info.text = active_list.get_item_text(idx)
+	# 활성 quest_id 찾기 (enumerate)
+	var active_qids: Array = []
+	for qid in Quest._state.keys():
+		if Quest._state[qid] == Quest.STATUS_ACTIVE:
+			active_qids.append(qid)
+	if idx < active_qids.size():
+		var qid = active_qids[idx]
+		var prog = Quest.quest_progress_text(qid)
+		info.text = "%s\n%s" % [Quest.quest_name(qid), prog if not prog.is_empty() else "진행 중"]
+	else:
+		info.text = active_list.get_item_text(idx)
 
 
 func _on_completed_selected(idx: int) -> void:
