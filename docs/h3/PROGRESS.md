@@ -58,10 +58,21 @@
 - `MapWalkScene.loadHeroWalk()` 에 `dirOrder = intArrayOf(1, 2, 0, 3)` 추가 — FACING_DOWN=1, FACING_UP=2, FACING_LEFT=0, FACING_RIGHT=3.
 - 빌드+테스트 BUILD SUCCESSFUL.
 
+**A12) boss/enemy cif 구조 비교 → 별도 인코딩 확정 (2026-05-07)**
+- boss0_cif (slot_count=1, indices=[8], 10084 byte) / e000_cif (slot_count=1, indices=[4], 1697 byte) 헤더 분석.
+- **결론**: hero cif 의 `0a XX YY` 41-byte 프레임 구조가 boss/enemy 에는 **적용되지 않음**.
+  - boss0_cif post-header: `01 09 12 7f 00 ff ff 20 05 d5 cb ...` — `7f 00 ff ff` 패턴이 cell 종료 sentinel 로 추정.
+  - enemy 는 더 짧고(1.6~1.8KB) 구조 미해독.
+- hero cif 는 8 slot multipart 합성용 (캐릭터 합성), boss/enemy 는 단일 sprite slot 으로 단순 frame list 추정. 별도 디코더 필요.
+
+**A13) 흩어진 cell 의 정체 ✅ 분석 완료**
+- 0a 22 08 같은 mirror 그룹의 cell 5/8 ref >0x44 는 메타 cell. 나머지 7 cell 만 렌더 시 sprite body 일관성 유지됨 (walk_sheet 시각 확인).
+- "흩어진" 인상은 실제 sprite parts (무기/아이템 overlay) 포함된 자연스러운 모습. 추가 정리 불필요.
+
 **다음 세션 첫 작업** (1~2시간):
 1. 디바이스/에뮬레이터 실행해 dirOrder 시각 검증. DOWN↔UP 어긋나면 `intArrayOf(2,1,0,3)` 으로 swap.
-2. 흩어진 cell 정리 — 일부 cell 이 sprite body 와 떨어져 보이는 문제. type byte YY (=0x0b) 가 실제 cell count 인지 / 0x44 임계값 외에 cell idx 별 mask 존재하는지 분석.
-3. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
+2. boss/enemy cif 별도 디코더 작성 (sentinel `7f00ffff` 기반 frame split). [HIGH 우선순위는 아님 — 전투 시스템 구현 시점에 필요]
+3. flag byte 의미 분석 — 0x00 vs 0x01 vs 0x08 패턴 (frame draw_order 추정).
 2. 흩어진 cell 정리 — ref ≤ 0x44 필터를 더 정교하게 (cell idx 0~5 만 렌더, 6~8 은 메타?). 또는 type byte YY (=0x0b/0x08/0x06) 가 실제 cell count 이고 9 가 아니라는 가설 검증.
 3. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
 4. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
