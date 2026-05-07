@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-07 — Phase 2-A 완료 + Ghidra hash 복원 + DEX 메소드 분석 (stub 확인) + TINY_META 정식 파서.
+업데이트: 2026-05-07 — **Phase 2-B 완료** (자산 이름 99.3% 복원). Ghidra caller 분석 → .so format strings → 패턴 brute-force.
 
 ---
 
@@ -278,7 +278,56 @@ body_count rows × (kind+2) bytes each:
 - `work/h5/analysis/tiny_meta.tsv` — row-level dump
 - `work/h5/analysis/tiny_meta_summary.txt` — 통계
 
-#### 2-A.10 다음 단계 (Phase 2 마무리)
+#### 2-A.10 자산 이름 99.3% 복원 — ✅ 완료 (2026-05-07)
+
+**돌파구**: Ghidra 로 `loadAssetFromVFS` caller 추적 → `getAssetSizeFromVFS(this, assetname, ...)`
+가 **string 직접 사용** 확인 → 이름이 native binary 안에 sprintf format-string 으로 박혀 있음.
+
+`.so` 의 모든 format string 스캔 (`tools/h5_recover_names.py` pass 1):
+```
+c/calc/calc_<region>.dat       c/csv/<table>.dat / enemy_/item_/quest_/skill_/etc
+c/csv2/help_<region>.dat        c/font/{eng,kor}.fnt + table.dat + type.dat
+c/img/<ui>.mgr                  c/sp/img{0..6}/%03d.mgr
+c/sp/cif/%03d.cif               c/sp/ext/%03d.ext
+c/sp/imgcom/<named>.mgr         c/sp/empty/empty.mgr
+c/sp/pal/%03d.pal (557개)       c/map/{face_%02d, obj_%03d, fgi_%03d, tile_%03d}.gbm
+c/map/seaani_%03d.pal           c/map/%05d.scn (5-digit numeric scenes)
+c/map/(md)%02d                   c/map_sp/{fgi%03d, ms%03d, ms_img%02d.mgr, %03d.ext}
+c/mon/%d_ai                     c/par/{p%03d, ps%03d, pimg%02d.mgr, pinfo.dat}
+c/snd/{bgm_%02d, eff_%02d}.{ogg,mmf}
+c/iconpal/{226..232}_%03d.pal   c/ep/ep_%d/s%d_%03d.scn
+```
+
+**결과 진행**:
+| 단계 | 매칭 | 누적% |
+|---|---:|---:|
+| pass 1 (.so suffix slice) | 78 | 3.6% |
+| pass 2 (sprite/pal numeric) | 1,205 | 55.0% |
+| pass 3 (map/snd/par/mon/ep + map %05d.scn) | 2,171 | 99.2% |
+| pass 4–7 (iconpal/csv/named) | 2,174 | **99.3%** |
+
+**잔여 15개**: 짝지어진 동일 크기 (1141/1142, 1644/1645) i18n 추정 + 큰 파일 (37KB) + 작은
+isolated bins. 후속 작업으로 보류.
+
+**False-positive 위험**: 32-bit DJB2 충돌 가능성 있으나, 패턴이 매우 구조적
+(c/<dir>/<numbered>) 이고 90% 이상이 연속 인덱스 클러스터로 매칭되어 매우 낮음.
+
+산출:
+- `tools/h5_recover_names.py` — 통합 복원기 (pass 0–7)
+- `tools/h5_dex_extract_names.py` — DEX 파서 (CletEntry/MidasAssetManager 분석 확인)
+- `tools/ghidra/FindAssetNameTable.java` — caller XREF + .rodata string-array 스캐너
+- `tools/ghidra/DecompileNameLookup.java` — `getUniqueAssetNameFromID` JNI 브리지 본문
+- `work/h5/analysis/asset_names.tsv` — **2,174 / 2,189 (99.3%) 복원된 이름**
+- `work/h5/analysis/asset_callers.c` — caller 디컴파일
+- `work/h5/analysis/name_lookup.c` — JNI 브리지 + hash 함수
+
+**핵심 발견 (PROGRESS 6.2 [P1] 가설 수정)**:
+- `MidasAssetManager.assetNameFromNumericHash` (Java Hashtable) 는 **DEX 에서 절대 populate 안 됨**
+- C++ `AndroidService::getUniqueAssetNameFromID` 는 JNI 로 빈 Hashtable 을 lookup 하므로 **항상 null 반환**
+- → 게임 코드는 native side 에서 **string literal 직접 사용** (`MC_knlGetResourceID(name)` 등)
+- → 이름 → ID 매핑은 빌드 타임에만 존재, 런타임에는 hash 만 사용
+
+#### 2-A.11 다음 단계 (Phase 2 마무리)
 
 1. ~~DEX 디컴파일러~~ → **차단 확정** (2-A.8). Java 메소드는 stub. 다음 단계는 **native binary 안의 string array 추적** — Ghidra 에서 `loadAssetFromVFS` 의 caller 들이 참조하는 .rodata 영역 string-pointer 배열을 찾아야 함.
 2. ~~TINY_META 정식 파서~~ → 완료 (2-A.9). 다음: **payload 의 5 슬롯 의미 확정** — Ghidra 로 `MIDASKernelManager` 내 7-byte record 를 `fread` 하는 함수 검색.
@@ -313,7 +362,7 @@ body_count rows × (kind+2) bytes each:
 | 스프라이트 | ✅ 426 파일 / 3,798 PNG (유효 100%) | `tools/converter/convert_h5_sprite.py`, `work/h5/converted/sprites/` |
 | 한글 코퍼스 | ✅ 18,837 unique strings | `work/h5/converted/text/_corpus.txt` |
 | Hash 함수 | ✅ DJB2 (init=0x1505, mul=0x21) | `tools/h5_recover_names.py` |
-| 자산 이름 복원 | ⚠ 1/2189 (`version.txt` 만) — Java stub 확인됨, native 추적 대기 | `tools/h5_dex_extract_names.py`, `tools/h5_recover_names_v2.py` |
+| 자산 이름 복원 | ✅ 2,174 / 2,189 (99.3%) — .so format-string 추출 + 패턴 brute-force | `tools/h5_recover_names.py`, `work/h5/analysis/asset_names.tsv` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
