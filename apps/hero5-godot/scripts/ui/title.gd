@@ -38,7 +38,7 @@ func _on_new_game() -> void:
 	GameState.gold = 1000
 	GameState.inventory = []
 	GameState.flags = {}
-	get_tree().change_scene_to_file("res://scenes/demo.tscn")
+	get_tree().change_scene_to_file("res://scenes/class_select.tscn")
 
 
 var _selected_slot: int = -1
@@ -71,10 +71,14 @@ func _refresh_slots() -> void:
 		var p = s.get("player", {})
 		var btn := Button.new()
 		btn.name = "Slot_%d" % slot
-		btn.text = "[%d] Lv.%d  scn#%d  %s" % [
+		var pt = int(s.get("play_time_sec", 0))
+		var hh = pt / 3600; var mm = (pt % 3600) / 60
+		btn.text = "[%d] Lv.%d cls%d %dG inv%d  %02d:%02d" % [
 			slot, int(p.get("level", 1)),
-			s.get("scene_id", 0),
-			s.get("timestamp", "?").substr(0, 10)]
+			int(p.get("class_id", 0)),
+			int(p.get("gold", 0)),
+			int(s.get("inventory_count", 0)),
+			hh, mm]
 		btn.position = Vector2(8, 380 + slot * 22)
 		btn.size = Vector2(304, 20)
 		btn.add_theme_font_size_override("font_size", 10)

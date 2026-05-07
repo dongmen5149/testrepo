@@ -25,9 +25,52 @@ var _shown: bool = false
 const SLOT_NAMES := ["무기", "방어구", "투구", "장화", "악세1", "악세2"]
 
 
+signal item_used(item_name: String)
+
 func _ready() -> void:
 	visible = false
+	inv_list.item_activated.connect(_on_item_activated)
 	_apply()
+
+
+## 더블클릭/엔터로 아이템 사용 (포션 등).
+func _on_item_activated(idx: int) -> void:
+	# idx 0..5 = 장비 슬롯 (장착/해제)
+	# idx 6 = 구분선
+	# idx 7+ = 인벤 항목
+	var inv: Array = _state["inventory"]
+	var equipment: Array = _state.get("equipment", [])
+	if idx >= 0 and idx < equipment.size():
+		# 장비 슬롯 클릭 → 해제
+		GameState.unequip(idx)
+		return
+	var inv_idx = idx - equipment.size() - 1  # -1 for "--- 인벤토리 ---" 구분선
+	if inv_idx < 0 or inv_idx >= inv.size(): return
+	var item_name := str(inv[inv_idx])
+	_use_item(item_name, inv_idx)
+
+
+func _use_item(item_name: String, inv_idx: int) -> void:
+	# 포션류 자동 식별 (이름에 "포션" 또는 "수프가루")
+	if "포션" in item_name or "수프가루" in item_name:
+		var heal := 30
+		GameState.hp = min(GameState.max_hp, GameState.hp + heal)
+		# 인벤에서 1개 제거
+		GameState.inventory.remove_at(inv_idx)
+		GameState.state_changed.emit()
+		item_used.emit(item_name)
+		return
+	# 무기/방어구 자동 장착 (이름에 "검" / "소드" 등)
+	if "검" in item_name or "소드" in item_name or "액스" in item_name:
+		GameState.inventory.append(item_name)  # keep
+		GameState.equip(GameState.SLOT_WEAPON, GameState.inventory.size() - 1)
+		return
+	if "갑옷" in item_name or "투구" in item_name or "장화" in item_name:
+		var slot = GameState.SLOT_ARMOR
+		if "투구" in item_name: slot = GameState.SLOT_HELMET
+		elif "장화" in item_name: slot = GameState.SLOT_BOOTS
+		GameState.equip(slot, inv_idx)
+		return
 
 
 func toggle() -> void:

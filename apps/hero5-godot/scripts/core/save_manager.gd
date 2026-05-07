@@ -15,23 +15,36 @@ static func save_path(slot: int) -> String:
 
 
 static func make_payload(state: Dictionary) -> Dictionary:
+	var inv: Array = state.get("inventory", [])
 	return {
 		"version": SAVE_VERSION,
 		"timestamp": Time.get_datetime_string_from_system(),
+		"play_time_sec": int(state.get("play_time_sec", 0)),
 		"scene_id": state.get("scene_id", 0),
 		"map_id": state.get("map_id", 0),
 		"player": {
 			"x": state.get("player_x", 0),
 			"y": state.get("player_y", 0),
 			"dir": state.get("player_dir", 0),
+			"class_id": state.get("class_id", 0),
 			"hp": state.get("hp", 100),
+			"max_hp": state.get("max_hp", 100),
 			"sp": state.get("sp", 100),
+			"max_sp": state.get("max_sp", 100),
 			"level": state.get("level", 1),
 			"exp": state.get("exp", 0),
 			"gold": state.get("gold", 0),
+			"str": state.get("stat_str", 0),
+			"dex": state.get("stat_dex", 0),
+			"int": state.get("stat_int", 0),
+			"con": state.get("stat_con", 0),
 		},
-		"inventory": state.get("inventory", []),
+		"inventory": inv,
+		"inventory_count": inv.size(),
+		"equipment": state.get("equipment", []),
+		"unlocked_skills": state.get("unlocked_skills", []),
 		"flags": state.get("flags", {}),
+		"quest": state.get("quest", {}),
 	}
 
 
@@ -70,8 +83,10 @@ static func list_slots() -> Array:
 			out.append({
 				"slot": i,
 				"timestamp": data.get("timestamp", ""),
+				"play_time_sec": data.get("play_time_sec", 0),
 				"scene_id": data.get("scene_id", 0),
 				"player": data.get("player", {}),
+				"inventory_count": data.get("inventory_count", 0),
 			})
 	return out
 

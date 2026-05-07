@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_class_select"]
+
+[ext_resource type="Script" path="res://scripts/ui/class_select.gd" id="1_class"]
+
+[node name="ClassSelect" type="Control"]
+script = ExtResource("1_class")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="BG" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.1, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 32.0
+offset_right = 312.0
+offset_bottom = 64.0
+text = "캐릭터 클래스 선택"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+
+[node name="Info" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 72.0
+offset_right = 312.0
+offset_bottom = 96.0
+text = "전투 스타일에 맞는 클래스를 선택하세요"
+horizontal_alignment = 1
+
+[node name="ClassList" type="ItemList" parent="."]
+offset_left = 60.0
+offset_top = 120.0
+offset_right = 260.0
+offset_bottom = 280.0
+
+[node name="StatLabel" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 300.0
+offset_right = 312.0
+offset_bottom = 360.0
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+
+[node name="StartButton" type="Button" parent="."]
+offset_left = 80.0
+offset_top = 400.0
+offset_right = 240.0
+offset_bottom = 432.0
+text = "여행 시작"

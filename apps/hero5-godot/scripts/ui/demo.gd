@@ -59,6 +59,10 @@ func _ready() -> void:
 				GameState.add_battle_reward(exp, gold))
 	# 레벨업 popup
 	GameState.level_up.connect(_on_level_up)
+	# 아이템 사용 알림
+	if _status.has_signal("item_used"):
+		_status.item_used.connect(func(name):
+			_dialog.show_dialog("System", "%s 사용 (HP +30)" % name))
 	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
 	add_child(_battle_ui)
 	_shop = preload("res://scenes/shop_panel.tscn").instantiate()

@@ -466,6 +466,10 @@ isolated bins. 후속 작업으로 보류.
 | 장비 stat 자동 적용 | ✅ equipment_bonus / total_attack/defense → 전투에 반영 | `game_state.gd` |
 | Quest UI | ✅ 활성/완료 분리 ItemList + 정보 패널 (Q키) | `quest_panel.gd/.tscn` |
 | BGM cross-fade | ✅ 0.3+0.3s tween 으로 부드러운 전환 | `audio_manager.gd::_fade_swap` |
+| 클래스 선택 화면 | ✅ Title → New Game → Class Select → Demo (5 클래스 + stat) | `apps/hero5-godot/scenes/class_select.tscn` |
+| NPC sprite 텍스처 | ✅ sprite_id → sprites/imgN/NNN/frame_00 자동 검색 (없으면 색박스) | `map_renderer.gd::_try_load_npc_sprite` |
+| 포션/장비 사용 | ✅ inv 더블클릭 → 포션 사용 (HP+30) / 무기/방어구 자동 장착 | `status_panel.gd::_use_item` |
+| 세이브 메타 확장 | ✅ play_time/class_id/stats/equipment/unlocked_skills/quest 포함 | `save_manager.gd::make_payload` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

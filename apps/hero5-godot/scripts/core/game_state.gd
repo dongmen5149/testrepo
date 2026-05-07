@@ -102,17 +102,31 @@ func total_defense() -> int:
 
 var verbose: bool = true
 
+# 플레이 시간 추적
+var play_time_sec: float = 0.0
+
+
+func _process(delta: float) -> void:
+	play_time_sec += delta
+
 
 func to_save_dict() -> Dictionary:
 	return {
 		"scene_id": current_scene_id,
 		"map_id": map_id,
+		"play_time_sec": int(play_time_sec),
 		"player_x": player_x, "player_y": player_y, "player_dir": player_dir,
+		"class_id": class_id,
 		"hp": hp, "max_hp": max_hp,
 		"sp": sp, "max_sp": max_sp,
 		"level": level, "exp": exp, "gold": gold,
+		"stat_str": stat_str, "stat_dex": stat_dex,
+		"stat_int": stat_int, "stat_con": stat_con,
 		"inventory": inventory,
+		"equipment": equipment,
+		"unlocked_skills": unlocked_skills,
 		"flags": flags,
+		"quest": Quest.to_save() if Quest else {},
 	}
 
 

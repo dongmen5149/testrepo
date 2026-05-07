@@ -106,11 +106,22 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 		var ty = int(flags[3])
 		if sprite_id == 0xFF or tx == 0xFF or ty == 0xFF: continue
 		if tx == 0 and ty == 0: continue
-		var marker = ColorRect.new()
+		# 실제 sprite 텍스처 시도 (sprite_id 기반 c/sp/img0/NNN/frame_00 검색)
+		var marker: Node2D
+		var tex = _try_load_npc_sprite(sprite_id)
+		if tex:
+			var spr = Sprite2D.new()
+			spr.texture = tex
+			spr.centered = false
+			spr.position = Vector2(tx * TILE_SIZE + 4, ty * TILE_SIZE)
+			marker = spr
+		else:
+			var rect = ColorRect.new()
+			rect.color = Color(0.4, 0.8, 1.0, 0.85)
+			rect.size = Vector2(TILE_SIZE * 0.8, TILE_SIZE * 0.8)
+			rect.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE)
+			marker = rect
 		marker.name = "NPC_%d" % r.get("idx", 0)
-		marker.color = Color(0.4, 0.8, 1.0, 0.85)
-		marker.size = Vector2(TILE_SIZE * 0.8, TILE_SIZE * 0.8)
-		marker.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE)
 		parent.add_child(marker)
 		# label
 		var lbl := Label.new()
@@ -182,4 +193,20 @@ static func get_face(idx: int) -> Texture2D:
 	var p := "res://assets/gbm/map/face_%02d.png" % idx
 	if FileAccess.file_exists(p):
 		return load(p)
+	return null
+
+
+## sprite_id 로 NPC 첫 frame 텍스처 시도 (img0/NNN/frame_00_*.png).
+func _try_load_npc_sprite(sprite_id: int) -> Texture2D:
+	for cat in range(7):
+		var dir := "res://assets/sprites/img%d/%03d" % [cat, sprite_id]
+		if not DirAccess.dir_exists_absolute(dir): continue
+		var d := DirAccess.open(dir)
+		if d == null: continue
+		d.list_dir_begin()
+		var fname := d.get_next()
+		while fname != "":
+			if fname.begins_with("frame_00") and fname.ends_with(".png"):
+				return load(dir + "/" + fname)
+			fname = d.get_next()
 	return null
