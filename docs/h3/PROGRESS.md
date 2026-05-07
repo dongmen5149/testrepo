@@ -41,11 +41,16 @@
   - `0a2208 @1039` (mirror): 일부 cell ref 0x82/0xeb 가 풀 범위 초과 → 9-cell 고정 가정이 over-fit. 실제 cell count 가변, 후행 byte 는 메타.
 - **결정사항**: cell 0~8 중 ref ≤ 0x44 인 것만 렌더 cell, 그 외는 메타데이터. 정확한 cell count 인코딩은 추후 (count byte 0x0b 의미 재해석 필요).
 
+**A9) 4방향 walk-cycle PNG 베이킹 ✅ (2026-05-07 완료)**
+- [tools/converter/bake_hero_walkcycle.py](../../tools/converter/bake_hero_walkcycle.py) — h0_cif 첫 4 그룹 × 8 frame = 32 PNG 베이킹.
+- 산출: [android/app/src/main/assets/sprites/hero/h0_walk/dir{0..3}_{0..7}.png](../../android/app/src/main/assets/sprites/hero/h0_walk/)
+- 각 방향(0=group1@12, 1=group2@341, 2=group3@670, 3=group4@1039)에서 영웅 sprite 가 시각 확인됨. 일부 cell 은 메타라 떨어져 보이지만 main body 는 일관됨.
+
 **다음 세션 첫 작업** (1~2시간):
-1. cell count 정확히 결정 — `0a XX YY` 의 YY 또는 type 별 fixed count 매핑 추출. ref<=0x44 필터로 동작은 가능.
-2. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
-3. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀로 추정).
-4. Android `MapWalkScene` — 4방향 walk-cycle (group `0a020b`, `0a2208`, `0a0208`, `0a2306` 의 8 frame 그룹) 을 합성해 placeholder 색상 영웅을 실제 sprite 로 교체.
+1. Android `MapWalkScene.loadHeroFrames()` — `hero/h00000_bm` 대신 `hero/h0_walk/dir{facing}_{anim}.png` 로딩. facing→dir 매핑 결정 (시각 비교).
+2. 흩어진 cell 정리 — ref ≤ 0x44 필터를 더 정교하게 (cell idx 0~5 만 렌더, 6~8 은 메타?). 또는 type byte YY (=0x0b/0x08/0x06) 가 실제 cell count 이고 9 가 아니라는 가설 검증.
+3. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
+4. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
 
 ---
 
