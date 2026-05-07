@@ -205,4 +205,28 @@ errors=0 양 게임 모두. 다음: [`next-steps.md`](next-steps.md) 의 Phase B
    - [docs/REMAKE_METHODOLOGY.md](../REMAKE_METHODOLOGY.md) 신규 — "리메이크" 의 정의 + JAR/APK 케이스별 작업 방식 + 시리즈 진행 기록
    - [Readme.md](../../Readme.md) 상단에 방법론 문서 링크 추가
 
-다음 작업: [next-steps.md](next-steps.md) 의 **A3 → A2 → B** 순서 권장. 자세한 "이어서 진행해줘" 시나리오는 동 문서 §⏭ 참조.
+---
+
+## 📜 세션 (2026-05-07 후속) — A3 + DES 발견
+
+1. **A3 — translation_dict.py game-aware 리팩토링 완료**
+   - `CHARACTERS_H3` / `CHARACTERS_H4`, `PLACES_H3` / `PLACES_H4` 분리 (이전 `CHARACTERS` / `PLACES` 는 H3 alias 로 보존 → 기존 호출자 무회귀)
+   - `for_game(id)` / `all_translations(id)` 게임별 묶음 조회 API 추가
+   - [translate_dialogues.py](../../tools/i18n/translate_dialogues.py) 의 `build_system_prompt` 가 `_g.id` 기반으로 게임 헤더 (`GAME_HEADERS`) + dict 자동 선택
+   - Hero4 zone 12개 prefill: 뮤리아스/핀디아스/팔리아스/고리아스 (켈트 4 보물 도시) + 수레바퀴섬/매도우힐/이름없는섬/아눈섬/검은바위섬/은바위섬/해적소굴/환영의검
+   - `--dry-run` 이 corpus 부재시에도 system prompt 검증 가능하도록 수정
+   - 검증: `HERO_GAME=h4 python translate_dialogues.py --dry-run` → 219 항목, Hero4 헤더 + Tuatha Dé Danann 설명 정상 출력. Hero3 회귀 없음 (249 항목 그대로)
+
+2. **🚨 A1 차단 원인 발견 — Hero4 SCN = DES 암호화**
+   - 증상: `dialogue_corpus.json` 에 한자/깨진 문자 (`曝삑킴`, `承孼`, `偉煌`) — Hero3 의 EUC-KR extractor 가 random 바이트를 garbage 로 디코딩
+   - Hero3 SCN 첫 64B = `00 00 00 ff ff ff ...` plaintext bytecode
+   - Hero4 SCN 첫 64B = `28 69 6c 88 a4 2a ca 09 ...` **high-entropy 암호 바이트**
+   - **결정적 단서**: `work/h4/extracted/DAT/_DAT_DES` (824 bytes) 가 표준 DES 알고리즘 테이블 (PC-1, E-box, P-box, S1) 을 그대로 담고 있음을 검증. 따라서 Hero4 는 표준 DES (custom 알고리즘 아님)
+   - Hero5 의 `KEY4ENCRYPT` (`ff 00 00 00 0a 33 22 3c 31 11 21 39 02 09 13 2a`) 패턴을 Hero4 binary 에서 검색 → **NOT FOUND**. Hero4 는 별도 키 사용
+   - **다음 단계 (Phase B 1순위)**: Ghidra 에서 `/DAT/_DAT_DES` (string @ 0x86ecc) xref 추적 → SCN decryption 진입점 → DES key 8 bytes 추출. 키 발견 후 SCN 재복호화 → corpus 재생성 → A1 진행 가능
+
+3. **문서 갱신**
+   - [next-steps.md](next-steps.md): A1 ⛔ DES 차단 표시, Phase B 우선순위 표 최상단에 **DES key (8 bytes)** 추가
+   - 해당 발견 요약 inline note 추가
+
+다음 작업: **Phase B (Ghidra GUI)** — A2 (Ghidra 프로젝트 셋업) 부터 사용자 환경 작업 필요. 1순위 함수: `_DAT_DES` xref → SCN decrypt 진입점 → 8-byte key 발굴.
