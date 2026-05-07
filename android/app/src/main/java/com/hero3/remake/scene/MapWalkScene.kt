@@ -109,7 +109,7 @@ class MapWalkScene(
     }
 
     private var map: MapData? = null
-    private val heroFrames: List<Bitmap>
+    private val heroWalk: List<List<Bitmap>>  // [dir 0..3][anim 0..7]
     private val npcSprites: MutableMap<String, Bitmap> = mutableMapOf()
 
     init {
@@ -118,7 +118,7 @@ class MapWalkScene(
         if (gameState.heroX < 0 || gameState.heroY < 0) {
             map?.let { gameState.resetPosition(it.id, it.w / 2, it.h / 2) }
         }
-        heroFrames = loadHeroFrames()
+        heroWalk = loadHeroWalk()
         SfxBus.playMusic(SfxBus.Bgm.FIELD)
     }
 
@@ -171,15 +171,15 @@ class MapWalkScene(
         }.getOrNull()?.also { npcSprites[npc.id] = it }
     }
 
-    private fun loadHeroFrames(): List<Bitmap> {
-        val dir = "${settings.spritesDir()}/hero/h00000_bm"
-        val files = runCatching {
-            context.assets.list(dir)?.filter { it.endsWith(".png") }?.sorted() ?: emptyList()
-        }.getOrDefault(emptyList())
-        return files.mapNotNull { name ->
-            runCatching {
-                context.assets.open("$dir/$name").use { BitmapFactory.decodeStream(it) }
-            }.getOrNull()
+    private fun loadHeroWalk(): List<List<Bitmap>> {
+        // h0_cif 베이크 결과: dir0..3 × anim 0..7 (32 PNG). dir 매핑은 GameState.FACING_* 와 동일 순서 가정 (DOWN/UP/LEFT/RIGHT).
+        val dir = "${settings.spritesDir()}/hero/h0_walk"
+        return (0..3).map { d ->
+            (0..7).mapNotNull { f ->
+                runCatching {
+                    context.assets.open("$dir/dir${d}_${f}.png").use { BitmapFactory.decodeStream(it) }
+                }.getOrNull()
+            }
         }
     }
 
@@ -312,7 +312,7 @@ class MapWalkScene(
         animTimer += deltaMs
         if (animTimer >= animFrameMs) {
             animTimer = 0L
-            animFrame = (animFrame + 1) % heroFrames.size.coerceAtLeast(1)
+            animFrame = (animFrame + 1) % 8
         }
 
         moveTimer -= deltaMs
@@ -457,10 +457,10 @@ class MapWalkScene(
             }
         }
 
-        // 영웅 그리기 — 방향에 맞는 frame 우선, 없으면 cycle
+        // 영웅 그리기 — 방향별 8 frame walk-cycle
         val facing = gameState.heroFacing.coerceIn(0, 3)
-        val frame = heroFrames.getOrNull(facing)
-            ?: heroFrames.getOrNull(animFrame.coerceAtMost(heroFrames.size - 1))
+        val dirFrames = heroWalk.getOrNull(facing).orEmpty()
+        val frame = dirFrames.getOrNull(animFrame % dirFrames.size.coerceAtLeast(1))
         if (frame != null) {
             val hx = gameState.heroX * tilePx - camX + (tilePx - frame.width) / 2
             val hy = gameState.heroY * tilePx - camY + (tilePx - frame.height) + hudOffsetY

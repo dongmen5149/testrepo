@@ -1,4 +1,5 @@
-## .scn body 의 Interpreter 바이트코드 실행기 (초기 골격).
+## .scn body 의 Interpreter 바이트코드 실행기.
+## Dialog / Teleport / Direction / Move 등 핵심 핸들러 구현.
 ##
 ## 원본 EventProc::onFunction 은 77개 opcode 를 dispatch — 우리는 가장 빈번한
 ## 것부터 stub 으로 구현 (현재는 print 로 추적).
@@ -93,9 +94,49 @@ func step(body: PackedByteArray, max_steps: int = 64) -> void:
 		print("[Interp] step limit reached")
 
 
+## 등록된 외부 핸들러: 호스트 (Demo 씬 등) 가 set_handler() 로 등록.
+## 핸들러 시그니처: func(args: PackedByteArray) -> void
+var _handlers: Dictionary = {}
+
+func set_handler(opcode: int, fn: Callable) -> void:
+	_handlers[opcode] = fn
+
+
 func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
-	# 현재는 모든 opcode 를 print. 실제 동작은 후속 구현.
-	# 가장 자주 쓰일 후속 구현 후보:
-	#   Event_PlayerTeleport, Event_SituateDialogText, Event_PlayerMove,
-	#   Event_PlayerDirection, Event_SituateCamera, Event_SituateDelay
-	print("  0x%02x %s %s" % [op, name, args.hex_encode()])
+	if op in _handlers:
+		_handlers[op].call(args)
+		return
+	# 기본 핸들러 — 자주 쓰이는 opcode 만 처리, 나머지는 log.
+	match name:
+		"Event_PlayerTeleport":
+			# args: x_lo, x_hi, y_lo, y_hi, dir
+			if args.size() >= 5:
+				var x = args[0] | (args[1] << 8)
+				var y = args[2] | (args[3] << 8)
+				var dir = args[4]
+				print("[Interp] PlayerTeleport(%d, %d, dir=%d)" % [x, y, dir])
+		"Event_PlayerDirection":
+			if args.size() >= 1:
+				print("[Interp] PlayerDirection(%d)" % args[0])
+		"Event_PlayerChange":
+			if args.size() >= 1:
+				print("[Interp] PlayerChange(%d)" % args[0])
+		"Event_SituateDelay":
+			# args: ms_lo, ms_hi
+			if args.size() >= 2:
+				var ms = args[0] | (args[1] << 8)
+				print("[Interp] SituateDelay(%dms)" % ms)
+		"Event_Scene_ChangeBgm":
+			if args.size() >= 1:
+				print("[Interp] ChangeBgm(%d)" % args[0])
+		"Event_SituateScreenShake":
+			print("[Interp] SituateScreenShake")
+		"Event_MapTileChange":
+			# args: x, y, tileID_lo, tileID_hi, layer, ?
+			if args.size() >= 6:
+				print("[Interp] MapTileChange x=%d y=%d tile=%d layer=%d" % [
+					args[0], args[1],
+					args[2] | (args[3] << 8),
+					args[4]])
+		_:
+			print("  0x%02x %s %s" % [op, name, args.hex_encode()])
