@@ -23,6 +23,7 @@ var _shop: CanvasLayer
 var _quest_panel: CanvasLayer
 var _hud: CanvasLayer
 var _settings: CanvasLayer
+var _help: CanvasLayer
 
 
 func _ready() -> void:
@@ -90,6 +91,8 @@ func _ready() -> void:
 	minimap.bind(_map, _hero)
 	_settings = preload("res://scenes/settings_panel.tscn").instantiate()
 	add_child(_settings)
+	_help = preload("res://scenes/help_panel.tscn").instantiate()
+	add_child(_help)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
@@ -314,6 +317,9 @@ func _input(event: InputEvent) -> void:
 			KEY_X:
 				# X: 설정 토글
 				_settings.toggle()
+			KEY_H:
+				# H: 도움말 토글
+				_help.toggle()
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
@@ -325,9 +331,29 @@ func _input(event: InputEvent) -> void:
 					_dialog.show_dialog("System", "불러옴 (slot 0)")
 
 
+func _show_map_name(scene_meta: Dictionary) -> void:
+	# 씬 진입 시 화면 중앙에 잠시 큰 텍스트
+	var name = scene_meta.get("name", "")
+	if name.is_empty(): return
+	var lbl := Label.new()
+	lbl.text = name
+	lbl.add_theme_font_size_override("font_size", 18)
+	lbl.add_theme_color_override("font_color", Color(1, 0.95, 0.7, 1))
+	lbl.position = Vector2(60, 200)
+	lbl.size = Vector2(200, 32)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.z_index = 30
+	add_child(lbl)
+	var tween := create_tween()
+	tween.tween_interval(2.0)
+	tween.tween_property(lbl, "modulate:a", 0.0, 0.6)
+	tween.tween_callback(lbl.queue_free)
+
+
 func _apply_scene() -> void:
 	if _scene_index.size() == 0: return
 	var s = _scene_index[_scene_idx]
+	_show_map_name(s)
 	_map.map_id = int(s.get("mapID", 0))
 	# Scene 의 startX/Y 는 tile coord (8-bit, 보통). pixel 변환.
 	# 0xFF (255) 는 "유지" 또는 "기본 위치" 의미 — 화면 중앙 placeholder.

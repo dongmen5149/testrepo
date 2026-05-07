@@ -495,6 +495,10 @@ isolated bins. 후속 작업으로 보류.
 | Inventory 정렬 | ✅ default/name/price cycle (정렬 버튼) | `status_panel.gd::cycle_sort` |
 | Quest 토스트 | ✅ 시작/완료 시 우상단 잠시 + 페이드 | `apps/hero5-godot/scripts/ui/toast.gd` |
 | Settings 영구 저장 | ✅ user://config.cfg (BGM/SFX/FPS/fullscreen) | `settings_panel.gd::_save_config` |
+| 도주 % 표시 | ✅ flee_chance() (HP%/DEX/turn 기반) → 버튼 라벨 실시간 갱신 | `battle_system.gd`, `battle_ui.gd` |
+| Help 패널 | ✅ H 키 — 모든 단축키 BBCode 표시 | `help_panel.gd/.tscn` |
+| Map 이름 표시 | ✅ 씬 진입 시 화면 중앙 큰 라벨 2초 + 페이드 | `demo.gd::_show_map_name` |
+| 메뉴 별 BGM | ✅ Title bgm_00, ClassSelect bgm_01, Demo mapID%21 | `title.gd`, `class_select.gd` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

@@ -21,6 +21,8 @@ func _ready() -> void:
 	if not _classes.is_empty():
 		class_list.select(0)
 		_on_select(0)
+	# 클래스 선택 BGM (bgm_01 다른 곡)
+	Audio.play_bgm(1)
 
 
 func _load_classes() -> void:

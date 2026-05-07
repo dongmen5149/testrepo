@@ -18,6 +18,8 @@ func _ready() -> void:
 	if not logo_dir.is_empty():
 		var tex = AssetLoader.first_frame_of(logo_dir)
 		if tex: logo.texture = tex
+	# 타이틀 BGM (bgm_00 — 일반적으로 main theme)
+	Audio.play_bgm(0)
 	pass  # logo loading moved to title.gd _ready (sprite_index 기반)
 
 

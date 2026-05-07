@@ -93,12 +93,13 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 		Action.DEFEND:
 			log_message.emit("방어 자세")
 		Action.FLEE:
-			if randi() % 100 < 70:
-				log_message.emit("도망 성공")
+			var rate = flee_chance()
+			if randi() % 100 < rate:
+				log_message.emit("도망 성공 (%d%%)" % rate)
 				_finish(false)
 				return
 			else:
-				log_message.emit("도망 실패!")
+				log_message.emit("도망 실패! (%d%%)" % rate)
 	# 적 턴
 	_enemy_turn(action == Action.DEFEND)
 
@@ -123,6 +124,18 @@ func _enemy_turn(player_defending: bool) -> void:
 	turn_count += 1
 	is_player_turn = true
 	turn_changed.emit(turn_count, true)
+
+
+## 도주 성공률: HP 비율 + DEX + 턴 수 기반.
+##   기본 50%, HP 낮을수록 +, DEX 높을수록 +, 턴 길수록 +. 최대 95%.
+func flee_chance() -> int:
+	var hp_ratio = float(player_hp) / max(1, player_max_hp)
+	var base = 50
+	if hp_ratio < 0.3: base += 25
+	elif hp_ratio < 0.6: base += 10
+	base += min(20, GameState.stat_dex)
+	base += min(15, turn_count * 3)
+	return clamp(base, 30, 95)
 
 
 ## skill_id → {name, mp_cost, cooldown, damage_pct} 메타.

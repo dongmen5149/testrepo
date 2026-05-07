@@ -83,6 +83,7 @@ func _on_started(name: String) -> void:
 	# 스킬 버튼 라벨에 실제 첫 스킬 이름
 	if _battle.skill_names.size() > 0:
 		skill_btn.text = _battle.skill_names[0]
+	flee_btn.text = "도망 (%d%%)" % _battle.flee_chance()
 	_set_buttons_enabled(true)
 
 
@@ -134,6 +135,9 @@ func _on_turn_changed(turn: int, is_player: bool) -> void:
 		var color = Color(1, 0.9, 0.4, 1) if is_player else Color(1, 0.5, 0.5, 1)
 		turn_indicator.text = "턴 %d — %s" % [turn, who]
 		turn_indicator.add_theme_color_override("font_color", color)
+	# 도주 % 미리보기
+	if is_player and _battle:
+		flee_btn.text = "도망 (%d%%)" % _battle.flee_chance()
 	_set_buttons_enabled(is_player)
 
 
