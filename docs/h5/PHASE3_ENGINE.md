@@ -90,16 +90,48 @@ apps/hero5-godot/
 - AnimatedSprite2D 로 frame_00..frame_NN 재생 테스트
 - 한글 텍스트 표시 테스트 (kor.fnt → Godot DynamicFont)
 
-### 3-D. MVP 목표 (1개월)
-- 타이틀 화면 + 1 캐릭터 1 맵 이동
-- 한글 대사 표시
-- 1 전투 데모
+### 3-D. MVP 목표 (1개월) — ✅ 모두 달성 (2026-05-08)
+- ✅ 타이틀 → 클래스 선택 → Demo 흐름
+- ✅ 캐릭터 4방향 이동 + 충돌 + walk-cycle
+- ✅ Map 4-layer 합성 + collision + warp + NPC sprite
+- ✅ 한글 대사 표시 (typewriter + 선택지)
+- ✅ 전투 (4 액션 + skill MP/cooldown + damage popup + 이펙트 + 도주 % + turn 표시)
+- ✅ 레벨업 (자동 stat + 수동 stat_points + 스킬 해금)
+- ✅ 인벤 (장비 6슬롯 + 더블클릭 사용 + 필터/정렬 + 비교 툴팁)
+- ✅ 상점 / 퀘스트 / 세이브 / HUD / Mini-map / Settings / 도움말
+
+### 3-E. 본구현 단계별 진척 (2026-05-08)
+
+| 영역 | Phase | 구현 |
+|---|---|---|
+| 임포트 파이프라인 | ✅ 완료 | `tools/import_to_godot.py` (5,500+ 자산) + `sprite_index.json` |
+| 임포트 검증 | ✅ | `tools/verify_godot_project.py` (0 errors) |
+| 캐릭터 / Map / 충돌 | ✅ | character.gd / map_renderer.gd (collision 67/67) |
+| Interpreter | ⚠ 부분 | 22/77 opcode 핸들러 + 22 종 dispatch |
+| 전투 / 스킬 / 적 stat | ✅ | battle_system.gd + 215 skill + 75 valid enemy |
+| Quest / 상점 / 인벤 | ✅ | 105 quest + drop 252 + items 1,360 |
+| 사운드 (BGM cross-fade) | ✅ | audio_manager.gd, OGG 42개 |
+| 세이브 (8 슬롯 + auto) | ✅ | save_manager.gd, 메타 포함 |
+| Title / ClassSelect / HUD | ✅ | 14 씬 통합 |
+| Settings / 도움말 / 토스트 | ✅ | 영구 저장 (user://config.cfg) |
+| Android APK 빌드 | ⚠ | `export_presets.cfg.template` 작성, 실 빌드 미검증 |
 
 ---
 
 ## 미해결 / 차후 처리
 
-- **scn 포맷 (c/map/%05d.scn)** — 추가 Ghidra 분석 필요. `MIDASKernelManager` 의 scene 로더 함수 추적.
-- **TINY_META** 의 5-슬롯 payload 의미 — 애니메이션 hitbox/offset 추정만, 정식 검증 필요.
-- **잔여 7개 자산 이름** — 빌드 타임 이름 가능성, 우선순위 낮음.
+| 우선순위 | 항목 | 상세 |
+|---|---|---|
+| **P1** | Interpreter opcode 자동 dispatch (실 .scn 실행) | 22/77 → 77/77 확장 |
+| P2 | enemy_g 121B layout ATK/DEF 정확한 offset | BATTLER setter 추적 |
+| P3 | Status UI ATK/DEF 합산 + 방어구 비교 | total_attack/defense 라벨 |
+| P4 | Battle 결과 화면 + 메뉴 페이드 | 보상 popup + 0.3s 전환 |
+| P5 | 한글 자모 인코딩 (table.dat → 581 glyph 매핑) | DrawText/Strings::draw 추적 |
+| P6 | Android APK 실 빌드 검증 | Godot Editor + device 테스트 |
+| 낮음 | scn body opcode 의미 (164 unique) | 이미 22 종 분석 완료 |
+| 낮음 | TINY_META 7-byte record 의미 | 7/356 strict match 만 |
+| 낮음 | 잔여 7개 자산 이름 (0.3%) | 빌드 타임 동적 이름 추정 |
+| 낮음 | SMAF (.mmf) → OGG 변환 | 외부 도구 필요 |
+
+다음 세션 빠른 재개: [SESSION_HANDOFF.md](SESSION_HANDOFF.md)
 - **DRM / IAP** — 통신사 SDK 전부 제거. 신규 IAP 는 Phase 3 후반.

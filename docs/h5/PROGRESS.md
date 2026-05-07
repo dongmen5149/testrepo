@@ -3,7 +3,9 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-07 — **Phase 2-B 완료** (자산 이름 99.3% 복원). Ghidra caller 분석 → .so format strings → 패턴 brute-force.
+업데이트: 2026-05-08 — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
+전투/퀘스트/상점/세이브/HUD/이펙트 통합. 다음 세션 빠른 재개 — [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
 
 ---
 
@@ -504,79 +506,107 @@ isolated bins. 후속 작업으로 보류.
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
-### 6.2 다음 즉시 작업 — 우선순위 순
+### 6.2 다음 즉시 작업 — 우선순위 순 (2026-05-08 기준)
 
-**[P1] DEX 디컴파일러 도입 → 자산 이름 복원** (가장 큰 unlock)
-```bash
-# Option A: jadx (GUI + CLI)
-#   https://github.com/skylot/jadx/releases  → jadx-1.5.x.zip 압축 해제
-#   jadx work/h5/extracted/classes.dex -d work/h5/dex_decompiled
-# Option B: baksmali (smali bytecode)
-#   wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar
-#   java -jar baksmali-2.5.2.jar d work/h5/extracted/classes.dex -o work/h5/smali
+> Phase 2 (자산 추출/디코딩) + Phase 3 (Godot 엔진 + 게임 시스템) **대부분 완료**.
+> 현재 상태는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) 참조.
 
-# 추출 후:
-grep -rn "getUniqueAssetNameFromID" work/h5/dex_decompiled/  # 또는 smali/
-# → 메소드 본문에서 이름 테이블 / switch 케이스 추출
-# → tools/h5_recover_names.py 의 candidate 리스트에 주입 후 재실행
-python tools/h5_recover_names.py  # 매칭 완료 시 work/h5/analysis/asset_names.tsv 갱신
-```
+**[P1] Interpreter opcode 자동 dispatch (실 .scn 실행)**
+- 현재: 22/77 opcode 만 GDScript 핸들러 구현, 나머지는 console log.
+- 목표: `EventProc::onFunction` switch 케이스 77종을 1:1 핸들러로 변환.
+- 입력: `work/h5/analysis/opcode_dispatch.c` (Ghidra 디컴파일).
+- 출력: `apps/hero5-godot/scripts/core/interpreter.gd` 의 `_dispatch()` 확장.
+- 검증: 실제 .scn 파일을 demo 진입 시 자동 실행하면 NPC 대화 / 카메라 / 이벤트가 원본대로 재생.
+- 도움이 되는 산출물: `work/h5/analysis/opcode_table.tsv` (opcode → event 이름/arg 사이즈).
 
-**[P2] TINY_META 7-byte record 파서**
-```bash
-# 가설: (u16 count, u16 N) + prefix record + count×7-byte main record
-# 후보 record: `05 00 XX XX XX XX XX` with 0x2A-0x2D 마커
-# 검증 데이터: 104 파일 (work/h5/vfs_entries/ 중 5-50B, _pa 제외)
-ls work/h5/vfs_entries/ | head
-# 우선 5–10개 파일 hexdump 비교 → record 의미 추정
-# → tools/converter/convert_h5_meta.py 작성 (예정)
-# → Ghidra: 'MIDASKernelManager::loadFrameMeta' 등 함수 검색해서 디컴파일 추가
-```
+**[P2] enemy_g 121B layout 의 ATK/DEF 정확한 위치 (BATTLER 추가 분석)**
+- 현재: HP/MP 정확. ATK/DEF 추정 위치 (offset 16-19) 가 65535 인 record 다수 → 잘못된 offset.
+- 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
+- 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
 
-**[P3] 19 19 마커 의미 (스크립트 디스어셈블)**
-```bash
-# MID_SCRIPT 31 + LARGE_ANIM 177 파일에서 0x19 0x19 가 청크 분리자로 사용
-# 우선 00055_641e44fa.bin (메인 대사 22KB) 의 19 19 위치 분포 분석
-python -c "
-import pathlib
-d=pathlib.Path('work/h5/vfs_entries/00055_641e44fa.bin').read_bytes()
-hits=[i for i in range(len(d)-1) if d[i]==0x19 and d[i+1]==0x19]
-print(f'{len(hits)} markers, first deltas: {[hits[i+1]-hits[i] for i in range(min(20,len(hits)-1))]}')
-"
-# → 청크 길이 패턴으로 record 구조 추정
-```
+**[P3] Stats UI 합산 표시 + 장비 비교 패널**
+- Status panel 의 ATK/DEF 총합 라벨 (`game_state.gd::total_attack/defense` 사용).
+- 인벤 hover 시 비교 툴팁은 이미 있음 (ATK 만). 방어구/포션 효과도 추가.
 
-**[P4] Phase 3 진입 (엔진 결정)**
-- Unity 2022 LTS vs Godot 4 vs 자체 Kotlin/Compose 비교
-- 결정 후 `apps/hero5-android/` 또는 `apps/hero5-unity/` 스캐폴드
-- Hero3 의 `android/` 디렉토리 구조를 참고
+**[P4] Battle 결과 화면 + 메뉴 페이드**
+- 승리 시 보상 요약 popup (EXP/Gold/획득 아이템 리스트).
+- 씬 전환 시 0.3s 페이드 인/아웃 (Title→ClassSelect→Demo).
+
+**[P5] 자모 인코딩 정밀 (한글 비트맵 폰트 사용)**
+- table.dat 의 2350 EUC-KR codepoint 와 581 glyph 의 실제 매핑.
+- `Graphic::DrawText` / `Strings::draw` 추가 디컴파일 필요.
+- 우회: 시스템 폰트 (Noto Sans CJK KR) 사용 — 현재 기본값.
+
+**[P6] Android APK 실 빌드 검증**
+- Godot Editor 열기 → Install Android Build Template → Export.
+- `apps/hero5-godot/export_presets.cfg.template` 참조.
+- 실제 device 에서 타이틀→데모 흐름 확인.
 
 ### 6.3 환경 / 도구 빠른 참조
 
+#### Phase 2 — 자산 추출/디코딩 재실행
 ```bash
 # VFS 재언팩 (catalog 깨졌을 때만)
 python tools/h5_vfs_unpack.py
 
-# 스프라이트 일괄 디코딩
-python tools/h5_decode_sprites.py
+# 자산 이름 복원
+python tools/h5_recover_names.py
 
-# 한글 텍스트 일괄 추출
+# 스프라이트 / 팔레트 / GBM / collision / scn / 한글
+python tools/converter/convert_h5_sprite.py
+python tools/converter/convert_h5_pa.py
+python tools/converter/convert_h5_gbm.py
+python tools/converter/convert_h5_collision.py
+python tools/converter/convert_h5_scn.py
 python tools/h5_extract_text.py
 
-# 잔여 카테고리화 / 클러스터링
-python tools/h5_residual_classify.py
-python tools/h5_residual_cluster.py
+# 게임 데이터 (CSV/skill/item/quest/enemy/npc/...)
+python tools/converter/convert_h5_csv.py
+python tools/converter/decode_h5_class.py
+python tools/converter/decode_h5_skill.py
+python tools/converter/decode_h5_item.py
+python tools/converter/decode_h5_enemy.py
+python tools/converter/decode_h5_npc.py
+python tools/converter/decode_h5_quest.py
+python tools/converter/decode_h5_misc.py
+python tools/converter/decode_h5_fixed.py
+python tools/converter/convert_h5_fnt2png.py
 ```
 
+#### Phase 3 — Godot 임포트 / 검증
 ```bash
-# Ghidra 추가 함수 디컴파일
-#   tools/ghidra/DecompileHero5Keys.java 의 PAT 정규식에 함수명 추가 후:
+# 변환된 자산 → Godot assets/ 으로 복사
+python tools/import_to_godot.py
+
+# tscn/gd 의 res:// 참조 무결성 체크
+python tools/verify_godot_project.py
+```
+
+#### Ghidra (추가 디컴파일 필요시)
+```bash
+# 헤드리스 모드 (script 자동 실행)
 "D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat" \
   "D:/testrepo/work/h5/ghidra_project" Hero5 \
   -process libHeroesLore5.so -noanalysis \
   -scriptPath "D:/testrepo/tools/ghidra" \
   -postScript DecompileHero5Keys.java
-# → work/h5/analysis/key_funcs.c 갱신
+
+# tools/ghidra/ 스크립트들:
+#   DecompileHero5Keys.java   — DES/VFS/JNI 핵심 함수
+#   FindAssetNameTable.java   — loadAssetFromVFS caller
+#   DecompileNameLookup.java  — JNI 브리지
+#   FindSceneLoader.java      — scene 로더 후보
+#   DumpScnRef.java           — .scn 참조 함수
+#   DumpInterpreter.java      — Interpreter::doScript
+#   DumpInterpreterCore.java  — Token/Scripts/Strings/Event_*
+#   FindOpcodeDispatch.java   — onFunction 후보
+#   DumpGbm.java              — GbmImage::LoadImage
+#   DumpHeroChar.java         — HERO/CHAR 클래스
+#   DumpMonsterLoad.java      — Monster/EnemyG_set
+#   DumpMapInit.java          — Map::Initialize/LoadData
+#   DumpDes.java              — MX_des*
+#   DumpDesArg.java           — DES key arg trace
+#   FindFieldWrites.java      — this+offset 쓰기 검색
 
 # Ghidra GUI (수동 분석)
 "D:/ghidra_12.0.4_PUBLIC/ghidraRun.bat"
@@ -585,27 +615,69 @@ python tools/h5_residual_cluster.py
 
 ### 6.4 핵심 산출물 인덱스
 
+#### Phase 2 (자산 추출 / 분석)
 | 무엇 | 어디 |
 |---|---|
 | VFS catalog | `work/h5/vfs_catalog.tsv` |
-| 디컴파일 코드 (19 함수) | `work/h5/analysis/key_funcs.c` |
-| 심볼/JNI/문자열 dump | `work/h5/analysis/so_quick.txt` |
-| 스프라이트 PNG | `work/h5/converted/sprites/<file>/frame_NN_*.png` |
-| 한글 코퍼스 | `work/h5/converted/text/_corpus.txt` |
-| 잔여 카테고리 리포트 | `work/h5/analysis/residual_categories.txt` |
-| 미매칭 클러스터 dump | `work/h5/analysis/unknown_clusters.txt` |
+| 자산 이름 (2,182 / 99.7%) | `work/h5/analysis/asset_names.tsv` |
+| 디컴파일 코드 모음 | `work/h5/analysis/*.c` (19+ 함수, 핵심: scn_loader / opcode_dispatch / monster_load / des_key / gbm_loader / interpreter_core) |
+| Opcode 매핑 (77종) | `work/h5/analysis/opcode_table.tsv` |
+| 스프라이트 PNG (3,798) | `work/h5/converted/sprites/<file>/frame_NN_*.png` |
+| 한글 코퍼스 (18,837 unique) | `work/h5/converted/text/_corpus.txt` |
 | _pa 시각화 컨택트시트 | `work/h5/analysis/pa_swatches/_index.html` |
-| 자산 이름 매칭 (1건 FP) | `work/h5/analysis/asset_names.tsv` |
+| Map collision/tile 매핑 | `work/h5/analysis/mapdata_index.tsv` |
+| Scene 헤더 (258개) | `work/h5/analysis/scn_headers.tsv` |
+| Ghidra 프로젝트 | `work/h5/ghidra_project/Hero5/` |
+
+#### Phase 3 (Godot 리메이크)
+| 무엇 | 어디 |
+|---|---|
+| Godot 프로젝트 | `apps/hero5-godot/` |
+| 임포트된 자산 (gitignored) | `apps/hero5-godot/assets/` |
+| 게임 데이터 JSON (15+ 테이블) | `apps/hero5-godot/assets/gamedata/` |
+| Map 데이터 (collision + tile) | `apps/hero5-godot/assets/maps/<id>.{json,col.bin,tile.bin}` |
+| Sprite name → dir 매핑 | `apps/hero5-godot/assets/sprite_index.json` |
+| Scene 인덱스 | `apps/hero5-godot/assets/scenes/index.json` |
+| 임포트 파이프라인 | `tools/import_to_godot.py` |
+| 정합성 검증 | `tools/verify_godot_project.py` |
+| Android export 가이드 | `apps/hero5-godot/export_presets.cfg.template` |
 
 ### 6.5 최근 커밋 히스토리 (작업 추적)
 
 ```
+9b6174b  도주 % + 도움말 + 맵 이름 + 메뉴별 BGM
+7c3d422  turn 표시 + 인벤 정렬 + 토스트 + Settings 영구
+d619817  자동 인카운터 + auto-save + tile attr + 퀘 보상 정밀
+2aa969e  HP회복 + 장비비교 + minimap + settings
+a2ec161  HUD + 슬롯 삭제 + NPC 색상 + 인벤 필터
+a058070  quest 처치 카운트 + warp trigger + NPC 한글 + 이펙트 애니
+c600e11  sprite 매핑 + Title 로고 + stat 분배 + 적 그래픽 + 퀘스트 보상
+9b5072c  클래스 선택 + NPC sprite + 포션/장비 사용 + 세이브 메타
+4f3265d  레벨업 알림 + 장비 stat + Quest UI + BGM 페이드
+4514bd6  상점 UI + 레벨업 + NPC 정밀 + 다중 세이브
+7f9dec3  item stat + damage popup + dialog 분기 + scene 전환
+e9eff82  equipment + inventory UI + combat 정밀 + NPC 스폰
+2ba8534  drop/shop/smith/quest 데이터 + Quest 시스템 + Title 슬롯 + skill resolver
+4c91c65  skill/item/quest tree 디코딩 + 사운드 hookup
+6ff31e9  GameData API 확장 + 전투/인벤 실데이터 연동
+cd57c8d  MVP 검증 + enemy 정확도 + NPC/quest 데이터
+0f9f834  enemy stats + walk-cycle + Interpreter 확장 + Android export
+7b6b455  DES key + 고정사이즈 csv + GameState 통합
+e675855  stats 디코딩 + 전투 UI + collision 디버그
+6af2634  한글 폰트 변환 + Dialog/Status UI
+2dc2bfa  맵 데이터 + Interpreter 핸들러 + 세이브 골격
+daf4be6  캐릭터 + Interpreter + 타이틀/데모 씬
+860f997  opcode 매핑 + Map 렌더러 + 폰트/SMAF 분석
+78dafe9  .scn 헤더 파서 + Scene_Init 디컴파일
+1f7a4b8  자산 이름 99.7% + anim 파서 + Phase3 결정
+fc19f8a  자산 이름 99.3% 복원 (Phase 2-B 완료)
+dc59407  DEX 메소드 분석 + TINY_META 파서
 89a4fdc  Ghidra hash 함수 복원 (DJB2-like)
-79759b8  한글 추출 필터 개선 (한자 false-positive 제거)
-637b164  잔여 분류 + 한글 텍스트 75,284개 추출
-c011eae  sprite 디코더 type=0x04/0x08/0x18 추가 (유효 frame 100%)
-fbfaebe  Phase 2-A.4 sprite 디코더 (84% 프레임 렌더링)
-8aec053  Phase 2-A.2~3 _pa 인코딩 확정 + 미매칭 클러스터링
+79759b8  한글 추출 필터 개선
+637b164  잔여 분류 + 한글 텍스트 추출
+c011eae  sprite 디코더 type=0x04/0x08/0x18
+fbfaebe  Phase 2-A.4 sprite 디코더 (84%)
+8aec053  Phase 2-A.2~3 _pa 인코딩 + 미매칭 클러스터링
 c57be91  Phase 2-A.1 bin 포맷 호환성 프로브
-6a1c78a  영웅서기5 리메이크 대기중 (Phase 1 시작점)
+6a1c78a  영웅서기5 리메이크 시작점
 ```
