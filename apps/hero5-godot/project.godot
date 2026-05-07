@@ -38,3 +38,4 @@ pointing/emulate_touch_from_mouse=true
 
 GameState="*res://scripts/core/game_state.gd"
 AssetLoader="*res://scripts/core/asset_loader.gd"
+GameData="*res://scripts/core/game_data.gd"

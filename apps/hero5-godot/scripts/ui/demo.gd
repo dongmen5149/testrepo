@@ -30,10 +30,19 @@ func _ready() -> void:
 	add_child(_dialog)
 	_status = preload("res://scenes/status_panel.tscn").instantiate()
 	add_child(_status)
+	# 실제 게임 데이터에서 이름 가져오기 (없으면 기본값)
+	var inv: Array = []
+	# item_NN 테이블에서 처음 4개 아이템
+	for i in range(4):
+		var arr = GameData.names("c/csv/item_%02d.dat" % i)
+		if arr.size() > 0:
+			inv.append(arr[0])
+	if inv.is_empty():
+		inv = ["회복약", "마나약", "한손검", "가죽갑옷"]
 	_status.set_state({
 		"hp": 100, "max_hp": 100, "sp": 50, "max_sp": 50,
 		"level": 1, "exp": 0, "gold": 1000,
-		"inventory": ["회복약 ×3", "마나약 ×2", "한손검", "가죽갑옷"],
+		"inventory": inv,
 	})
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
