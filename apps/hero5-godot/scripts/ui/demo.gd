@@ -96,11 +96,15 @@ func _npc_talk() -> void:
 	if npc_data.is_empty():
 		_dialog.show_dialog("System", "NPC 데이터 없음")
 		return
-	# scene_idx 따라 다른 NPC 선택
 	var npc = npc_data[_scene_idx % npc_data.size()]
-	var char_names = GameData.char_names()
 	var name = "NPC #%d" % npc.get("idx", 0)
-	# stat1 (dialog id) → ingame_text lookup 시도
+	# 선택지 데모: 매 3번째 NPC 는 선택지 표시
+	if _scene_idx % 3 == 0:
+		_dialog.show_choices(name, "어떤 일이지?", ["퀘스트 받기", "상점 보기", "그냥 인사"])
+		# 한 번만 connect
+		if not _dialog.choice_selected.is_connected(_on_npc_choice):
+			_dialog.choice_selected.connect(_on_npc_choice)
+		return
 	var dlg_id = int(npc.get("stat1", 0))
 	if dlg_id != 65535:
 		var msg = GameData.ingame_text(dlg_id)
@@ -109,6 +113,17 @@ func _npc_talk() -> void:
 		_dialog.show_dialog(name, msg)
 	else:
 		_dialog.show_dialog(name, "...")
+
+
+func _on_npc_choice(idx: int) -> void:
+	match idx:
+		0:
+			Quest.start(0)  # 첫 quest = "여행자"
+			_dialog.show_dialog("System", "퀘스트 시작: " + Quest.quest_name(0))
+		1:
+			_dialog.show_dialog("상인", "오늘은 좋은 물건 들어왔소. 다음에 상점 시스템에서 만나죠.")
+		2:
+			_dialog.show_dialog("NPC", "여행 잘 다녀오시오.")
 
 
 func _on_change_bgm(args: PackedByteArray) -> void:
@@ -200,9 +215,16 @@ func _apply_scene() -> void:
 	if _scene_index.size() == 0: return
 	var s = _scene_index[_scene_idx]
 	_map.map_id = int(s.get("mapID", 0))
-	_hero.position = Vector2(
-		int(s.get("startX", 160)),
-		int(s.get("startY", 240)))
+	# Scene 의 startX/Y 는 tile coord (8-bit, 보통). pixel 변환.
+	# 0xFF (255) 는 "유지" 또는 "기본 위치" 의미 — 화면 중앙 placeholder.
+	var sx = int(s.get("startX", 0xFF))
+	var sy = int(s.get("startY", 0xFF))
+	if sx >= 0xFF: sx = 5  # 기본 5 tile
+	if sy >= 0xFF: sy = 5
+	_hero.position = Vector2(sx * 32 + 16, sy * 32 + 16)
+	_hero.direction = int(s.get("startDir", H5Character.DIR_DOWN)) % 4
+	# BGM도 mapID 따라 변경 (간단 매핑: mapID % 21 = bgm idx)
+	Audio.play_bgm(int(s.get("mapID", 0)) % 21)
 	_update_status()
 	_run_intro(s)
 

@@ -18,6 +18,12 @@ var _full_text: String = ""
 var _shown_chars: int = 0
 var _waiting: bool = false
 
+# 선택지 모드
+var _choices: Array = []
+var _choice_idx: int = 0
+var _choice_buttons: Array = []
+signal choice_selected(idx: int)
+
 
 func _ready() -> void:
 	visible = false
@@ -32,6 +38,39 @@ func show_dialog(speaker: String, text: String) -> void:
 	label.text = ""
 	_waiting = false
 	prompt.visible = false
+	_clear_choices()
+
+
+## 선택지 표시 (대사 후 분기).
+func show_choices(speaker: String, prompt_text: String, choices: Array) -> void:
+	show_dialog(speaker, prompt_text)
+	_choices = choices
+	_choice_idx = 0
+	_render_choices()
+
+
+func _render_choices() -> void:
+	_clear_choices()
+	for i in _choices.size():
+		var btn = Button.new()
+		btn.text = "%d. %s" % [i + 1, _choices[i]]
+		btn.position = Vector2(8, 80 + i * 18)
+		btn.size = Vector2(280, 16)
+		btn.pressed.connect(func(): _on_choice_pressed(i))
+		bg.add_child(btn)
+		_choice_buttons.append(btn)
+
+
+func _on_choice_pressed(idx: int) -> void:
+	choice_selected.emit(idx)
+	_clear_choices()
+	visible = false
+
+
+func _clear_choices() -> void:
+	for b in _choice_buttons: b.queue_free()
+	_choice_buttons.clear()
+	_choices.clear()
 
 
 func _process(delta: float) -> void:

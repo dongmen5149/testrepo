@@ -112,6 +112,42 @@ func enemy_stats(idx: int) -> Dictionary:
 
 var _enemy_table_cache: Array = []
 var _skills_cache: Dictionary = {}
+var _items_cache: Dictionary = {}
+
+
+## items.json 의 slot_N 구조 캐시.
+func _load_items() -> Dictionary:
+	if _items_cache.is_empty():
+		var p := "res://assets/gamedata/items.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_items_cache = JSON.parse_string(f.get_as_text()) or {}
+	return _items_cache
+
+
+## 아이템 stats 해석 (slot 별 의미 다름).
+##   slot 0..N (무기): stats[0]=price, stats[7]=attack_power
+##   slot 15 (포션):    stats[0]=price, stats[2..5]=icon/effect refs (추정)
+##   slot 16-17 (스킬북): stats[0]=price, 다른 stats=skill_id 참조
+func item_stat(slot: int, idx: int) -> Dictionary:
+	var data = _load_items()
+	var arr = data.get("slot_%d" % slot, [])
+	if idx < 0 or idx >= arr.size():
+		return {}
+	var it = arr[idx]
+	var stats: Array = it.get("stats_u16", [])
+	var price = stats[0] if stats.size() > 0 else 0
+	var info := {
+		"name": it.get("name", ""),
+		"prefix": it.get("prefix", 0),
+		"price": price,
+	}
+	# 슬롯별 추가 의미
+	if slot >= 0 and slot <= 9:
+		# weapon/armor
+		info["attack"] = stats[7] if stats.size() > 7 else 0
+		info["sub_id"] = stats[6] if stats.size() > 6 else 0
+	return info
 
 
 ## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.

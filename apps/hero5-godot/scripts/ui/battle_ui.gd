@@ -46,6 +46,8 @@ func _on_started(name: String) -> void:
 	enemy_hp.value = _battle.enemy_hp
 	player_hp.max_value = _battle.player_max_hp
 	player_hp.value = _battle.player_hp
+	_last_enemy_hp = _battle.enemy_hp
+	_last_player_hp = _battle.player_hp
 	log_box.text = ""
 	# 스킬 버튼 라벨에 실제 첫 스킬 이름
 	if _battle.skill_names.size() > 0:
@@ -53,8 +55,24 @@ func _on_started(name: String) -> void:
 	_set_buttons_enabled(true)
 
 
+const DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+var _last_enemy_hp: int = 0
+var _last_player_hp: int = 0
+
+
 func _on_log(msg: String) -> void:
 	log_box.append_text(msg + "\n")
+	# 데미지 차이 popup
+	if _battle.enemy_hp < _last_enemy_hp:
+		var dmg = _last_enemy_hp - _battle.enemy_hp
+		DamagePopup.spawn(bg, enemy_label.position + Vector2(160, 30),
+			"-%d" % dmg, Color(1, 0.4, 0.2))
+	if _battle.player_hp < _last_player_hp:
+		var dmg = _last_player_hp - _battle.player_hp
+		DamagePopup.spawn(bg, player_label.position + Vector2(160, 30),
+			"-%d" % dmg, Color(1, 0.6, 0.6))
+	_last_enemy_hp = _battle.enemy_hp
+	_last_player_hp = _battle.player_hp
 	enemy_hp.value = _battle.enemy_hp
 	player_hp.value = _battle.player_hp
 
