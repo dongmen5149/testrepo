@@ -15,6 +15,9 @@ var _map: Node2D
 var _hero: Sprite2D
 var _scene_index: Array = []
 var _scene_idx: int = 0
+var _dialog: CanvasLayer
+var _interp: H5Interpreter
+var _status: CanvasLayer
 
 
 func _ready() -> void:
@@ -23,7 +26,39 @@ func _ready() -> void:
 	_load_scene_index()
 	_hero = _spawn_hero()
 	add_child(_hero)
+	_dialog = preload("res://scenes/dialog_box.tscn").instantiate()
+	add_child(_dialog)
+	_status = preload("res://scenes/status_panel.tscn").instantiate()
+	add_child(_status)
+	_status.set_state({
+		"hp": 100, "max_hp": 100, "sp": 50, "max_sp": 50,
+		"level": 1, "exp": 0, "gold": 1000,
+		"inventory": ["회복약 ×3", "마나약 ×2", "한손검", "가죽갑옷"],
+	})
+	_interp = H5Interpreter.new()
+	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
+	#   0x35 (53) Event_SituateBallon (2B)
+	#   0x39 (57) Event_SituateDialogText (4B)
+	#   0x3b (59) Event_SituateNarration (3B)
+	#   0x3e (62) Event_SituatePopup (0B)
+	_interp.set_handler(0x39, _on_dialog_text)
+	_interp.set_handler(0x35, _on_dialog_text)
+	_interp.set_handler(0x3b, _on_narration)
 	_apply_scene()
+
+
+func _on_dialog_text(args: PackedByteArray) -> void:
+	# args[0]=string_idx? args[1]=face_idx? args[2..3] reserved
+	# 실제 의미는 Event_SituateDialogText 본문 추가 분석 필요.
+	# 데모용으로 placeholder 한글 출력.
+	var sample := ["대화 테스트입니다.", "여행을 시작합시다.",
+			"마을 사람들에게 도움을 청해보세요."]
+	var idx = args[0] % sample.size() if args.size() > 0 else 0
+	_dialog.show_dialog("NPC", sample[idx])
+
+
+func _on_narration(args: PackedByteArray) -> void:
+	_dialog.show_dialog("나레이션", "...")
 
 
 func _load_scene_index() -> void:
@@ -52,6 +87,29 @@ func _input(event: InputEvent) -> void:
 				if _scene_index.size() > 0:
 					_scene_idx = (_scene_idx + 1) % _scene_index.size()
 					_apply_scene()
+			KEY_T:
+				# T: dialog 테스트
+				_on_dialog_text(PackedByteArray([_scene_idx % 3]))
+			KEY_ESCAPE, KEY_I:
+				# ESC/I: 상태창 토글
+				_status.toggle()
+			KEY_F5:
+				# F5: 빠른 저장 (slot 0)
+				H5SaveManager.save(0, {
+					"scene_id": _scene_idx,
+					"map_id": _map.map_id,
+					"player_x": int(_hero.position.x),
+					"player_y": int(_hero.position.y),
+				})
+				_on_dialog_text(PackedByteArray([0]))
+				_dialog.show_dialog("System", "저장됨 (slot 0)")
+			KEY_F9:
+				# F9: 빠른 로드
+				var saved = H5SaveManager.load_slot(0)
+				if not saved.is_empty():
+					_scene_idx = int(saved.get("scene_id", 0))
+					_apply_scene()
+					_dialog.show_dialog("System", "불러옴 (slot 0)")
 
 
 func _apply_scene() -> void:
