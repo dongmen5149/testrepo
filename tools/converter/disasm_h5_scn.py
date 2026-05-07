@@ -32,8 +32,24 @@ OUT_DIR = ROOT / 'work' / 'h5' / 'analysis' / 'scn_disasm'
 OUT_SUM = ROOT / 'work' / 'h5' / 'analysis' / 'scn_disasm_summary.txt'
 
 
+_OPCODE_TABLE: dict[int, tuple[str, int]] = {}
+
+
+def _load_opcode_table():
+    if _OPCODE_TABLE: return
+    p = ROOT / 'work' / 'h5' / 'analysis' / 'opcode_table.tsv'
+    if not p.exists(): return
+    with open(p, encoding='utf-8') as f:
+        next(f)
+        for line in f:
+            parts = line.rstrip('\n').split('\t')
+            if len(parts) < 3: continue
+            _OPCODE_TABLE[int(parts[0])] = (parts[1], int(parts[2]))
+
+
 def disasm_body(body: bytes) -> tuple[list[tuple], dict]:
-    """Return (events, stats)."""
+    """Return (events, stats). Opcode-aware: each known opcode reads its arg_size bytes."""
+    _load_opcode_table()
     events = []
     pos = 0
     op_count = collections.Counter()
@@ -42,18 +58,16 @@ def disasm_body(body: bytes) -> tuple[list[tuple], dict]:
         op = body[pos]; pos += 1
         op_count[op] += 1
         if op == 0xFF:
-            # escape — used by doEvent for compound ops
+            # doEvent escape — compound: <argc> <sizes...> <sub-streams...>
             if pos >= len(body): break
             argc = body[pos]; pos += 1
             if argc > 0x13:
-                # doEvent treats >0x13 as terminator-like
                 events.append(('END', op, argc))
                 break
             arg_sizes = []
             for _ in range(argc):
                 if pos >= len(body): break
                 arg_sizes.append(body[pos]); pos += 1
-            # then argc sub-events of given sizes
             sub = []
             for sz in arg_sizes:
                 end = min(pos + sz, len(body))
@@ -62,7 +76,15 @@ def disasm_body(body: bytes) -> tuple[list[tuple], dict]:
             events.append(('ESC', argc, arg_sizes, sub))
             arg_count_dist[argc] += 1
         else:
-            events.append(('OP', op))
+            entry = _OPCODE_TABLE.get(op)
+            if entry is None:
+                events.append(('OP_UNK', op))
+            else:
+                name, sz = entry
+                end = min(pos + sz, len(body))
+                args = body[pos:end]
+                pos = end
+                events.append(('OP', op, name, sz, args))
     stats = {
         'op_dist': op_count,
         'arg_count_dist': arg_count_dist,
@@ -73,15 +95,15 @@ def disasm_body(body: bytes) -> tuple[list[tuple], dict]:
 
 def fmt_event(e) -> str:
     if e[0] == 'OP':
-        return f'OP   0x{e[1]:02x}'
+        op, name, sz, args = e[1], e[2], e[3], e[4]
+        return f'  0x{op:02x}  {name:30s}  ({sz}B): {args.hex() if args else ""}'
+    if e[0] == 'OP_UNK':
+        return f'  0x{e[1]:02x}  ???'
     if e[0] == 'END':
-        return f'END  esc=0xff arg=0x{e[2]:02x}'
+        return f'  END  esc=0xff arg=0x{e[2]:02x}'
     if e[0] == 'ESC':
         argc = e[1]; sizes = e[2]; subs = e[3]
-        s = f'ESC  argc={argc} sizes=[{",".join(str(x) for x in sizes)}]'
-        for i, sub in enumerate(subs):
-            s += f'\n      sub{i}({len(sub)}B): {sub.hex()}'
-        return s
+        return f'  ESC  argc={argc} sizes={sizes} subs={[s.hex() for s in subs]}'
     return repr(e)
 
 
