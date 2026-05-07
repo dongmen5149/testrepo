@@ -491,6 +491,10 @@ isolated bins. 후속 작업으로 보류.
 | 자동 저장 | ✅ slot 7 (AUTO_SLOT) 60초 간격 + oldest_slot() API | `save_manager.gd::auto_save`, `game_state.gd` |
 | Tile attribute 디버그 | ✅ V키 토글 — tile_id 별 색상 + 숫자 표시 | `map_renderer.gd::_draw` |
 | Quest 보상 정밀 | ✅ rewards.json 의 6B record (type byte) → gold/exp/item 분기 | `quest_system.gd::_grant_reward` |
+| Battle turn 표시 | ✅ "턴 N — 플레이어/적이름" + 색 변경 + 버튼 비활성화 | `battle_system.gd`, `battle_ui.gd` |
+| Inventory 정렬 | ✅ default/name/price cycle (정렬 버튼) | `status_panel.gd::cycle_sort` |
+| Quest 토스트 | ✅ 시작/완료 시 우상단 잠시 + 페이드 | `apps/hero5-godot/scripts/ui/toast.gd` |
+| Settings 영구 저장 | ✅ user://config.cfg (BGM/SFX/FPS/fullscreen) | `settings_panel.gd::_save_config` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

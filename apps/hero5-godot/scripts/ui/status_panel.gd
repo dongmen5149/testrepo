@@ -18,13 +18,15 @@ extends CanvasLayer
 @onready var int_btn: Button = $BG/StatBox/IntBtn
 @onready var con_btn: Button = $BG/StatBox/ConBtn
 
-# filter
+# filter / sort
 var _filter: String = "all"
+var _sort: String = "default"  # default / name / price
 @onready var all_btn: Button = $BG/FilterBox/AllBtn
 @onready var weapon_btn: Button = $BG/FilterBox/WeaponBtn
 @onready var armor_btn: Button = $BG/FilterBox/ArmorBtn
 @onready var potion_btn: Button = $BG/FilterBox/PotionBtn
 @onready var misc_btn: Button = $BG/FilterBox/MiscBtn
+@onready var sort_btn: Button = $BG/FilterBox/SortBtn
 
 var _state: Dictionary = {
 	"hp": 100, "max_hp": 100,
@@ -53,6 +55,7 @@ func _ready() -> void:
 	armor_btn.pressed.connect(func(): _set_filter("armor"))
 	potion_btn.pressed.connect(func(): _set_filter("potion"))
 	misc_btn.pressed.connect(func(): _set_filter("misc"))
+	sort_btn.pressed.connect(cycle_sort)
 	_apply()
 
 
@@ -184,9 +187,36 @@ func _apply() -> void:
 		if idx >= 0 and idx < inv.size():
 			name = str(inv[idx])
 		inv_list.add_item("[%s] %s" % [SLOT_NAMES[slot], name])
-	# 인벤토리 항목들 (필터 적용)
-	inv_list.add_item("--- 인벤토리 (%s) ---" % _filter)
+	# 인벤토리 항목들 (필터 + 정렬)
+	inv_list.add_item("--- 인벤토리 (%s, %s) ---" % [_filter, _sort])
+	var filtered: Array = []
 	for item in inv:
 		var name = str(item)
 		if _matches_filter(name):
-			inv_list.add_item(name)
+			filtered.append(name)
+	# 정렬
+	if _sort == "name":
+		filtered.sort()
+	elif _sort == "price":
+		filtered.sort_custom(func(a, b): return _find_item_price(a) > _find_item_price(b))
+	for name in filtered:
+		inv_list.add_item(name)
+
+
+func _find_item_price(name: String) -> int:
+	for slot in range(19):
+		var arr = GameData.items_in_slot(slot)
+		var idx = arr.find(name)
+		if idx >= 0:
+			var data = GameData.item_stat(slot, idx)
+			return int(data.get("price", 0))
+	return 0
+
+
+## 필터 버튼이 정렬 cycle 도 겸함 (Misc 길게 = price 정렬 등 단축)
+func cycle_sort() -> void:
+	match _sort:
+		"default": _sort = "name"
+		"name": _sort = "price"
+		_: _sort = "default"
+	_apply()

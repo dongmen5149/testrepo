@@ -61,6 +61,14 @@ func _ready() -> void:
 				GameState.add_battle_reward(exp, gold))
 	# 레벨업 popup
 	GameState.level_up.connect(_on_level_up)
+	# Quest 알림
+	Quest.quest_started.connect(func(qid, n):
+		preload("res://scripts/ui/toast.gd").show_msg(self,
+			"퀘스트 시작: " + n))
+	Quest.quest_completed.connect(func(qid):
+		preload("res://scripts/ui/toast.gd").show_msg(self,
+			"퀘스트 완료: " + Quest.quest_name(qid),
+			3.0, Color(0.5, 1, 0.5, 1)))
 	# warp 감지: hero 가 이동하면 check_warp
 	if _hero.has_signal("moved"):
 		_hero.moved.connect(_on_hero_moved)

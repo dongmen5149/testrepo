@@ -72,8 +72,12 @@ custom_minimum_size = Vector2(38, 18)
 text = "포션"
 
 [node name="MiscBtn" type="Button" parent="BG/FilterBox"]
-custom_minimum_size = Vector2(38, 18)
+custom_minimum_size = Vector2(30, 18)
 text = "기타"
+
+[node name="SortBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(34, 18)
+text = "정렬"
 
 [node name="Inventory" type="ItemList" parent="BG"]
 offset_left = 8.0

@@ -9,6 +9,7 @@ const BattleSystem = preload("res://scripts/core/battle_system.gd")
 @onready var bg: ColorRect = $BG
 @onready var enemy_label: Label = $BG/Enemy
 @onready var enemy_sprite: Sprite2D = $BG/EnemySprite
+@onready var turn_indicator: Label = $BG/TurnIndicator
 @onready var enemy_hp: ProgressBar = $BG/EnemyHP
 @onready var player_label: Label = $BG/Player
 @onready var player_hp: ProgressBar = $BG/PlayerHP
@@ -38,6 +39,7 @@ func start(monster_id: int, player_state: Dictionary) -> void:
 	_battle.battle_started.connect(_on_started)
 	_battle.battle_ended.connect(_on_ended)
 	_battle.log_message.connect(_on_log)
+	_battle.turn_changed.connect(_on_turn_changed)
 	_battle.start_battle(monster_id)
 	visible = true
 	# 적 스프라이트 (enemy stats flags_a[0] 가 sprite_id 추정)
@@ -124,6 +126,15 @@ func _on_ended(victory: bool, exp: int, gold: int) -> void:
 
 func _do(action: int) -> void:
 	if _battle: _battle.player_action(action)
+
+
+func _on_turn_changed(turn: int, is_player: bool) -> void:
+	if turn_indicator:
+		var who = "플레이어" if is_player else _battle.enemy_name
+		var color = Color(1, 0.9, 0.4, 1) if is_player else Color(1, 0.5, 0.5, 1)
+		turn_indicator.text = "턴 %d — %s" % [turn, who]
+		turn_indicator.add_theme_color_override("font_color", color)
+	_set_buttons_enabled(is_player)
 
 
 func _set_buttons_enabled(on: bool) -> void:

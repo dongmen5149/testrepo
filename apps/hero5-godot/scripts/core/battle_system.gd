@@ -26,6 +26,11 @@ var skill_names: Array = []
 var player_mp: int = 50
 var player_max_mp: int = 50
 
+# 턴 진행
+var turn_count: int = 1
+var is_player_turn: bool = true
+signal turn_changed(turn: int, is_player: bool)
+
 # skill_id → frames-until-usable
 var _cooldowns: Dictionary = {}
 
@@ -34,6 +39,8 @@ const FRAME_PER_TURN := 1   # 1 turn = 1 second equiv (간소화)
 
 func start_battle(monster_id: int = 0) -> void:
 	_monster_id = monster_id
+	turn_count = 1
+	is_player_turn = true
 	# enemy_table.json 에서 실제 stats
 	var stats = GameData.enemy_stats(monster_id)
 	enemy_name = "Monster #%d" % monster_id
@@ -97,6 +104,8 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 
 
 func _enemy_turn(player_defending: bool) -> void:
+	is_player_turn = false
+	turn_changed.emit(turn_count, false)
 	var raw_dmg := enemy_attack + randi() % 5
 	if player_defending: raw_dmg = raw_dmg / 2
 	# 방어력 차감
@@ -110,6 +119,10 @@ func _enemy_turn(player_defending: bool) -> void:
 	if player_hp == 0:
 		log_message.emit("플레이어 패배...")
 		_finish(false)
+		return
+	turn_count += 1
+	is_player_turn = true
+	turn_changed.emit(turn_count, true)
 
 
 ## skill_id → {name, mp_cost, cooldown, damage_pct} 메타.
