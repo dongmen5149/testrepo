@@ -52,6 +52,21 @@ def main() -> int:
         if h in h2info and h not in candidates:
             candidates[h] = name
 
+    # Pass 0b — region/carrier variants (cash/help/named-cif families)
+    REGIONS = ['', 'sk', 'skt', 'ktf', 'lg', 'kt', 'lgt', 'olleh', 'show',
+               'android', 'android_sk', 'android_skt', 'android_ktf',
+               'android_lg', 'android_kt', 'android_lgt',
+               'single_android', 'network_android', 'expert', 'normal',
+               'single', 'network', 'common', '3g', 'wcdma']
+    for r in REGIONS:
+        add(f'c/csv/cash_{r}.dat'.encode())
+        add(f'c/csv2/help_{r}.dat'.encode())
+        for prefix in ('828', 'eff', 'imo', 'pointer', 'title', 'ealogo'):
+            for sep in ('_', ''):
+                add(f'c/sp/cif/{prefix}{sep}{r}.cif'.encode())
+                add(f'c/sp/ext/{prefix}{sep}{r}.ext'.encode())
+                add(f'c/sp/imgcom/{prefix}{sep}{r}.mgr'.encode())
+
     # Pass 0 — explicit known names that may not appear standalone in .so
     for nm in (b'version.txt', b'c/font/eng.fnt', b'c/font/kor.fnt',
                b'c/font/table.dat', b'c/font/type.dat'):

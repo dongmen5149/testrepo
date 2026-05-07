@@ -344,9 +344,10 @@ isolated bins. 후속 작업으로 보류.
 `Java_..._nativeLoop` 와 `MIDASKernelManager::timerLoop` 부터 시작. 60fps tick / event handling / render 호출 순서를 그래프로.
 
 ### Phase 3. 리메이크 엔진 결정 + 재구현
-- **권장 Unity 2022 LTS** (Android arm64 + iOS 동시 빌드)
-- ES 1.x → Unity URP 변환 시 fixed-function 컬러/조명 재현 주의
-- IAP / SDK 의존성 전부 제거 후 Unity IAP 로 교체
+**상세는 [PHASE3_ENGINE.md](PHASE3_ENGINE.md) 참조.**
+- 권장: **Godot 4** (2D 우선, 자산 임포트 단순, APK 무게 가벼움, MIT)
+- 차순위: Unity 2022 LTS (기존 노하우/IAP 인프라 있을 때)
+- 첫 작업: `apps/hero5-godot/` 스캐폴드 + asset import 파이프라인 (Python → res://)
 
 ---
 
@@ -362,7 +363,8 @@ isolated bins. 후속 작업으로 보류.
 | 스프라이트 | ✅ 426 파일 / 3,798 PNG (유효 100%) | `tools/converter/convert_h5_sprite.py`, `work/h5/converted/sprites/` |
 | 한글 코퍼스 | ✅ 18,837 unique strings | `work/h5/converted/text/_corpus.txt` |
 | Hash 함수 | ✅ DJB2 (init=0x1505, mul=0x21) | `tools/h5_recover_names.py` |
-| 자산 이름 복원 | ✅ 2,174 / 2,189 (99.3%) — .so format-string 추출 + 패턴 brute-force | `tools/h5_recover_names.py`, `work/h5/analysis/asset_names.tsv` |
+| 자산 이름 복원 | ✅ 2,182 / 2,189 (99.7%) — .so format-string + region 변형 | `tools/h5_recover_names.py`, `work/h5/analysis/asset_names.tsv` |
+| Anim/Script 파서 | ✅ 300 파일 record 분리 (sentinel 19 19 + 20 20) | `tools/converter/convert_h5_anim_script.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 

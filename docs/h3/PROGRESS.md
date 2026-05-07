@@ -22,6 +22,37 @@
 - [MapWalkScene.kt](../../android/app/src/main/java/com/hero3/remake/scene/MapWalkScene.kt) 에 `DecoMarker` + `colorForDecoId()` 추가. id 별 색상으로 작은 점 표시 (풀=녹색, 가구=갈색, 특수=빨강 등). §4.1 sprite 디코딩 풀리면 진짜 그림으로 교체.
 - 검증: `:app:assembleDebug` + `:app:testDebugUnitTest` 모두 BUILD SUCCESSFUL.
 
+### A4) §4.3 _cif animation timing 분석 시작 — **부분 진척, 셀 구조 미해독**
+
+**대상**: `hero/h0_cif` (8025 byte, 영웅 메인 애니메이션)
+
+**확정된 구조**:
+- 헤더 10 byte: `slot_count=8, category=0, indices=[1,2,3,10,17,19,16,8]` (8 슬롯이 BM 파일 번호 매핑)
+- 애니메이션 데이터 (offset 10~): **41 byte 고정 프레임 레코드**
+- `byte[0]` = `0x0a` (10) — **duration** (프레임 단위, ~333ms @ 30fps = 일반 걷기 속도)
+- `byte[1]` = `0x02` — 애니메이션 타입 플래그 추정
+- `byte[2]` = `0x0b` (11) — 셀 개수 추정
+- `bytes[3..40]` = 38 byte 셀 합성 데이터 (구조 미확정)
+
+**핵심 발견 — 프레임 페어링**:
+- R0=R1, R2=R3, R4=R5, R6=R7 (동일 내용 2번 반복) → 좌/우 미러 또는 사용 빈도 가중치 추정
+- R0/R1 → R2/R3 diff: 8개 byte 위치(offset 4, 8, 16, 20, 24, 28, 32, 36)에서 **정확히 -1씩 감소**
+  → 캐릭터 상하 bobbing y-offset
+- R8부터 첫바이트 `08 0a` → 다른 애니메이션 상태 시작 (공격/사망/idle 후보)
+- "0a 02 0b" 마커가 1110 byte 간격으로 다시 등장 → 다른 방향/액션 그룹
+
+**미해결**:
+- 41 byte 중 38 byte 셀 데이터 정확한 인코딩 (4 byte × 11 = 44 mismatch, 3 byte 가변 가설 유력)
+- 셀 = `[bm_idx, x_off, y_off, transform/flip]` 4-tuple 추정이지만 stride 미확정
+- 4방향(UP/DOWN/LEFT/RIGHT) + 액션(IDLE/WALK/ATTACK/HURT/DEATH) 매핑 미확정
+- 다른 cif 파일(boss/enemy)에서 같은 구조 적용 가능한지 검증 필요
+
+**다음 세션 첫 작업** (1~2시간 예상):
+1. 41 byte 안 셀 stride 확정 — diff 위치 패턴 + Frame R8 (다른 액션) 비교 분석
+2. 1개 액션(걷기 down) 셀 구조 풀어 1방향 walk-cycle Android 구현
+3. 4방향 매핑 (R0~R7 그룹이 어느 방향인지 sprite 시각 매칭)
+4. 검증되면 boss0_cif / e000_cif 동일 포맷 적용
+
 ### A1) §4.2 자동 grep 시도 — **블로킹 상태로 결론** (참고용)
 - `work/ghidra_out/all_decompiled.c` (76,876줄, 3,556 함수) 패턴 grep 으로 _mp 파서 함수 추적 시도
 - 결과: PIC + GOT-relative offset 때문에 string xref 없음. `Event_freeID`/`loadDataID` 등 PROGRESS의 심볼명은 디컴파일 출력에 `FUN_xxxx` 형태로만 존재.
