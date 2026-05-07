@@ -1,85 +1,100 @@
-"""_cif animation_data 영역 통계 분석.
+"""
+Hero3 _cif animation 분석 도구 (2026-05-07 갱신).
 
-확인된 헤더: uint16 slot_count + slot_count bytes indices.
-미해독 영역: 그 이후의 animation_data (timing/event sequence).
+핵심 발견 (h0_cif, 8025 byte):
+- 헤더 10 byte: slot_count, category, indices[8]
+- 프레임 레코드: 가변 길이, `0a XX YY` 마커로 시작 (XX=type, YY=cell_count?)
+- 첫 그룹 8개 (offset 12~339): `0a 02 0b` 헤더, 41 byte fixed stride
+- 두번째 그룹 8개 (offset 341~669): `0a 05 ??` 헤더, 41 byte stride
+- 그룹 사이 1 byte separator (offset 340 = `08` = 다음 그룹 frame count 추정)
+- 전체 113 frame 추출 (변동 길이 그룹 포함)
 
-가설: 9-byte record 가설(PROGRESS) 검증 + 0xff terminator + `19 19` (frame size?) 패턴 검색.
+Cell layout 가설 (group1, `0a 02 0b` 레코드, 41 byte):
+- 헤더 3 byte: [duration=0x0a, type=0x02, count=0x0b]
+- 셀 9개 × 4 byte = 36 byte (offset 3..38) — 각 셀 [x_s8, y_s8, bm_ref_u8, flag_u8]
+- 트레일러 2 byte (offset 39..40): 미해독
+- y-bobbing 검증: R0→R2, R4→R6 비교 시 각 4-byte 셀의 offset 1 (y) 만 ±1 변화
+- cell 2 (offset 11..14) 는 bobbing 없음 → 그림자 셀 추정
 
-출력: work/cif_anim_summary.json
+미해결:
+- count(0x0b=11) vs 실측 9 cells 불일치 — count 의미 재해석 필요
+- 트레일러 2 byte 정체
+- 셀 ref → BM 파일 매핑 (indices=[1,2,3,10,17,19,16,8] 와 연결 안 됨)
+- group2 (`0a 05 ??`) 는 cell 0/1 swap 패턴 — 다른 액션/방향
+
+사용:
+    python analyze_cif.py [path/to/h0_cif]
 """
 from __future__ import annotations
-import collections, json, pathlib, struct
-
-ROOT = pathlib.Path(__file__).resolve().parents[2]
-EXT  = ROOT / 'work' / 'extracted'
-OUT  = ROOT / 'work' / 'cif_anim_summary.json'
+import sys, pathlib
+from collections import Counter
 
 
-def parse(data: bytes):
-    slot_count = struct.unpack_from('<H', data, 0)[0]
-    body = data[2 + slot_count:]
-    return slot_count, body
-
-
-def main():
-    files = list(EXT.rglob('*_cif'))
-    print(f'cif files: {len(files)}')
-
-    sizes = []
-    slot_dist = collections.Counter()
-    body_byte_freq = collections.Counter()
-    has_ff_term = 0
-    has_1919   = 0
-    nine_byte_record_score = 0   # body len이 9의 배수인 파일 수
-    eight_byte_record_score = 0
-    seven_byte_record_score = 0
-
-    for f in files:
-        data = f.read_bytes()
-        if len(data) < 2: continue
-        slot_count, body = parse(data)
-        sizes.append(len(data))
-        slot_dist[slot_count] += 1
-        if not body:
+def find_frames(data: bytes, start: int = 10) -> list[int]:
+    frames = []
+    i = start
+    while i < len(data) - 1:
+        if data[i] != 0x0a:
+            i += 1
             continue
-        if body.endswith(b'\xff'): has_ff_term += 1
-        if b'\x19\x19' in body: has_1919 += 1
-        # body 길이 가설 검증
-        bl = len(body)
-        if bl % 9 == 0: nine_byte_record_score += 1
-        if bl % 8 == 0: eight_byte_record_score += 1
-        if bl % 7 == 0: seven_byte_record_score += 1
-        for b in body[:200]:
-            body_byte_freq[b] += 1
+        frames.append(i)
+        nxt = i + 41
+        if nxt < len(data) and data[nxt] == 0x0a:
+            i = nxt
+        else:
+            j = nxt
+            while j < len(data) and data[j] != 0x0a:
+                j += 1
+            i = j if j < len(data) else len(data)
+    return frames
 
-    avg = sum(sizes) // max(1, len(sizes))
-    print(f'avg size: {avg} bytes  (range {min(sizes)}~{max(sizes)})')
-    print(f'\nslot count distribution:')
-    for s, c in sorted(slot_dist.items()):
-        print(f'  slots={s}: {c} files')
-    print(f'\nstructural hints:')
-    print(f'  ends with 0xff:    {has_ff_term} / {len(files)}')
-    print(f'  contains 19 19:    {has_1919} / {len(files)}')
-    print(f'  body % 7 == 0:     {seven_byte_record_score} / {len(files)}')
-    print(f'  body % 8 == 0:     {eight_byte_record_score} / {len(files)}')
-    print(f'  body % 9 == 0:     {nine_byte_record_score} / {len(files)}')
-    print(f'\ntop 20 bytes in animation body (first 200 bytes per file):')
-    for b, c in body_byte_freq.most_common(20):
-        print(f'  {b:#04x}  count={c}')
 
-    OUT.write_text(json.dumps({
-        'files': len(files),
-        'avg_size': avg,
-        'slot_distribution': dict(slot_dist),
-        'ends_with_ff': has_ff_term,
-        'contains_1919': has_1919,
-        'body_mod_7': seven_byte_record_score,
-        'body_mod_8': eight_byte_record_score,
-        'body_mod_9': nine_byte_record_score,
-        'top_body_bytes': [(f'{b:#04x}', c) for b, c in body_byte_freq.most_common(64)],
-    }, indent=2), encoding='utf-8')
-    print(f'\nwrote {OUT}')
+def diff_frames(a: bytes, b: bytes) -> str:
+    return ' '.join(f'{(y-x)&0xff:02x}' if x != y else '..' for x, y in zip(a, b))
+
+
+def s8(b: int) -> int:
+    return b - 256 if b >= 128 else b
+
+
+def parse_cells_4byte(rec: bytes, offset: int = 3, n: int = 9) -> list[dict]:
+    cells = []
+    for k in range(n):
+        o = offset + k * 4
+        if o + 4 > len(rec):
+            break
+        cells.append({
+            'idx': k, 'x': s8(rec[o]), 'y': s8(rec[o+1]),
+            'ref': rec[o+2], 'flag': rec[o+3]
+        })
+    return cells
+
+
+def main(argv: list[str]) -> int:
+    src = pathlib.Path(argv[1] if len(argv) > 1 else 'work/extracted/hero/h0_cif')
+    data = src.read_bytes()
+    print(f'file: {src} ({len(data)} bytes)')
+    print(f'header: {data[:10].hex()}')
+    frames = find_frames(data)
+    print(f'frame count (41-stride heuristic): {len(frames)}')
+    print(f'first 16 frame offsets: {frames[:16]}')
+
+    leads = Counter(data[off:off+3].hex() for off in frames)
+    print(f'frame leads (top 10): {leads.most_common(10)}')
+
+    if len(frames) >= 8:
+        print('\n--- group1 sample (frames 0,2,4,6) ---')
+        for i in [0, 2, 4, 6]:
+            rec = data[frames[i]:frames[i]+41]
+            print(f'  R{i} @{frames[i]}: {rec.hex()}')
+        r0 = data[frames[0]:frames[0]+41]
+        r2 = data[frames[2]:frames[2]+41]
+        print(f'  R0->R2 deltas: {diff_frames(r0, r2)}')
+        print('\n  Cells of R0 (4-byte stride, offset 3, n=9):')
+        for c in parse_cells_4byte(r0):
+            print(f'    cell {c["idx"]}: x={c["x"]:+4d} y={c["y"]:+4d} ref=0x{c["ref"]:02x} flag=0x{c["flag"]:02x}')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main(sys.argv))

@@ -5,9 +5,25 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋**: `6a1c78a feat:영웅서기5 리메이크 대기중` (이전 세션까지 반영)
+**최신 커밋**: `c24c447 feat:영웅서기3 §4.2 _mp extras 97% 해독 + 데코 마커 렌더` (이전 세션까지 반영)
 
-**미커밋 변경 (2026-05-07 후반)** — §4.2 _mp extras **부분 해독 + 데코 마커 렌더 완료**:
+### A5) §4.3 _cif cell layout 4-byte stride 검증 (2026-05-07 후반) ✅ 부분
+- [tools/recon/analyze_cif.py](../../tools/recon/analyze_cif.py) 신설 — h0_cif 113 frame 자동 추출, group/lead 분포 통계.
+- **셀 stride 확정**: group1(`0a 02 0b` 41-byte 레코드, 8 frame) 의 R0→R2/R4→R6 byte-delta 분석 결과 — y-bobbing 변동이 정확히 4-byte 주기 offset 1 위치(4, 8, 16, 20, 24, 28, 32, 36, 40)에서만 ±1 발생.
+- **셀 포맷 (가설 검증됨)**: `[x_s8, y_s8, bm_ref_u8, flag_u8]` 4 byte × 9 cells, offset 3..38. 트레일러 2 byte (offset 39..40) 미해독.
+- **shadow cell 식별**: cell 2 (offset 11..14) 는 bobbing 안함 → 그림자 셀로 추정 (지면 고정).
+- group1 R0 디코드 결과: cell0~8 모두 BM ref 0x00~0x27 범위 — h0_cif indices=[1,2,3,10,17,19,16,8] 와 직접 매칭 안됨. 글로벌 multi-frame BM 인덱스로 해석 필요 (이슈 #4 와 동일 패턴).
+- **미해결**: ① count byte(0x0b=11) vs 실측 9 cells 불일치 — count 의미 재해석 필요, ② 트레일러 2 byte 정체, ③ ref→BM 매핑 — §4.1 글로벌 인덱스 테이블 풀어야 함, ④ 4방향(UP/DOWN/LEFT/RIGHT) 매핑은 group1/group2/...별 sprite 시각 매칭 필요.
+
+**다음 세션 첫 작업** (1~2시간):
+1. ref → BM frame 매핑 풀기 — 모든 _bm 파일을 글로벌 인덱싱(h00000_bm 부터 누적)해서 0x27 같은 ref 가 어느 BM frame 인지 추적.
+2. cell 0~8 을 BM frame 으로 합성해 1프레임 PNG 출력 → 영웅 sprite 시각 확인.
+3. group1/group2/... 가 어느 방향/액션인지 라벨링.
+4. 검증되면 boss0_cif / e000_cif 에 동일 포맷 적용.
+
+---
+
+### (이전) 미커밋 변경 (2026-05-07 후반) — §4.2 _mp extras **부분 해독 + 데코 마커 렌더 완료**:
 
 ### A2) §4.2 _mp extras 해독 — **97% 자동 파싱 성공** ✅
 - 사용자 Ghidra GUI 분석 시도 → string xref 막혀 보류 후 **경험적 디코딩으로 전환**
