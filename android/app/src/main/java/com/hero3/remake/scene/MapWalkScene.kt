@@ -176,8 +176,10 @@ class MapWalkScene(
         // dir0(0a020b) 와 dir3(0a2208) 는 type byte bit5 flip 으로 좌우 mirror 쌍 → LEFT/RIGHT.
         // 남은 dir1(0a0501), dir2(0a0208) 가 DOWN/UP. 디바이스에서 시각 검증 후 dirOrder 조정.
         val dir = "${settings.spritesDir()}/hero/h0_walk"
-        // FACING_* 인덱스 → cif dir 번호. 현재 가설: DOWN=1, UP=2, LEFT=0, RIGHT=3
-        val dirOrder = intArrayOf(1, 2, 0, 3)
+        // FACING_* 인덱스 → cif dir 번호.
+        // 픽셀 symmetry 테스트(dir2 vs dir3 flipped = score 22.2, 가장 낮음) 결과 → dir2/dir3 가 LEFT/RIGHT mirror 쌍.
+        // dir0/dir1 = DOWN/UP. cif 그룹 순서가 FACING 순서와 일치한다고 가정.
+        val dirOrder = intArrayOf(0, 1, 2, 3)
         return (0..3).map { facing ->
             val cifDir = dirOrder[facing]
             (0..7).mapNotNull { f ->
