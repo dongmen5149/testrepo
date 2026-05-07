@@ -5,11 +5,18 @@
 ## 것부터 stub 으로 구현 (현재는 print 로 추적).
 ##
 ## 실제 Event 의 의미 매핑은 work/h5/analysis/opcode_table.tsv 참조.
+## Runtime 우선순위:
+##   1. assets/scenes/opcode_table.json 이 존재하면 거기서 77개 전체 로드
+##   2. fallback = 아래 BASE_TABLE (잘 알려진 ~38 opcode 만)
 class_name H5Interpreter
 extends RefCounted
 
-# opcode → (name, arg_size). Phase 2-A.10 자동 추출 결과.
-const OPCODE_TABLE := {
+const EXTERNAL_TABLE_PATH := "res://assets/scenes/opcode_table.json"
+
+# opcode → (name, arg_size). 0x00-0x1d = Phase 2-A.10 자동 추출 결과 (확실).
+# 그 외 0x31~0x43 = demo.gd 와 분석 코멘트에 명시된 알려진 매핑 (확실).
+# 나머지 ~40 opcode 는 EXTERNAL_TABLE_PATH 에 의존.
+const BASE_TABLE := {
 	0x00: ["Event_EnemyAction", 6],
 	0x01: ["Event_EnemyChange", 2],
 	0x02: ["Event_EnemyChangeAction", 7],
@@ -40,8 +47,49 @@ const OPCODE_TABLE := {
 	0x1b: ["Event_PlayerAction", 5],
 	0x1c: ["Event_PlayerAppearSpirit", 1],
 	0x1d: ["Event_PlayerChange", 1],
-	# (full table loaded from assets/scenes/opcode_table.json at runtime)
+	0x31: ["Event_QuestBoss", 2],
+	0x32: ["Event_QuestTimer", 4],
+	0x33: ["Event_QuestStatus", 2],
+	0x35: ["Event_SituateBallon", 2],
+	0x39: ["Event_SituateDialogText", 4],
+	0x3a: ["Event_QuestSwitch", 2],
+	0x3b: ["Event_SituateNarration", 3],
+	0x3e: ["Event_SituatePopup", 0],
+	0x42: ["Event_QuestQSwitch", 2],
+	0x43: ["Event_Scene_ChangeBgm", 1],
 }
+
+## OPCODE_TABLE: 인스턴스 단위 — BASE_TABLE 복사 + 외부 JSON 머지.
+var OPCODE_TABLE: Dictionary = {}
+
+
+func _init() -> void:
+	OPCODE_TABLE = BASE_TABLE.duplicate()
+	_try_load_external()
+
+
+func _try_load_external() -> void:
+	if not FileAccess.file_exists(EXTERNAL_TABLE_PATH): return
+	var f := FileAccess.open(EXTERNAL_TABLE_PATH, FileAccess.READ)
+	if f == null: return
+	var data = JSON.parse_string(f.get_as_text())
+	# 형식 옵션:
+	#   A. {"opcodes": [{"op":0,"name":"Event_X","size":N}, ...]}
+	#   B. {"0": ["Event_X", N], "53": ["Event_SituateBallon", 2], ...}
+	if data is Dictionary:
+		if data.has("opcodes") and data["opcodes"] is Array:
+			for entry in data["opcodes"]:
+				var op = int(entry.get("op", -1))
+				var name = str(entry.get("name", ""))
+				var sz = int(entry.get("size", 0))
+				if op >= 0 and not name.is_empty():
+					OPCODE_TABLE[op] = [name, sz]
+		else:
+			for k in data.keys():
+				var op = int(k)
+				var v = data[k]
+				if v is Array and v.size() >= 2:
+					OPCODE_TABLE[op] = [str(v[0]), int(v[1])]
 
 
 func run_intro(scene_meta: Dictionary) -> void:
@@ -106,31 +154,29 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 	if op in _handlers:
 		_handlers[op].call(args)
 		return
-	# 기본 핸들러 — 자주 쓰이는 opcode 만 처리, 나머지는 log.
+	# 기본 핸들러 — BASE_TABLE 또는 외부 JSON 에 등록된 이름은 처리.
+	# 외부 JSON 에서만 활성화되는 이름들 (Event_PlayerMove 등) 은 케이스 보존.
 	match name:
-		"Event_PlayerTeleport":
-			# args: x_lo, x_hi, y_lo, y_hi, dir
+		# BASE_TABLE 의 Enemy* / Event* / Map* (0x00-0x1a)
+		"Event_EnemyEffect":
+			if args.size() >= 2:
+				print("[Interp] EnemyEffect(idx=%d, fx=%d)" % [args[0], args[1]])
+		"Event_EnemyMove", "Event_EnemyMoveRelative":
+			if args.size() >= 5:
+				print("[Interp] %s %s" % [name, args.hex_encode()])
+		"Event_EnemyTeleport":
 			if args.size() >= 5:
 				var x = args[0] | (args[1] << 8)
 				var y = args[2] | (args[3] << 8)
-				var dir = args[4]
-				print("[Interp] PlayerTeleport(%d, %d, dir=%d)" % [x, y, dir])
-		"Event_PlayerDirection":
-			if args.size() >= 1:
-				print("[Interp] PlayerDirection(%d)" % args[0])
-		"Event_PlayerChange":
-			if args.size() >= 1:
-				print("[Interp] PlayerChange(%d)" % args[0])
-		"Event_SituateDelay":
-			# args: ms_lo, ms_hi
-			if args.size() >= 2:
-				var ms = args[0] | (args[1] << 8)
-				print("[Interp] SituateDelay(%dms)" % ms)
-		"Event_Scene_ChangeBgm":
-			if args.size() >= 1:
-				print("[Interp] ChangeBgm(%d)" % args[0])
-		"Event_SituateScreenShake":
-			print("[Interp] SituateScreenShake")
+				print("[Interp] EnemyTeleport(%d, %d, dir=%d)" % [x, y, args[4]])
+		"Event_EventMove", "Event_EventMoveRelative":
+			if args.size() >= 5:
+				print("[Interp] %s %s" % [name, args.hex_encode()])
+		"Event_EventTeleport":
+			if args.size() >= 5:
+				var x = args[0] | (args[1] << 8)
+				var y = args[2] | (args[3] << 8)
+				print("[Interp] EventTeleport(%d, %d, dir=%d)" % [x, y, args[4]])
 		"Event_MapTileChange":
 			# args: x, y, tileID_lo, tileID_hi, layer, ?
 			if args.size() >= 6:
@@ -138,40 +184,74 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 					args[0], args[1],
 					args[2] | (args[3] << 8),
 					args[4]])
+		"Event_MapTileChangeAll":
+			print("[Interp] MapTileChangeAll %s" % args.hex_encode())
+		# BASE_TABLE 의 Player* (0x1b-0x1d)
+		"Event_PlayerAction":
+			if args.size() >= 5:
+				print("[Interp] PlayerAction %s" % args.hex_encode())
+		"Event_PlayerAppearSpirit":
+			print("[Interp] PlayerAppearSpirit %s" % args.hex_encode())
+		"Event_PlayerChange":
+			if args.size() >= 1:
+				print("[Interp] PlayerChange(%d)" % args[0])
+		# BASE_TABLE 의 Quest* (0x31, 0x32, 0x33, 0x3a, 0x42)
+		"Event_QuestBoss":
+			if args.size() >= 2:
+				print("[Interp] QuestBoss(qid=%d, ?=%d)" % [args[0], args[1]])
+		"Event_QuestTimer":
+			if args.size() >= 4:
+				var dur = args[1] | (args[2] << 8)
+				print("[Interp] QuestTimer(qid=%d, dur=%d)" % [args[0], dur])
+		"Event_QuestStatus":
+			if args.size() >= 2:
+				print("[Interp] QuestStatus(qid=%d, status=%d)" % [args[0], args[1]])
+		"Event_QuestSwitch", "Event_QuestQSwitch":
+			if args.size() >= 2:
+				print("[Interp] %s(qid=%d, on=%d)" % [name, args[0], args[1]])
+		# BASE_TABLE 의 Situate* + Scene_*
+		"Event_SituateBallon":
+			print("[Interp] Ballon %s" % args.hex_encode())
+		"Event_SituateDialogText":
+			print("[Interp] DialogText %s" % args.hex_encode())
+		"Event_SituateNarration":
+			print("[Interp] Narration %s" % args.hex_encode())
+		"Event_SituatePopup":
+			print("[Interp] Popup")
+		"Event_Scene_ChangeBgm":
+			if args.size() >= 1:
+				print("[Interp] ChangeBgm(%d)" % args[0])
+		# 외부 JSON 에서 활성화될 수 있는 이름들 (BASE_TABLE 외).
+		"Event_PlayerTeleport":
+			if args.size() >= 5:
+				var x = args[0] | (args[1] << 8)
+				var y = args[2] | (args[3] << 8)
+				print("[Interp] PlayerTeleport(%d, %d, dir=%d)" % [x, y, args[4]])
+		"Event_PlayerDirection":
+			if args.size() >= 1:
+				print("[Interp] PlayerDirection(%d)" % args[0])
+		"Event_PlayerMove":
+			if args.size() >= 5:
+				print("[Interp] PlayerMove %s" % args.hex_encode())
+		"Event_PlayerEffect":
+			if args.size() >= 1:
+				print("[Interp] PlayerEffect(%d)" % args[0])
+		"Event_SituateDelay":
+			if args.size() >= 2:
+				var ms = args[0] | (args[1] << 8)
+				print("[Interp] SituateDelay(%dms)" % ms)
+		"Event_SituateScreenShake":
+			print("[Interp] SituateScreenShake")
 		"Event_SituateCamera":
 			print("[Interp] SituateCamera %s" % args.hex_encode())
 		"Event_SituateCameraTarget":
 			if args.size() >= 1:
 				print("[Interp] CameraTarget(target=%d)" % args[0])
-		"Event_SituateScreenShake":
-			print("[Interp] ScreenShake")
+		"Event_SituateSystemMessage":
+			print("[Interp] SystemMessage")
 		"Event_screenEffect":
 			if args.size() >= 1:
 				print("[Interp] ScreenEffect(%d)" % args[0])
-		"Event_PlayerEffect":
-			if args.size() >= 1:
-				print("[Interp] PlayerEffect(%d)" % args[0])
-		"Event_EnemyEffect":
-			if args.size() >= 2:
-				print("[Interp] EnemyEffect(idx=%d, fx=%d)" % [args[0], args[1]])
-		"Event_PlayerMove":
-			if args.size() >= 5:
-				print("[Interp] PlayerMove(dx=%d, dy=%d, ?=%d, sk=%d, sk2=%d)" %
-					[args[0], args[1], args[2], args[3], args[4]])
-		"Event_EventMove":
-			if args.size() >= 5:
-				print("[Interp] EventMove(target=%d, dx=%d, dy=%d, sk=%d, sk2=%d)" %
-					[args[0], args[1], args[2], args[3], args[4]])
-		"Event_PlayerTeleport":
-			if args.size() >= 5:
-				print("[Interp] PlayerTeleport @ %d,%d dir=%d" %
-					[args[0] | (args[1] << 8), args[2] | (args[3] << 8), args[4]])
-		"Event_SituatePopup":
-			print("[Interp] Popup")
-		"Event_SituateSystemMessage":
-			print("[Interp] SystemMessage")
-		"Event_QuestStatus", "Event_QuestSwitch", "Event_QuestQSwitch", "Event_QuestBoss":
-			print("[Interp] Quest %s %s" % [name, args.hex_encode()])
 		"Event_Scene_WarpAble", "Event_Scene_WarpPoint", "Event_Scene_SaveAble":
 			print("[Interp] %s %s" % [name, args.hex_encode()])
 		_:

@@ -506,6 +506,10 @@ isolated bins. 후속 작업으로 보류.
 | Battle 결과 popup | ✅ 승리 시 EXP/Gold/획득 아이템 패널 + 확인 버튼 (4초 자동 닫힘) | `battle_ui.gd::_show_victory_popup` |
 | Battle drop | ✅ enemy stats exp/gold + 25% drop_table roll, items 배열 emit | `battle_system.gd::_finish/_roll_drops` |
 | 씬 전환 fade | ✅ Title↔ClassSelect↔Demo 0.3s 검정 fade-out / fade-in | `scripts/ui/scene_fader.gd` |
+| OPCODE_TABLE 확장 | ⚠ 38/77 — BASE_TABLE 인라인 + 외부 opcode_table.json 로더 (없으면 fallback) | `interpreter.gd::BASE_TABLE/_try_load_external` |
+| Dispatch 정리 | ✅ 중복 case 제거, Quest/Situate/Scene 핸들러 정렬, 외부 JSON 활성화 시 자동 매칭 | `interpreter.gd::_dispatch` |
+| Scene body 자동 실행 | ✅ import 시 .scn body 11B 이후를 `assets/scenes/bodies/<idx>.bin` 저장, run_intro 가 step() 호출 | `import_to_godot.py::import_scn_index`, `demo.gd::_run_intro` |
+| Quest opcode 핸들러 | ✅ 0x31 Boss / 0x32 Timer / 0x33 Status / 0x3a Switch / 0x42 QSwitch — demo.gd 에서 set_handler | `demo.gd::_on_quest_*` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
@@ -528,6 +532,19 @@ isolated bins. 후속 작업으로 보류.
 - 현재: HP/MP 정확. ATK/DEF 추정 위치 (offset 16-19) 가 65535 인 record 다수 → 잘못된 offset.
 - 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
 - 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
+
+**[P1] Interpreter opcode 자동 dispatch** — ⚠ 부분 진전 (2026-05-08)
+- BASE_TABLE 38 opcode 인라인 (0x00-0x1d + 0x31~0x43 알려진 매핑만, 추측 0).
+- 외부 `assets/scenes/opcode_table.json` 로더 추가 — Ghidra 산출물(`opcode_table.tsv`)
+  를 다음 import 시 JSON 으로 변환해 두면 즉시 77/77 활성화.
+- `_dispatch()` 정리: 중복 case 제거 (Event_SituateScreenShake/PlayerTeleport 양쪽),
+  외부 JSON 에서 활성화될 수 있는 이름들도 보존 (Event_PlayerMove/Effect/Teleport 등).
+- demo.gd 의 `set_handler` 호출들이 BASE_TABLE 에 등록 안된 op 를 가리키던 dead 상태
+  → BASE_TABLE 추가로 0x35/0x39/0x3b/0x3e/0x33/0x43 정상 동작.
+- Quest 핸들러 추가: 0x31 Boss / 0x32 Timer / 0x3a Switch / 0x42 QSwitch.
+- demo.gd `_run_intro` 가 dead `Interp.new()` 대신 멤버 `_interp` 사용 + `body_path`
+  존재 시 `step(bytes, 64)` 자동 실행. import 시 `assets/scenes/bodies/<idx>.bin` 으로
+  body 저장 (vfs/asset_names 필요 — gitignored 자산 환경에서 자동 활성화).
 
 **[P3] Stats UI 합산 표시 + 장비 비교 패널** — ✅ 완료 (2026-05-08)
 - Status panel 의 ATK/DEF 총합 라벨 추가 (`status_panel.gd::_apply`).

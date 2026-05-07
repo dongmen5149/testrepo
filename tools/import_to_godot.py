@@ -137,13 +137,23 @@ def import_sprite_index() -> int:
 
 
 def import_scn_index() -> int:
-    """Build assets/scenes/index.json from scn_headers.tsv."""
+    """Build assets/scenes/index.json from scn_headers.tsv + body bytes."""
     if not SRC_SCN.exists(): return 0
     out_dir = DST / 'scenes'; out_dir.mkdir(parents=True, exist_ok=True)
+    bodies_dir = out_dir / 'bodies'; bodies_dir.mkdir(parents=True, exist_ok=True)
+    # name → (vfs_idx, hash) lookup for .scn entries
+    scn_lookup: dict[str, tuple[int, int]] = {}
+    if SRC_NAMES.exists():
+        with open(SRC_NAMES, encoding='utf-8') as f:
+            for row in csv.DictReader(f, delimiter='\t'):
+                n = row['recovered_name']
+                if not n.endswith('.scn'): continue
+                scn_lookup[n] = (int(row['index']), int(row['hash'], 16))
     scenes = []
+    body_count = 0
     with open(SRC_SCN, encoding='utf-8') as f:
         for row in csv.DictReader(f, delimiter='\t'):
-            scenes.append({
+            entry = {
                 'index': int(row['index']),
                 'name': row['name'],
                 'mapID': int(row['mapID']),
@@ -151,9 +161,25 @@ def import_scn_index() -> int:
                 'startY': int(row['startY']),
                 'startDir': int(row['startDir']),
                 'body_len': int(row['body_len']),
-            })
+            }
+            # try export body: 11-byte header + body. body = bin[11:].
+            scn_name = row['name']
+            if scn_name in scn_lookup and SRC_VFS.exists():
+                vfs_idx, h = scn_lookup[scn_name]
+                src = SRC_VFS / f'{vfs_idx:05d}_{h:08x}.bin'
+                if src.exists():
+                    data = src.read_bytes()
+                    if len(data) > 11:
+                        body = data[11:]
+                        out_name = f"{entry['index']:05d}.bin"
+                        (bodies_dir / out_name).write_bytes(body)
+                        entry['body_path'] = f'bodies/{out_name}'
+                        body_count += 1
+            scenes.append(entry)
     (out_dir / 'index.json').write_text(json.dumps(scenes, indent=2), encoding='utf-8')
     print(f'  wrote scene index ({len(scenes)} entries) -> assets/scenes/index.json')
+    if body_count:
+        print(f'  exported {body_count} scene body files -> assets/scenes/bodies/')
     return len(scenes)
 
 

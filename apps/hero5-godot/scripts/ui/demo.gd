@@ -7,7 +7,6 @@ extends Node2D
 
 const MapRenderer = preload("res://scripts/core/map_renderer.gd")
 const Character = preload("res://scripts/core/character.gd")
-const Interp = preload("res://scripts/core/interpreter.gd")
 
 @onready var status: Label = $UI/Status
 
@@ -98,18 +97,23 @@ func _ready() -> void:
 	add_child(_help)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
-	#   0x35 (53) Event_SituateBallon (2B)
-	#   0x39 (57) Event_SituateDialogText (4B)
-	#   0x3b (59) Event_SituateNarration (3B)
-	#   0x3e (62) Event_SituatePopup (0B)
+	#   0x35 (53) Event_SituateBallon       (2B)
+	#   0x39 (57) Event_SituateDialogText   (4B)
+	#   0x3b (59) Event_SituateNarration    (3B)
+	#   0x3e (62) Event_SituatePopup        (0B)
 	_interp.set_handler(0x39, _on_dialog_text)
 	_interp.set_handler(0x35, _on_dialog_text)
 	_interp.set_handler(0x3b, _on_narration)
-	# Event_Scene_ChangeBgm = idx 67 in opcode_table
+	_interp.set_handler(0x3e, func(_a): _dialog.show_dialog("System", "..."))
+	# Event_Scene_ChangeBgm = 0x43 (idx 67)
 	_interp.set_handler(0x43, _on_change_bgm)
-	# Quest opcodes: SituateQuestPopup=53→0x35? actually 0x35 already=Ballon.
-	# QuestStatus=51, QuestSwitch=58, QuestBoss=49, QuestTimer=50, QuestQSwitch=66.
-	_interp.set_handler(51, func(args): _on_quest_status(args))
+	# Quest opcodes (BASE_TABLE 등록):
+	#   0x31 QuestBoss   0x32 QuestTimer    0x33 QuestStatus
+	#   0x3a QuestSwitch 0x42 QuestQSwitch
+	_interp.set_handler(0x33, _on_quest_status)
+	_interp.set_handler(0x3a, _on_quest_switch)
+	_interp.set_handler(0x42, _on_quest_switch)
+	_interp.set_handler(0x31, _on_quest_boss)
 	# 시작 BGM
 	Audio.play_bgm(0)
 	_apply_scene()
@@ -236,6 +240,22 @@ func _on_quest_status(args: PackedByteArray) -> void:
 		elif status == Quest.STATUS_COMPLETED:
 			Quest.complete(qid)
 			_dialog.show_dialog("System", "퀘스트 완료: " + Quest.quest_name(qid))
+
+
+func _on_quest_switch(args: PackedByteArray) -> void:
+	# qid + on/off — 단순 토글 알림 (실제 분기 로직은 quest_system 가 처리)
+	if args.size() >= 2:
+		var qid = args[0]
+		var on = args[1] != 0
+		print("[Demo] QuestSwitch(qid=%d, on=%s)" % [qid, on])
+
+
+func _on_quest_boss(args: PackedByteArray) -> void:
+	if args.size() >= 2:
+		var qid = args[0]
+		var enemy_id = args[1]
+		_dialog.show_dialog("System", "보스 출현! Quest %s" % Quest.quest_name(qid))
+		_battle_ui.start(enemy_id, {"hp": GameState.hp, "max_hp": GameState.max_hp})
 
 
 func _load_npc_table() -> Array:
@@ -383,6 +403,15 @@ func _update_status() -> void:
 
 
 func _run_intro(scene_meta: Dictionary) -> void:
-	# 첫 진입 시 Interpreter 가 처음 5개 opcode 만 console 에 dump
-	var interp = Interp.new()
-	interp.run_intro(scene_meta)
+	if _interp == null: return
+	_interp.run_intro(scene_meta)
+	# body bytes 가 import 시 export 되어 있으면 자동 실행 (안전: max 64 step).
+	# import_to_godot.py 가 vfs/asset_names 에서 .scn 본문을 분리 저장.
+	var body_path = scene_meta.get("body_path", "")
+	if body_path.is_empty(): return
+	var full := "res://assets/scenes/" + str(body_path)
+	if not FileAccess.file_exists(full): return
+	var f := FileAccess.open(full, FileAccess.READ)
+	if f == null: return
+	var bytes := f.get_buffer(f.get_length())
+	_interp.step(bytes, 64)

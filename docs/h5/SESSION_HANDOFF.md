@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-08 (P3 + P4 완료)
+업데이트: 2026-05-08 (P3 + P4 완료, P1 부분 진전)
 
 ---
 
@@ -10,12 +10,14 @@
 
 **Phase 2 (자산 추출/분석)** + **Phase 3 (Godot 게임 시스템)** 모두 구현 완료.
 Title → ClassSelect → Demo 흐름이 완비된 Godot 4 프로젝트 (`apps/hero5-godot/`)
-가 동작 가능한 상태. 37 GDScript / 14 씬 / 5 싱글톤 / 22 Interpreter 핸들러.
-이번 세션에 P3 (Stats ATK/DEF 합산 + 방어구 hover 비교) + P4 (Battle 승리
-popup + 씬 전환 페이드) 완료. verify_godot_project.py: **0 errors / 9 warnings**
+가 동작 가능한 상태. 37 GDScript / 14 씬 / 5 싱글톤 / **38 OPCODE_TABLE entries
+(+ 외부 JSON 로더로 77 확장 가능)**.
+이번 세션: P3 (Stats ATK/DEF 합산 + 방어구 hover 비교), P4 (Battle 승리 popup
++ 씬 전환 페이드), P1 부분 (BASE_TABLE 확장 + dispatch 정리 + body 자동 실행 hook
++ Quest opcode 핸들러). verify_godot_project.py: **0 errors / 9 warnings**
 (모두 gitignored 자산 디렉토리).
 
-남은 큰 미해결: opcode dispatch 자동 실행 (22/77), enemy ATK/DEF 정확도,
+남은 큰 미해결: opcode 77/77 (외부 JSON 만 들어오면 즉시), enemy ATK/DEF 정확도,
 한글 자모 인코딩, Android APK 실 빌드 검증.
 
 ---
@@ -55,11 +57,17 @@ Demo:
 
 ## 우선순위 다음 작업
 
-### P1: Interpreter opcode 자동 dispatch
-- 현재 22/77 opcode 만 GDScript 핸들러. 나머지는 console log.
-- 입력: `work/h5/analysis/opcode_dispatch.c` + `opcode_table.tsv`
-- 작업: `apps/hero5-godot/scripts/core/interpreter.gd::_dispatch()` 의 `match name:` 블록 확장.
-- 검증: 실제 .scn 파일 자동 실행 시 NPC 대화 / 카메라 / 이벤트 원본대로 재생.
+### P1: Interpreter opcode 자동 dispatch — ⚠ 부분 진전 (2026-05-08)
+- 현재 BASE_TABLE 38 opcode + 외부 `opcode_table.json` 로더로 77 확장 가능.
+- `_dispatch()` 정리 완료: 중복 case 제거, dead match 분류.
+- demo.gd 가 멤버 `_interp.step()` 호출 + body 자동 실행 hook 추가.
+- 다음 작업:
+  - `work/h5/analysis/opcode_table.tsv` 가 들어오면 JSON 으로 변환해
+    `apps/hero5-godot/assets/scenes/opcode_table.json` 에 배치 (또는 import_to_godot.py
+    에 변환 단계 추가).
+  - vfs_entries + asset_names.tsv 가 들어오면 import 시 .scn body 가 자동 export 되어
+    `bodies/<idx>.bin` 으로 저장됨 → demo 진입 시 실제 .scn 바이트코드 재생.
+  - 정확한 arg_size 가 알려지면 BASE_TABLE 에 더 추가 (현재는 추측 0개, 확실한 것만).
 
 ### P2: enemy_g 121B layout 의 ATK/DEF 정확한 offset
 - 현재 `decode_h5_enemy.py` 의 stat3/stat4 (offset 16/18) 가 65535 인 record 多.
