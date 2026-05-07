@@ -51,9 +51,10 @@ func start_battle(monster_id: int = 0) -> void:
 func player_action(action: Action, skill_id: int = 0) -> void:
 	match action:
 		Action.ATTACK:
-			var dmg := 8 + randi() % 8
+			var atk = max(8, GameState.total_attack())
+			var dmg := atk + randi() % 8
 			enemy_hp = max(0, enemy_hp - dmg)
-			log_message.emit("플레이어 → %s 에게 %d 피해" % [enemy_name, dmg])
+			log_message.emit("플레이어 → %s 에게 %d 피해 (ATK %d)" % [enemy_name, dmg, atk])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -95,8 +96,11 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 
 
 func _enemy_turn(player_defending: bool) -> void:
-	var dmg := enemy_attack + randi() % 5
-	if player_defending: dmg = dmg / 2
+	var raw_dmg := enemy_attack + randi() % 5
+	if player_defending: raw_dmg = raw_dmg / 2
+	# 방어력 차감
+	var def = GameState.total_defense()
+	var dmg = max(1, raw_dmg - def / 2)
 	player_hp = max(0, player_hp - dmg)
 	log_message.emit("%s → 플레이어에게 %d 피해" % [enemy_name, dmg])
 	# 모든 cooldown 1 감소

@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_quest"]
+
+[ext_resource type="Script" path="res://scripts/ui/quest_panel.gd" id="1_quest"]
+
+[node name="QuestPanel" type="CanvasLayer"]
+layer = 9
+script = ExtResource("1_quest")
+
+[node name="BG" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = 24.0
+offset_right = 304.0
+offset_bottom = 456.0
+color = Color(0.05, 0.08, 0.05, 0.95)
+
+[node name="Title" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 280.0
+offset_bottom = 24.0
+text = "퀘스트"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+
+[node name="ActiveLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 28.0
+offset_right = 280.0
+offset_bottom = 44.0
+text = "활성:"
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+
+[node name="ActiveList" type="ItemList" parent="BG"]
+offset_left = 8.0
+offset_top = 46.0
+offset_right = 280.0
+offset_bottom = 200.0
+
+[node name="CompletedLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 210.0
+offset_right = 280.0
+offset_bottom = 226.0
+text = "완료:"
+theme_override_colors/font_color = Color(0.5, 1, 0.5, 1)
+
+[node name="CompletedList" type="ItemList" parent="BG"]
+offset_left = 8.0
+offset_top = 228.0
+offset_right = 280.0
+offset_bottom = 360.0
+
+[node name="Info" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 366.0
+offset_right = 280.0
+offset_bottom = 400.0
+text = ""
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="BG"]
+offset_left = 192.0
+offset_top = 404.0
+offset_right = 280.0
+offset_bottom = 426.0
+text = "닫기"

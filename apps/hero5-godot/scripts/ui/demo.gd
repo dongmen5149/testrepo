@@ -20,6 +20,7 @@ var _interp: H5Interpreter
 var _status: CanvasLayer
 var _battle_ui: CanvasLayer
 var _shop: CanvasLayer
+var _quest_panel: CanvasLayer
 
 
 func _ready() -> void:
@@ -56,10 +57,14 @@ func _ready() -> void:
 		_battle_ui.battle_completed.connect(func(victory, exp, gold):
 			if victory:
 				GameState.add_battle_reward(exp, gold))
+	# 레벨업 popup
+	GameState.level_up.connect(_on_level_up)
 	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
 	add_child(_battle_ui)
 	_shop = preload("res://scenes/shop_panel.tscn").instantiate()
 	add_child(_shop)
+	_quest_panel = preload("res://scenes/quest_panel.tscn").instantiate()
+	add_child(_quest_panel)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
@@ -137,6 +142,22 @@ func _on_npc_choice(idx: int) -> void:
 func _on_change_bgm(args: PackedByteArray) -> void:
 	if args.size() >= 1:
 		Audio.play_bgm(args[0])
+
+
+func _on_level_up(new_level: int, gained_skills: Array) -> void:
+	# 큰 popup + 데미지 popup 으로 시각 강조
+	var DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+	DamagePopup.spawn(self, _hero.position + Vector2(-30, -30),
+		"LEVEL UP! → %d" % new_level, Color(1, 0.9, 0.3))
+	var msg := "Lv. %d 달성!" % new_level
+	if not gained_skills.is_empty():
+		var skill_arr = GameData.skills_for_class(GameState.class_id)
+		var names: Array = []
+		for sid in gained_skills:
+			if sid < skill_arr.size():
+				names.append(skill_arr[sid])
+		msg += "\n해금된 스킬: " + ", ".join(names)
+	_dialog.show_dialog("System", msg)
 
 
 func _on_quest_status(args: PackedByteArray) -> void:
@@ -225,6 +246,9 @@ func _input(event: InputEvent) -> void:
 			KEY_S:
 				# S: 상점 열기
 				_shop.open_shop(0)
+			KEY_Q:
+				# Q: 퀘스트 패널 토글
+				_quest_panel.toggle()
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})

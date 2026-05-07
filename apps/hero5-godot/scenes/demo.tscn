@@ -20,5 +20,5 @@ offset_left = 8.0
 offset_top = 440.0
 offset_right = 312.0
 offset_bottom = 472.0
-text = "WASD/M/N | E:NPC | P:NPC스폰 | S:상점 | I:상태 | B:전투 | C:충돌 | 1-8:저장(Shift+:로드)"
+text = "WASD/M/N | E:NPC | P:스폰 | S:상점 | Q:퀘스트 | I:상태 | B:전투 | 1-8:저장"
 autowrap_mode = 2

@@ -24,6 +24,10 @@ func _ready() -> void:
 	add_child(_sfx)
 
 
+@export var fade_duration: float = 0.6
+var _bgm_target_db: float = -6.0
+
+
 func play_bgm(bgm_id: int) -> void:
 	if bgm_id == _current_bgm and _bgm.playing:
 		return
@@ -32,10 +36,25 @@ func play_bgm(bgm_id: int) -> void:
 		push_warning("bgm not found: %s" % path)
 		return
 	var stream = load(path)
-	if stream is AudioStream:
+	if not stream is AudioStream: return
+	if _bgm.playing:
+		# fade out, swap, fade in
+		_fade_swap(stream, bgm_id)
+	else:
 		_bgm.stream = stream
+		_bgm.volume_db = _bgm_target_db
 		_bgm.play()
 		_current_bgm = bgm_id
+
+
+func _fade_swap(new_stream: AudioStream, bgm_id: int) -> void:
+	var t := create_tween()
+	t.tween_property(_bgm, "volume_db", -40.0, fade_duration / 2)
+	t.tween_callback(func():
+		_bgm.stream = new_stream
+		_bgm.play()
+		_current_bgm = bgm_id)
+	t.tween_property(_bgm, "volume_db", _bgm_target_db, fade_duration / 2)
 
 
 func stop_bgm() -> void:

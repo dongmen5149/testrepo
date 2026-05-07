@@ -68,10 +68,37 @@ func equipped_item(slot: int) -> Variant:
 	return inventory[idx]
 
 
-## 모든 장비 stat 합 (예: 무기 atk + 방어구 def 합산).
-## 실제 stat 은 item table 의 stats_u16 배열에서 추출 — 후속.
+## 장비 stat 합산. inventory 의 아이템명 → items.json 의 slot_N 에서
+## 검색 → stats[7] (atk/def) 추출.
 func equipment_bonus() -> Dictionary:
-	return {"attack": 0, "defense": 0, "agility": 0}
+	var bonus := {"attack": 0, "defense": 0}
+	for slot in SLOT_COUNT:
+		var item = equipped_item(slot)
+		if item == null: continue
+		var item_name := str(item)
+		# 모든 무기/방어구 슬롯 검색
+		for item_slot in range(10):
+			var arr = GameData.items_in_slot(item_slot)
+			var idx = arr.find(item_name)
+			if idx >= 0:
+				var data = GameData.item_stat(item_slot, idx)
+				if slot == SLOT_WEAPON:
+					bonus["attack"] += int(data.get("attack", 0))
+				else:
+					bonus["defense"] += int(data.get("attack", 0))  # 방어구도 stats[7]
+				break
+	return bonus
+
+
+## 캐릭터 총 ATK = base STR-derived + equipment bonus.
+func total_attack() -> int:
+	var base = stat_str * 2 + level * 3
+	return base + int(equipment_bonus().get("attack", 0))
+
+
+func total_defense() -> int:
+	var base = stat_con + level * 2
+	return base + int(equipment_bonus().get("defense", 0))
 
 var verbose: bool = true
 
