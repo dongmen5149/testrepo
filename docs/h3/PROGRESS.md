@@ -58,6 +58,14 @@
 - `MapWalkScene.loadHeroWalk()` 에 `dirOrder = intArrayOf(1, 2, 0, 3)` 추가 — FACING_DOWN=1, FACING_UP=2, FACING_LEFT=0, FACING_RIGHT=3.
 - 빌드+테스트 BUILD SUCCESSFUL.
 
+**A14) §4.4 _scn 세그먼트 통계 — opcode 영역 협소함 확인 (2026-05-07 추가)**
+- [tools/recon/analyze_scn_segments.py](../../tools/recon/analyze_scn_segments.py) 신설 — 텍스트/태그 영역 명확히 격리한 'opcode segment' 만 분석.
+- 244 파일, opcode-segment 총 143,556 byte. 세그먼트 길이 분포: **17,173 segments × 1 byte / 6,212 × 2 / 3,740 × 3** — 압도적으로 1~3 byte 짧은 갭.
+- 빈도 1위 trigram `2e 2e 20`(1280) / `2e 2e 2e`(1145) — 마침표/줄임표 (punctuation). 실제 opcode 가 아님.
+- 의미있는 마커: `0x00 0x7c|0x27|0x24|0x7b|0x7d` — sentence-end mode bytes. 이미 convert_scn_v2.py 가 처리 중.
+- **`{...}` 중괄호 247개 unique 디코딩**: 아이템명 `[부활의...]`, 금액 `5000G`, 수량 `5|6`, 퀘스트 라벨. → **스크립트 변수 / 보상 데이터 / 선택지** 임. 컨트롤 플로우 opcode 아님.
+- **결론**: _scn 은 대부분 (52% 한국어 + 30% 마크업/punctuation + ~ 18% short markers) 로 구성된 dialogue/script 데이터. 분기/플래그/사운드 트리거 같은 게임 흐름 opcode 는 _scn 안이 아니라 **외부 (Java MIDlet 코드 또는 별도 binary)** 에 있을 가능성. Ghidra 분석 시 `eventManager` / `onEventMessageOkKey` 함수 디스패치 코드 확인 필요.
+
 **A12) boss/enemy cif 구조 비교 → 별도 인코딩 확정 (2026-05-07)**
 - boss0_cif (slot_count=1, indices=[8], 10084 byte) / e000_cif (slot_count=1, indices=[4], 1697 byte) 헤더 분석.
 - **결론**: hero cif 의 `0a XX YY` 41-byte 프레임 구조가 boss/enemy 에는 **적용되지 않음**.

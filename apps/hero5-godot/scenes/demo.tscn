@@ -20,5 +20,5 @@ offset_left = 8.0
 offset_top = 440.0
 offset_right = 312.0
 offset_bottom = 472.0
-text = "WASD: 이동 | M:mapID | N:scene | T:대화 | ESC/I:상태 | F5/F9:저장/로드"
+text = "WASD: 이동 | M:mapID | N:scene | T:대화 | I:상태 | B:전투 | F5/F9:저장/로드"
 autowrap_mode = 2

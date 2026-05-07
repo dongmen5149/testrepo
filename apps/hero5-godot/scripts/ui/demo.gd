@@ -18,6 +18,7 @@ var _scene_idx: int = 0
 var _dialog: CanvasLayer
 var _interp: H5Interpreter
 var _status: CanvasLayer
+var _battle_ui: CanvasLayer
 
 
 func _ready() -> void:
@@ -44,6 +45,8 @@ func _ready() -> void:
 		"level": 1, "exp": 0, "gold": 1000,
 		"inventory": inv,
 	})
+	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
+	add_child(_battle_ui)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
@@ -112,6 +115,9 @@ func _input(event: InputEvent) -> void:
 				})
 				_on_dialog_text(PackedByteArray([0]))
 				_dialog.show_dialog("System", "저장됨 (slot 0)")
+			KEY_B:
+				# B: 랜덤 전투 시작
+				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
 			KEY_F9:
 				# F9: 빠른 로드
 				var saved = H5SaveManager.load_slot(0)

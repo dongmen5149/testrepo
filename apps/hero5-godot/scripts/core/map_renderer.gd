@@ -61,6 +61,30 @@ func _load_collision() -> void:
 	_col_data = col_f.get_buffer(col_f.get_length())
 
 
+## 디버그 오버레이 토글 (collision 가시화).
+@export var show_collision_debug: bool = false:
+	set(value):
+		show_collision_debug = value
+		queue_redraw()
+
+
+func _draw() -> void:
+	if not show_collision_debug or _col_data.is_empty():
+		return
+	for ty in _col_height:
+		for tx in _col_width:
+			var idx = ty * _col_width + tx
+			if idx >= _col_data.size(): break
+			var v = _col_data[idx]
+			var color: Color
+			if v == 0 or v == 2:
+				color = Color(0, 1, 0, 0.2)   # 통과
+			else:
+				color = Color(1, 0, 0, 0.4)   # 막힘
+			draw_rect(Rect2(tx * TILE_SIZE, ty * TILE_SIZE,
+					TILE_SIZE, TILE_SIZE), color, true)
+
+
 ## (x, y) 픽셀 좌표 → collision 값 (0 = 통과, 그 외 = 막힘).
 ## CHAR 의 _physics_process 가 부르는 collision_at(int, int) API.
 func collision_at(px: int, py: int) -> int:
