@@ -2,7 +2,7 @@
 class_name BattleUI
 extends CanvasLayer
 
-signal battle_completed(victory: bool, exp: int, gold: int)
+signal battle_completed(victory: bool, exp: int, gold: int, items: Array)
 
 const BattleSystem = preload("res://scripts/core/battle_system.gd")
 
@@ -114,15 +114,80 @@ func _on_log(msg: String) -> void:
 	player_hp.value = _battle.player_hp
 
 
-func _on_ended(victory: bool, exp: int, gold: int) -> void:
+func _on_ended(victory: bool, exp_gain: int, gold_gain: int, items: Array) -> void:
 	_set_buttons_enabled(false)
-	await get_tree().create_timer(1.5).timeout
+	if victory:
+		await _show_victory_popup(exp_gain, gold_gain, items)
+	else:
+		await _show_defeat_popup()
 	visible = false
 	GameState.in_combat = false
-	battle_completed.emit(victory, exp, gold)
+	battle_completed.emit(victory, exp_gain, gold_gain, items)
 	if _battle:
 		_battle.queue_free()
 		_battle = null
+
+
+## 승리 popup — EXP/Gold/획득 아이템 요약 + 확인 버튼.
+func _show_victory_popup(exp_gain: int, gold_gain: int, items: Array) -> void:
+	var panel := Panel.new()
+	panel.name = "ResultPanel"
+	panel.position = Vector2(40, 120)
+	panel.size = Vector2(240, 200)
+	bg.add_child(panel)
+	var title := Label.new()
+	title.text = "승 리!"
+	title.position = Vector2(0, 8)
+	title.size = Vector2(240, 32)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(1, 0.9, 0.4, 1))
+	panel.add_child(title)
+	var lines := PackedStringArray()
+	lines.append("EXP +%d" % exp_gain)
+	lines.append("Gold +%d" % gold_gain)
+	if items.is_empty():
+		lines.append("(획득 아이템 없음)")
+	else:
+		lines.append("획득 아이템:")
+		for it in items:
+			lines.append("  • " + str(it))
+	var body := Label.new()
+	body.text = "\n".join(lines)
+	body.position = Vector2(16, 50)
+	body.size = Vector2(208, 110)
+	body.add_theme_font_size_override("font_size", 13)
+	panel.add_child(body)
+	var ok := Button.new()
+	ok.text = "확인"
+	ok.position = Vector2(80, 162)
+	ok.size = Vector2(80, 28)
+	panel.add_child(ok)
+	# 확인 버튼 또는 4초 자동 닫힘
+	var done := false
+	ok.pressed.connect(func(): done = true)
+	var t := 0.0
+	while not done and t < 4.0:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	panel.queue_free()
+
+
+func _show_defeat_popup() -> void:
+	var panel := Panel.new()
+	panel.position = Vector2(40, 180)
+	panel.size = Vector2(240, 100)
+	bg.add_child(panel)
+	var title := Label.new()
+	title.text = "패 배..."
+	title.position = Vector2(0, 16)
+	title.size = Vector2(240, 32)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(0.7, 0.3, 0.3, 1))
+	panel.add_child(title)
+	await get_tree().create_timer(1.5).timeout
+	panel.queue_free()
 
 
 func _do(action: int) -> void:

@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-08
+업데이트: 2026-05-08 (P3 + P4 완료)
 
 ---
 
@@ -10,8 +10,10 @@
 
 **Phase 2 (자산 추출/분석)** + **Phase 3 (Godot 게임 시스템)** 모두 구현 완료.
 Title → ClassSelect → Demo 흐름이 완비된 Godot 4 프로젝트 (`apps/hero5-godot/`)
-가 동작 가능한 상태. 36 GDScript / 14 씬 / 5 싱글톤 / 22 Interpreter 핸들러.
-verify_godot_project.py: **0 errors / 0 warnings**.
+가 동작 가능한 상태. 37 GDScript / 14 씬 / 5 싱글톤 / 22 Interpreter 핸들러.
+이번 세션에 P3 (Stats ATK/DEF 합산 + 방어구 hover 비교) + P4 (Battle 승리
+popup + 씬 전환 페이드) 완료. verify_godot_project.py: **0 errors / 9 warnings**
+(모두 gitignored 자산 디렉토리).
 
 남은 큰 미해결: opcode dispatch 자동 실행 (22/77), enemy ATK/DEF 정확도,
 한글 자모 인코딩, Android APK 실 빌드 검증.
@@ -72,13 +74,16 @@ Demo:
   ```
 - 검증: enemy_table.json 의 ATK/DEF 가 5–500 범위 자연수.
 
-### P3: Stats UI ATK/DEF 합산 표시
-- Status panel 에 `total_attack()/total_defense()` 라벨 추가.
-- 인벤 hover 비교 툴팁에 방어구 stat 도 추가.
+### ~~P3: Stats UI ATK/DEF 합산 표시~~ — ✅ 완료 (2026-05-08)
+- Status panel 의 `AtkDef` Label 에 total_attack/defense + 장비 보너스 분리 표시.
+- 인벤 hover: 무기 → ATK diff vs SLOT_WEAPON, 방어구 → DEF diff vs 해당 슬롯
+  (투구/장화/일반 방어), 포션 → "HP +30" 미리보기.
 
-### P4: Battle 결과 화면 + 메뉴 페이드
-- 승리 popup: EXP/Gold/획득 아이템 요약.
-- 씬 전환 0.3s fade (`get_tree().change_scene_to_file` 직전 ColorRect 페이드).
+### ~~P4: Battle 결과 화면 + 메뉴 페이드~~ — ✅ 완료 (2026-05-08)
+- 승리 popup: EXP/Gold/획득 아이템 리스트 + 확인 버튼 (4초 자동 닫힘).
+  enemy stats 의 exp/gold 우선, drop_table 25% 확률 1~2개.
+- 씬 전환 fade: `scripts/ui/scene_fader.gd` (CanvasLayer + ColorRect tween).
+  Title/ClassSelect/Demo 모두 진입 시 fade_in, 나갈 때 change_scene fade-out.
 
 ### P5: 자모 인코딩 정밀
 - table.dat 의 0x88+ codepoint 와 581 glyph 매핑 룰.

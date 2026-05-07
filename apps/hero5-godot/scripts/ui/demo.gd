@@ -55,11 +55,6 @@ func _ready() -> void:
 		GameState.inventory = inv
 	_status.set_state(GameState.to_save_dict())
 	GameState.state_changed.connect(func(): _status.set_state(GameState.to_save_dict()))
-	# 전투 결과 → GameState 적용
-	if _battle_ui.has_signal("battle_completed"):
-		_battle_ui.battle_completed.connect(func(victory, exp, gold):
-			if victory:
-				GameState.add_battle_reward(exp, gold))
 	# 레벨업 popup
 	GameState.level_up.connect(_on_level_up)
 	# Quest 알림
@@ -80,6 +75,14 @@ func _ready() -> void:
 			_dialog.show_dialog("System", "%s 사용 (HP +30)" % name))
 	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
 	add_child(_battle_ui)
+	# 전투 결과 → GameState 적용 (보상 + 획득 아이템 인벤 추가)
+	_battle_ui.battle_completed.connect(func(victory, exp_gain, gold_gain, items):
+		if victory:
+			GameState.add_battle_reward(exp_gain, gold_gain)
+			for it in items:
+				GameState.inventory.append(str(it))
+			if not items.is_empty():
+				GameState.state_changed.emit())
 	_shop = preload("res://scenes/shop_panel.tscn").instantiate()
 	add_child(_shop)
 	_quest_panel = preload("res://scenes/quest_panel.tscn").instantiate()
@@ -110,6 +113,7 @@ func _ready() -> void:
 	# 시작 BGM
 	Audio.play_bgm(0)
 	_apply_scene()
+	SceneFader.fade_in(self)
 
 
 func _on_dialog_text(args: PackedByteArray) -> void:

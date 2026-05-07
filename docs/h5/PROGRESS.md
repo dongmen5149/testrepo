@@ -501,6 +501,11 @@ isolated bins. 후속 작업으로 보류.
 | Help 패널 | ✅ H 키 — 모든 단축키 BBCode 표시 | `help_panel.gd/.tscn` |
 | Map 이름 표시 | ✅ 씬 진입 시 화면 중앙 큰 라벨 2초 + 페이드 | `demo.gd::_show_map_name` |
 | 메뉴 별 BGM | ✅ Title bgm_00, ClassSelect bgm_01, Demo mapID%21 | `title.gd`, `class_select.gd` |
+| ATK/DEF 합산 표시 | ✅ Status panel 에 total + 장비 보너스 분리 표시 | `status_panel.gd::_apply`, `status_panel.tscn` |
+| 방어구 hover 비교 | ✅ 무기/방어구/포션 자동 분류, 슬롯별 ATK 또는 DEF diff | `status_panel.gd::_on_item_hover` |
+| Battle 결과 popup | ✅ 승리 시 EXP/Gold/획득 아이템 패널 + 확인 버튼 (4초 자동 닫힘) | `battle_ui.gd::_show_victory_popup` |
+| Battle drop | ✅ enemy stats exp/gold + 25% drop_table roll, items 배열 emit | `battle_system.gd::_finish/_roll_drops` |
+| 씬 전환 fade | ✅ Title↔ClassSelect↔Demo 0.3s 검정 fade-out / fade-in | `scripts/ui/scene_fader.gd` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
@@ -524,13 +529,18 @@ isolated bins. 후속 작업으로 보류.
 - 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
 - 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
 
-**[P3] Stats UI 합산 표시 + 장비 비교 패널**
-- Status panel 의 ATK/DEF 총합 라벨 (`game_state.gd::total_attack/defense` 사용).
-- 인벤 hover 시 비교 툴팁은 이미 있음 (ATK 만). 방어구/포션 효과도 추가.
+**[P3] Stats UI 합산 표시 + 장비 비교 패널** — ✅ 완료 (2026-05-08)
+- Status panel 의 ATK/DEF 총합 라벨 추가 (`status_panel.gd::_apply`).
+- 인벤 hover 비교: `_item_kind()` 로 무기/방어구/포션 분류 후 슬롯별 ATK/DEF diff
+  표시 (방어구 = SLOT_ARMOR/HELMET/BOOTS 자동 매핑).
 
-**[P4] Battle 결과 화면 + 메뉴 페이드**
-- 승리 시 보상 요약 popup (EXP/Gold/획득 아이템 리스트).
-- 씬 전환 시 0.3s 페이드 인/아웃 (Title→ClassSelect→Demo).
+**[P4] Battle 결과 화면 + 메뉴 페이드** — ✅ 완료 (2026-05-08)
+- 승리 popup: 중앙 패널에 EXP/Gold/획득 아이템 리스트 + 확인 버튼 (4초 자동 닫힘).
+  drop_table 25% 확률 + enemy stats exp/gold 우선 사용.
+- 씬 전환 fade: `SceneFader.change_scene()` (out 0.3s) +
+  `SceneFader.fade_in()` (in 0.3s). Title/ClassSelect/Demo 진입 시 자동 fade-in.
+- pre-existing 버그 수정: demo.gd 의 `_battle_ui.has_signal()` 호출이
+  `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 **[P5] 자모 인코딩 정밀 (한글 비트맵 폰트 사용)**
 - table.dat 의 2350 EUC-KR codepoint 와 581 glyph 의 실제 매핑.

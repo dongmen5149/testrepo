@@ -49,11 +49,19 @@ offset_right = 244.0
 offset_bottom = 110.0
 text = "Gold --"
 
+[node name="AtkDef" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 110.0
+offset_right = 244.0
+offset_bottom = 128.0
+text = "ATK -- (+--)  DEF -- (+--)"
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+
 [node name="FilterBox" type="HBoxContainer" parent="BG"]
 offset_left = 8.0
-offset_top = 124.0
+offset_top = 132.0
 offset_right = 244.0
-offset_bottom = 142.0
+offset_bottom = 150.0
 
 [node name="AllBtn" type="Button" parent="BG/FilterBox"]
 custom_minimum_size = Vector2(38, 18)
@@ -81,7 +89,7 @@ text = "정렬"
 
 [node name="Inventory" type="ItemList" parent="BG"]
 offset_left = 8.0
-offset_top = 144.0
+offset_top = 152.0
 offset_right = 244.0
 offset_bottom = 380.0
 

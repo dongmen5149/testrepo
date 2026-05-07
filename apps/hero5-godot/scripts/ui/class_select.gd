@@ -23,6 +23,7 @@ func _ready() -> void:
 		_on_select(0)
 	# 클래스 선택 BGM (bgm_01 다른 곡)
 	Audio.play_bgm(1)
+	SceneFader.fade_in(self)
 
 
 func _load_classes() -> void:
@@ -63,4 +64,4 @@ func _on_start() -> void:
 	GameState.hp = GameState.max_hp
 	GameState.max_sp = 30 + GameState.stat_int * 2
 	GameState.sp = GameState.max_sp
-	get_tree().change_scene_to_file("res://scenes/demo.tscn")
+	SceneFader.change_scene(self, "res://scenes/demo.tscn")

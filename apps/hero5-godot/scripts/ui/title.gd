@@ -13,6 +13,7 @@ func _ready() -> void:
 	new_btn.pressed.connect(_on_new_game)
 	cont_btn.pressed.connect(_on_continue)
 	_refresh_slots()
+	SceneFader.fade_in(self)
 	# 로고: c/sp/imgcom/title.mgr 의 첫 frame
 	var logo_dir = AssetLoader.sprite_dir("c/sp/imgcom/title.mgr")
 	if not logo_dir.is_empty():
@@ -35,7 +36,7 @@ func _on_new_game() -> void:
 	GameState.gold = 1000
 	GameState.inventory = []
 	GameState.flags = {}
-	get_tree().change_scene_to_file("res://scenes/class_select.tscn")
+	SceneFader.change_scene(self, "res://scenes/class_select.tscn")
 
 
 var _selected_slot: int = -1
@@ -45,7 +46,7 @@ func _on_continue() -> void:
 	# 가장 최근 저장 자동 선택 (없으면 0)
 	var slot = _selected_slot if _selected_slot >= 0 else 0
 	if GameState.quick_load(slot):
-		get_tree().change_scene_to_file("res://scenes/demo.tscn")
+		SceneFader.change_scene(self, "res://scenes/demo.tscn")
 	else:
 		slots.text = "슬롯 %d 비어있음" % slot
 
@@ -91,7 +92,7 @@ func _refresh_slots() -> void:
 func _on_slot_selected(slot: int) -> void:
 	_selected_slot = slot
 	if GameState.quick_load(slot):
-		get_tree().change_scene_to_file("res://scenes/demo.tscn")
+		SceneFader.change_scene(self, "res://scenes/demo.tscn")
 
 
 func _confirm_delete(slot: int) -> void:

@@ -9,7 +9,7 @@ class_name H5Battle
 extends Node
 
 signal battle_started(enemy_name: String)
-signal battle_ended(victory: bool, exp: int, gold: int)
+signal battle_ended(victory: bool, exp: int, gold: int, items: Array)
 signal log_message(msg: String)
 
 enum Action { ATTACK, SKILL, DEFEND, FLEE }
@@ -166,11 +166,31 @@ var _monster_id: int = 0
 
 func _finish(victory: bool) -> void:
 	if victory:
-		var exp := 10 + randi() % 20
-		var gold := 5 + randi() % 50
-		log_message.emit("승리! EXP +%d  Gold +%d" % [exp, gold])
-		# Quest 처치 카운트 갱신
+		var exp_g := 10 + randi() % 20
+		var gold_g := 5 + randi() % 50
+		# 적 stats 의 exp/gold 가 있으면 우선 사용
+		var stats = GameData.enemy_stats(_monster_id)
+		if stats.has("exp") and int(stats["exp"]) > 0 and int(stats["exp"]) != 65535:
+			exp_g = int(stats["exp"])
+		if stats.has("gold") and int(stats["gold"]) > 0 and int(stats["gold"]) != 65535:
+			gold_g = int(stats["gold"])
+		var drops := _roll_drops()
+		log_message.emit("승리! EXP +%d  Gold +%d" % [exp_g, gold_g])
 		Quest.on_enemy_killed(_monster_id)
-		battle_ended.emit(true, exp, gold)
+		battle_ended.emit(true, exp_g, gold_g, drops)
 	else:
-		battle_ended.emit(false, 0, 0)
+		battle_ended.emit(false, 0, 0, [])
+
+
+## 25% 확률로 drop_table 에서 1 ~ 2 개 아이템 결정.
+func _roll_drops() -> Array:
+	if randi() % 100 >= 25: return []
+	var table = GameData.drop_table()
+	if table.is_empty(): return []
+	var n = 1 + (randi() % 2)
+	var out: Array = []
+	for i in n:
+		var pick = table[randi() % table.size()]
+		if pick and not out.has(pick):
+			out.append(pick)
+	return out

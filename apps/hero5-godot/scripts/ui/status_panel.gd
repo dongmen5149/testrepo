@@ -11,6 +11,7 @@ extends CanvasLayer
 @onready var sp_label: Label = $BG/SP
 @onready var lvl_label: Label = $BG/LVL
 @onready var gold_label: Label = $BG/Gold
+@onready var atkdef_label: Label = $BG/AtkDef
 @onready var inv_list: ItemList = $BG/Inventory
 @onready var stat_points_label: Label = $BG/StatBox/StatPointsLabel
 @onready var str_btn: Button = $BG/StatBox/StrBtn
@@ -88,17 +89,42 @@ func _on_item_hover(idx: int) -> void:
 	var inv_idx = idx - equipment.size() - 1
 	if inv_idx < 0 or inv_idx >= inv.size(): return
 	var item_name := str(inv[inv_idx])
-	# items.json 에서 검색해서 stats[7] 추출
-	var item_atk = _find_item_attack(item_name)
-	if item_atk < 0:
-		stat_points_label.tooltip_text = ""
+	var kind = _item_kind(item_name)
+	if kind == "potion":
+		stat_points_label.tooltip_text = "%s\n사용 시 HP +30" % item_name
 		return
-	# 현재 무기와 비교
-	var cur_weapon = GameState.equipped_item(GameState.SLOT_WEAPON)
-	var cur_atk = _find_item_attack(str(cur_weapon)) if cur_weapon else 0
-	var diff = item_atk - cur_atk
-	var sign = "+" if diff >= 0 else ""
-	stat_points_label.tooltip_text = "%s\nATK %d (%s%d)" % [item_name, item_atk, sign, diff]
+	if kind == "weapon" or kind == "armor":
+		var item_stat = _find_item_attack(item_name)
+		if item_stat < 0:
+			stat_points_label.tooltip_text = item_name
+			return
+		var slot = _slot_for_kind(kind, item_name)
+		var cur = GameState.equipped_item(slot)
+		var cur_stat = _find_item_attack(str(cur)) if cur else 0
+		if cur_stat < 0: cur_stat = 0
+		var diff = item_stat - cur_stat
+		var sign_s = "+" if diff >= 0 else ""
+		var label = "ATK" if kind == "weapon" else "DEF"
+		stat_points_label.tooltip_text = "%s\n%s %d (%s%d vs 현재)" % [
+			item_name, label, item_stat, sign_s, diff]
+		return
+	stat_points_label.tooltip_text = item_name
+
+
+func _item_kind(name: String) -> String:
+	if "포션" in name or "수프가루" in name: return "potion"
+	if "검" in name or "소드" in name or "액스" in name or "총" in name or "창" in name:
+		return "weapon"
+	if "갑옷" in name or "투구" in name or "장화" in name or "방패" in name:
+		return "armor"
+	return "misc"
+
+
+func _slot_for_kind(kind: String, name: String) -> int:
+	if kind == "weapon": return GameState.SLOT_WEAPON
+	if "투구" in name: return GameState.SLOT_HELMET
+	if "장화" in name: return GameState.SLOT_BOOTS
+	return GameState.SLOT_ARMOR
 
 
 func _find_item_attack(name: String) -> int:
@@ -169,6 +195,14 @@ func _apply() -> void:
 	sp_label.text = "SP %d / %d" % [_state["sp"], _state["max_sp"]]
 	lvl_label.text = "Lv %d  EXP %d" % [_state["level"], _state["exp"]]
 	gold_label.text = "Gold %d" % _state["gold"]
+	if atkdef_label:
+		var bonus = GameState.equipment_bonus()
+		var atk_total = GameState.total_attack()
+		var def_total = GameState.total_defense()
+		var atk_eq = int(bonus.get("attack", 0))
+		var def_eq = int(bonus.get("defense", 0))
+		atkdef_label.text = "ATK %d (장비+%d)  DEF %d (장비+%d)" % [
+			atk_total, atk_eq, def_total, def_eq]
 	if stat_points_label:
 		var pts = GameState.stat_points
 		stat_points_label.text = "+%d" % pts
