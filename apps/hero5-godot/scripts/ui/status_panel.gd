@@ -18,6 +18,14 @@ extends CanvasLayer
 @onready var int_btn: Button = $BG/StatBox/IntBtn
 @onready var con_btn: Button = $BG/StatBox/ConBtn
 
+# filter
+var _filter: String = "all"
+@onready var all_btn: Button = $BG/FilterBox/AllBtn
+@onready var weapon_btn: Button = $BG/FilterBox/WeaponBtn
+@onready var armor_btn: Button = $BG/FilterBox/ArmorBtn
+@onready var potion_btn: Button = $BG/FilterBox/PotionBtn
+@onready var misc_btn: Button = $BG/FilterBox/MiscBtn
+
 var _state: Dictionary = {
 	"hp": 100, "max_hp": 100,
 	"sp": 50, "max_sp": 50,
@@ -39,7 +47,34 @@ func _ready() -> void:
 	dex_btn.pressed.connect(func(): GameState.allocate_stat("dex"))
 	int_btn.pressed.connect(func(): GameState.allocate_stat("int"))
 	con_btn.pressed.connect(func(): GameState.allocate_stat("con"))
+	all_btn.pressed.connect(func(): _set_filter("all"))
+	weapon_btn.pressed.connect(func(): _set_filter("weapon"))
+	armor_btn.pressed.connect(func(): _set_filter("armor"))
+	potion_btn.pressed.connect(func(): _set_filter("potion"))
+	misc_btn.pressed.connect(func(): _set_filter("misc"))
 	_apply()
+
+
+func _set_filter(f: String) -> void:
+	_filter = f
+	_apply()
+
+
+func _matches_filter(name: String) -> bool:
+	if _filter == "all": return true
+	if _filter == "weapon":
+		return ("검" in name or "소드" in name or "액스" in name or "총" in name or "창" in name)
+	if _filter == "armor":
+		return ("갑옷" in name or "투구" in name or "장화" in name or "방패" in name)
+	if _filter == "potion":
+		return ("포션" in name or "수프가루" in name)
+	if _filter == "misc":
+		# 위 카테고리에 속하지 않으면 misc
+		var is_w = ("검" in name or "소드" in name or "액스" in name)
+		var is_a = ("갑옷" in name or "투구" in name or "장화" in name)
+		var is_p = ("포션" in name or "수프가루" in name)
+		return not (is_w or is_a or is_p)
+	return true
 
 
 ## 더블클릭/엔터로 아이템 사용 (포션 등).
@@ -117,7 +152,9 @@ func _apply() -> void:
 		if idx >= 0 and idx < inv.size():
 			name = str(inv[idx])
 		inv_list.add_item("[%s] %s" % [SLOT_NAMES[slot], name])
-	# 인벤토리 항목들
-	inv_list.add_item("--- 인벤토리 ---")
+	# 인벤토리 항목들 (필터 적용)
+	inv_list.add_item("--- 인벤토리 (%s) ---" % _filter)
 	for item in inv:
-		inv_list.add_item(str(item))
+		var name = str(item)
+		if _matches_filter(name):
+			inv_list.add_item(name)

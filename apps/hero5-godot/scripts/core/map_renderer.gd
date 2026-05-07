@@ -106,18 +106,27 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 		var ty = int(flags[3])
 		if sprite_id == 0xFF or tx == 0xFF or ty == 0xFF: continue
 		if tx == 0 and ty == 0: continue
-		# 실제 sprite 텍스처 시도 (sprite_id 기반 c/sp/img0/NNN/frame_00 검색)
+		# NPC 종류 분류 (flags[6] = npc type 추정)
+		# flags[6] != 0xFF 이면 적대적/특수 NPC, 아니면 일반 NPC
+		var npc_type := int(flags[6]) if flags.size() > 6 else 0xFF
+		var npc_color: Color
+		if npc_type == 0xFF: npc_color = Color(0.4, 0.8, 1.0, 0.85)  # 일반 (cyan)
+		elif npc_type < 30: npc_color = Color(1.0, 0.4, 0.4, 0.85)   # 적대 (red)
+		elif npc_type < 60: npc_color = Color(1.0, 0.85, 0.3, 0.85)  # 상인 (yellow)
+		else: npc_color = Color(0.5, 1.0, 0.5, 0.85)                  # 퀘스트 (green)
+		# 실제 sprite 텍스처 시도
 		var marker: Node2D
 		var tex = _try_load_npc_sprite(sprite_id)
 		if tex:
 			var spr = Sprite2D.new()
 			spr.texture = tex
+			spr.modulate = npc_color  # 색조 반영
 			spr.centered = false
 			spr.position = Vector2(tx * TILE_SIZE + 4, ty * TILE_SIZE)
 			marker = spr
 		else:
 			var rect = ColorRect.new()
-			rect.color = Color(0.4, 0.8, 1.0, 0.85)
+			rect.color = npc_color
 			rect.size = Vector2(TILE_SIZE * 0.8, TILE_SIZE * 0.8)
 			rect.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE)
 			marker = rect
@@ -133,6 +142,7 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 			"idx": int(r.get("idx", 0)),
 			"tile_x": tx, "tile_y": ty,
 			"sprite_id": sprite_id,
+			"npc_type": npc_type,
 		})
 		spawned += 1
 

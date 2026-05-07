@@ -479,6 +479,10 @@ isolated bins. 후속 작업으로 보류.
 | Map warp trigger | ✅ collision 0x40-0x7F = 다음 scene 인덱스, hero.moved signal 연동 | `map_renderer.gd::check_warp` |
 | NPC 한글 대사 | ✅ quest_text.json 의 한글 발췌 → NPC 대화로 표시 (3 episodes) | `game_data.gd::quest_dialogue` |
 | 이펙트 애니메이션 | ✅ EffectAnim.spawn_at() — c/sp/imgcom/eff frame 시퀀스, 12fps | `effect_anim.gd` |
+| HUD | ✅ 상단 HP/SP bar + Lv + Gold (state_changed 자동 갱신) | `apps/hero5-godot/scripts/ui/hud.gd` |
+| 슬롯 삭제 UI | ✅ Title 에서 우클릭/Shift+클릭 → AcceptDialog 확인 → delete | `title.gd::_confirm_delete` |
+| NPC 색상 분류 | ✅ flags[6] 따라 일반/적대/상인/퀘스트 4 색 modulate | `map_renderer.gd` |
+| Inventory 필터 | ✅ 전체/무기/방어/포션/기타 5 탭 | `status_panel.gd::_matches_filter` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

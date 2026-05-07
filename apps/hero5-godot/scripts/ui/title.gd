@@ -78,6 +78,11 @@ func _refresh_slots() -> void:
 		btn.size = Vector2(304, 20)
 		btn.add_theme_font_size_override("font_size", 10)
 		btn.pressed.connect(func(): _on_slot_selected(slot))
+		# 우클릭 / Shift+클릭 = 삭제 확인
+		btn.gui_input.connect(func(ev):
+			if ev is InputEventMouseButton and ev.pressed:
+				if ev.button_index == MOUSE_BUTTON_RIGHT or ev.shift_pressed:
+					_confirm_delete(slot))
 		$UI.add_child(btn)
 
 
@@ -85,6 +90,21 @@ func _on_slot_selected(slot: int) -> void:
 	_selected_slot = slot
 	if GameState.quick_load(slot):
 		get_tree().change_scene_to_file("res://scenes/demo.tscn")
+
+
+func _confirm_delete(slot: int) -> void:
+	# 간이 confirmation (popup)
+	var popup := AcceptDialog.new()
+	popup.dialog_text = "슬롯 %d 의 저장 데이터를 삭제하시겠습니까?" % slot
+	popup.title = "슬롯 삭제"
+	popup.add_cancel_button("취소")
+	popup.confirmed.connect(func():
+		SaveManager.delete_slot(slot)
+		_refresh_slots()
+		popup.queue_free())
+	popup.canceled.connect(func(): popup.queue_free())
+	add_child(popup)
+	popup.popup_centered()
 
 
 func _input(event: InputEvent) -> void:

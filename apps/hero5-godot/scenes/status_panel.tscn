@@ -49,12 +49,31 @@ offset_right = 244.0
 offset_bottom = 110.0
 text = "Gold --"
 
-[node name="InvLabel" type="Label" parent="BG"]
+[node name="FilterBox" type="HBoxContainer" parent="BG"]
 offset_left = 8.0
 offset_top = 124.0
 offset_right = 244.0
 offset_bottom = 142.0
-text = "인벤토리"
+
+[node name="AllBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(38, 18)
+text = "전체"
+
+[node name="WeaponBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(38, 18)
+text = "무기"
+
+[node name="ArmorBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(38, 18)
+text = "방어"
+
+[node name="PotionBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(38, 18)
+text = "포션"
+
+[node name="MiscBtn" type="Button" parent="BG/FilterBox"]
+custom_minimum_size = Vector2(38, 18)
+text = "기타"
 
 [node name="Inventory" type="ItemList" parent="BG"]
 offset_left = 8.0

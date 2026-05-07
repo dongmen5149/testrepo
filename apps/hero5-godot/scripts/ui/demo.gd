@@ -21,6 +21,7 @@ var _status: CanvasLayer
 var _battle_ui: CanvasLayer
 var _shop: CanvasLayer
 var _quest_panel: CanvasLayer
+var _hud: CanvasLayer
 
 
 func _ready() -> void:
@@ -73,6 +74,8 @@ func _ready() -> void:
 	add_child(_shop)
 	_quest_panel = preload("res://scenes/quest_panel.tscn").instantiate()
 	add_child(_quest_panel)
+	_hud = preload("res://scenes/hud.tscn").instantiate()
+	add_child(_hud)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
