@@ -10,8 +10,9 @@ Repeated until file end. No encryption at this layer.
 from __future__ import annotations
 import struct, pathlib, sys
 
-VFS = pathlib.Path(r"D:/testrepo/work/h5/extracted/assets/data.vfs.mp3")
-OUT = pathlib.Path(r"D:/testrepo/work/h5/vfs_entries")
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+VFS = ROOT / "work" / "h5" / "extracted" / "assets" / "data.vfs.mp3"
+OUT = ROOT / "work" / "h5" / "vfs_entries"
 OUT.mkdir(parents=True, exist_ok=True)
 
 MAGIC_SNIFFERS = {

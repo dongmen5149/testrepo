@@ -183,6 +183,27 @@ def import_scn_index() -> int:
     return len(scenes)
 
 
+def import_opcode_table() -> int:
+    """capstone+lief 가 있으면 .so disasm 으로 opcode_table.json 생성."""
+    so = ROOT / 'work/h5/extracted/lib/armeabi/libHeroesLore5.so'
+    if not so.exists():
+        print('  [skip] opcode_table: .so missing'); return 0
+    try:
+        import lief, capstone  # noqa: F401
+    except ImportError:
+        print('  [skip] opcode_table: capstone/lief not installed'); return 0
+    import subprocess, sys as _sys
+    script = ROOT / 'tools' / 'h5_extract_opcode_disasm.py'
+    if not script.exists(): return 0
+    r = subprocess.run([_sys.executable, str(script)],
+                       capture_output=True, text=True, encoding='utf-8')
+    if r.returncode != 0:
+        print(f'  [warn] opcode_table extract failed:\n{r.stderr[-500:]}')
+        return 0
+    print(f'  opcode_table.json generated (77 entries)')
+    return 1
+
+
 def main() -> int:
     DST.mkdir(parents=True, exist_ok=True)
     print(f'importing to {DST.relative_to(ROOT)}/')
@@ -193,6 +214,7 @@ def main() -> int:
     import_sounds()
     import_sprite_index()
     import_scn_index()
+    import_opcode_table()
     print('\ndone.')
     return 0
 

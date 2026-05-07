@@ -509,7 +509,11 @@ isolated bins. 후속 작업으로 보류.
 | OPCODE_TABLE 확장 | ⚠ 38/77 — BASE_TABLE 인라인 + 외부 opcode_table.json 로더 (없으면 fallback) | `interpreter.gd::BASE_TABLE/_try_load_external` |
 | Dispatch 정리 | ✅ 중복 case 제거, Quest/Situate/Scene 핸들러 정렬, 외부 JSON 활성화 시 자동 매칭 | `interpreter.gd::_dispatch` |
 | Scene body 자동 실행 | ✅ import 시 .scn body 11B 이후를 `assets/scenes/bodies/<idx>.bin` 저장, run_intro 가 step() 호출 | `import_to_godot.py::import_scn_index`, `demo.gd::_run_intro` |
-| Quest opcode 핸들러 | ✅ 0x31 Boss / 0x32 Timer / 0x33 Status / 0x3a Switch / 0x42 QSwitch — demo.gd 에서 set_handler | `demo.gd::_on_quest_*` |
+| Quest opcode 핸들러 | ✅ 0x29 Boss / 0x2a QSwitch / 0x2b Status / 0x2c Switch — `.so disasm 검증` | `demo.gd::_on_quest_*` |
+| Opcode 77/77 추출 (Ghidra-free) | ✅ ARM disasm + jumptable 추적 → opcode_table.tsv/json 자동 생성 | `tools/h5_extract_opcode_disasm.py`, `apps/hero5-godot/assets/scenes/opcode_table.json` |
+| Event 함수 mangle 분석 | ✅ 105 Event_* 식별자 → arg_size 자동 룩업 (Itanium ABI demangle) | `tools/h5_event_arg_sizes.py`, `analysis/event_arg_sizes.tsv` |
+| BASE_TABLE 매핑 수정 | ✅ Quest 0x31~0x42 추측 → 정확한 0x29~0x2d (.so 검증), Scene_ChangeBgm dead entry 제거 | `interpreter.gd::BASE_TABLE` |
+| 자산 환경 복원 | ✅ APK 재추출 + VFS 2189 unpack + 99.7% 이름 + 421 sprite / 588 pal / 258 scn body | tools 전체 |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
@@ -533,18 +537,30 @@ isolated bins. 후속 작업으로 보류.
 - 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
 - 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
 
-**[P1] Interpreter opcode 자동 dispatch** — ⚠ 부분 진전 (2026-05-08)
-- BASE_TABLE 38 opcode 인라인 (0x00-0x1d + 0x31~0x43 알려진 매핑만, 추측 0).
-- 외부 `assets/scenes/opcode_table.json` 로더 추가 — Ghidra 산출물(`opcode_table.tsv`)
-  를 다음 import 시 JSON 으로 변환해 두면 즉시 77/77 활성화.
-- `_dispatch()` 정리: 중복 case 제거 (Event_SituateScreenShake/PlayerTeleport 양쪽),
-  외부 JSON 에서 활성화될 수 있는 이름들도 보존 (Event_PlayerMove/Effect/Teleport 등).
-- demo.gd 의 `set_handler` 호출들이 BASE_TABLE 에 등록 안된 op 를 가리키던 dead 상태
-  → BASE_TABLE 추가로 0x35/0x39/0x3b/0x3e/0x33/0x43 정상 동작.
-- Quest 핸들러 추가: 0x31 Boss / 0x32 Timer / 0x3a Switch / 0x42 QSwitch.
+**[P1] Interpreter opcode 자동 dispatch** — ✅ 77/77 완료 (2026-05-08)
+- ARM disasm + jumptable 추적으로 `EventProc::onFunction` 의 77 case 모두 자동 추출
+  (`tools/h5_extract_opcode_disasm.py`, capstone + lief). Ghidra 불필요.
+- 산출: `apps/hero5-godot/assets/scenes/opcode_table.json` (77 entries) — interpreter.gd
+  의 외부 로더가 자동 머지 → BASE_TABLE 38 ↔ 외부 77.
+- **BASE_TABLE 의 잘못된 추측 매핑 수정** (.so disasm 으로 검증):
+  - Quest 계열 0x31~0x42 → 실제 0x29~0x2d (PROGRESS hint 가 추측이었음)
+  - `Event_Scene_ChangeBgm` 은 실제로 dispatch table 에 없음 — BGM 변경은
+    `demo._apply_scene` 의 `Audio.play_bgm` 직접 호출로만 처리.
+- demo.gd `set_handler` 호출 정확한 op 로 수정 (0x29/0x2a/0x2b/0x2c).
 - demo.gd `_run_intro` 가 dead `Interp.new()` 대신 멤버 `_interp` 사용 + `body_path`
-  존재 시 `step(bytes, 64)` 자동 실행. import 시 `assets/scenes/bodies/<idx>.bin` 으로
-  body 저장 (vfs/asset_names 필요 — gitignored 자산 환경에서 자동 활성화).
+  존재 시 `step(bytes, 64)` 자동 실행. import 가 .scn body 258개를
+  `assets/scenes/bodies/<idx>.bin` 으로 export.
+- Itanium C++ ABI mangle 파서 (`tools/h5_event_arg_sizes.py`) 로 105 Event_* 함수의
+  arg_size 모두 추출 — `Eh`=1, `Ehh`=2, `Eaht`=4 등.
+
+**[자산 환경 복원] 이 머신에서 처음부터 추출** — ✅ 완료 (2026-05-08)
+- APK 압축 풀기 → `work/h5/extracted/` (assets, lib/armeabi/libHeroesLore5.so).
+- VFS unpack 2189 entries (path D: → C: 수정).
+- 자산 이름 99.7% 복원 (.so 의 sprintf format-string 기반).
+- sprite 421 + palette 588 + sound 42 + scn 258 + 한글 코퍼스 18,837 변환.
+- import_to_godot.py 로 Godot assets/ 완전 채움 — verify **0 errors / 0 warnings** 처음 달성.
+- import 도구 확장: vfs/asset_names 매칭 시 .scn body 258개 자동 export.
+- 신규 도구: `tools/h5_batch_sprite.py` (single-file argv converter 의 batch wrapper).
 
 **[P3] Stats UI 합산 표시 + 장비 비교 패널** — ✅ 완료 (2026-05-08)
 - Status panel 의 ATK/DEF 총합 라벨 추가 (`status_panel.gd::_apply`).

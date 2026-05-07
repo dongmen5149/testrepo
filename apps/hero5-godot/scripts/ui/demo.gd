@@ -96,24 +96,24 @@ func _ready() -> void:
 	_help = preload("res://scenes/help_panel.tscn").instantiate()
 	add_child(_help)
 	_interp = H5Interpreter.new()
-	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
+	# Dialog 관련 opcode (.so disasm 검증):
 	#   0x35 (53) Event_SituateBallon       (2B)
 	#   0x39 (57) Event_SituateDialogText   (4B)
 	#   0x3b (59) Event_SituateNarration    (3B)
-	#   0x3e (62) Event_SituatePopup        (0B)
+	#   0x3e (62) Event_SituatePopup        (1B)
 	_interp.set_handler(0x39, _on_dialog_text)
 	_interp.set_handler(0x35, _on_dialog_text)
 	_interp.set_handler(0x3b, _on_narration)
 	_interp.set_handler(0x3e, func(_a): _dialog.show_dialog("System", "..."))
-	# Event_Scene_ChangeBgm = 0x43 (idx 67)
-	_interp.set_handler(0x43, _on_change_bgm)
-	# Quest opcodes (BASE_TABLE 등록):
-	#   0x31 QuestBoss   0x32 QuestTimer    0x33 QuestStatus
-	#   0x3a QuestSwitch 0x42 QuestQSwitch
-	_interp.set_handler(0x33, _on_quest_status)
-	_interp.set_handler(0x3a, _on_quest_switch)
-	_interp.set_handler(0x42, _on_quest_switch)
-	_interp.set_handler(0x31, _on_quest_boss)
+	# Quest opcodes (.so disasm 검증):
+	#   0x29 QuestBoss / 0x2a QuestQSwitch / 0x2b QuestStatus
+	#   0x2c QuestSwitch / 0x2d QuestTimer
+	_interp.set_handler(0x29, _on_quest_boss)
+	_interp.set_handler(0x2a, _on_quest_switch)
+	_interp.set_handler(0x2b, _on_quest_status)
+	_interp.set_handler(0x2c, _on_quest_switch)
+	# Note: Event_Scene_ChangeBgm 은 EventProc::onFunction dispatch table 에 없음.
+	# BGM 변경은 demo._apply_scene 에서 mapID 기반 Audio.play_bgm 직접 호출로 처리.
 	# 시작 BGM
 	Audio.play_bgm(0)
 	_apply_scene()
@@ -175,11 +175,6 @@ func _on_npc_choice(idx: int) -> void:
 			_dialog.show_dialog("상인", "오늘은 좋은 물건 들어왔소. 다음에 상점 시스템에서 만나죠.")
 		2:
 			_dialog.show_dialog("NPC", "여행 잘 다녀오시오.")
-
-
-func _on_change_bgm(args: PackedByteArray) -> void:
-	if args.size() >= 1:
-		Audio.play_bgm(args[0])
 
 
 var _steps_since_battle: int = 0

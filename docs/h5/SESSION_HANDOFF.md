@@ -2,23 +2,27 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-08 (P3 + P4 완료, P1 부분 진전)
+업데이트: 2026-05-08 (P3 + P4 + P1 완료, 자산 환경 처음부터 복원)
 
 ---
 
 ## 30초 요약
 
-**Phase 2 (자산 추출/분석)** + **Phase 3 (Godot 게임 시스템)** 모두 구현 완료.
-Title → ClassSelect → Demo 흐름이 완비된 Godot 4 프로젝트 (`apps/hero5-godot/`)
-가 동작 가능한 상태. 37 GDScript / 14 씬 / 5 싱글톤 / **38 OPCODE_TABLE entries
-(+ 외부 JSON 로더로 77 확장 가능)**.
-이번 세션: P3 (Stats ATK/DEF 합산 + 방어구 hover 비교), P4 (Battle 승리 popup
-+ 씬 전환 페이드), P1 부분 (BASE_TABLE 확장 + dispatch 정리 + body 자동 실행 hook
-+ Quest opcode 핸들러). verify_godot_project.py: **0 errors / 9 warnings**
-(모두 gitignored 자산 디렉토리).
+**Phase 2 (자산 추출/분석)** + **Phase 3 (Godot 게임 시스템)** + **P1 (Interpreter
+opcode dispatch 77/77)** 모두 완료. Title → ClassSelect → Demo 흐름이 완비된
+Godot 4 프로젝트 (`apps/hero5-godot/`) 가 동작 가능한 상태. 37 GDScript / 14 씬 /
+5 싱글톤 / **OPCODE_TABLE 77/77 (.so ARM disasm 자동 추출)**.
 
-남은 큰 미해결: opcode 77/77 (외부 JSON 만 들어오면 즉시), enemy ATK/DEF 정확도,
-한글 자모 인코딩, Android APK 실 빌드 검증.
+이번 세션 큰 성과:
+- 자산 환경을 이 머신에서 처음부터 복원 (APK → VFS → 변환 → Godot import).
+- **opcode_table 77/77 자동 추출** — Ghidra 없이 capstone + lief 로 완성.
+- BASE_TABLE 의 추측 매핑 (Quest 0x31~0x42, Scene_ChangeBgm) → 실제 (0x29~0x2d) 로
+  검증·수정. PROGRESS.md 의 일부 hint 가 추측이었음을 .so disasm 으로 확정.
+
+verify_godot_project.py: **0 errors / 0 warnings** (처음 달성).
+
+남은 큰 미해결: enemy ATK/DEF offset 정확도 (P2, BATTLER setter 추적 필요),
+한글 자모 인코딩 (P5, Graphic::DrawText 디컴파일), Android APK 실 빌드 (P6, Editor 필요).
 
 ---
 
@@ -57,17 +61,14 @@ Demo:
 
 ## 우선순위 다음 작업
 
-### P1: Interpreter opcode 자동 dispatch — ⚠ 부분 진전 (2026-05-08)
-- 현재 BASE_TABLE 38 opcode + 외부 `opcode_table.json` 로더로 77 확장 가능.
-- `_dispatch()` 정리 완료: 중복 case 제거, dead match 분류.
-- demo.gd 가 멤버 `_interp.step()` 호출 + body 자동 실행 hook 추가.
-- 다음 작업:
-  - `work/h5/analysis/opcode_table.tsv` 가 들어오면 JSON 으로 변환해
-    `apps/hero5-godot/assets/scenes/opcode_table.json` 에 배치 (또는 import_to_godot.py
-    에 변환 단계 추가).
-  - vfs_entries + asset_names.tsv 가 들어오면 import 시 .scn body 가 자동 export 되어
-    `bodies/<idx>.bin` 으로 저장됨 → demo 진입 시 실제 .scn 바이트코드 재생.
-  - 정확한 arg_size 가 알려지면 BASE_TABLE 에 더 추가 (현재는 추측 0개, 확실한 것만).
+### ~~P1: Interpreter opcode 자동 dispatch~~ — ✅ 77/77 완료 (2026-05-08)
+- ARM disasm + jumptable 추적 (`tools/h5_extract_opcode_disasm.py`, capstone+lief).
+- 산출 `apps/hero5-godot/assets/scenes/opcode_table.json` (77 entries) — interpreter.gd
+  외부 로더가 자동 머지.
+- BASE_TABLE 잘못된 추측 (Quest 0x31~0x42, Scene_ChangeBgm) → 정확한 매핑으로 수정.
+- demo.gd 의 `set_handler` op 들도 정확하게 (0x29 Boss / 0x2a QSwitch / 0x2b Status /
+  0x2c Switch).
+- scene body 258 export 완료 → demo 진입 시 step() 자동 실행 동작 가능.
 
 ### P2: enemy_g 121B layout 의 ATK/DEF 정확한 offset
 - 현재 `decode_h5_enemy.py` 의 stat3/stat4 (offset 16/18) 가 65535 인 record 多.
@@ -167,12 +168,12 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 
 ## 알려진 제한
 
-- [ ] Interpreter opcode dispatch (22/77 만 구현)
-- [ ] enemy ATK/DEF offset 일부 부정확
-- [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중)
+- [x] ~~Interpreter opcode dispatch (22/77 만 구현)~~ — ✅ 77/77 (2026-05-08)
+- [ ] enemy ATK/DEF offset 일부 부정확 (P2)
+- [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) (P5)
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)
-- [ ] Android APK 실 빌드 미검증 (export 가이드만 작성)
+- [ ] Android APK 실 빌드 미검증 (P6, export 가이드만 작성)
 
 ---
 

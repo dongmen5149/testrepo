@@ -13,9 +13,9 @@ extends RefCounted
 
 const EXTERNAL_TABLE_PATH := "res://assets/scenes/opcode_table.json"
 
-# opcode → (name, arg_size). 0x00-0x1d = Phase 2-A.10 자동 추출 결과 (확실).
-# 그 외 0x31~0x43 = demo.gd 와 분석 코멘트에 명시된 알려진 매핑 (확실).
-# 나머지 ~40 opcode 는 EXTERNAL_TABLE_PATH 에 의존.
+# opcode → (name, arg_size). 0x00-0x1d = ARM disasm 자동 추출 결과 (.so 의 EventProc::onFunction).
+# 외부 EXTERNAL_TABLE_PATH (assets/scenes/opcode_table.json) 가 source of truth — 77개 전체.
+# 본 BASE_TABLE 은 외부 JSON 부재 시 fallback 만. ~40 opcode 는 외부 JSON 의존.
 const BASE_TABLE := {
 	0x00: ["Event_EnemyAction", 6],
 	0x01: ["Event_EnemyChange", 2],
@@ -35,7 +35,7 @@ const BASE_TABLE := {
 	0x0f: ["Event_EventEffect", 2],
 	0x10: ["Event_EventImo", 2],
 	0x11: ["Event_EventMove", 5],
-	0x12: ["Event_EventMoveBreak", 0],
+	0x12: ["Event_EventMoveBreak", 1],
 	0x13: ["Event_EventMoveRelative", 5],
 	0x14: ["Event_EventTeleport", 5],
 	0x15: ["Event_MapCollision", 3],
@@ -47,16 +47,25 @@ const BASE_TABLE := {
 	0x1b: ["Event_PlayerAction", 5],
 	0x1c: ["Event_PlayerAppearSpirit", 1],
 	0x1d: ["Event_PlayerChange", 1],
-	0x31: ["Event_QuestBoss", 2],
-	0x32: ["Event_QuestTimer", 4],
-	0x33: ["Event_QuestStatus", 2],
+	# Quest opcodes (.so disasm 검증):
+	0x29: ["Event_QuestBoss", 2],
+	0x2a: ["Event_QuestQSwitch", 2],
+	0x2b: ["Event_QuestStatus", 2],
+	0x2c: ["Event_QuestSwitch", 2],
+	0x2d: ["Event_QuestTimer", 4],
+	# Situate / Scene (.so disasm 검증):
+	0x32: ["Event_Scene_SaveAble", 1],
+	0x33: ["Event_Scene_WarpAble", 1],
+	0x34: ["Event_Scene_WarpPoint", 4],
 	0x35: ["Event_SituateBallon", 2],
+	0x36: ["Event_SituateCamera", 3],
+	0x37: ["Event_SituateCameraTarget", 2],
+	0x38: ["Event_SituateDelay", 1],
 	0x39: ["Event_SituateDialogText", 4],
-	0x3a: ["Event_QuestSwitch", 2],
+	0x3a: ["Event_SituateWindowOff", 1],
 	0x3b: ["Event_SituateNarration", 3],
-	0x3e: ["Event_SituatePopup", 0],
-	0x42: ["Event_QuestQSwitch", 2],
-	0x43: ["Event_Scene_ChangeBgm", 1],
+	0x3e: ["Event_SituatePopup", 1],
+	# (Event_Scene_ChangeBgm 은 dispatch table 에 존재하지 않음 — 별도 메커니즘)
 }
 
 ## OPCODE_TABLE: 인스턴스 단위 — BASE_TABLE 복사 + 외부 JSON 머지.
