@@ -40,11 +40,16 @@ func _ready() -> void:
 			inv.append(arr[0])
 	if inv.is_empty():
 		inv = ["회복약", "마나약", "한손검", "가죽갑옷"]
-	_status.set_state({
-		"hp": 100, "max_hp": 100, "sp": 50, "max_sp": 50,
-		"level": 1, "exp": 0, "gold": 1000,
-		"inventory": inv,
-	})
+	# GameState 싱글톤 사용. inv 가 비어있으면 placeholder.
+	if GameState.inventory.is_empty():
+		GameState.inventory = inv
+	_status.set_state(GameState.to_save_dict())
+	GameState.state_changed.connect(func(): _status.set_state(GameState.to_save_dict()))
+	# 전투 결과 → GameState 적용
+	if _battle_ui.has_signal("battle_completed"):
+		_battle_ui.battle_completed.connect(func(victory, exp, gold):
+			if victory:
+				GameState.add_battle_reward(exp, gold))
 	_battle_ui = preload("res://scenes/battle.tscn").instantiate()
 	add_child(_battle_ui)
 	_interp = H5Interpreter.new()
@@ -106,14 +111,12 @@ func _input(event: InputEvent) -> void:
 				# ESC/I: 상태창 토글
 				_status.toggle()
 			KEY_F5:
-				# F5: 빠른 저장 (slot 0)
-				H5SaveManager.save(0, {
-					"scene_id": _scene_idx,
-					"map_id": _map.map_id,
-					"player_x": int(_hero.position.x),
-					"player_y": int(_hero.position.y),
-				})
-				_on_dialog_text(PackedByteArray([0]))
+				# F5: 빠른 저장 (slot 0) — GameState 통해
+				GameState.current_scene_id = _scene_idx
+				GameState.map_id = _map.map_id
+				GameState.player_x = int(_hero.position.x)
+				GameState.player_y = int(_hero.position.y)
+				GameState.quick_save(0)
 				_dialog.show_dialog("System", "저장됨 (slot 0)")
 			KEY_C:
 				# C: collision 디버그 토글
@@ -123,9 +126,8 @@ func _input(event: InputEvent) -> void:
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
 			KEY_F9:
 				# F9: 빠른 로드
-				var saved = H5SaveManager.load_slot(0)
-				if not saved.is_empty():
-					_scene_idx = int(saved.get("scene_id", 0))
+				if GameState.quick_load(0):
+					_scene_idx = GameState.current_scene_id
 					_apply_scene()
 					_dialog.show_dialog("System", "불러옴 (slot 0)")
 

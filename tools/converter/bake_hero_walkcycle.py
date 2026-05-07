@@ -47,29 +47,39 @@ def composite(rec: bytes, canvas: int = 64) -> Image.Image:
     return img
 
 
-def main() -> int:
-    cif_path = ROOT / 'work/extracted/hero/h0_cif'
+def bake_one(cif_path: pathlib.Path, out_dir: pathlib.Path) -> int:
+    """단일 hero cif 베이크. 첫 4 그룹 × 8 frame = 32 PNG."""
     data = cif_path.read_bytes()
     frames = find_frames(data)
-    out_dir = SPRITE_DIR / 'h0_walk'
+    if len(frames) < 32:
+        print(f'! {cif_path.name}: only {len(frames)} frames, skipping')
+        return 0
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    direction_starts = [12, 341, 670, 1039]
-    for dir_idx, start in enumerate(direction_starts):
-        try:
-            i0 = frames.index(start)
-        except ValueError:
-            print(f'! direction {dir_idx} start {start} not in frame list, skipping')
-            continue
+    written = 0
+    for dir_idx in range(4):
         for k in range(8):
-            if i0 + k >= len(frames):
+            i = dir_idx * 8 + k
+            if i >= len(frames):
                 break
-            off = frames[i0 + k]
+            off = frames[i]
             rec = data[off:off+41]
             img = composite(rec)
-            out = out_dir / f'dir{dir_idx}_{k}.png'
-            img.save(out)
-            print(f'dir{dir_idx} frame{k} @{off}: {out.name}')
+            img.save(out_dir / f'dir{dir_idx}_{k}.png')
+            written += 1
+    print(f'{cif_path.name}: {written} PNG -> {out_dir.name}/')
+    return written
+
+
+def main() -> int:
+    hero_dir = ROOT / 'work/extracted/hero'
+    cifs = sorted(p for p in hero_dir.glob('h*_cif') if p.name != 'commeffect_cif')
+    total = 0
+    for cif in cifs:
+        stem = cif.stem  # e.g. h0_cif -> h0_cif (no ext though, since file has no dot)
+        # cif_path.stem 은 'h0_cif' (확장자 없음). 그대로 사용.
+        out = SPRITE_DIR / f'{stem.replace("_cif", "_walk")}'
+        total += bake_one(cif, out)
+    print(f'\ntotal {total} PNG written across {len(cifs)} hero cif files')
     return 0
 
 
