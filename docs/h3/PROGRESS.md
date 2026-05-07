@@ -46,8 +46,14 @@
 - 산출: [android/app/src/main/assets/sprites/hero/h0_walk/dir{0..3}_{0..7}.png](../../android/app/src/main/assets/sprites/hero/h0_walk/)
 - 각 방향(0=group1@12, 1=group2@341, 2=group3@670, 3=group4@1039)에서 영웅 sprite 가 시각 확인됨. 일부 cell 은 메타라 떨어져 보이지만 main body 는 일관됨.
 
+**A10) MapWalkScene walk-cycle 와이어 ✅ (2026-05-07 완료)**
+- `loadHeroFrames` → `loadHeroWalk` 로 교체. `List<List<Bitmap>>` (4 dir × 8 anim) 로딩.
+- 영웅 렌더 분기: `heroWalk[facing][animFrame % 8]`. 8 frame walk-cycle 자동 cycling.
+- 매핑: dir0=DOWN, dir1=UP, dir2=LEFT, dir3=RIGHT (FACING 순서와 동일 가정 — 디바이스에서 시각 검증 필요).
+- 빌드: `:app:assembleDebug` + `:app:testDebugUnitTest` 모두 BUILD SUCCESSFUL.
+
 **다음 세션 첫 작업** (1~2시간):
-1. Android `MapWalkScene.loadHeroFrames()` — `hero/h00000_bm` 대신 `hero/h0_walk/dir{facing}_{anim}.png` 로딩. facing→dir 매핑 결정 (시각 비교).
+1. 디바이스/에뮬레이터 실행해 4방향 walk-cycle 시각 검증. dir 매핑 어긋나면 dirOrder 배열로 재매핑.
 2. 흩어진 cell 정리 — ref ≤ 0x44 필터를 더 정교하게 (cell idx 0~5 만 렌더, 6~8 은 메타?). 또는 type byte YY (=0x0b/0x08/0x06) 가 실제 cell count 이고 9 가 아니라는 가설 검증.
 3. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
 4. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
