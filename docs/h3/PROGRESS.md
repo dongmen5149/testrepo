@@ -32,11 +32,20 @@
 - **결론**: 4-byte cell layout `[x_s8, y_s8, ref, flag]` 시각 검증 완료. 가설 확정.
 - 모든 hero cif (h0~h11) 의 indices 가 h1XXXX_bm 시리즈만 참조함을 확인 (header 분석). 슬롯들은 공유 BM atlas 의 일부.
 
+**A8) ref → h1XXXX_bm 매핑 해독 ✅ (2026-05-07 확정)**
+- [tools/recon/composite_cif_frame.py](../../tools/recon/composite_cif_frame.py) 신설 — cumulative pool 가설 검증.
+- **확정 매핑**: `ref → h1{ref//3:04d}_bm/frame_{ref%3:02d}`. 3 frames/file, 69 frame 글로벌 풀.
+- 실제 BM 합성 결과 → [work/h3/cif_render_real/](../../work/h3/cif_render_real/)
+  - `0a020b @12`: **명확한 휴머노이드 영웅 sprite** ✓ 머리/몸/무기 식별 가능
+  - `0a2306 @3125`: 다른 자세의 영웅 sprite ✓
+  - `0a2208 @1039` (mirror): 일부 cell ref 0x82/0xeb 가 풀 범위 초과 → 9-cell 고정 가정이 over-fit. 실제 cell count 가변, 후행 byte 는 메타.
+- **결정사항**: cell 0~8 중 ref ≤ 0x44 인 것만 렌더 cell, 그 외는 메타데이터. 정확한 cell count 인코딩은 추후 (count byte 0x0b 의미 재해석 필요).
+
 **다음 세션 첫 작업** (1~2시간):
-1. ref(0x00~0x27) → 실제 h1XXXX_bm 프레임 매핑 풀기 — 가능한 인코딩: ① cumulative across all 23 h1 BMs (=69 frames total, 0x27=39 fits), ② packed (slot << N | local), ③ 별도 atlas 인덱스. 가능성 높은 ① 부터 검증.
-2. cell PNG 합성 — placeholder 박스 대신 실제 BM frame 을 (x,y) 위치에 컴포지트 → 영웅 sprite 완성 PNG.
-3. flag byte 의미 (0x00/0x01 패턴) — frame 변형 (flip/rot/blend) 인지 분석.
-4. 검증되면 boss0_cif / e000_cif 동일 포맷 적용 + Android `MapWalkScene` 실제 sprite 교체.
+1. cell count 정확히 결정 — `0a XX YY` 의 YY 또는 type 별 fixed count 매핑 추출. ref<=0x44 필터로 동작은 가능.
+2. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
+3. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀로 추정).
+4. Android `MapWalkScene` — 4방향 walk-cycle (group `0a020b`, `0a2208`, `0a0208`, `0a2306` 의 8 frame 그룹) 을 합성해 placeholder 색상 영웅을 실제 sprite 로 교체.
 
 ---
 
