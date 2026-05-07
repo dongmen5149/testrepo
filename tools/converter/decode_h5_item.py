@@ -25,11 +25,29 @@ NAMES = ROOT / 'work' / 'h5' / 'analysis' / 'asset_names.tsv'
 OUT = ROOT / 'apps' / 'hero5-godot' / 'assets' / 'gamedata' / 'items.json'
 
 
-def find(target: str) -> pathlib.Path | None:
-    for r in csv.DictReader(open(NAMES, encoding='utf-8'), delimiter='\t'):
-        if r['recovered_name'] == target:
-            return ENTRIES / f'{int(r["index"]):05d}_{int(r["hash"], 16):08x}.bin'
+CATALOG = ROOT / 'work' / 'h5' / 'vfs_catalog.tsv'
+
+
+def djb2(s: bytes) -> int:
+    h = 0x1505
+    for c in s: h = (c + h * 0x21) & 0xFFFFFFFF
+    return h
+
+
+def find_by_hash(name: str) -> pathlib.Path | None:
+    """asset_names.tsv 가 false-positive 인 경우 (item_NN 등) catalog 에서
+    hash 직접 매칭."""
+    target_h = djb2(name.encode())
+    with open(CATALOG, encoding='utf-8') as f:
+        for r in csv.DictReader(f, delimiter='\t'):
+            if int(r['hash'], 16) == target_h:
+                idx = int(r['index'])
+                return ENTRIES / f'{idx:05d}_{target_h:08x}.bin'
     return None
+
+
+def find(target: str) -> pathlib.Path | None:
+    return find_by_hash(target)
 
 
 def parse_items(d: bytes) -> list[dict]:
@@ -73,7 +91,7 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     all_items: dict[str, list] = {}
     total = 0
-    for slot in range(4):
+    for slot in range(19):  # item_00..item_18
         p = find(f'c/csv/item_{slot:02d}.dat')
         if not p: continue
         items = parse_items(p.read_bytes())

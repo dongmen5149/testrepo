@@ -66,6 +66,10 @@ func _ready() -> void:
 	_interp.set_handler(0x39, _on_dialog_text)
 	_interp.set_handler(0x35, _on_dialog_text)
 	_interp.set_handler(0x3b, _on_narration)
+	# Event_Scene_ChangeBgm = idx 67 in opcode_table
+	_interp.set_handler(0x43, _on_change_bgm)
+	# 시작 BGM
+	Audio.play_bgm(0)
 	_apply_scene()
 
 
@@ -102,6 +106,11 @@ func _npc_talk() -> void:
 		_dialog.show_dialog(name, msg)
 	else:
 		_dialog.show_dialog(name, "...")
+
+
+func _on_change_bgm(args: PackedByteArray) -> void:
+	if args.size() >= 1:
+		Audio.play_bgm(args[0])
 
 
 func _load_npc_table() -> Array:

@@ -229,4 +229,19 @@ errors=0 양 게임 모두. 다음: [`next-steps.md`](next-steps.md) 의 Phase B
    - [next-steps.md](next-steps.md): A1 ⛔ DES 차단 표시, Phase B 우선순위 표 최상단에 **DES key (8 bytes)** 추가
    - 해당 발견 요약 inline note 추가
 
-다음 작업: **Phase B (Ghidra GUI)** — A2 (Ghidra 프로젝트 셋업) 부터 사용자 환경 작업 필요. 1순위 함수: `_DAT_DES` xref → SCN decrypt 진입점 → 8-byte key 발굴.
+4. **자동 brute-force 시도 + diagnostic** (Phase B 진입 전 자동 가능 영역 한계 도달)
+   - [tools/converter/decrypt_h4_scn.py](../../tools/converter/decrypt_h4_scn.py) 신규 — DES 키 받아 SCN decrypt (단일/일괄, ECB/CBC). 키 발견 즉시 사용 가능
+   - [tools/recon/find_h4_des_key.py](../../tools/recon/find_h4_des_key.py) 신규 — binary `.data` 영역 (start=0x77000) 의 ASCII / sliding-window 8-byte 후보를 brute force. Hero3 SCN signature `00 00 00 ff ff ff` 매칭 시 score+200
+     - ASCII 후보 (2,311개): max score 81 (BASIC_SM 등 binary 안 부분문자열). 진짜 키 신호 없음
+     - sliding-window 전체 (59,556개): max score 87. 여전히 signature 매칭 0건
+     - **결론**: ECB 라면 키는 binary 안 단순 8-byte 가 아니거나, plaintext format 이 Hero3 SCN 과 달라 scoring 가정 자체가 빗나감
+   - [tools/recon/diagnose_h4_scn_cipher.py](../../tools/recon/diagnose_h4_scn_cipher.py) 신규 — 350 SCN 통계 진단:
+     - **99% (348/350) 가 8-byte aligned** → DES 호환 ✓
+     - **Shannon entropy 7.9962 bits/byte** (uniform random 8.0) → 강한 암호 (DES/AES) 또는 compressed. XOR 류 약한 obfuscation 배제
+     - **반복 cipher block 1~5%** + **첫 cipher block 22% sharing** (273/350 unique) → **ECB DES 강력 시사** (CBC 면 per-file IV 로 거의 100% unique 나와야)
+     - Hero5 의 `KEY4ENCRYPT` (`ff 00 00 00 0a 33 22 3c …`) 패턴 검색 → Hero4 binary 에 NOT FOUND. 별개 키
+     - misaligned 2개 (e0184_scn=30B, e0185_scn=6313B+1) — outlier, 별도 처리 필요할 수도
+
+다음 작업: **Phase B (Ghidra GUI) — 사용자 환경 작업 필수**. 자동 정찰의 한계는 명확.
+1순위: `/DAT/_DAT_DES` (string @ 0x86ecc) xref 추적 → SCN decrypt 진입점 함수 → 그 함수 호출자에서 키 source (literal 8 bytes 또는 키 파생 input)
+키 발견 후: `python tools/converter/decrypt_h4_scn.py --key <KEY> --batch` 한 번이면 350 파일 즉시 복호화 → corpus 재생성 → A1 진행 가능.
