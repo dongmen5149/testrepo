@@ -1,0 +1,13 @@
+{
+  "facing_to_dir": [
+    0,
+    3,
+    1,
+    2
+  ],
+  "mirror_pair": [
+    1,
+    2
+  ],
+  "note": "DOWN/UP \uc21c\uc11c\ub294 \uc784\uc758 (\ub514\ubc14\uc774\uc2a4 \uac80\uc99d \ud544\uc694). LEFT/RIGHT \ub294 \ud53d\uc140 symmetry \ub85c \uc2dd\ubcc4."
+}

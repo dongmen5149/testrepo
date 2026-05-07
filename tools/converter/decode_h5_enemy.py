@@ -38,19 +38,20 @@ def find_path(target: str) -> pathlib.Path:
 
 
 def decode_record(r: bytes) -> dict:
-    if len(r) < 0x2b: return {}
+    if len(r) < 39: return {}
+    # Field offsets within record (record starts at file offset 4 after count+sz header):
     return {
-        'flags_a': list(r[4:0x10]),       # 12 bytes
-        'hp':      struct.unpack_from('<H', r, 0x10)[0],
-        'mp':      struct.unpack_from('<H', r, 0x12)[0],
-        'attack':  struct.unpack_from('<H', r, 0x14)[0],
-        'defense': struct.unpack_from('<H', r, 0x16)[0],
-        'exp':     struct.unpack_from('<H', r, 0x18)[0],
-        'gold':    struct.unpack_from('<H', r, 0x1a)[0],
-        'flags_b': list(r[0x1c:0x2b]),    # 15 bytes
+        'flags_a': list(r[0:12]),           # 12 u8 (sprite/anim/AI)
+        'hp':      struct.unpack_from('<H', r, 12)[0],
+        'mp':      struct.unpack_from('<H', r, 14)[0],
+        'stat3':   struct.unpack_from('<H', r, 16)[0],   # ATK 추정
+        'stat4':   struct.unpack_from('<H', r, 18)[0],   # DEF 추정
+        'stat5':   struct.unpack_from('<H', r, 20)[0],   # EXP/lvl 추정
+        'stat6':   struct.unpack_from('<H', r, 22)[0],   # GOLD/AI type 추정
+        'flags_b': list(r[24:39]),          # 15 u8
         'skills':  [
-            list(struct.unpack_from('<8h', r, 0x2b + i * 16))
-            for i in range(5) if 0x2b + (i+1) * 16 <= len(r)
+            list(struct.unpack_from('<8h', r, 39 + i * 16))
+            for i in range(5) if 39 + (i + 1) * 16 <= len(r)
         ],
     }
 
@@ -60,12 +61,15 @@ def main() -> int:
     p = find_path('c/csv/enemy_g.dat')
     d = p.read_bytes()
     count = struct.unpack_from('<H', d, 0)[0]
-    rec_size = (len(d) - 2) // count
-    print(f'enemy_g.dat: {count} records × {rec_size}B')
+    payload_sz = struct.unpack_from('<H', d, 2)[0]
+    rec_size = payload_sz + 2  # stride includes the 2B size field per Map::MapEnemyG_set
+    # Actually the sz_field is for ALL records (single global size at offset 2), records START at 4.
+    # Stride per record = payload_sz + 2 = 121.
+    print(f'enemy_g.dat: {count} records × stride={rec_size}B (payload_sz={payload_sz})')
 
     out = []
     for i in range(count):
-        off = 2 + i * rec_size
+        off = 4 + i * rec_size
         rec = d[off:off + rec_size]
         info = decode_record(rec)
         info['idx'] = i
@@ -78,12 +82,14 @@ def main() -> int:
     # show stats summary
     print(f'\nfirst 8 enemies:')
     for r in out[:8]:
-        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:4d} ATK={r["attack"]:4d} '
-              f'DEF={r["defense"]:4d} EXP={r["exp"]:4d} GOLD={r["gold"]:4d}')
-    print('\nstrongest enemies (by HP):')
-    sorted_e = sorted(out, key=lambda x: -x.get("hp", 0))
-    for r in sorted_e[:5]:
-        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} ATK={r["attack"]:4d}')
+        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:4d} '
+              f'stat3={r["stat3"]:5d} stat4={r["stat4"]:5d} '
+              f'stat5={r["stat5"]:5d} stat6={r["stat6"]:5d}')
+    print('\nstrongest enemies (by HP, valid only):')
+    valid = [r for r in out if r['hp'] != 0xFFFF and r['hp'] > 0]
+    print(f'  valid: {len(valid)}/{len(out)}')
+    for r in sorted(valid, key=lambda x: -x['hp'])[:8]:
+        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:5d} flags_a[:5]={r["flags_a"][:5]}')
     return 0
 
 
