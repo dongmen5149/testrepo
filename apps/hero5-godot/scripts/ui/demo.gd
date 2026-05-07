@@ -78,6 +78,35 @@ func _on_narration(args: PackedByteArray) -> void:
 	_dialog.show_dialog("나레이션", "...")
 
 
+func _npc_talk() -> void:
+	# 가장 가까운 NPC 와 대화 (시뮬레이션). npc_table 의 첫 valid 사용.
+	var npc_data = _load_npc_table()
+	if npc_data.is_empty():
+		_dialog.show_dialog("System", "NPC 데이터 없음")
+		return
+	# scene_idx 따라 다른 NPC 선택
+	var npc = npc_data[_scene_idx % npc_data.size()]
+	var char_names = GameData.char_names()
+	var name = "NPC #%d" % npc.get("idx", 0)
+	# stat1 (dialog id) → ingame_text lookup 시도
+	var dlg_id = int(npc.get("stat1", 0))
+	if dlg_id != 65535:
+		var msg = GameData.ingame_text(dlg_id)
+		if msg.is_empty():
+			msg = "안녕하시오, 모험가여."
+		_dialog.show_dialog(name, msg)
+	else:
+		_dialog.show_dialog(name, "...")
+
+
+func _load_npc_table() -> Array:
+	var p := "res://assets/gamedata/npc_table.json"
+	if not FileAccess.file_exists(p): return []
+	var f := FileAccess.open(p, FileAccess.READ)
+	var data = JSON.parse_string(f.get_as_text())
+	return data if data is Array else []
+
+
 func _load_scene_index() -> void:
 	var p := "res://assets/scenes/index.json"
 	if FileAccess.file_exists(p):
@@ -107,6 +136,9 @@ func _input(event: InputEvent) -> void:
 			KEY_T:
 				# T: dialog 테스트
 				_on_dialog_text(PackedByteArray([_scene_idx % 3]))
+			KEY_E:
+				# E: NPC 인터랙션 (npc_table.json 의 stat1 을 dialogID 로 사용)
+				_npc_talk()
 			KEY_ESCAPE, KEY_I:
 				# ESC/I: 상태창 토글
 				_status.toggle()

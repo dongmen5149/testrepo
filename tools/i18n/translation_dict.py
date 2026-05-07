@@ -5,13 +5,15 @@ InGame_txt 196개 UI 어휘 + dialogue_corpus Top 200 빈도 텍스트를 베이
 수동 번역한 영문 표기. 추후 일본어/중국어 추가 시 같은 구조 사용.
 
 이 사전은 Android values-en/strings.xml 생성의 source 입니다.
+
+게임별 지명/캐릭터는 PLACES_H3, PLACES_H4 등으로 분리. `for_game(id)` 로 묶음 조회.
 """
 from __future__ import annotations
 
 # ─────────────────────────────────────────────────
-# 캐릭터 이름 (Top 200 빈도 기반)
+# Hero3 캐릭터 이름 (Top 200 빈도 기반)
 # ─────────────────────────────────────────────────
-CHARACTERS = {
+CHARACTERS_H3 = {
     '케이':       'Kei',
     '리츠':       'Ritz',
     '리치':       'Litch',     # char_dat 의 다른 표기
@@ -26,10 +28,24 @@ CHARACTERS = {
     '듀크':       'Duke',
 }
 
+# 하위 호환 alias — 외부 import 가 CHARACTERS 를 직접 쓰는 경우.
+CHARACTERS = CHARACTERS_H3
+
 # ─────────────────────────────────────────────────
-# 지명 (맵 + 대사)
+# Hero4 캐릭터 이름
+#
+# 주의: 2026-05-07 시점 Hero4 SCN 이 DES 암호화 되어 corpus 가 깨져 있음.
+# Phase B 에서 DES key 발굴 후 corpus 재생성하면 추가/검증 필요.
+# 아래 항목은 binary 정찰 + 일반적 한빛 RPG 인물 후보로 prefill.
 # ─────────────────────────────────────────────────
-PLACES = {
+CHARACTERS_H4: dict[str, str] = {
+    # corpus 풀린 후 채울 예정. 현재는 비어있음.
+}
+
+# ─────────────────────────────────────────────────
+# Hero3 지명 (맵 + 대사)
+# ─────────────────────────────────────────────────
+PLACES_H3 = {
     '솔티아':       'Soltia',
     'NEOSOLTIA':    'Neo Soltia',
     'SECRET_ROOM':  'Secret Room',
@@ -61,6 +77,31 @@ PLACES = {
     'UNDER_CAVE_3':    'Under Cave 3',
     'SMALL_CAVE_1':    'Small Cave 1',
     'SMALL_FACTORY_4': 'Small Factory 4',
+}
+
+# 하위 호환 alias.
+PLACES = PLACES_H3
+
+# ─────────────────────────────────────────────────
+# Hero4 지명
+#
+# 켈트 신화 Tuatha Dé Danann 의 4 보물 도시 (뮤리아스/핀디아스/팔리아스/고리아스)
+# 가 게임 zone 이름의 baseline. 나머지는 PROGRESS.md 에서 확인된 한국어 zone.
+# corpus 풀리면 추가/검증.
+# ─────────────────────────────────────────────────
+PLACES_H4 = {
+    '뮤리아스':         'Murias',         # 켈트 신화 4 보물 도시 그대로 transliterate
+    '핀디아스':         'Findias',
+    '팔리아스':         'Falias',
+    '고리아스':         'Gorias',
+    '수레바퀴섬':       'Wheel Island',
+    '매도우힐':         'Meadow Hill',
+    '이름없는섬':       'Nameless Isle',
+    '아눈섬':           'Annwn Isle',     # 켈트 신화 저승 'Annwn'
+    '검은바위섬':       'Blackrock Isle',
+    '은바위섬':         'Silverrock Isle',
+    '해적소굴':         'Pirate Den',
+    '환영의검':         'Sword of Illusion',  # 부제 "영웅서기4 - 환영의검"
 }
 
 # ─────────────────────────────────────────────────
@@ -322,22 +363,38 @@ COMMON_WORDS = {
 }
 
 
-def all_translations() -> dict[str, str]:
-    """모든 사전 통합."""
+def for_game(game_id: str) -> dict[str, dict[str, str]]:
+    """게임별 dict 묶음 반환. translate_dialogues.py 의 system prompt 빌더가 사용.
+
+    UI_VOCAB / COMMON_WORDS 는 한빛 엔진 공유라 게임 무관 공통.
+    """
+    if game_id == 'h3':
+        return {
+            'characters': CHARACTERS_H3,
+            'places': PLACES_H3,
+            'ui_vocab': UI_VOCAB,
+            'common_words': COMMON_WORDS,
+        }
+    if game_id == 'h4':
+        return {
+            'characters': CHARACTERS_H4,
+            'places': PLACES_H4,
+            'ui_vocab': UI_VOCAB,
+            'common_words': COMMON_WORDS,
+        }
+    raise ValueError(f'Unknown game id: {game_id!r}')
+
+
+def all_translations(game_id: str = 'h3') -> dict[str, str]:
+    """모든 사전 통합 (game-aware). 인자 없으면 Hero3 default."""
     out = {}
-    out.update(CHARACTERS)
-    out.update(PLACES)
-    out.update(UI_VOCAB)
-    out.update(COMMON_WORDS)
+    bundle = for_game(game_id)
+    for d in bundle.values():
+        out.update(d)
     return out
 
 
 if __name__ == '__main__':
     import json, sys
-    out = {
-        'characters': CHARACTERS,
-        'places': PLACES,
-        'ui_vocab': UI_VOCAB,
-        'common_words': COMMON_WORDS,
-    }
-    print(json.dumps(out, ensure_ascii=False, indent=2))
+    gid = sys.argv[1] if len(sys.argv) > 1 else 'h3'
+    print(json.dumps(for_game(gid), ensure_ascii=False, indent=2))

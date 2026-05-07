@@ -24,7 +24,7 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 
 ## 🟢 즉시 자동 가능 (사용자 트리거만 필요)
 
-### A1. 대사 영어 번역 — Claude API 키 필요
+### A1. ~~대사 영어 번역~~ ⛔ **DES key 발굴 후 가능**
 
 ```bash
 export ANTHROPIC_API_KEY=...
@@ -36,6 +36,8 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 - Hero3 와 동일한 system prompt + 1h prompt caching 으로 비용 절감
 - 추정 비용: ~$0.30 (Hero3 $0.66 보다 적음, 대사 수 1/6 수준)
 - system prompt 의 캐릭터 사전은 Hero3 인물 (리츠/케이/일레느 등) 기준 — Hero4 캐릭터 (수레바퀴섬/매도우힐/뮤리아스 NPC 등) 로 갱신 권장 (`tools/i18n/translation_dict.py`)
+
+> ⛔ **현재 차단**: Hero4 SCN 이 DES 암호화 되어 있어 corpus 가 garbage. Phase B 에서 DES key 8 bytes 발굴 → SCN re-decrypt → corpus 재생성 후에 번역해야 의미 있음. 자세한 내용은 [Phase B](#b-phase-b--ghidra-gui-분석) 참조.
 
 ### A2. Ghidra 프로젝트 락 해제 + Hero4 프로젝트 생성
 
@@ -102,12 +104,15 @@ Hero3 PLACES 와 합치거나 게임별 분리 (`select(game).places`).
 
 | 풀리는 미해독 | 키 string |
 |---|---|
+| ⭐ **DES key (8 bytes)** | `/DAT/_DAT_DES` 로딩 함수 + 그 호출자 (SCN 복호화 진입점) |
 | _PAL secondary RGB 의미 | `/H4/PAL/_H_%03d_PAL`, `Alpha Palette Index Not Found` |
 | _EXD payload entry struct | `/H4/EXD/_H_%03d_EXD` |
 | _MAP_M_ extras 영역 (NPC/exit/event) | `/MAP/M/_MAP_M_%03d` |
 | HDAT entry layout | (정확한 string 미확인 — file enum 으로 로드 가능) |
 
 **예상 시간**: 1~2주 (Hero3 Ghidra 작업과 비슷한 수준).
+
+> ⚠️ **2026-05-07 발견**: Hero4 SCN 파일은 **DES 암호화** (high-entropy 바이트). `work/h4/extracted/DAT/_DAT_DES` (824 bytes) 가 표준 DES 알고리즘 테이블 (PC-1, E-box, P-box, S1-S8) 을 그대로 담고 있음을 확인. 따라서 SCN/대사 corpus 가 현재 garbage 로 디코딩됨 ([apps/hero4-android/app/src/main/assets/dialogue_corpus.json](../../apps/hero4-android/app/src/main/assets/dialogue_corpus.json) 의 `曝삑킴`, `承孼` 류). **A1 (대사 영어 번역) 는 DES key 발굴 후로 미뤄야 함.** 키는 binary (`client.bin387872`) 안 8 bytes 상수로 추정.
 
 ### C. Phase C — Hero3 엔진 KMM 분리 + Hero4 콘텐츠 wiring
 

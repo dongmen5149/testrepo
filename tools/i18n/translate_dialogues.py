@@ -31,16 +31,32 @@ CORPUS = _g.converted_root / 'dialogue_corpus.json'
 OUT = _g.converted_root / 'dialogue_translations_en.json'
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from translation_dict import CHARACTERS, PLACES, COMMON_WORDS  # noqa: E402
+from translation_dict import for_game  # noqa: E402
+
+
+# 게임별 system prompt 의 게임 식별 문구. 게임 추가 시 여기만 추가.
+GAME_HEADERS = {
+    'h3': (
+        '"영웅서기3 - 운명의수레바퀴" (Hero3 - Wheel of Destiny), a 2008 Korean RPG.\n'
+        'The game is a fantasy story about Soltian and Askran factions, the Guardians, '
+        'and a Masked Swordsman, set in the world of NEOSOLTIA.'
+    ),
+    'h4': (
+        '"영웅서기4 - 환영의검" (Hero4 - Sword of Illusion), the 2009 sequel by Hanbit Soft.\n'
+        'The game features a Celtic-mythology themed world: the four treasure cities of the '
+        'Tuatha Dé Danann (Murias, Findias, Falias, Gorias) and surrounding islands '
+        '(Wheel Island, Meadow Hill, Annwn Isle, Blackrock/Silverrock Isle, etc).'
+    ),
+}
 
 
 def build_system_prompt() -> str:
-    char_lines = '\n'.join(f'  {ko} → {en}' for ko, en in CHARACTERS.items())
-    place_lines = '\n'.join(f'  {ko} → {en}' for ko, en in PLACES.items())
-    common_lines = '\n'.join(f'  {ko} → {en}' for ko, en in COMMON_WORDS.items())
-    return f"""You are a professional Korean→English translator for the 2008 Korean RPG "영웅서기3 - 운명의수레바퀴" (Hero3 - Wheel of Destiny).
-
-The game is a fantasy story about Soltian and Askran factions, the Guardians, and a Masked Swordsman, set in the world of NEOSOLTIA.
+    bundle = for_game(_g.id)
+    char_lines = '\n'.join(f'  {ko} → {en}' for ko, en in bundle['characters'].items()) or '  (none yet — verify after corpus is decoded)'
+    place_lines = '\n'.join(f'  {ko} → {en}' for ko, en in bundle['places'].items())
+    common_lines = '\n'.join(f'  {ko} → {en}' for ko, en in bundle['common_words'].items())
+    header = GAME_HEADERS.get(_g.id, f'a Korean RPG (game id: {_g.id}).')
+    return f"""You are a professional Korean→English translator for {header}
 
 # CRITICAL RULES
 

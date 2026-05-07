@@ -436,6 +436,10 @@ isolated bins. 후속 작업으로 보류.
 | Walk-cycle 애니 | ✅ 4방향 walk_frames + stand_frames 시퀀스 자동 전환 | `character.gd` |
 | Interpreter 핸들러 | ✅ 확장 (Camera/Effect/Move/Teleport/Quest/Warp 등 +15 종) | `interpreter.gd` |
 | Android export 가이드 | ✅ arm64-v8a 64bit, min SDK 23 / target 34 설정 템플릿 | `apps/hero5-godot/export_presets.cfg.template`, `README.md` |
+| MVP 정합성 검증 | ✅ tscn/gd reference 체크, 0 errors / 0 warnings | `tools/verify_godot_project.py` |
+| enemy 정확도 | ✅ stride 공식 수정 (4 + i × 121), 75/166 valid HP/MP 확인 | `tools/converter/decode_h5_enemy.py` |
+| NPC table | ✅ 81 × 27B 디코딩 + Demo E 키 인터랙션 | `tools/converter/decode_h5_npc.py` |
+| Quest 데이터 | ✅ 105 quest 이름 + 72 tree 노드 (mission_list + questTree) | `tools/converter/decode_h5_quest.py` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
