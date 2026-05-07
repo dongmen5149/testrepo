@@ -19,8 +19,10 @@ var _state: Dictionary = {
 	"level": 1, "exp": 0,
 	"gold": 0,
 	"inventory": [],
+	"equipment": [-1, -1, -1, -1, -1, -1],
 }
 var _shown: bool = false
+const SLOT_NAMES := ["무기", "방어구", "투구", "장화", "악세1", "악세2"]
 
 
 func _ready() -> void:
@@ -46,5 +48,16 @@ func _apply() -> void:
 	lvl_label.text = "Lv %d  EXP %d" % [_state["level"], _state["exp"]]
 	gold_label.text = "Gold %d" % _state["gold"]
 	inv_list.clear()
-	for item in _state["inventory"]:
+	# 장비 먼저
+	var equipment: Array = _state.get("equipment", [])
+	var inv: Array = _state["inventory"]
+	for slot in range(min(SLOT_NAMES.size(), equipment.size())):
+		var idx = int(equipment[slot])
+		var name = "(없음)"
+		if idx >= 0 and idx < inv.size():
+			name = str(inv[idx])
+		inv_list.add_item("[%s] %s" % [SLOT_NAMES[slot], name])
+	# 인벤토리 항목들
+	inv_list.add_item("--- 인벤토리 ---")
+	for item in inv:
 		inv_list.add_item(str(item))

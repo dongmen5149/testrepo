@@ -23,6 +23,13 @@ var enemy_attack: int = 10
 
 
 var skill_names: Array = []
+var player_mp: int = 50
+var player_max_mp: int = 50
+
+# skill_id → frames-until-usable
+var _cooldowns: Dictionary = {}
+
+const FRAME_PER_TURN := 1   # 1 turn = 1 second equiv (간소화)
 
 
 func start_battle(monster_id: int = 0) -> void:
@@ -51,14 +58,26 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 				_finish(true)
 				return
 		Action.SKILL:
-			var dmg := 15 + randi() % 10
+			# cooldown / MP 체크
+			if _cooldowns.get(skill_id, 0) > 0:
+				log_message.emit("재사용 대기 중 (%d턴 남음)" % _cooldowns[skill_id])
+				return
+			var skill_data = _skill_data(skill_id)
+			var mp_cost = int(skill_data.get("mp_cost", 0))
+			if player_mp < mp_cost:
+				log_message.emit("MP 부족 (%d 필요)" % mp_cost)
+				return
+			player_mp -= mp_cost
+			# damage 계수: skill 의 stat[5] 가 % (없으면 100%)
+			var dmg_pct = int(skill_data.get("damage_pct", 150))
+			var base_atk = 10 + (skill_id % 5)
+			var dmg := base_atk * dmg_pct / 100 + randi() % 5
 			enemy_hp = max(0, enemy_hp - dmg)
-			var skill_name := "스킬"
-			if skill_id >= 0 and skill_id < skill_names.size():
-				skill_name = skill_names[skill_id]
-			elif not skill_names.is_empty():
-				skill_name = skill_names[randi() % min(8, skill_names.size())]
-			log_message.emit("[%s]! %d 피해" % [skill_name, dmg])
+			var skill_name = skill_data.get("name", "스킬")
+			# cooldown 적용
+			var cd = int(skill_data.get("cooldown", 0))
+			if cd > 0: _cooldowns[skill_id] = cd
+			log_message.emit("[%s]! %d 피해 (MP -%d)" % [skill_name, dmg, mp_cost])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -80,9 +99,35 @@ func _enemy_turn(player_defending: bool) -> void:
 	if player_defending: dmg = dmg / 2
 	player_hp = max(0, player_hp - dmg)
 	log_message.emit("%s → 플레이어에게 %d 피해" % [enemy_name, dmg])
+	# 모든 cooldown 1 감소
+	for k in _cooldowns.keys():
+		_cooldowns[k] = max(0, _cooldowns[k] - 1)
 	if player_hp == 0:
 		log_message.emit("플레이어 패배...")
 		_finish(false)
+
+
+## skill_id → {name, mp_cost, cooldown, damage_pct} 메타.
+func _skill_data(skill_id: int) -> Dictionary:
+	# 직접 skills.json 에서 stats_u16 읽음 (class_0 임시)
+	if skill_id < 0 or skill_id >= skill_names.size():
+		return {"name": "?", "mp_cost": 0, "cooldown": 0, "damage_pct": 100}
+	var name = skill_names[skill_id]
+	# stats[9] = cooldown(초), stats[5] = damage % (관습)
+	# 실제 skill 의 stat 추출 — GameData 의 _skills_cache 통해
+	var sk_arr = GameData._skills_cache.get("class_0", [])
+	if skill_id < sk_arr.size():
+		var stats: Array = sk_arr[skill_id].get("stats_u16", [])
+		var mp = stats[7] if stats.size() > 7 else 0
+		var cd = stats[9] if stats.size() > 9 else 0
+		var dpct = stats[5] if stats.size() > 5 else 100
+		return {
+			"name": name,
+			"mp_cost": min(int(mp), 30),
+			"cooldown": min(int(cd), 5),
+			"damage_pct": clamp(int(dpct), 50, 300),
+		}
+	return {"name": name, "mp_cost": 5, "cooldown": 1, "damage_pct": 150}
 
 
 func _finish(victory: bool) -> void:

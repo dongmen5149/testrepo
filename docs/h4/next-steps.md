@@ -36,6 +36,38 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 
 ## 🟢 즉시 자동 가능 (사용자 트리거만 필요)
 
+### ⚡ DES key 발견 시 자동 파이프라인 (다음 세션 카피-페이스트)
+
+```bash
+# 0. 키 검증 — 키 = 8 bytes (16 hex / 8 ASCII / colon-sep)
+KEY="<KEY_HERE>"   # 예: "0xa1b2c3d4e5f60718" 또는 "Hanbit01" 또는 a1:b2:c3:...
+
+# 1. SCN 일괄 복호화 → work/h4/decrypted/SC/*_scn (350 file)
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key "$KEY" --batch
+
+# 2. 단일 파일로 1차 검증 — EUC-KR 한글이 보이면 성공
+python tools/converter/decrypt_h4_scn.py --key "$KEY" \
+    work/h4/extracted/MAP/SC/e0001_scn /tmp/scn_check.bin
+xxd /tmp/scn_check.bin | head -10
+#    Hero3 SCN 처럼 "00 00 00 ff ff ff ..." 또는 한국어 EUC-KR (0xa1-0xfe) 시퀀스가 보여야 함
+
+# 3. decrypted 를 extracted 로 백업-치환 (convert_all.py 가 extracted 만 봄)
+cp -r work/h4/extracted/MAP/SC work/h4/extracted/MAP/SC.encrypted_backup
+cp work/h4/decrypted/SC/* work/h4/extracted/MAP/SC/
+
+# 4. 파이프라인 재실행
+HERO_GAME=h4 python tools/converter/convert_all.py work/h4/extracted work/h4/converted
+HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py
+HERO_GAME=h4 python tools/converter/prepare_android_assets.py work/h4/converted apps/hero4-android/app/src/main/assets
+
+# 5. A1 — 영어 번역 (~30분, ~$0.30)
+export ANTHROPIC_API_KEY="..."
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py
+
+# 6. (선택) Hero4 캐릭터명 사전 갱신 — corpus dialogue_top_texts.json 에서 Top 등장 인명 식별 후
+#    tools/i18n/translation_dict.py 의 CHARACTERS_H4 dict 채우기 → translate 다시 실행
+```
+
 ### A1. ~~대사 영어 번역~~ ⛔ **DES key 발굴 후 가능**
 
 ```bash
@@ -43,13 +75,12 @@ export ANTHROPIC_API_KEY=...
 HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 ```
 
-- 입력: `work/h4/converted/dialogue_corpus.json` (4,078 lines, 3,743 unique)
+- 입력: `work/h4/converted/dialogue_corpus.json` (현재 garbage, key 발굴 후 재생성)
 - 출력: `work/h4/converted/dialogue_translations_en.json`
-- Hero3 와 동일한 system prompt + 1h prompt caching 으로 비용 절감
+- 이미 game-aware 사전 + system prompt 적용됨 (A3 완료)
 - 추정 비용: ~$0.30 (Hero3 $0.66 보다 적음, 대사 수 1/6 수준)
-- system prompt 의 캐릭터 사전은 Hero3 인물 (리츠/케이/일레느 등) 기준 — Hero4 캐릭터 (수레바퀴섬/매도우힐/뮤리아스 NPC 등) 로 갱신 권장 (`tools/i18n/translation_dict.py`)
 
-> ⛔ **현재 차단**: Hero4 SCN 이 DES 암호화 되어 있어 corpus 가 garbage. Phase B 에서 DES key 8 bytes 발굴 → SCN re-decrypt → corpus 재생성 후에 번역해야 의미 있음. 자세한 내용은 [Phase B](#b-phase-b--ghidra-gui-분석) 참조.
+> ⛔ **현재 차단**: Hero4 SCN 이 DES 암호화 되어 있어 corpus 가 garbage. Phase B 에서 DES key 8 bytes 발굴 → 위 §⚡ 자동 파이프라인 한 번 돌리면 됨. 자세한 내용은 [Phase B](#b-phase-b--ghidra-gui-분석) 참조.
 
 ### A2. ⭐ Hero4 Ghidra 프로젝트 셋업 — **현재 1순위**
 

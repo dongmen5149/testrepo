@@ -61,6 +61,43 @@ func _load_collision() -> void:
 	_col_data = col_f.get_buffer(col_f.get_length())
 
 
+## NPC 스폰 (npc_table.json 의 flags[2..3] = tile x,y).
+##   현재 mapID 와 무관하게 첫 N 개 valid NPC 를 표시 (demo).
+func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
+	# 기존 NPC 제거
+	for c in parent.get_children():
+		if c.name.begins_with("NPC_"):
+			c.queue_free()
+	var p := "res://assets/gamedata/npc_table.json"
+	if not FileAccess.file_exists(p): return
+	var f := FileAccess.open(p, FileAccess.READ)
+	var data = JSON.parse_string(f.get_as_text())
+	if not data is Array: return
+	var spawned := 0
+	for r in data:
+		if spawned >= max_count: break
+		var flags = r.get("flags", [])
+		if flags.size() < 4: continue
+		var sprite_id = int(flags[0])
+		var tx = int(flags[2])
+		var ty = int(flags[3])
+		if sprite_id == 0xFF or tx == 0xFF or ty == 0xFF: continue
+		if tx == 0 and ty == 0: continue
+		var marker = ColorRect.new()
+		marker.name = "NPC_%d" % r.get("idx", 0)
+		marker.color = Color(0.4, 0.8, 1.0, 0.85)
+		marker.size = Vector2(TILE_SIZE * 0.8, TILE_SIZE * 0.8)
+		marker.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE)
+		parent.add_child(marker)
+		# label
+		var lbl := Label.new()
+		lbl.text = "N%d" % r.get("idx", 0)
+		lbl.position = Vector2(tx * TILE_SIZE, ty * TILE_SIZE - 12)
+		lbl.add_theme_font_size_override("font_size", 9)
+		parent.add_child(lbl)
+		spawned += 1
+
+
 ## 디버그 오버레이 토글 (collision 가시화).
 @export var show_collision_debug: bool = false:
 	set(value):

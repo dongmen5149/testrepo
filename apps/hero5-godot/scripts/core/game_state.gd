@@ -25,6 +25,44 @@ var gold: int = 1000
 var inventory: Array = []
 var flags: Dictionary = {}
 
+# 장비 슬롯 — 각 값은 inventory 의 인덱스 (또는 -1 = 비어있음)
+const SLOT_WEAPON := 0
+const SLOT_ARMOR := 1
+const SLOT_HELMET := 2
+const SLOT_BOOTS := 3
+const SLOT_ACC1 := 4
+const SLOT_ACC2 := 5
+const SLOT_COUNT := 6
+var equipment: Array[int] = [-1, -1, -1, -1, -1, -1]
+
+
+## 아이템을 슬롯에 장착. inventory 인덱스 사용.
+func equip(slot: int, inv_idx: int) -> bool:
+	if slot < 0 or slot >= SLOT_COUNT: return false
+	if inv_idx < 0 or inv_idx >= inventory.size(): return false
+	equipment[slot] = inv_idx
+	state_changed.emit()
+	return true
+
+
+func unequip(slot: int) -> void:
+	if slot < 0 or slot >= SLOT_COUNT: return
+	equipment[slot] = -1
+	state_changed.emit()
+
+
+func equipped_item(slot: int) -> Variant:
+	if slot < 0 or slot >= SLOT_COUNT: return null
+	var idx = equipment[slot]
+	if idx < 0 or idx >= inventory.size(): return null
+	return inventory[idx]
+
+
+## 모든 장비 stat 합 (예: 무기 atk + 방어구 def 합산).
+## 실제 stat 은 item table 의 stats_u16 배열에서 추출 — 후속.
+func equipment_bonus() -> Dictionary:
+	return {"attack": 0, "defense": 0, "agility": 0}
+
 var verbose: bool = true
 
 

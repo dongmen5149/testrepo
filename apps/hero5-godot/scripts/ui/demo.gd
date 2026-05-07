@@ -182,6 +182,9 @@ func _input(event: InputEvent) -> void:
 			KEY_C:
 				# C: collision 디버그 토글
 				_map.show_collision_debug = not _map.show_collision_debug
+			KEY_P:
+				# P: NPC 마커 스폰 (npc_table 좌표 기반)
+				_map.spawn_npcs(_map, 12)
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})

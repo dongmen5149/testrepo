@@ -450,6 +450,10 @@ isolated bins. 후속 작업으로 보류.
 | Quest 진행 시스템 | ✅ Quest 싱글톤 + start/complete + Interpreter QuestStatus 핸들러 | `apps/hero5-godot/scripts/core/quest_system.gd` |
 | Title slot 선택 | ✅ New Game / Continue + slot list 표시 | `apps/hero5-godot/scripts/ui/title.gd` |
 | Skill 템플릿 resolver | ✅ `#NN` → stats_u16[NN] 치환 (예: 재사용대기 9초, 공격력 120%) | `game_data.gd::resolve_skill_desc` |
+| Equipment 슬롯 | ✅ 6 슬롯 (무기/방어구/투구/장화/악세×2) + equip/unequip API | `game_state.gd` |
+| Inventory UI 확장 | ✅ 장비 슬롯 표시 + 인벤토리 분리 | `status_panel.gd` |
+| Combat 정밀 | ✅ MP 코스트 + cooldown + damage_pct (skill stat 사용) | `battle_system.gd` |
+| Map NPC 스폰 | ✅ npc_table flags[0,2,3] = sprite/x/y → 마커 + 라벨 | `map_renderer.gd::spawn_npcs` (P키) |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
