@@ -66,6 +66,17 @@
 - **`{...}` 중괄호 247개 unique 디코딩**: 아이템명 `[부활의...]`, 금액 `5000G`, 수량 `5|6`, 퀘스트 라벨. → **스크립트 변수 / 보상 데이터 / 선택지** 임. 컨트롤 플로우 opcode 아님.
 - **결론**: _scn 은 대부분 (52% 한국어 + 30% 마크업/punctuation + ~ 18% short markers) 로 구성된 dialogue/script 데이터. 분기/플래그/사운드 트리거 같은 게임 흐름 opcode 는 _scn 안이 아니라 **외부 (Java MIDlet 코드 또는 별도 binary)** 에 있을 가능성. Ghidra 분석 시 `eventManager` / `onEventMessageOkKey` 함수 디스패치 코드 확인 필요.
 
+**A16) 9 hero walk-cycle 일괄 베이킹 ✅ (2026-05-07)**
+- `bake_hero_walkcycle.py` 일반화 → `h*_cif` 자동 처리.
+- 성공: h0/h4/h5/h6/h7/h8/h9/h10/h11 (9 캐릭터) × 32 PNG = **288 PNG** → `sprites/hero/h{N}_walk/`.
+- 미처리: h1_cif(23 frames), h2_cif(30), h3_cif(21) — 32 frame 미만이라 스킵. 프레임 offset 도 불규칙(stride 41 아님). NPC/cinematic 용 추정.
+- h4_cif (201 frames, 41KB) 는 거대 캐릭터 — 추가 액션(공격/사망 등) 다수.
+
+**A17) MainActivity SceneRequest 라우팅 리팩토링 ✅ (2026-05-07)**
+- 23 when 분기에서 반복되던 `(this, ::handleSceneRequest)` → `ctx`/`cb` 로 단축.
+- `healParty()` / `popScene()` 별도 메서드, `DEMO_CYCLE` companion 상수화, `settings.lang()` 적용.
+- 빌드+테스트 SUCCESSFUL — 동작 100% 보존.
+
 **A15) boss/enemy cif 구조 추가 분석 (2026-05-07)**
 - boss0_cif (10KB): `7f00ffff` sentinel **229회** 등장. 프레임 구분자로 추정. sentinel 사이 가변 길이 cell list.
 - enemy e000_cif (1.7KB): sentinel 없음. 6-byte 헤더 후 ~17 byte 가변 stride 반복 (byte[3] 가 frame counter f7/f8/f9 등). 단일 sprite × 다수 frame.
