@@ -138,5 +138,41 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 					args[0], args[1],
 					args[2] | (args[3] << 8),
 					args[4]])
+		"Event_SituateCamera":
+			print("[Interp] SituateCamera %s" % args.hex_encode())
+		"Event_SituateCameraTarget":
+			if args.size() >= 1:
+				print("[Interp] CameraTarget(target=%d)" % args[0])
+		"Event_SituateScreenShake":
+			print("[Interp] ScreenShake")
+		"Event_screenEffect":
+			if args.size() >= 1:
+				print("[Interp] ScreenEffect(%d)" % args[0])
+		"Event_PlayerEffect":
+			if args.size() >= 1:
+				print("[Interp] PlayerEffect(%d)" % args[0])
+		"Event_EnemyEffect":
+			if args.size() >= 2:
+				print("[Interp] EnemyEffect(idx=%d, fx=%d)" % [args[0], args[1]])
+		"Event_PlayerMove":
+			if args.size() >= 5:
+				print("[Interp] PlayerMove(dx=%d, dy=%d, ?=%d, sk=%d, sk2=%d)" %
+					[args[0], args[1], args[2], args[3], args[4]])
+		"Event_EventMove":
+			if args.size() >= 5:
+				print("[Interp] EventMove(target=%d, dx=%d, dy=%d, sk=%d, sk2=%d)" %
+					[args[0], args[1], args[2], args[3], args[4]])
+		"Event_PlayerTeleport":
+			if args.size() >= 5:
+				print("[Interp] PlayerTeleport @ %d,%d dir=%d" %
+					[args[0] | (args[1] << 8), args[2] | (args[3] << 8), args[4]])
+		"Event_SituatePopup":
+			print("[Interp] Popup")
+		"Event_SituateSystemMessage":
+			print("[Interp] SystemMessage")
+		"Event_QuestStatus", "Event_QuestSwitch", "Event_QuestQSwitch", "Event_QuestBoss":
+			print("[Interp] Quest %s %s" % [name, args.hex_encode()])
+		"Event_Scene_WarpAble", "Event_Scene_WarpPoint", "Event_Scene_SaveAble":
+			print("[Interp] %s %s" % [name, args.hex_encode()])
 		_:
 			print("  0x%02x %s %s" % [op, name, args.hex_encode()])

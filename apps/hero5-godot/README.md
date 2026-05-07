@@ -38,6 +38,20 @@ apps/hero5-godot/
     └── scenes/index.json               # 258 .scn 메타데이터
 ```
 
+## Android APK 빌드
+
+1. **Godot 4.2+ Editor** 설치 + 열기 → 이 디렉토리 import.
+2. **Project → Install Android Build Template** (gradle build 사용).
+3. **Editor Settings** → Export → Android:
+   - Java SDK Path = JDK 17 설치 경로 (현재 PC: `C:/Program Files/Microsoft/jdk-21`)
+   - Android SDK Path = Android SDK
+   - Debug Keystore = (자동 생성된 것 사용)
+4. **Project → Export → Add → Android**:
+   - `export_presets.cfg.template` 의 설정 참조 (특히 arm64-v8a 만 ✓, min SDK 23, target 34)
+5. **Export Project** → `build/Hero5.apk` 생성.
+
+원본 APK 32-bit (armeabi) → **리메이크는 arm64-v8a 64-bit** (현대 Android 14+ 지원).
+
 ## 다음 작업 (Phase 3 본 구현)
 
 - [ ] Interpreter opcode → 이벤트 매핑 (현재 164개 opcode 식별, 의미 미해독)

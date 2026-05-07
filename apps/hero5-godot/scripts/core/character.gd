@@ -29,7 +29,20 @@ var motion: int = MOTION_STAND
 var direction: int = DIR_DOWN
 var frame_idx: int = 0
 var _frame_timer: float = 0.0
-var _frame_textures: Dictionary = {}   # key=(motion, dir, frame) → Texture
+var _frame_textures: Dictionary = {}   # frame_idx → Texture (single anim)
+# 4-방향 walk-cycle: dir → [frame_idx,...]
+var _walk_frames: Dictionary = {
+	DIR_DOWN: [0, 1, 2, 1],
+	DIR_LEFT: [3, 4, 5, 4],
+	DIR_RIGHT: [6, 7, 8, 7],
+	DIR_UP: [9, 10, 11, 10],
+}
+var _stand_frames: Dictionary = {
+	DIR_DOWN: [0],
+	DIR_LEFT: [3],
+	DIR_RIGHT: [6],
+	DIR_UP: [9],
+}
 
 signal moved(new_pos: Vector2)
 
@@ -82,17 +95,27 @@ func _physics_process(delta: float) -> void:
 	else:
 		motion = MOTION_STAND
 
-	# 애니메이션 진행
+	# 애니메이션 진행 (4방향 walk-cycle)
 	_frame_timer += delta
 	var frame_dur := 0.15 if motion == MOTION_WALK else 0.5
 	if _frame_timer >= frame_dur:
 		_frame_timer = 0.0
-		var max_frames := _frame_textures.size()
-		if max_frames > 0:
-			frame_idx = (frame_idx + 1) % max_frames
-			_apply_frame()
+		var seq: Array = (
+			_walk_frames.get(direction, [0]) if motion == MOTION_WALK
+			else _stand_frames.get(direction, [0]))
+		if seq.is_empty(): return
+		# 다음 시퀀스 인덱스
+		var current_pos := seq.find(frame_idx)
+		var next_pos := (current_pos + 1) % seq.size() if current_pos >= 0 else 0
+		frame_idx = seq[next_pos]
+		_apply_frame()
 
 
 func _apply_frame() -> void:
 	if frame_idx in _frame_textures:
 		texture = _frame_textures[frame_idx]
+	elif _frame_textures.size() > 0:
+		# fallback to closest available frame
+		var keys = _frame_textures.keys()
+		keys.sort()
+		texture = _frame_textures[keys[0]]
