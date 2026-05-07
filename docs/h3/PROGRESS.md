@@ -23,11 +23,20 @@
   - `0a 02 08` (UP/DOWN 후보) / `0a 23 06` (다른 방향)
 - 비-렌더 그룹들 (`0a 84 04`, `0a 80 00`, `0a e8 19` 등 51 frames) — 좌표가 ±90, ±125 같은 큰 값 → hitbox/이벤트/사운드 메타데이터 프레임 추정. 렌더링과 무관할 가능성.
 
+**A7) Placeholder PNG 렌더로 4-byte cell layout 시각 검증 ✅ (2026-05-07 추가)**
+- [tools/recon/render_cif_frame.py](../../tools/recon/render_cif_frame.py) 신설 — 96×96 캔버스에 ref 별 색상의 16px 박스로 cell 0~8 그림
+- 4 lead group 출력 → [work/h3/cif_render/](../../work/h3/cif_render/) 4 PNG
+  - `0a020b @12`: 휴머노이드 클러스터 ✓
+  - `0a2208 @1039`: 같은 모양이 **horizontal mirror** ✓ — bit 5 flip 가설 확정
+  - `0a0208 @670`, `0a2306 @3125`: 다른 방향/액션의 다른 클러스터 형태
+- **결론**: 4-byte cell layout `[x_s8, y_s8, ref, flag]` 시각 검증 완료. 가설 확정.
+- 모든 hero cif (h0~h11) 의 indices 가 h1XXXX_bm 시리즈만 참조함을 확인 (header 분석). 슬롯들은 공유 BM atlas 의 일부.
+
 **다음 세션 첫 작업** (1~2시간):
-1. ref → BM frame 매핑 풀기 — h0_cif indices=[1,2,3,10,17,19,16,8] 가 어느 series 인지 결정 (h0XXXX_bm vs h1XXXX_bm vs 글로벌). cell ref 값 0x00~0x27 이 cumulative slot frame 인덱스인지 검증.
-2. cell 0~8 (4-byte stride) 을 BM frame 으로 합성해 1프레임 PNG 출력 → 영웅 sprite 시각 확인.
-3. type byte bit 5 mirror 가설 검증 — 같은 idx 그룹 R0 의 x 부호 패턴이 짝맞춰 뒤집히는지.
-4. 검증되면 boss0_cif / e000_cif 동일 포맷 적용.
+1. ref(0x00~0x27) → 실제 h1XXXX_bm 프레임 매핑 풀기 — 가능한 인코딩: ① cumulative across all 23 h1 BMs (=69 frames total, 0x27=39 fits), ② packed (slot << N | local), ③ 별도 atlas 인덱스. 가능성 높은 ① 부터 검증.
+2. cell PNG 합성 — placeholder 박스 대신 실제 BM frame 을 (x,y) 위치에 컴포지트 → 영웅 sprite 완성 PNG.
+3. flag byte 의미 (0x00/0x01 패턴) — frame 변형 (flip/rot/blend) 인지 분석.
+4. 검증되면 boss0_cif / e000_cif 동일 포맷 적용 + Android `MapWalkScene` 실제 sprite 교체.
 
 ---
 
