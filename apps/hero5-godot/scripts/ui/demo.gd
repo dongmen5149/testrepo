@@ -115,6 +115,9 @@ func _input(event: InputEvent) -> void:
 				})
 				_on_dialog_text(PackedByteArray([0]))
 				_dialog.show_dialog("System", "저장됨 (slot 0)")
+			KEY_C:
+				# C: collision 디버그 토글
+				_map.show_collision_debug = not _map.show_collision_debug
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
