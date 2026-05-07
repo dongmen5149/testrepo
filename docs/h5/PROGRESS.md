@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-07 — Phase 2-A 완료 + Ghidra hash 함수 복원 (자산 이름 복원은 DEX 디컴파일 필요로 보류).
+업데이트: 2026-05-07 — Phase 2-A 완료 + Ghidra hash 복원 + DEX 메소드 분석 (stub 확인) + TINY_META 정식 파서.
 
 ---
 
@@ -226,12 +226,64 @@ def hash_hero5(name: str) -> int:
 - `work/h5/analysis/asset_names.tsv` — 1건 false-positive
 - `work/h5/analysis/key_funcs.c:479-502` — hash 함수 디컴파일
 
-#### 2-A.8 다음 단계 (Phase 2 마무리)
+#### 2-A.8 DEX 메소드 분석 — ✅ 완료 (2026-05-07)
 
-1. **DEX 디컴파일러 도입** — jadx 또는 baksmali 설치 후 `CletEntry.getUniqueAssetNameFromID(int)` 분석 → 이름 테이블 추출 → 2,189 파일 일괄 매핑.
-2. **TINY_META 정식 파서** — 7-byte record 의미 확정 (Ghidra `loadFrameMeta` 류 함수 추적).
+`tools/h5_dex_extract_names.py` (순수 Python DEX 파서, 의존성 없음) 으로 `classes.dex` 의
+모든 메소드를 walk 하며 const-string 시퀀스 + 메소드 dump 생성.
+
+**핵심 발견** — `getUniqueAssetNameFromID` 는 **양쪽 모두 stub**:
+- `Lco/kr/eamobile/CletEntry;::getUniqueAssetNameFromID` (7 code units): `setContentView` 호출 후 return.
+- `Lco/kr/eamobile/resource/MidasAssetManager;::getUniqueAssetNameFromID` (13 code units): `getResources/finish` 호출 후 return null.
+- → 자산 이름 → ID 매핑은 **빌드 타임에 계산되어 native binary 에만 존재**, Java 측엔 없음.
+
+**brute-force 한계 검증** — `tools/h5_recover_names_v2.py`:
+- pool: DEX strings (4,046) + libHeroesLore5.so 식별자 (6,529 unique) = 8,313개
+- 변형 (확장자 17종 × 대소문자 × path-sep + numeric suffix 0–999 + 30 prefix × 0–999):
+  추정 총 ~30M candidate hash 평가
+- 결과: **5건 매칭 (`version.txt` 1건만 진짜)**, 나머지 4건은 32-bit DJB2 충돌 false-positive
+- 결론: 8K base × 변형으론 32-bit hash space 충분히 못 메움. **이름 리스트 자체가 native binary 안에 packed 되어 있을 가능성 높음** — Ghidra 로 `loadAssetFromVFS` caller 추적 시 string array 발견 여부 확인 필요.
+
+산출:
+- `tools/h5_dex_extract_names.py` — DEX 메소드 파서 + 명령어 dump
+- `tools/h5_recover_names_v2.py` — 확장 brute-force
+- `work/h5/analysis/dex_const_strings.tsv` — 449 메소드 × const-string 시퀀스
+- `work/h5/analysis/asset_name_candidates.txt` — 1,236 unique const-string 값
+- `work/h5/analysis/so_strings.txt` — 6,529 unique .so 식별자 후보
+
+#### 2-A.9 TINY_META 정식 파서 — ✅ 완료 (2026-05-07)
+
+`tools/converter/convert_h5_meta.py`. 가설(2-A.6) 검증 후 **kind=row-width 파라미터** 발견 (kind=3, 5 두 종 확인).
+
+**확정 포맷**:
+```
+u16 total_count
+u16 kind                              ; row payload width parameter
+prefix row [kind bytes]:
+   [0]=kind, [1]=body_count, [2:]=prefix_payload
+body_count rows × (kind+2) bytes each:
+   [0]=kind, [1]=subtype (보통 0x00), [2:kind+2]=payload (0xff = 빈 슬롯, 0x2a-0x2d = field marker)
+```
+
+총 파일 사이즈 = `4 + kind + body_count × (kind+2)`.
+
+검증:
+- 00075/76/78 (30B): total=4, kind=5, body=3 → 4+5+21=30 ✓
+- 00077 (44B): total=6, kind=5, body=5 → 4+5+35=44 ✓
+- 00080 (32B): total=6, kind=3, body=5 → 4+3+25=32 ✓ (kind=3 케이스)
+
+**결과**: ≤50B bin 후보 356개 중 **7개 strict match** (kind 5×6 + kind 3×1). 나머지 349개는 다른 mini-format (`0100`, `09ee`, `0b6a` 등 별도 시그니처). residual 의 TINY_META 카테고리(104) 중 일부만이 이 표준형식이고 나머지는 다른 small-record container.
+
+산출:
+- `tools/converter/convert_h5_meta.py` — 파서
+- `work/h5/analysis/tiny_meta.tsv` — row-level dump
+- `work/h5/analysis/tiny_meta_summary.txt` — 통계
+
+#### 2-A.10 다음 단계 (Phase 2 마무리)
+
+1. ~~DEX 디컴파일러~~ → **차단 확정** (2-A.8). Java 메소드는 stub. 다음 단계는 **native binary 안의 string array 추적** — Ghidra 에서 `loadAssetFromVFS` 의 caller 들이 참조하는 .rodata 영역 string-pointer 배열을 찾아야 함.
+2. ~~TINY_META 정식 파서~~ → 완료 (2-A.9). 다음: **payload 의 5 슬롯 의미 확정** — Ghidra 로 `MIDASKernelManager` 내 7-byte record 를 `fread` 하는 함수 검색.
 3. **MID_SCRIPT/LARGE_ANIM 의 19 19 마커 의미** — 청크 분리자/프레임 표지자/end-of-record 후보.
-4. **`loadAssetFromVFS` caller 분석** — `assetID` 가 어디서 어떤 컨텍스트로 오는지 → 파일 용도 분류.
+4. **`loadAssetFromVFS` caller 분석** — `assetID` 가 어디서 어떤 컨텍스트로 오는지 → 파일 용도 분류 + 이름 테이블 위치 후보.
 5. **Phase 3 진입** — 엔진 결정 (Unity 권장) + 자산 임포트 파이프라인.
 
 ### Phase 2-B. 자산 파일명 복원 — ⚠ 부분 완료
@@ -261,8 +313,8 @@ def hash_hero5(name: str) -> int:
 | 스프라이트 | ✅ 426 파일 / 3,798 PNG (유효 100%) | `tools/converter/convert_h5_sprite.py`, `work/h5/converted/sprites/` |
 | 한글 코퍼스 | ✅ 18,837 unique strings | `work/h5/converted/text/_corpus.txt` |
 | Hash 함수 | ✅ DJB2 (init=0x1505, mul=0x21) | `tools/h5_recover_names.py` |
-| 자산 이름 복원 | ⏳ 0% (DEX 메소드 분석 대기) | jadx/baksmali 미설치 |
-| TINY_META 파서 | ⏳ 가설만 | 2-A.6 참조 |
+| 자산 이름 복원 | ⚠ 1/2189 (`version.txt` 만) — Java stub 확인됨, native 추적 대기 | `tools/h5_dex_extract_names.py`, `tools/h5_recover_names_v2.py` |
+| TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
 ### 6.2 다음 즉시 작업 — 우선순위 순
