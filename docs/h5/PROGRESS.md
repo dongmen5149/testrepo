@@ -446,6 +446,10 @@ isolated bins. 후속 작업으로 보류.
 | Item 디코드 | ✅ 19 슬롯, 1,360 명명 아이템 (포션/스킬북/장비), price=stats[0] | `tools/converter/decode_h5_item.py` |
 | Quest tree | ✅ 72 노드 (대부분 root sequential, type=5) | quests.json |
 | 사운드 hookup | ✅ Audio 싱글톤 + Event_Scene_ChangeBgm 핸들러, demo 자동 BGM | `apps/hero5-godot/scripts/core/audio_manager.gd` |
+| Drop/Shop/Smith/Quest text/Rewards | ✅ 252+9+96+453+285 record 추출 | `tools/converter/decode_h5_misc.py` |
+| Quest 진행 시스템 | ✅ Quest 싱글톤 + start/complete + Interpreter QuestStatus 핸들러 | `apps/hero5-godot/scripts/core/quest_system.gd` |
+| Title slot 선택 | ✅ New Game / Continue + slot list 표시 | `apps/hero5-godot/scripts/ui/title.gd` |
+| Skill 템플릿 resolver | ✅ `#NN` → stats_u16[NN] 치환 (예: 재사용대기 9초, 공격력 120%) | `game_data.gd::resolve_skill_desc` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

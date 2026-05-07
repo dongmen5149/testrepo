@@ -68,6 +68,9 @@ func _ready() -> void:
 	_interp.set_handler(0x3b, _on_narration)
 	# Event_Scene_ChangeBgm = idx 67 in opcode_table
 	_interp.set_handler(0x43, _on_change_bgm)
+	# Quest opcodes: SituateQuestPopup=53→0x35? actually 0x35 already=Ballon.
+	# QuestStatus=51, QuestSwitch=58, QuestBoss=49, QuestTimer=50, QuestQSwitch=66.
+	_interp.set_handler(51, func(args): _on_quest_status(args))
 	# 시작 BGM
 	Audio.play_bgm(0)
 	_apply_scene()
@@ -111,6 +114,18 @@ func _npc_talk() -> void:
 func _on_change_bgm(args: PackedByteArray) -> void:
 	if args.size() >= 1:
 		Audio.play_bgm(args[0])
+
+
+func _on_quest_status(args: PackedByteArray) -> void:
+	if args.size() >= 2:
+		var qid = args[0]
+		var status = args[1]
+		if status == Quest.STATUS_ACTIVE:
+			Quest.start(qid)
+			_dialog.show_dialog("System", "퀘스트 시작: " + Quest.quest_name(qid))
+		elif status == Quest.STATUS_COMPLETED:
+			Quest.complete(qid)
+			_dialog.show_dialog("System", "퀘스트 완료: " + Quest.quest_name(qid))
 
 
 func _load_npc_table() -> Array:

@@ -6,12 +6,49 @@
 
 | 질문 | 답 위치 |
 |---|---|
-| 이번 세션에 뭐 했나 | 이 문서 §스냅샷 |
+| 이번 세션에 뭐 했나 | 이 문서 §최신 세션 |
+| **지금 1순위 차단 이슈** | **DES key 8 bytes (Phase B Ghidra)** — §🚨 핵심 차단 |
 | 자산 포맷 분석 디테일 | [`formats/`](formats/) (5 + README) |
 | 바이너리 정찰 결과 | [`binary/recon-results.md`](binary/recon-results.md) |
 | Ghidra GUI 분석 가이드 | [`ghidra-guide.md`](ghidra-guide.md) |
-| **앞으로 뭐 해야 하나** | [`next-steps.md`](next-steps.md) |
+| **앞으로 뭐 해야 하나** | [`next-steps.md`](next-steps.md) ★ 빠른 셀렉터 |
 | 프로젝트 전체 (Hero3 포함) 컨텍스트 | [`../../Readme.md`](../../Readme.md), 메모리 `project_hero4_remake.md` |
+
+---
+
+## 🚨 핵심 차단 — DES key (다음 세션 1순위)
+
+Hero4 SCN 350개 + 대사 corpus = **표준 DES (ECB 거의 확실) 로 암호화**. 자동 brute-force 한계 도달 → Ghidra GUI 작업 필요.
+
+**바로 시작 명령**:
+```bash
+# 1. Ghidra 락 해제 (열려있으면 먼저 종료)
+rm work/h3/ghidra_proj/*.lock work/h3/ghidra_proj/*.lock~ 2>/dev/null
+
+# 2. Hero4 Ghidra 프로젝트 생성
+#    File > New Project > work/h4/ghidra_proj/Hero4
+#    File > Import > work/h4/extracted/client.bin387872
+#    Language: ARM:LE:32:Cortex (gcc)
+
+# 3. 우선 추적 string xref:
+#    "/DAT/_DAT_DES" @ 0x86ecc → 사용 함수 = SCN decrypt 진입점
+#    그 함수 호출자에서 8-byte literal 또는 키 파생 input 추출
+
+# 4. 키 발견 후 즉시 (자동 — Claude 가 처리 가능):
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key <KEY_HEX_OR_ASCII> --batch
+HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py   # corpus 재생성
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py          # A1 번역
+```
+
+근거 자료 (이미 자동 정찰로 확립):
+- [tools/recon/diagnose_h4_scn_cipher.py](../../tools/recon/diagnose_h4_scn_cipher.py): SCN 350개 — 99% 8-byte aligned, 엔트로피 7.9962, 첫 cipher block 22% sharing → ECB DES 강력 시사
+- [work/h4/extracted/DAT/_DAT_DES](../../work/h4/extracted/DAT/_DAT_DES) (824 bytes) = 표준 DES 테이블 (PC-1, E-box, P-box, S1) 1:1 매칭 검증 완료
+- [tools/recon/find_h4_des_key.py](../../tools/recon/find_h4_des_key.py): ASCII (2,311) + sliding-window (59,556) brute force 모두 max score 87/200+ — 키는 binary 안 단순 8-byte 가 아니거나 plaintext format 이 Hero3 와 다름
+- Hero5 의 `KEY4ENCRYPT` (`ff 00 00 00 0a 33 22 3c …`) 패턴 Hero4 binary 에 NOT FOUND → Hero4 별도 키
+
+**키 발견 시 100% 검증 방법**: decrypted 첫 8 bytes 가 보통 의미 있는 magic / opcode 시퀀스로 시작해야 함 (ASCII / 낮은 byte 분포 / 0xff separator 등). 또는 `tools/converter/decrypt_h4_scn.py` 후 `convert_scn.py` 가 EUC-KR 한글을 정상 추출하면 성공.
+
+**부수 작업 (Ghidra 진입 후 같이)**: `_PAL` secondary RGB 의미, `_EXD` payload struct, `_MAP_M_` extras 영역 — 모두 string xref 기반.
 
 ---
 
@@ -41,17 +78,22 @@ Done. txt=5 pa=196 bm_files=30 bm_frames=200 cif=148 mp=0 scn=350
 - ✅ `tools/_game.py` — 게임-aware path 중앙 관리 (`HERO_GAME` 환경변수)
 - ✅ `apps/hero4-android/` — Android 모듈 스켈레톤 (com.hero4.remake), 자산 699 file 배포
 - ✅ `work/h4/converted_hd/` — scale4x 4× HD 209 PNG
-- ✅ `work/h4/converted/dialogue_corpus.json` — 4,078 대사 corpus
+- ⚠️ `work/h4/converted/dialogue_corpus.json` — 4,078 라인이지만 **DES 미복호화 → garbage**. apps/hero4-android assets 에도 garbage 사본 존재. **DES key 발견 후 재생성 필요**
 - ✅ `work/h4/converted/asset_catalog.json` — 97 maps + 30 sprite dirs
+- ✅ `tools/i18n/translation_dict.py` — game-aware (CHARACTERS_H3/H4, PLACES_H3/H4, `for_game(id)`). Hero4 zone 12개 prefill (켈트 4 보물 도시 + 한국어 zone)
+- ✅ `tools/converter/decrypt_h4_scn.py` — DES 키 받아 SCN decrypt (단일/일괄, ECB/CBC). 키 발견 후 즉시 사용
+- ✅ `tools/recon/find_h4_des_key.py` — DES brute-force (ASCII/sliding-window). 결과: 키는 binary 안 단순 8-byte 아님
+- ✅ `tools/recon/diagnose_h4_scn_cipher.py` — SCN 통계 진단 (size/entropy/ECB hypothesis)
 
 ### 핵심 발견
 
+- ⭐ **Hero4 SCN = 표준 DES (ECB 거의 확실) 암호화** — `_DAT_DES` 가 표준 DES 테이블 그대로 (2026-05-07 후속). **키 미발견** → Phase B 1순위
 - ⭐ **0x0c BM = 8-bit dense palette indexed** (Ghidra `FUN_00010fe4` 분석). Hero3 미해독 91 BM (theme 47 + obj 44) 도 동시 unblocking
 - **_PAL** 8byte/color (Hero3 4byte 의 2배) — primary + secondary RGB 페어
 - **_MAP_M_** 헤더 버전 일반화: `0xff` separator 개수 = v, `nlen` offset = `2v+1`
 - **_MAP_M_** post-NUL body = Hero3 `_mp` 100% 동일 layout
-- Hero4 zone 이름 = **켈트 신화 Tuatha Dé Danann** 패러디 (뮤리아스/핀디아스/팔리아스)
-- Hero3+Hero4 = **같은 한빛 내부 엔진의 진화형** (`'frameBuf is NULL'` 동일 에러)
+- Hero4 zone 이름 = **켈트 신화 Tuatha Dé Danann** 패러디 (뮤리아스/핀디아스/팔리아스/고리아스)
+- Hero3+Hero4 = **같은 한빛 내부 엔진의 진화형** (`'frameBuf is NULL'` 동일 에러). 단 Hero4 는 SCN 암호화 추가
 - `client.bin387872` 안에 **WIPI/JLet API 임베드** (`org/kwis/msp/lcdui/*`) — Clet+KTF 호환 빌드
 - 모든 자산 path string 이 binary 에 명시되어 디스어셈블 없이도 자산 로딩 흐름 파악 가능
 
@@ -70,9 +112,15 @@ tools/
 │   ├── convert_h4_tile.py        ← Hero4 single-frame BM (TILE/OBJ)
 │   ├── convert_exd.py            ← Hero4 _EXD 헤더
 │   ├── convert_bm_v2.py          ← BM 디코더 (0x0b dense 4-bit, 0x0c dense 8-bit)
+│   ├── decrypt_h4_scn.py         ← ★ Hero4 SCN DES decrypt (키 발견 후 사용)
 │   └── ... (Hero3 와 공유)
 ├── recon/                        ← `HERO_GAME` env 로 게임 선택
+│   ├── find_h4_des_key.py        ← DES brute-force (한계 도달, 결과 PROGRESS 참조)
+│   ├── diagnose_h4_scn_cipher.py ← SCN 통계 진단
+│   └── ... (extract_strings, find_xrefs 등 game-aware)
 └── i18n/                         ← `HERO_GAME` env 로 게임 선택
+    ├── translation_dict.py       ← game-aware 사전 (for_game/all_translations)
+    └── translate_dialogues.py    ← Claude Haiku 번역 (--dry-run 으로 prompt 검증)
 ```
 
 ### 자산
@@ -139,6 +187,25 @@ HERO_GAME=h4 python tools/i18n/build_asset_catalog.py
 HERO_GAME=h4 python tools/recon/extract_strings.py     # 8,167 strings
 HERO_GAME=h4 python tools/recon/find_f81f.py           # 0xf81f 위치 10
 HERO_GAME=h4 python tools/recon/disasm_thumb.py        # 첫 256 byte 디스어셈블
+
+# DES 진단 / brute force (이미 한계 도달, 참고용)
+python tools/recon/diagnose_h4_scn_cipher.py          # SCN 350 통계 (entropy/ECB hint)
+python tools/recon/find_h4_des_key.py --source ascii   # ASCII 8-byte 후보 brute force (~수 초)
+python tools/recon/find_h4_des_key.py --source all     # sliding-window 전체 (~10초)
+```
+
+### DES key 발견 후 자동 파이프라인
+
+```bash
+# (Phase B 에서 8-byte 키 발견 가정)
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key <KEY> --batch
+#   → work/h4/decrypted/SC/*_scn 350 file 생성
+
+# 그 다음 SCN parser 가 decrypted 디렉토리 읽도록 수정 필요 (현재 convert_all.py 는 extracted 만 봄)
+# 임시: cp work/h4/decrypted/SC/*_scn work/h4/extracted/MAP/SC/  (백업 후)
+HERO_GAME=h4 python tools/converter/convert_all.py work/h4/extracted work/h4/converted
+HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 ```
 
 ### Android 빌드 (스켈레톤)
@@ -154,12 +221,15 @@ cd apps/hero4-android
 
 ## ⚠️ 알려진 이슈 / 보류
 
+- ⛔ **NEW Hero4 SCN = DES 암호화** (2026-05-07 후속 발견) — 350 SCN + 4,078 대사 corpus 가 모두 garbage. ECB DES 거의 확실 (entropy 7.9962, 첫 cipher block 22% sharing, 99% 8-byte aligned). 자동 brute-force 한계 → **Phase B 1순위**. Diagnostic / brute-force 도구는 위 §🚨 참조
+- ⛔ **A1 (대사 영어 번역)** — DES key 발굴 후 corpus 재생성 가능해야 의미 있음. `translation_dict.py` / `translate_dialogues.py` 는 Hero4 game-aware 로 이미 준비됨
 - ~~**`_TILE_030`**~~ ✅ **풀림 (2026-05-07)**: 컨테이너 prefix `01 00 00 00 <size LE32>` 감지 → inner BM 으로 재진입. [convert_h4_tile.py](../../tools/converter/convert_h4_tile.py) 에 반영. h4_tile=276→**277**, skipped=564→563
 - **work/h3/ghidra_proj/*.lock** — Hero3 Ghidra 프로젝트 락이 걸려있어 work/h3/ 일부 이동 못 함. Ghidra 닫고 락 정리 필요
 - ~~**`tools/recon/find_xrefs.py`, `find_pic_xrefs.py`, `find_base.py`** — hardcoded TARGETS~~ ✅ **풀림 (2026-05-07)**: [extract_strings.py](../../tools/recon/extract_strings.py) `--json` 옵션 + [_targets.py](../../tools/recon/_targets.py) 헬퍼 도입. 3 스크립트 모두 game-aware. h3/h4 양쪽 검증
 - **`_PAL` secondary RGB 의미** — 미확정. 가장 유력한 가설은 alpha mask. Phase B 에서 확정
 - **_EXD payload, _MAP_M_ extras, HDAT entry layout** — 모두 Phase B 후 확정
 - **Hero4 binary 의 string xref 추적** — h3 와 다른 addressing (PIC LDR+ADD T1 인접 패턴 거의 없음). Phase B Ghidra GUI 에서는 32-bit LDR.W (T4) 또는 다른 sequence 추적 필요
+- **2 misaligned SCN** — `e0184_scn` (30B), `e0185_scn` (6313B+1) 8-byte 정렬 안 됨. outlier, DES 적용 시 별도 처리 필요할 수도
 
 ---
 

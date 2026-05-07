@@ -111,3 +111,27 @@ func enemy_stats(idx: int) -> Dictionary:
 
 
 var _enemy_table_cache: Array = []
+var _skills_cache: Dictionary = {}
+
+
+## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
+##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
+##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"
+func resolve_skill_desc(class_id: int, skill_id: int) -> String:
+	if _skills_cache.is_empty():
+		var p := "res://assets/gamedata/skills.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_skills_cache = JSON.parse_string(f.get_as_text()) or {}
+	var arr = _skills_cache.get("class_%d" % class_id, [])
+	if skill_id < 0 or skill_id >= arr.size():
+		return ""
+	var skill = arr[skill_id]
+	var desc = skill.get("desc", "")
+	var stats: Array = skill.get("stats_u16", [])
+	# regex 대신 단순 치환
+	var result = desc
+	for i in stats.size():
+		result = result.replace("}#%02d" % i, "}%d" % stats[i])
+		result = result.replace("#%02d" % i, str(stats[i]))
+	return result
