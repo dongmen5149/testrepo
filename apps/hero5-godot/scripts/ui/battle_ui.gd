@@ -30,6 +30,7 @@ func _ready() -> void:
 
 
 func start(monster_id: int, player_state: Dictionary) -> void:
+	GameState.in_combat = true
 	_battle = H5Battle.new()
 	add_child(_battle)
 	_battle.player_hp = int(player_state.get("hp", 100))
@@ -114,6 +115,7 @@ func _on_ended(victory: bool, exp: int, gold: int) -> void:
 	_set_buttons_enabled(false)
 	await get_tree().create_timer(1.5).timeout
 	visible = false
+	GameState.in_combat = false
 	battle_completed.emit(victory, exp, gold)
 	if _battle:
 		_battle.queue_free()

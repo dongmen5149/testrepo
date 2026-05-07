@@ -123,8 +123,28 @@ var verbose: bool = true
 var play_time_sec: float = 0.0
 
 
+var _regen_timer: float = 0.0
+const REGEN_INTERVAL := 2.0  # 2초마다 회복
+var in_combat: bool = false
+
+
 func _process(delta: float) -> void:
 	play_time_sec += delta
+	# 비전투 시 HP/SP 자동 회복
+	if not in_combat:
+		_regen_timer += delta
+		if _regen_timer >= REGEN_INTERVAL:
+			_regen_timer = 0.0
+			var hp_regen := max(1, max_hp / 50)   # 2%/2초
+			var sp_regen := max(1, max_sp / 30)
+			var changed := false
+			if hp < max_hp:
+				hp = min(max_hp, hp + hp_regen)
+				changed = true
+			if sp < max_sp:
+				sp = min(max_sp, sp + sp_regen)
+				changed = true
+			if changed: state_changed.emit()
 
 
 func to_save_dict() -> Dictionary:

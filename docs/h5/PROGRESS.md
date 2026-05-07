@@ -483,6 +483,10 @@ isolated bins. 후속 작업으로 보류.
 | 슬롯 삭제 UI | ✅ Title 에서 우클릭/Shift+클릭 → AcceptDialog 확인 → delete | `title.gd::_confirm_delete` |
 | NPC 색상 분류 | ✅ flags[6] 따라 일반/적대/상인/퀘스트 4 색 modulate | `map_renderer.gd` |
 | Inventory 필터 | ✅ 전체/무기/방어/포션/기타 5 탭 | `status_panel.gd::_matches_filter` |
+| HP/SP 회복 | ✅ 비전투시 2초마다 max/50 HP, max/30 SP 회복 | `game_state.gd::_process` |
+| 장비 비교 툴팁 | ✅ inv hover 시 ATK 값 + 현재 무기 대비 차이 표시 | `status_panel.gd::_on_item_hover` |
+| Mini-map | ✅ 우상단 64×64 collision + warp + hero/NPC 마커 | `minimap.gd/.tscn` |
+| Settings 패널 | ✅ BGM/SFX 볼륨 슬라이더 + FPS/Fullscreen 토글 | `settings_panel.gd` (X키) |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

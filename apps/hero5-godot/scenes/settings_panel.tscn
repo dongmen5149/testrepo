@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_settings"]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_panel.gd" id="1_settings"]
+
+[node name="SettingsPanel" type="CanvasLayer"]
+layer = 12
+script = ExtResource("1_settings")
+
+[node name="BG" type="ColorRect" parent="."]
+offset_left = 32.0
+offset_top = 80.0
+offset_right = 288.0
+offset_bottom = 400.0
+color = Color(0.05, 0.05, 0.1, 0.95)
+
+[node name="Title" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 248.0
+offset_bottom = 28.0
+text = "설정"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+
+[node name="BGMLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 36.0
+offset_right = 60.0
+offset_bottom = 56.0
+text = "BGM"
+
+[node name="BGMSlider" type="HSlider" parent="BG"]
+offset_left = 64.0
+offset_top = 38.0
+offset_right = 248.0
+offset_bottom = 54.0
+max_value = 100.0
+value = 70.0
+
+[node name="SFXLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 64.0
+offset_right = 60.0
+offset_bottom = 84.0
+text = "SFX"
+
+[node name="SFXSlider" type="HSlider" parent="BG"]
+offset_left = 64.0
+offset_top = 66.0
+offset_right = 248.0
+offset_bottom = 82.0
+max_value = 100.0
+value = 80.0
+
+[node name="FPSCheck" type="CheckBox" parent="BG"]
+offset_left = 8.0
+offset_top = 96.0
+offset_right = 248.0
+offset_bottom = 116.0
+text = "FPS 표시"
+
+[node name="FullscreenCheck" type="CheckBox" parent="BG"]
+offset_left = 8.0
+offset_top = 124.0
+offset_right = 248.0
+offset_bottom = 144.0
+text = "전체 화면"
+
+[node name="FPSLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 156.0
+offset_right = 248.0
+offset_bottom = 176.0
+text = "FPS: --"
+visible = false
+
+[node name="CloseButton" type="Button" parent="BG"]
+offset_left = 88.0
+offset_top = 280.0
+offset_right = 168.0
+offset_bottom = 308.0
+text = "닫기"

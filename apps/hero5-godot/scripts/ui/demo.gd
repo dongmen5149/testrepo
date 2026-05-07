@@ -22,6 +22,7 @@ var _battle_ui: CanvasLayer
 var _shop: CanvasLayer
 var _quest_panel: CanvasLayer
 var _hud: CanvasLayer
+var _settings: CanvasLayer
 
 
 func _ready() -> void:
@@ -76,6 +77,11 @@ func _ready() -> void:
 	add_child(_quest_panel)
 	_hud = preload("res://scenes/hud.tscn").instantiate()
 	add_child(_hud)
+	var minimap = preload("res://scenes/minimap.tscn").instantiate()
+	add_child(minimap)
+	minimap.bind(_map, _hero)
+	_settings = preload("res://scenes/settings_panel.tscn").instantiate()
+	add_child(_settings)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode → dialog box 연결 (opcode_table.tsv)
 	#   0x35 (53) Event_SituateBallon (2B)
@@ -273,6 +279,9 @@ func _input(event: InputEvent) -> void:
 			KEY_Q:
 				# Q: 퀘스트 패널 토글
 				_quest_panel.toggle()
+			KEY_X:
+				# X: 설정 토글
+				_settings.toggle()
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})

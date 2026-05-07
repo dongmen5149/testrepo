@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_minimap"]
+
+[ext_resource type="Script" path="res://scripts/ui/minimap.gd" id="1_mini"]
+
+[node name="MiniMapLayer" type="CanvasLayer"]
+layer = 6
+script = ExtResource("1_mini")
+
+[node name="Canvas" type="Control" parent="."]
+offset_left = 248.0
+offset_top = 36.0
+offset_right = 312.0
+offset_bottom = 100.0

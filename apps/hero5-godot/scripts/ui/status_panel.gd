@@ -43,6 +43,7 @@ signal item_used(item_name: String)
 func _ready() -> void:
 	visible = false
 	inv_list.item_activated.connect(_on_item_activated)
+	inv_list.item_selected.connect(_on_item_hover)
 	str_btn.pressed.connect(func(): GameState.allocate_stat("str"))
 	dex_btn.pressed.connect(func(): GameState.allocate_stat("dex"))
 	int_btn.pressed.connect(func(): GameState.allocate_stat("int"))
@@ -75,6 +76,37 @@ func _matches_filter(name: String) -> bool:
 		var is_p = ("포션" in name or "수프가루" in name)
 		return not (is_w or is_a or is_p)
 	return true
+
+
+## 단일 클릭 = hover → 툴팁 + stat 비교.
+func _on_item_hover(idx: int) -> void:
+	var inv: Array = _state["inventory"]
+	var equipment: Array = _state.get("equipment", [])
+	var inv_idx = idx - equipment.size() - 1
+	if inv_idx < 0 or inv_idx >= inv.size(): return
+	var item_name := str(inv[inv_idx])
+	# items.json 에서 검색해서 stats[7] 추출
+	var item_atk = _find_item_attack(item_name)
+	if item_atk < 0:
+		stat_points_label.tooltip_text = ""
+		return
+	# 현재 무기와 비교
+	var cur_weapon = GameState.equipped_item(GameState.SLOT_WEAPON)
+	var cur_atk = _find_item_attack(str(cur_weapon)) if cur_weapon else 0
+	var diff = item_atk - cur_atk
+	var sign = "+" if diff >= 0 else ""
+	stat_points_label.tooltip_text = "%s\nATK %d (%s%d)" % [item_name, item_atk, sign, diff]
+
+
+func _find_item_attack(name: String) -> int:
+	if name.is_empty() or name == "(없음)": return -1
+	for slot in range(10):
+		var arr = GameData.items_in_slot(slot)
+		var idx = arr.find(name)
+		if idx >= 0:
+			var data = GameData.item_stat(slot, idx)
+			return int(data.get("attack", 0))
+	return -1
 
 
 ## 더블클릭/엔터로 아이템 사용 (포션 등).
