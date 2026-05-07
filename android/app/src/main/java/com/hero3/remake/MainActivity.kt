@@ -135,9 +135,32 @@ class MainActivity : ComponentActivity() {
     private var demoCycleIdx = 0
 
     private fun handleSceneRequest(req: SceneRequest) {
+        // ctx/cb 는 매 분기마다 반복되던 (this, ::handleSceneRequest) 단축.
+        val ctx = this
+        val cb = ::handleSceneRequest
         when (req) {
-            SceneRequest.MainMenu -> pushScene(MainMenuScene(this, input, settings, this::handleSceneRequest))
-            SceneRequest.MapWalk -> pushScene(MapWalkScene(this, input, settings, gameState, this::handleSceneRequest))
+            SceneRequest.MainMenu     -> pushScene(MainMenuScene(ctx, input, settings, cb))
+            SceneRequest.MapWalk      -> pushScene(MapWalkScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Status       -> pushScene(StatusScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Inventory    -> pushScene(InventoryScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Equipment    -> pushScene(InventoryScene(ctx, input, settings, gameState, cb, startTab = 1))
+            SceneRequest.DialogueDemo -> pushScene(DialogueDemoScene(ctx, input, settings, cb))
+            SceneRequest.SpriteGallery -> pushScene(SpriteGalleryScene(assets, input, settings))
+            SceneRequest.MapGallery   -> pushScene(MapScene(assets, input))
+            SceneRequest.SettingsScene -> pushScene(SettingsScene(ctx, input, settings, gameState, cb))
+            SceneRequest.SaveSlots    -> pushScene(SaveSlotScene(ctx, input, gameState, cb))
+            SceneRequest.Quests       -> pushScene(QuestScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Skills       -> pushScene(SkillScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Bestiary     -> pushScene(BestiaryScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Records      -> pushScene(RecordsScene(ctx, input, settings, gameState, cb))
+            SceneRequest.EventViewer  -> pushScene(EventViewerScene(ctx, input, cb))
+            SceneRequest.Travel       -> pushScene(TravelScene(ctx, input, settings, gameState, cb))
+            SceneRequest.Battle       -> pushScene(BattleScene(ctx, input, settings, gameState, cb))
+            is SceneRequest.NpcDialogue -> pushScene(NpcDialogueScene(ctx, input, settings, gameState, req.npcId, cb))
+            is SceneRequest.Shop      -> pushScene(ShopScene(ctx, input, settings, gameState, req.npcId, cb))
+            is SceneRequest.BattleEnemy -> pushScene(BattleScene(ctx, input, settings, gameState, cb, forcedEnemyId = req.enemyId))
+            SceneRequest.CreditsView  -> pushScene(EndingScene(ctx, input, settings, gameState, cb, markCleared = false))
+
             SceneRequest.NewGame -> {
                 // 클리어 플래그는 슬롯에 종속되지 않도록 보존 (전회차 클리어 → ★ 유지)
                 val prevCleared = gameState.gameCleared
@@ -145,71 +168,56 @@ class MainActivity : ComponentActivity() {
                 if (prevCleared) gameState.gameCleared = true
                 gameState.resetPosition(0, 17, 12)
                 sceneStack.clear()
-                pushScene(MapWalkScene(this, input, settings, gameState, this::handleSceneRequest))
+                pushScene(MapWalkScene(ctx, input, settings, gameState, cb))
             }
-            SceneRequest.Status -> pushScene(StatusScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.Inventory -> pushScene(InventoryScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.Equipment -> pushScene(InventoryScene(this, input, settings, gameState, this::handleSceneRequest, startTab = 1))
-            SceneRequest.DialogueDemo -> pushScene(DialogueDemoScene(this, input, settings, this::handleSceneRequest))
-            SceneRequest.SpriteGallery -> pushScene(SpriteGalleryScene(assets, input, settings))
-            SceneRequest.MapGallery -> pushScene(MapScene(assets, input))
-            SceneRequest.SettingsScene -> pushScene(SettingsScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.SaveSlots -> pushScene(SaveSlotScene(this, input, gameState, this::handleSceneRequest))
-            SceneRequest.Quests -> pushScene(QuestScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.Skills -> pushScene(SkillScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.Bestiary -> pushScene(BestiaryScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.Records -> pushScene(RecordsScene(this, input, settings, gameState, this::handleSceneRequest))
-            SceneRequest.EventViewer -> pushScene(EventViewerScene(this, input, this::handleSceneRequest))
-            SceneRequest.Travel -> pushScene(TravelScene(this, input, settings, gameState, this::handleSceneRequest))
-            is SceneRequest.NpcDialogue -> pushScene(NpcDialogueScene(this, input, settings, gameState, req.npcId, this::handleSceneRequest))
-            is SceneRequest.Shop -> pushScene(ShopScene(this, input, settings, gameState, req.npcId, this::handleSceneRequest))
-            is SceneRequest.HealParty -> {
-                if (gameState.gold >= req.cost) {
-                    gameState.gold -= req.cost
-                    val party = gameState.loadParty().map { it.copy(hp = it.hpMax, sp = it.spMax) }
-                    gameState.saveParty(party)
-                    com.hero3.remake.engine.EventBus.push(
-                        if (settings.language == "en") "Rested. -${req.cost}G"
-                        else "휴식. -${req.cost}G")
-                } else {
-                    com.hero3.remake.engine.EventBus.push(
-                        if (settings.language == "en") "Not enough gold."
-                        else "골드 부족.")
-                }
-            }
-            SceneRequest.Battle -> pushScene(BattleScene(this, input, settings, gameState, this::handleSceneRequest))
-            is SceneRequest.BattleEnemy -> pushScene(BattleScene(this, input, settings, gameState, this::handleSceneRequest, forcedEnemyId = req.enemyId))
             SceneRequest.Title -> {
                 sceneStack.clear()
-                pushScene(TitleScene(this, input, settings, this::handleSceneRequest))
+                pushScene(TitleScene(ctx, input, settings, cb))
             }
             SceneRequest.Ending -> {
                 sceneStack.clear()
-                pushScene(EndingScene(this, input, settings, gameState, this::handleSceneRequest, markCleared = true))
+                pushScene(EndingScene(ctx, input, settings, gameState, cb, markCleared = true))
             }
-            SceneRequest.CreditsView -> pushScene(EndingScene(this, input, settings, gameState, this::handleSceneRequest, markCleared = false))
-            SceneRequest.Pop -> {
-                if (sceneStack.size > 1) {
-                    sceneStack.removeLast()
-                    gameView.scene = sceneStack.last()
-                } else {
-                    finish()
-                }
-            }
+            SceneRequest.Pop -> popScene()
             SceneRequest.CycleDemoScenes -> {
-                val cycle = listOf(
-                    SceneRequest.SpriteGallery,
-                    SceneRequest.MapGallery,
-                    SceneRequest.Title,
-                )
-                demoCycleIdx = (demoCycleIdx + 1) % cycle.size
-                handleSceneRequest(cycle[demoCycleIdx])
+                demoCycleIdx = (demoCycleIdx + 1) % DEMO_CYCLE.size
+                handleSceneRequest(DEMO_CYCLE[demoCycleIdx])
             }
+            is SceneRequest.HealParty -> healParty(req.cost)
         }
+    }
+
+    private fun healParty(cost: Int) {
+        val msg = if (gameState.gold >= cost) {
+            gameState.gold -= cost
+            val party = gameState.loadParty().map { it.copy(hp = it.hpMax, sp = it.spMax) }
+            gameState.saveParty(party)
+            settings.lang("휴식. -${cost}G", "Rested. -${cost}G")
+        } else {
+            settings.lang("골드 부족.", "Not enough gold.")
+        }
+        com.hero3.remake.engine.EventBus.push(msg)
     }
 
     private fun pushScene(scene: Scene) {
         sceneStack.addLast(scene)
         gameView.scene = scene
+    }
+
+    private fun popScene() {
+        if (sceneStack.size > 1) {
+            sceneStack.removeLast()
+            gameView.scene = sceneStack.last()
+        } else {
+            finish()
+        }
+    }
+
+    companion object {
+        private val DEMO_CYCLE = listOf(
+            SceneRequest.SpriteGallery,
+            SceneRequest.MapGallery,
+            SceneRequest.Title,
+        )
     }
 }
