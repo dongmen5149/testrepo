@@ -327,7 +327,37 @@ isolated bins. 후속 작업으로 보류.
 - → 게임 코드는 native side 에서 **string literal 직접 사용** (`MC_knlGetResourceID(name)` 등)
 - → 이름 → ID 매핑은 빌드 타임에만 존재, 런타임에는 hash 만 사용
 
-#### 2-A.11 다음 단계 (Phase 2 마무리)
+#### 2-A.11 .scn 포맷 분석 — ✅ 헤더 완료 (2026-05-07)
+
+`EventProc::Scene_Init @ 0x000823a8` 디컴파일 (`work/h5/analysis/scn_loader.c`) 으로
+.scn 파일 로드 흐름 확정:
+
+1. **경로 생성**: `MC_knlSprintk(buf, "/c/map/%05d.scn", mapNum)` 또는
+   `"/c/ep/ep_%d/s%d_%03d.scn"` (mode 따라 분기).
+2. **로드**: `StaticUtil::LoadRes(path, &size)` — `loadAssetFromVFS` 의 사용자 래퍼.
+3. **헤더 파싱** (11 bytes, sequential cursor):
+   ```
+   u8 flag1, flag2, state, mapID, dialogID, b5, startX, startY, startDir, b9, b10
+   ```
+4. **타일/이미지**: 별도 `c/map/{face,obj,fgi,tile,seaani}_NN.gbm` 파일을
+   `mapID` 인덱스로 `Map::LoadData` / `Map::LoadImage` 가 로드.
+5. **나머지 body**: `Interpreter::open(scn_buf+11, &cursor, flag1, flag2)` —
+   이벤트 스크립트 바이트코드. opcode 정의는 `Token::*` / `Interpreter::execute`
+   추가 분석 필요 (Phase 3 진입 후 우선과제).
+
+**결과** (`tools/converter/convert_h5_scn.py`):
+- 258/258 .scn 파일 헤더 파싱 성공 (100%)
+- 67개 unique mapID → 실제 맵 데이터 세트 67개, 시나리오 258개
+- 모두 state=1 → flag2 매직 분기 ('mmonUiC1Ev' 호환) 적용됨
+- body 평균 276B (대사+이벤트 스크립트)
+
+산출:
+- `tools/ghidra/FindSceneLoader.java`, `DumpScnRef.java`, `DumpInterpreter.java`
+- `work/h5/analysis/scn_loader.c` — Scene_Init 본문
+- `work/h5/analysis/scn_headers.tsv` — 258개 헤더 dump
+- `work/h5/analysis/scn_summary.txt` — mapID/body-size 분포
+
+#### 2-A.12 다음 단계 (Phase 2 마무리)
 
 1. ~~DEX 디컴파일러~~ → **차단 확정** (2-A.8). Java 메소드는 stub. 다음 단계는 **native binary 안의 string array 추적** — Ghidra 에서 `loadAssetFromVFS` 의 caller 들이 참조하는 .rodata 영역 string-pointer 배열을 찾아야 함.
 2. ~~TINY_META 정식 파서~~ → 완료 (2-A.9). 다음: **payload 의 5 슬롯 의미 확정** — Ghidra 로 `MIDASKernelManager` 내 7-byte record 를 `fread` 하는 함수 검색.
@@ -365,6 +395,7 @@ isolated bins. 후속 작업으로 보류.
 | Hash 함수 | ✅ DJB2 (init=0x1505, mul=0x21) | `tools/h5_recover_names.py` |
 | 자산 이름 복원 | ✅ 2,182 / 2,189 (99.7%) — .so format-string + region 변형 | `tools/h5_recover_names.py`, `work/h5/analysis/asset_names.tsv` |
 | Anim/Script 파서 | ✅ 300 파일 record 분리 (sentinel 19 19 + 20 20) | `tools/converter/convert_h5_anim_script.py` |
+| .scn 헤더 파서 | ✅ 258/258 파일 — 11B 헤더 + Interpreter 바이트코드 | `tools/converter/convert_h5_scn.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
