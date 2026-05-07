@@ -155,6 +155,14 @@ def main():
                     help='API 호출 없이 system prompt 만 출력')
     args = ap.parse_args()
 
+    # dry-run 은 corpus 없이도 system prompt 만 검증 가능해야 함.
+    if args.dry_run:
+        print(f'GAME: {_g.id} ({_g.name})')
+        print(f'CORPUS: {CORPUS}{" (MISSING)" if not CORPUS.exists() else ""}')
+        print('\n=== SYSTEM PROMPT ===')
+        print(build_system_prompt())
+        return 0
+
     if not CORPUS.exists():
         print(f'MISSING: {CORPUS}', file=sys.stderr)
         return 1
@@ -169,10 +177,6 @@ def main():
     print(f'To translate: {len(todo)}')
 
     system_prompt = build_system_prompt()
-    if args.dry_run:
-        print('\n=== SYSTEM PROMPT ===')
-        print(system_prompt)
-        return 0
 
     if not todo:
         print('Nothing to do.')

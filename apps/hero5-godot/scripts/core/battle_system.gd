@@ -22,14 +22,23 @@ var enemy_max_hp: int = 0
 var enemy_attack: int = 10
 
 
+var skill_names: Array = []
+
+
 func start_battle(monster_id: int = 0) -> void:
-	# enemy_g.dat 에서 monster 정보 가져오기 (간이)
-	var arr = GameData.names("c/csv/enemy_g.dat")
-	enemy_name = arr[monster_id] if monster_id < arr.size() else "고블린"
-	enemy_max_hp = 50 + monster_id * 10
+	# enemy_table.json 에서 실제 stats
+	var stats = GameData.enemy_stats(monster_id)
+	enemy_name = "Monster #%d" % monster_id
+	if stats.has("hp") and int(stats["hp"]) != 65535:
+		enemy_max_hp = int(stats["hp"])
+		enemy_attack = max(5, int(stats.get("mp", 10)) / 4)
+	else:
+		enemy_max_hp = 50 + monster_id * 10
 	enemy_hp = enemy_max_hp
+	# Player class 의 skill list 로드 (class_id 0 = 워리어)
+	skill_names = GameData.skills_for_class(0)
 	battle_started.emit(enemy_name)
-	log_message.emit("%s 와의 전투 시작!" % enemy_name)
+	log_message.emit("%s 와의 전투 시작! (HP %d)" % [enemy_name, enemy_hp])
 
 
 func player_action(action: Action, skill_id: int = 0) -> void:
@@ -44,7 +53,12 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 		Action.SKILL:
 			var dmg := 15 + randi() % 10
 			enemy_hp = max(0, enemy_hp - dmg)
-			log_message.emit("스킬 사용! %d 피해" % dmg)
+			var skill_name := "스킬"
+			if skill_id >= 0 and skill_id < skill_names.size():
+				skill_name = skill_names[skill_id]
+			elif not skill_names.is_empty():
+				skill_name = skill_names[randi() % min(8, skill_names.size())]
+			log_message.emit("[%s]! %d 피해" % [skill_name, dmg])
 			if enemy_hp == 0:
 				_finish(true)
 				return

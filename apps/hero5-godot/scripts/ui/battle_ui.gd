@@ -47,6 +47,9 @@ func _on_started(name: String) -> void:
 	player_hp.max_value = _battle.player_max_hp
 	player_hp.value = _battle.player_hp
 	log_box.text = ""
+	# 스킬 버튼 라벨에 실제 첫 스킬 이름
+	if _battle.skill_names.size() > 0:
+		skill_btn.text = _battle.skill_names[0]
 	_set_buttons_enabled(true)
 
 

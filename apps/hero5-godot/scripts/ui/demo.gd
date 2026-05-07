@@ -31,13 +31,18 @@ func _ready() -> void:
 	add_child(_dialog)
 	_status = preload("res://scenes/status_panel.tscn").instantiate()
 	add_child(_status)
-	# 실제 게임 데이터에서 이름 가져오기 (없으면 기본값)
+	# 실제 게임 데이터에서 인벤토리 placeholder 생성
 	var inv: Array = []
-	# item_NN 테이블에서 처음 4개 아이템
+	# 각 item slot 에서 첫 아이템
 	for i in range(4):
-		var arr = GameData.names("c/csv/item_%02d.dat" % i)
+		var arr = GameData.items_in_slot(i)
 		if arr.size() > 0:
-			inv.append(arr[0])
+			inv.append(arr[0] if arr[0] else "(item_%02d)" % i)
+	# drop table 에서 5개 추가
+	var drops = GameData.drop_table()
+	for i in range(5):
+		if i < drops.size() and drops[i]:
+			inv.append("[drop] " + drops[i])
 	if inv.is_empty():
 		inv = ["회복약", "마나약", "한손검", "가죽갑옷"]
 	# GameState 싱글톤 사용. inv 가 비어있으면 placeholder.
