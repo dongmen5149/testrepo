@@ -11,7 +11,7 @@ config_version=5
 config/name="Hero5"
 config/description="영웅서기5 (Heroes Lore 5) Android remake"
 config/version="0.1.0-alpha"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/title.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
