@@ -1,21 +1,18 @@
 """
 enemy_g.dat 121B record 디코더.
 
-근거: Map::MapEnemyG_set @ 000be394 디컴파일 (work/h5/analysis/monster_load.c).
+근거 (.so disasm 검증 — Map::MapEnemyG_set @ 0x000ae394 + ByteToInt16):
+  - record stride = 121 (header 4B + 121*166 records)
+  - record byte 0x00..0x0b → struct[0x00..0x0b]: 12 × u8 (sprite/anim/AI flags)
+  - record byte 0x0c..0x17 → struct[0x0c..0x17]: 6 × u16 LE (StaticUtil::ByteToInt16)
+      0x0c..0x0d: HP    0x0e..0x0f: MP
+      0x10..0x11: ATK   0x12..0x13: DEF
+      0x14..0x15: stat5 (EXP 후보)   0x16..0x17: stat6 (Gold 후보)
+  - record byte 0x18..0x23 → struct[0x18..0x23]: 12 × u8 (flags_b — element/resist)
+  - record byte 0x24..0x77 → 5 × 16B 스킬 슬롯 (8 × u16 each)
+  - StaticUtil::ByteToInt16 = `buf[off] | (buf[off+1]<<8)` = LE u16
 
-레코드 구조 (121B per record):
-  offset 0x00..0x03: 헤더/패딩 (size 정보, ByteToInt16 가 처음 2B 읽음)
-  offset 0x04..0x0f: 12개 u8 필드 (sprite/anim/AI flags 추정)
-  offset 0x10..0x11: u16 LE — HP
-  offset 0x12..0x13: u16 LE — MP/SP
-  offset 0x14..0x15: u16 LE — Attack
-  offset 0x16..0x17: u16 LE — Defense
-  offset 0x18..0x19: u16 LE — EXP reward
-  offset 0x1a..0x1b: u16 LE — Gold reward
-  offset 0x1c..0x2a: 15개 u8 (resistance/element flags)
-  offset 0x2b..0x7a: 5 × 16B 서브레코드 (스킬 슬롯 5개; 각 = 8 u16)
-
-(필드 의미 정확한 확정은 BATTLER 의 setHP/setAtk 등 추가 분석 필요)
+검증: 65535 sentinel 빈도 = enemy_g 가 sparse (게임이 일부 record 만 사용).
 
 산출:
   apps/hero5-godot/assets/gamedata/enemy_table.json
@@ -38,20 +35,20 @@ def find_path(target: str) -> pathlib.Path:
 
 
 def decode_record(r: bytes) -> dict:
-    if len(r) < 39: return {}
-    # Field offsets within record (record starts at file offset 4 after count+sz header):
+    if len(r) < 0x24: return {}
+    # .so disasm 검증된 layout (record-relative byte offsets):
     return {
-        'flags_a': list(r[0:12]),           # 12 u8 (sprite/anim/AI)
-        'hp':      struct.unpack_from('<H', r, 12)[0],
-        'mp':      struct.unpack_from('<H', r, 14)[0],
-        'stat3':   struct.unpack_from('<H', r, 16)[0],   # ATK 추정
-        'stat4':   struct.unpack_from('<H', r, 18)[0],   # DEF 추정
-        'stat5':   struct.unpack_from('<H', r, 20)[0],   # EXP/lvl 추정
-        'stat6':   struct.unpack_from('<H', r, 22)[0],   # GOLD/AI type 추정
-        'flags_b': list(r[24:39]),          # 15 u8
+        'flags_a': list(r[0:12]),                              # u8 × 12
+        'hp':      struct.unpack_from('<H', r, 0x0c)[0],
+        'mp':      struct.unpack_from('<H', r, 0x0e)[0],
+        'atk':     struct.unpack_from('<H', r, 0x10)[0],
+        'def':     struct.unpack_from('<H', r, 0x12)[0],
+        'exp':     struct.unpack_from('<H', r, 0x14)[0],       # stat5 후보
+        'gold':    struct.unpack_from('<H', r, 0x16)[0],       # stat6 후보
+        'flags_b': list(r[0x18:0x24]),                         # u8 × 12 (resist/element)
         'skills':  [
-            list(struct.unpack_from('<8h', r, 39 + i * 16))
-            for i in range(5) if 39 + (i + 1) * 16 <= len(r)
+            list(struct.unpack_from('<8H', r, 0x24 + i * 16))
+            for i in range(5) if 0x24 + (i + 1) * 16 <= len(r)
         ],
     }
 
@@ -80,16 +77,21 @@ def main() -> int:
     print(f'wrote {OUT}')
 
     # show stats summary
-    print(f'\nfirst 8 enemies:')
-    for r in out[:8]:
-        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:4d} '
-              f'stat3={r["stat3"]:5d} stat4={r["stat4"]:5d} '
-              f'stat5={r["stat5"]:5d} stat6={r["stat6"]:5d}')
-    print('\nstrongest enemies (by HP, valid only):')
-    valid = [r for r in out if r['hp'] != 0xFFFF and r['hp'] > 0]
-    print(f'  valid: {len(valid)}/{len(out)}')
-    for r in sorted(valid, key=lambda x: -x['hp'])[:8]:
-        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:5d} flags_a[:5]={r["flags_a"][:5]}')
+    valid = [r for r in out if 0 < r['hp'] < 65535]
+    valid_atk = [r for r in valid if 0 < r['atk'] < 65535]
+    valid_def = [r for r in valid if 0 < r['def'] < 65535]
+    print(f'\nvalid: HP {len(valid)}/{len(out)}  '
+          f'ATK {len(valid_atk)}  DEF {len(valid_def)}')
+    if valid_atk:
+        a = sorted(r['atk'] for r in valid_atk)
+        print(f'  ATK range: {a[0]} .. {a[-1]}  median={a[len(a)//2]}')
+    if valid_def:
+        d_ = sorted(r['def'] for r in valid_def)
+        print(f'  DEF range: {d_[0]} .. {d_[-1]}  median={d_[len(d_)//2]}')
+    print('\nfirst 12 valid enemies:')
+    for r in valid[:12]:
+        print(f'  #{r["idx"]:3d}  HP={r["hp"]:5d} MP={r["mp"]:5d} '
+              f'ATK={r["atk"]:5d} DEF={r["def"]:5d} EXP={r["exp"]:5d} Gold={r["gold"]:5d}')
     return 0
 
 

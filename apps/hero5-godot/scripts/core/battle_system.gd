@@ -20,6 +20,15 @@ var enemy_name: String = ""
 var enemy_hp: int = 0
 var enemy_max_hp: int = 0
 var enemy_attack: int = 10
+var enemy_def: int = 0
+
+
+## 65535 = sentinel (게임이 사용 안 함). 그 외 0 < v < 65535 면 사용, 아니면 default.
+func _stat_or(stats: Dictionary, key: String, default: int) -> int:
+	if not stats.has(key): return default
+	var v = int(stats[key])
+	if v <= 0 or v >= 65535: return default
+	return v
 
 
 var skill_names: Array = []
@@ -41,14 +50,12 @@ func start_battle(monster_id: int = 0) -> void:
 	_monster_id = monster_id
 	turn_count = 1
 	is_player_turn = true
-	# enemy_table.json 에서 실제 stats
+	# enemy_table.json 에서 실제 stats (.so disasm 검증된 layout)
 	var stats = GameData.enemy_stats(monster_id)
 	enemy_name = "Monster #%d" % monster_id
-	if stats.has("hp") and int(stats["hp"]) != 65535:
-		enemy_max_hp = int(stats["hp"])
-		enemy_attack = max(5, int(stats.get("mp", 10)) / 4)
-	else:
-		enemy_max_hp = 50 + monster_id * 10
+	enemy_max_hp = _stat_or(stats, "hp", 50 + monster_id * 10)
+	enemy_attack = _stat_or(stats, "atk", max(5, monster_id / 2 + 6))
+	enemy_def = _stat_or(stats, "def", 0)
 	enemy_hp = enemy_max_hp
 	# Player class 의 skill list 로드 (class_id 0 = 워리어)
 	skill_names = GameData.skills_for_class(0)
@@ -60,9 +67,11 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 	match action:
 		Action.ATTACK:
 			var atk = max(8, GameState.total_attack())
-			var dmg := atk + randi() % 8
+			var raw_dmg := atk + randi() % 8
+			var dmg = max(1, raw_dmg - enemy_def / 2)
 			enemy_hp = max(0, enemy_hp - dmg)
-			log_message.emit("플레이어 → %s 에게 %d 피해 (ATK %d)" % [enemy_name, dmg, atk])
+			log_message.emit("플레이어 → %s 에게 %d 피해 (ATK %d, 적 DEF %d)" % [
+				enemy_name, dmg, atk, enemy_def])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -166,14 +175,9 @@ var _monster_id: int = 0
 
 func _finish(victory: bool) -> void:
 	if victory:
-		var exp_g := 10 + randi() % 20
-		var gold_g := 5 + randi() % 50
-		# 적 stats 의 exp/gold 가 있으면 우선 사용
 		var stats = GameData.enemy_stats(_monster_id)
-		if stats.has("exp") and int(stats["exp"]) > 0 and int(stats["exp"]) != 65535:
-			exp_g = int(stats["exp"])
-		if stats.has("gold") and int(stats["gold"]) > 0 and int(stats["gold"]) != 65535:
-			gold_g = int(stats["gold"])
+		var exp_g = _stat_or(stats, "exp", 10 + randi() % 20)
+		var gold_g = _stat_or(stats, "gold", 5 + randi() % 50)
 		var drops := _roll_drops()
 		log_message.emit("승리! EXP +%d  Gold +%d" % [exp_g, gold_g])
 		Quest.on_enemy_killed(_monster_id)

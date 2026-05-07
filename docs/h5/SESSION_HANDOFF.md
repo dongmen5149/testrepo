@@ -70,18 +70,13 @@ Demo:
   0x2c Switch).
 - scene body 258 export 완료 → demo 진입 시 step() 자동 실행 동작 가능.
 
-### P2: enemy_g 121B layout 의 ATK/DEF 정확한 offset
-- 현재 `decode_h5_enemy.py` 의 stat3/stat4 (offset 16/18) 가 65535 인 record 多.
-- 작업: Ghidra 로 `BATTLER::SetAtk` 등 setter 함수의 read offset 추적.
-  ```bash
-  # Ghidra 추가 dump 예시:
-  "D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat" \
-    "D:/testrepo/work/h5/ghidra_project" Hero5 \
-    -process libHeroesLore5.so -noanalysis \
-    -scriptPath "D:/testrepo/tools/ghidra" \
-    -postScript DumpMonsterLoad.java
-  ```
-- 검증: enemy_table.json 의 ATK/DEF 가 5–500 범위 자연수.
+### ~~P2: enemy_g 121B layout 의 ATK/DEF 정확한 offset~~ — ✅ 완료 (2026-05-08)
+- `tools/h5_extract_enemy_layout.py` (capstone+lief) 로 `Map::MapEnemyG_set` 본문 +
+  `StaticUtil::ByteToInt16` (LE u16 reader) 자동 분석.
+- 결과: 기존 PROGRESS hint (HP@0x0c, MP@0x0e, ATK@0x10, DEF@0x12 LE u16) 가
+  **이미 정답**이었음을 검증. EXP@0x14, Gold@0x16 추가 확인.
+- `decode_h5_enemy.py` 코멘트 정정 + `battle_system._stat_or()` 로 sentinel(65535)
+  자동 fallback. ATTACK 시 enemy_def 차감 적용.
 
 ### ~~P3: Stats UI ATK/DEF 합산 표시~~ — ✅ 완료 (2026-05-08)
 - Status panel 의 `AtkDef` Label 에 total_attack/defense + 장비 보너스 분리 표시.
@@ -169,7 +164,7 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 ## 알려진 제한
 
 - [x] ~~Interpreter opcode dispatch (22/77 만 구현)~~ — ✅ 77/77 (2026-05-08)
-- [ ] enemy ATK/DEF offset 일부 부정확 (P2)
+- [x] ~~enemy ATK/DEF offset 일부 부정확~~ — ✅ .so disasm 검증 완료 (2026-05-08)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) (P5)
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

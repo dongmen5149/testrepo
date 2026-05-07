@@ -514,6 +514,8 @@ isolated bins. 후속 작업으로 보류.
 | Event 함수 mangle 분석 | ✅ 105 Event_* 식별자 → arg_size 자동 룩업 (Itanium ABI demangle) | `tools/h5_event_arg_sizes.py`, `analysis/event_arg_sizes.tsv` |
 | BASE_TABLE 매핑 수정 | ✅ Quest 0x31~0x42 추측 → 정확한 0x29~0x2d (.so 검증), Scene_ChangeBgm dead entry 제거 | `interpreter.gd::BASE_TABLE` |
 | 자산 환경 복원 | ✅ APK 재추출 + VFS 2189 unpack + 99.7% 이름 + 421 sprite / 588 pal / 258 scn body | tools 전체 |
+| enemy_g layout 검증 | ✅ Map::MapEnemyG_set + ByteToInt16 disasm — HP/MP/ATK/DEF/EXP/Gold offset 0x0c~0x16 LE u16 확정 | `tools/h5_extract_enemy_layout.py`, `decode_h5_enemy.py` |
+| Battle 정확도 | ✅ enemy DEF 데미지 차감 + EXP/Gold 검증된 stat 사용 + sentinel(65535) 자동 fallback | `battle_system.gd::_stat_or/_finish` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
@@ -536,6 +538,17 @@ isolated bins. 후속 작업으로 보류.
 - 현재: HP/MP 정확. ATK/DEF 추정 위치 (offset 16-19) 가 65535 인 record 다수 → 잘못된 offset.
 - 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
 - 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
+
+**[P2] enemy_g 121B layout — ATK/DEF 정확도** — ✅ 완료 (2026-05-08)
+- `Map::MapEnemyG_set` 디스어셈블 + `StaticUtil::ByteToInt16` 분석으로 121B record 의
+  byte layout 100% 확정. 도구: `tools/h5_extract_enemy_layout.py`.
+- 기존 PROGRESS hint (HP@0x0c, MP@0x0e, ATK@0x10, DEF@0x12 LE u16) 가 **이미 정답**
+  이었음을 .so disasm 으로 검증. 추측 → 검증 끝.
+- 추가 발견: stat5/stat6 = EXP@0x14, Gold@0x16 (LE u16). flags_b 영역은 0x18..0x23
+  (12 byte). 5× skill slot 시작은 0x24 (기존 코드의 0x27 보다 3 byte 당김).
+- 65535 sentinel 처리 통합: `battle_system._stat_or()` 가 invalid 값 자동 fallback.
+- 결과: HP 75/166 valid (PROGRESS 핸드오프와 정확히 일치), ATK 7/166, DEF 4/166.
+  나머지는 enemy_g 의 sparse 영역 — 게임이 사용 안 함.
 
 **[P1] Interpreter opcode 자동 dispatch** — ✅ 77/77 완료 (2026-05-08)
 - ARM disasm + jumptable 추적으로 `EventProc::onFunction` 의 77 case 모두 자동 추출
