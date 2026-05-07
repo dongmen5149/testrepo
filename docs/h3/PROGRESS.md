@@ -15,11 +15,19 @@
 - group1 R0 디코드 결과: cell0~8 모두 BM ref 0x00~0x27 범위 — h0_cif indices=[1,2,3,10,17,19,16,8] 와 직접 매칭 안됨. 글로벌 multi-frame BM 인덱스로 해석 필요 (이슈 #4 와 동일 패턴).
 - **미해결**: ① count byte(0x0b=11) vs 실측 9 cells 불일치 — count 의미 재해석 필요, ② 트레일러 2 byte 정체, ③ ref→BM 매핑 — §4.1 글로벌 인덱스 테이블 풀어야 함, ④ 4방향(UP/DOWN/LEFT/RIGHT) 매핑은 group1/group2/...별 sprite 시각 매칭 필요.
 
+**A6) 그룹 분류 + 방향 매핑 가설 (2026-05-07 추가) ✅ 부분**
+- analyze_cif.py 가 113 frame 을 25 lead group 으로 분류. → [work/h3/h0_cif_groups.json](../../work/h3/h0_cif_groups.json)
+- **렌더 후보 그룹 (작은 ref/좌표, 4-byte cell layout 적합)**: `0a020b`(16), `0a0208`(19), `0a2208`(17), `0a2306`(5), `0a0302`(1), `0a2500`(2), `0a0500`(2) — 합계 62 frames.
+- **방향 매핑 가설**: type byte (offset 1) 의 bit 5 (=0x20) 가 horizontal flip 플래그.
+  - `0a 02 0b` cell0 x=-5 / `0a 22 08` cell0 x=+4 → 같은 액션의 LEFT/RIGHT mirror 추정
+  - `0a 02 08` (UP/DOWN 후보) / `0a 23 06` (다른 방향)
+- 비-렌더 그룹들 (`0a 84 04`, `0a 80 00`, `0a e8 19` 등 51 frames) — 좌표가 ±90, ±125 같은 큰 값 → hitbox/이벤트/사운드 메타데이터 프레임 추정. 렌더링과 무관할 가능성.
+
 **다음 세션 첫 작업** (1~2시간):
-1. ref → BM frame 매핑 풀기 — 모든 _bm 파일을 글로벌 인덱싱(h00000_bm 부터 누적)해서 0x27 같은 ref 가 어느 BM frame 인지 추적.
-2. cell 0~8 을 BM frame 으로 합성해 1프레임 PNG 출력 → 영웅 sprite 시각 확인.
-3. group1/group2/... 가 어느 방향/액션인지 라벨링.
-4. 검증되면 boss0_cif / e000_cif 에 동일 포맷 적용.
+1. ref → BM frame 매핑 풀기 — h0_cif indices=[1,2,3,10,17,19,16,8] 가 어느 series 인지 결정 (h0XXXX_bm vs h1XXXX_bm vs 글로벌). cell ref 값 0x00~0x27 이 cumulative slot frame 인덱스인지 검증.
+2. cell 0~8 (4-byte stride) 을 BM frame 으로 합성해 1프레임 PNG 출력 → 영웅 sprite 시각 확인.
+3. type byte bit 5 mirror 가설 검증 — 같은 idx 그룹 R0 의 x 부호 패턴이 짝맞춰 뒤집히는지.
+4. 검증되면 boss0_cif / e000_cif 동일 포맷 적용.
 
 ---
 
