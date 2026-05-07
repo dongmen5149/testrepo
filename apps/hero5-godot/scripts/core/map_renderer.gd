@@ -23,7 +23,12 @@ var _fgi_sprite: Sprite2D
 var _col_width: int = 0
 var _col_height: int = 0
 var _col_data: PackedByteArray = []
+var _tile_data: PackedByteArray = []   # 2B/tile (tile_attribute)
 const TILE_SIZE := 32  # Map::MapSetData 의 0x20 (= 32)
+@export var show_tile_attr_debug: bool = false:
+	set(value):
+		show_tile_attr_debug = value
+		queue_redraw()
 
 
 func _ready() -> void:
@@ -47,7 +52,9 @@ func _rebuild() -> void:
 func _load_collision() -> void:
 	var meta_path := "res://assets/maps/%02d.json" % map_id
 	var col_path := "res://assets/maps/%02d.col.bin" % map_id
+	var tile_path := "res://assets/maps/%02d.tile.bin" % map_id
 	_col_data = PackedByteArray()
+	_tile_data = PackedByteArray()
 	_col_width = 0
 	_col_height = 0
 	if not FileAccess.file_exists(meta_path) or not FileAccess.file_exists(col_path):
@@ -59,6 +66,9 @@ func _load_collision() -> void:
 		_col_height = int(meta.get("height", 0))
 	var col_f := FileAccess.open(col_path, FileAccess.READ)
 	_col_data = col_f.get_buffer(col_f.get_length())
+	if FileAccess.file_exists(tile_path):
+		var tile_f := FileAccess.open(tile_path, FileAccess.READ)
+		_tile_data = tile_f.get_buffer(tile_f.get_length())
 
 
 ## 스폰된 NPC 위치 캐시 (인터랙션 거리 체크용).
@@ -155,20 +165,40 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 
 
 func _draw() -> void:
-	if not show_collision_debug or _col_data.is_empty():
-		return
-	for ty in _col_height:
-		for tx in _col_width:
-			var idx = ty * _col_width + tx
-			if idx >= _col_data.size(): break
-			var v = _col_data[idx]
-			var color: Color
-			if v == 0 or v == 2:
-				color = Color(0, 1, 0, 0.2)   # 통과
-			else:
-				color = Color(1, 0, 0, 0.4)   # 막힘
-			draw_rect(Rect2(tx * TILE_SIZE, ty * TILE_SIZE,
-					TILE_SIZE, TILE_SIZE), color, true)
+	if show_collision_debug and not _col_data.is_empty():
+		for ty in _col_height:
+			for tx in _col_width:
+				var idx = ty * _col_width + tx
+				if idx >= _col_data.size(): break
+				var v = _col_data[idx]
+				var color: Color
+				if v == 0 or v == 2:
+					color = Color(0, 1, 0, 0.2)
+				elif v >= 0x40 and v < 0x80:
+					color = Color(1, 0.9, 0.2, 0.5)  # warp
+				else:
+					color = Color(1, 0, 0, 0.4)
+				draw_rect(Rect2(tx * TILE_SIZE, ty * TILE_SIZE,
+						TILE_SIZE, TILE_SIZE), color, true)
+	if show_tile_attr_debug and not _tile_data.is_empty():
+		for ty in _col_height:
+			for tx in _col_width:
+				var idx = ty * _col_width + tx
+				if idx * 2 + 1 >= _tile_data.size(): break
+				var lo = _tile_data[idx * 2]
+				var hi = _tile_data[idx * 2 + 1]
+				var v = lo | (hi << 8)
+				if v == 0: continue
+				# tile_id 별 색 (단순 hash)
+				var c := Color.from_hsv((v % 360) / 360.0, 0.6, 0.8, 0.35)
+				draw_rect(Rect2(tx * TILE_SIZE, ty * TILE_SIZE,
+						TILE_SIZE, TILE_SIZE), c, true)
+				# tile_id 텍스트 표시 (작은 크기)
+				if v < 256:
+					draw_string(ThemeDB.fallback_font,
+						Vector2(tx * TILE_SIZE + 4, ty * TILE_SIZE + 12),
+						str(v), HORIZONTAL_ALIGNMENT_LEFT, -1, 8,
+						Color(1, 1, 1, 0.6))
 
 
 ## (x, y) 픽셀 좌표 → collision 값 (0 = 통과, 그 외 = 막힘).

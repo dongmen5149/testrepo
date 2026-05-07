@@ -8,6 +8,7 @@ extends RefCounted
 
 const SAVE_VERSION := 1
 const MAX_SLOTS := 8
+const AUTO_SLOT := 7   # slot 7 은 자동 저장 전용
 
 
 static func save_path(slot: int) -> String:
@@ -89,6 +90,25 @@ static func list_slots() -> Array:
 				"inventory_count": data.get("inventory_count", 0),
 			})
 	return out
+
+
+## 자동 저장 (전용 slot 7) — 일정 간격으로 호출.
+static func auto_save(state: Dictionary) -> bool:
+	return save(AUTO_SLOT, state)
+
+
+## 가장 오래된 slot (timestamp 기준) 찾기.
+static func oldest_slot() -> int:
+	var oldest_time = ""
+	var oldest_idx = -1
+	for i in MAX_SLOTS:
+		var p := save_path(i)
+		if not FileAccess.file_exists(p): return i  # 빈 슬롯 우선
+		var data = load_slot(i)
+		var ts = data.get("timestamp", "")
+		if oldest_idx < 0 or ts < oldest_time:
+			oldest_time = ts; oldest_idx = i
+	return max(0, oldest_idx)
 
 
 static func delete_slot(slot: int) -> bool:

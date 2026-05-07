@@ -89,16 +89,52 @@ func complete(qid: int) -> void:
 	_grant_reward(qid)
 
 
-## 보상 지급 — gold + EXP + 무작위 아이템.
-##   현재는 rewards.json structure 가 알려지지 않아 간이 지급:
-##   gold = qid * 50, exp = qid * 30, 인벤에 "보상 #qid" 추가.
+## 보상 지급 — rewards.json 의 6B record 사용 (type-byte 분기).
+##   현재 가설: byte[0] 가 reward_type (0x06+=item, 0x0d=gold, 0x0f=exp),
+##   byte[1..3] 가 value (LE u24).
+##   기본값: gold = qid×50+100, exp = qid×30+50.
+var _rewards_cache: Array = []
+
+
 func _grant_reward(qid: int) -> void:
+	if _rewards_cache.is_empty():
+		var p := "res://assets/gamedata/rewards.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_rewards_cache = JSON.parse_string(f.get_as_text()) or []
+
 	var gold_reward = qid * 50 + 100
 	var exp_reward = qid * 30 + 50
+	var item_to_grant := ""
+
+	# rewards tier 0 의 qid 번째 record 가 있으면 사용
+	if _rewards_cache.size() > 0:
+		var tier = _rewards_cache[0]
+		var recs: Array = tier.get("records", [])
+		if qid < recs.size():
+			var hex = recs[qid].get("extra_hex", "")
+			if hex.length() >= 4:
+				var reward_type = int(hex.substr(0, 2), 16)
+				var value_lo = int(hex.substr(2, 2), 16)
+				var value_hi = int(hex.substr(4, 2), 16) if hex.length() >= 6 else 0
+				var value = value_lo | (value_hi << 8)
+				match reward_type:
+					0x0d:  # gold 추정
+						gold_reward = max(gold_reward, value * 10)
+					0x0f:  # exp 추정
+						exp_reward = max(exp_reward, value * 5)
+					0x06, 0x07, 0x08, 0x11:  # item 추정
+						# value 를 item 인덱스로 슬롯 0..3 에서 검색
+						var slot = reward_type - 0x06
+						var arr = GameData.items_in_slot(slot)
+						if value < arr.size() and not arr[value].is_empty():
+							item_to_grant = arr[value]
+
 	GameState.gold += gold_reward
-	GameState.add_battle_reward(exp_reward, 0)  # exp 만 (gold 는 위에서)
-	# 보상 아이템 (포션류 자동 지급)
-	GameState.inventory.append("미들포션")
+	GameState.add_battle_reward(exp_reward, 0)
+	if item_to_grant.is_empty():
+		item_to_grant = "미들포션"  # fallback
+	GameState.inventory.append(item_to_grant)
 	GameState.state_changed.emit()
 
 

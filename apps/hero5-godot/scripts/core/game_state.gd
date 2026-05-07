@@ -127,6 +127,9 @@ var _regen_timer: float = 0.0
 const REGEN_INTERVAL := 2.0  # 2초마다 회복
 var in_combat: bool = false
 
+var _auto_save_timer: float = 0.0
+const AUTO_SAVE_INTERVAL := 60.0  # 60초마다 자동 저장
+
 
 func _process(delta: float) -> void:
 	play_time_sec += delta
@@ -145,6 +148,12 @@ func _process(delta: float) -> void:
 				sp = min(max_sp, sp + sp_regen)
 				changed = true
 			if changed: state_changed.emit()
+	# 자동 저장 (60초마다, 비전투 시)
+	if not in_combat:
+		_auto_save_timer += delta
+		if _auto_save_timer >= AUTO_SAVE_INTERVAL:
+			_auto_save_timer = 0.0
+			SaveManager.auto_save(to_save_dict())
 
 
 func to_save_dict() -> Dictionary:

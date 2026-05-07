@@ -163,8 +163,29 @@ func _on_change_bgm(args: PackedByteArray) -> void:
 		Audio.play_bgm(args[0])
 
 
+var _steps_since_battle: int = 0
+const ENCOUNTER_MIN_STEPS := 25
+const ENCOUNTER_CHANCE := 0.10  # 10% per step after min
+
+
 func _on_hero_moved(new_pos: Vector2) -> void:
 	_map.check_warp(int(new_pos.x), int(new_pos.y))
+	# 인카운터 체크 (HUD 등 UI 가 열려있으면 skip)
+	if _battle_ui.visible or _shop.visible or _quest_panel.visible:
+		return
+	if GameState.in_combat: return
+	_steps_since_battle += 1
+	if _steps_since_battle >= ENCOUNTER_MIN_STEPS and randf() < ENCOUNTER_CHANCE:
+		_steps_since_battle = 0
+		_trigger_random_encounter()
+
+
+func _trigger_random_encounter() -> void:
+	# 맵 mapID 따라 적 풀 (간이): 0..74 valid 중 무작위
+	var monster_id = randi() % 75
+	_battle_ui.start(monster_id, {
+		"hp": GameState.hp, "max_hp": GameState.max_hp,
+	})
 
 
 func _on_warp(target_scene: int) -> void:
@@ -270,6 +291,9 @@ func _input(event: InputEvent) -> void:
 			KEY_C:
 				# C: collision 디버그 토글
 				_map.show_collision_debug = not _map.show_collision_debug
+			KEY_V:
+				# V: tile attribute 디버그 토글
+				_map.show_tile_attr_debug = not _map.show_tile_attr_debug
 			KEY_P:
 				# P: NPC 마커 스폰 (npc_table 좌표 기반)
 				_map.spawn_npcs(_map, 12)
