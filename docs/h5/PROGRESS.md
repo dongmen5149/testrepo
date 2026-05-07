@@ -506,7 +506,7 @@ isolated bins. 후속 작업으로 보류.
 | Battle 결과 popup | ✅ 승리 시 EXP/Gold/획득 아이템 패널 + 확인 버튼 (4초 자동 닫힘) | `battle_ui.gd::_show_victory_popup` |
 | Battle drop | ✅ enemy stats exp/gold + 25% drop_table roll, items 배열 emit | `battle_system.gd::_finish/_roll_drops` |
 | 씬 전환 fade | ✅ Title↔ClassSelect↔Demo 0.3s 검정 fade-out / fade-in | `scripts/ui/scene_fader.gd` |
-| OPCODE_TABLE 확장 | ⚠ 38/77 — BASE_TABLE 인라인 + 외부 opcode_table.json 로더 (없으면 fallback) | `interpreter.gd::BASE_TABLE/_try_load_external` |
+| OPCODE_TABLE 확장 | ✅ 77/77 — BASE_TABLE 38 + 외부 opcode_table.json 자동 머지 (.so disasm 추출) | `interpreter.gd::BASE_TABLE/_try_load_external` |
 | Dispatch 정리 | ✅ 중복 case 제거, Quest/Situate/Scene 핸들러 정렬, 외부 JSON 활성화 시 자동 매칭 | `interpreter.gd::_dispatch` |
 | Scene body 자동 실행 | ✅ import 시 .scn body 11B 이후를 `assets/scenes/bodies/<idx>.bin` 저장, run_intro 가 step() 호출 | `import_to_godot.py::import_scn_index`, `demo.gd::_run_intro` |
 | Quest opcode 핸들러 | ✅ 0x29 Boss / 0x2a QSwitch / 0x2b Status / 0x2c Switch — `.so disasm 검증` | `demo.gd::_on_quest_*` |
@@ -521,23 +521,10 @@ isolated bins. 후속 작업으로 보류.
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
-### 6.2 다음 즉시 작업 — 우선순위 순 (2026-05-08 기준)
+### 6.2 완료된 우선순위 작업 (2026-05-08 일괄 완료)
 
-> Phase 2 (자산 추출/디코딩) + Phase 3 (Godot 엔진 + 게임 시스템) **대부분 완료**.
-> 현재 상태는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) 참조.
-
-**[P1] Interpreter opcode 자동 dispatch (실 .scn 실행)**
-- 현재: 22/77 opcode 만 GDScript 핸들러 구현, 나머지는 console log.
-- 목표: `EventProc::onFunction` switch 케이스 77종을 1:1 핸들러로 변환.
-- 입력: `work/h5/analysis/opcode_dispatch.c` (Ghidra 디컴파일).
-- 출력: `apps/hero5-godot/scripts/core/interpreter.gd` 의 `_dispatch()` 확장.
-- 검증: 실제 .scn 파일을 demo 진입 시 자동 실행하면 NPC 대화 / 카메라 / 이벤트가 원본대로 재생.
-- 도움이 되는 산출물: `work/h5/analysis/opcode_table.tsv` (opcode → event 이름/arg 사이즈).
-
-**[P2] enemy_g 121B layout 의 ATK/DEF 정확한 위치 (BATTLER 추가 분석)**
-- 현재: HP/MP 정확. ATK/DEF 추정 위치 (offset 16-19) 가 65535 인 record 다수 → 잘못된 offset.
-- 작업: Ghidra 로 `BATTLER::SetAtk` / `BATTLER::SetDef` 등 setter 추적 후 실제 read offset 확인.
-- 검증: `work/h5/analysis/enemy_table.json` 의 ATK/DEF 가 의미 있는 값 (5–500 범위).
+> Phase 2 (자산 추출/디코딩) + Phase 3 (Godot 엔진 + 게임 시스템) + 모든 우선순위
+> 작업 완료. 현재 상태와 다음 작업은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) 참조.
 
 **[P2] enemy_g 121B layout — ATK/DEF 정확도** — ✅ 완료 (2026-05-08)
 - `Map::MapEnemyG_set` 디스어셈블 + `StaticUtil::ByteToInt16` 분석으로 121B record 의
@@ -588,54 +575,75 @@ isolated bins. 후속 작업으로 보류.
 - pre-existing 버그 수정: demo.gd 의 `_battle_ui.has_signal()` 호출이
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
-**[P5] 자모 인코딩 정밀 (한글 비트맵 폰트 사용)**
-- table.dat 의 2350 EUC-KR codepoint 와 581 glyph 의 실제 매핑.
-- `Graphic::DrawText` / `Strings::draw` 추가 디컴파일 필요.
-- 우회: 시스템 폰트 (Noto Sans CJK KR) 사용 — 현재 기본값.
+### 6.2.1 다음 우선순위 (남은 작업)
 
-**[P6] Android APK 실 빌드 검증**
-- Godot Editor 열기 → Install Android Build Template → Export.
+**[P5] 자모 인코딩 정밀** — 자율 진행 가능 (capstone+lief 로 P1/P2 같은 패턴)
+- 목표: `kor.fnt` 의 581 glyph ↔ `table.dat` 의 2350 EUC-KR codepoint 매핑.
+- 방법: `tools/h5_extract_opcode_disasm.py` 와 동일한 패턴으로 `Graphic::DrawText`
+  / `Strings::draw` 본문 자동 분석.
+- **현 상태 영향 없음** — 시스템 폰트(Noto Sans CJK KR) 우회 중. polish 작업.
+
+**[P6] Android APK 실 빌드 검증** — 외부 환경 필요
+- Godot Editor 4.2+ + Install Android Build Template + Export Templates (~1GB)
+  + JDK 17 + Android SDK + NDK.
 - `apps/hero5-godot/export_presets.cfg.template` 참조.
-- 실제 device 에서 타이틀→데모 흐름 확인.
+- 이 머신에서 자동화 불가 — 사용자 GUI 진행 필요.
+
+**추가 polish (자율 진행 가능)**
+- scene body 자동 실행 trace — interpreter stats 모드로 빈도 분석.
+- damage formula 정확도 — `BATTLER` 의 ApplyAddEffect/IncreaseHP 등 disasm.
+- SMAF → OGG 변환 — 자체 SMAF 디코더 또는 vgmstream.
 
 ### 6.3 환경 / 도구 빠른 참조
 
-#### Phase 2 — 자산 추출/디코딩 재실행
-```bash
-# VFS 재언팩 (catalog 깨졌을 때만)
-python tools/h5_vfs_unpack.py
+#### 새 클론 / assets 비어있을 때 — 처음부터 복원
+필수: `Hero5/영웅서기5(최신폰전용).apk` 가 있어야 함.
 
-# 자산 이름 복원
-python tools/h5_recover_names.py
-
-# 스프라이트 / 팔레트 / GBM / collision / scn / 한글
-python tools/converter/convert_h5_sprite.py
-python tools/converter/convert_h5_pa.py
-python tools/converter/convert_h5_gbm.py
-python tools/converter/convert_h5_collision.py
-python tools/converter/convert_h5_scn.py
-python tools/h5_extract_text.py
-
-# 게임 데이터 (CSV/skill/item/quest/enemy/npc/...)
-python tools/converter/convert_h5_csv.py
-python tools/converter/decode_h5_class.py
-python tools/converter/decode_h5_skill.py
-python tools/converter/decode_h5_item.py
-python tools/converter/decode_h5_enemy.py
-python tools/converter/decode_h5_npc.py
-python tools/converter/decode_h5_quest.py
-python tools/converter/decode_h5_misc.py
-python tools/converter/decode_h5_fixed.py
-python tools/converter/convert_h5_fnt2png.py
+```powershell
+# 1) APK unzip → work/h5/extracted/
+$apk = "Hero5\영웅서기5(최신폰전용).apk"; $out = "work\h5\extracted"
+New-Item -ItemType Directory -Force -Path $out | Out-Null
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory($apk, $out)
 ```
 
-#### Phase 3 — Godot 임포트 / 검증
 ```bash
-# 변환된 자산 → Godot assets/ 으로 복사
-python tools/import_to_godot.py
+# 2) Phase 2 — 자산 추출/디코딩 (Python 3.10+ 필요)
+python tools/h5_vfs_unpack.py            # VFS 2189 entries
+python tools/h5_recover_names.py         # 99.7% 이름 복원
+python tools/h5_batch_sprite.py          # sprite 421 + palette 588
+python tools/h5_extract_text.py          # 한글 18,837 unique
 
-# tscn/gd 의 res:// 참조 무결성 체크
-python tools/verify_godot_project.py
+# 3) 디코더 일괄 (게임 데이터)
+for f in tools/converter/{convert,decode}_h5_*.py; do
+  python $f 2>/dev/null
+done
+
+# 4) Phase 3 — Godot 임포트 + 검증
+python tools/import_to_godot.py          # opcode_table.json 자동 포함 (capstone+lief 있을 때)
+python tools/verify_godot_project.py     # → 0 errors / 0 warnings 기대
+```
+
+#### .so 분석 도구 (capstone+lief 필요)
+```bash
+pip install lief capstone
+
+python tools/h5_extract_opcode_disasm.py    # 77/77 opcode → opcode_table.json
+python tools/h5_event_arg_sizes.py           # 105 Event_* arg sizes
+python tools/h5_extract_enemy_layout.py      # enemy_g 121B layout 검증
+```
+
+#### Ghidra (옵션 — capstone 으로 대체 가능)
+```bash
+# 헤드리스 모드 (script 자동 실행)
+"D:/ghidra_12.0.4_PUBLIC/support/analyzeHeadless.bat" \
+  "D:/testrepo/work/h5/ghidra_project" Hero5 \
+  -process libHeroesLore5.so -noanalysis \
+  -scriptPath "D:/testrepo/tools/ghidra" \
+  -postScript DecompileHero5Keys.java
+
+# tools/ghidra/*.java — 15개 분석 스크립트 (DES/Scene/Interpreter 등)
+# capstone+lief 환경이 있으면 대부분 Python 도구로 대체 가능.
 ```
 
 #### Ghidra (추가 디컴파일 필요시)
