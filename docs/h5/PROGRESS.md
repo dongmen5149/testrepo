@@ -373,11 +373,24 @@ isolated bins. 후속 작업으로 보류.
 ### Phase 2-C. JNI 호출 흐름 → 게임 루프 정리
 `Java_..._nativeLoop` 와 `MIDASKernelManager::timerLoop` 부터 시작. 60fps tick / event handling / render 호출 순서를 그래프로.
 
-### Phase 3. 리메이크 엔진 결정 + 재구현
-**상세는 [PHASE3_ENGINE.md](PHASE3_ENGINE.md) 참조.**
-- 권장: **Godot 4** (2D 우선, 자산 임포트 단순, APK 무게 가벼움, MIT)
-- 차순위: Unity 2022 LTS (기존 노하우/IAP 인프라 있을 때)
-- 첫 작업: `apps/hero5-godot/` 스캐폴드 + asset import 파이프라인 (Python → res://)
+### Phase 3. 리메이크 엔진 결정 + 재구현 — ✅ 스캐폴드 완료 (2026-05-07)
+**상세는 [PHASE3_ENGINE.md](PHASE3_ENGINE.md) + [apps/hero5-godot/README.md](../../apps/hero5-godot/README.md).**
+- 엔진: **Godot 4** 확정.
+- 자산 임포트 파이프라인: `tools/import_to_godot.py` — 5,000+ 자산 자동 변환.
+  - sprites: 3,798 frame PNG
+  - gbm: 342 map/face/obj/fgi 이미지
+  - palettes: 588 JSON RGBA
+  - text: 453 한글 JSON
+  - sounds: 42 OGG (SMAF 미포함)
+  - scenes: 258 .scn 메타 인덱스
+- 검증 씬: `apps/hero5-godot/scenes/main.tscn` — face 토글 + 한글 코퍼스 표시.
+
+#### 다음 본구현 작업
+- [ ] Interpreter opcode → 이벤트 매핑 (164 opcode 의미 매핑)
+- [ ] Map 렌더러 (tile/fgi/obj 레이어 합성)
+- [ ] CHAR/HERO 시스템 (4방향 애니메이션)
+- [ ] kor.fnt 임포트 / 한글 폰트
+- [ ] SMAF → OGG 변환
 
 ---
 
@@ -396,6 +409,8 @@ isolated bins. 후속 작업으로 보류.
 | 자산 이름 복원 | ✅ 2,182 / 2,189 (99.7%) — .so format-string + region 변형 | `tools/h5_recover_names.py`, `work/h5/analysis/asset_names.tsv` |
 | Anim/Script 파서 | ✅ 300 파일 record 분리 (sentinel 19 19 + 20 20) | `tools/converter/convert_h5_anim_script.py` |
 | .scn 헤더 파서 | ✅ 258/258 파일 — 11B 헤더 + Interpreter 바이트코드 | `tools/converter/convert_h5_scn.py` |
+| .scn body 디스어셈블 | ✅ 258 파일, 164 unique opcode | `tools/converter/disasm_h5_scn.py` |
+| .gbm 디코더 | ✅ 342/342 (100%) — 4/8-bit indexed → PNG | `tools/converter/convert_h5_gbm.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |
 | Ghidra 프로젝트 | ✅ 함수 19개 디컴파일 | `work/h5/ghidra_project/Hero5` |
 
