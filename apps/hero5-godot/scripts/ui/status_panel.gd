@@ -12,6 +12,11 @@ extends CanvasLayer
 @onready var lvl_label: Label = $BG/LVL
 @onready var gold_label: Label = $BG/Gold
 @onready var inv_list: ItemList = $BG/Inventory
+@onready var stat_points_label: Label = $BG/StatBox/StatPointsLabel
+@onready var str_btn: Button = $BG/StatBox/StrBtn
+@onready var dex_btn: Button = $BG/StatBox/DexBtn
+@onready var int_btn: Button = $BG/StatBox/IntBtn
+@onready var con_btn: Button = $BG/StatBox/ConBtn
 
 var _state: Dictionary = {
 	"hp": 100, "max_hp": 100,
@@ -30,6 +35,10 @@ signal item_used(item_name: String)
 func _ready() -> void:
 	visible = false
 	inv_list.item_activated.connect(_on_item_activated)
+	str_btn.pressed.connect(func(): GameState.allocate_stat("str"))
+	dex_btn.pressed.connect(func(): GameState.allocate_stat("dex"))
+	int_btn.pressed.connect(func(): GameState.allocate_stat("int"))
+	con_btn.pressed.connect(func(): GameState.allocate_stat("con"))
 	_apply()
 
 
@@ -90,6 +99,14 @@ func _apply() -> void:
 	sp_label.text = "SP %d / %d" % [_state["sp"], _state["max_sp"]]
 	lvl_label.text = "Lv %d  EXP %d" % [_state["level"], _state["exp"]]
 	gold_label.text = "Gold %d" % _state["gold"]
+	if stat_points_label:
+		var pts = GameState.stat_points
+		stat_points_label.text = "+%d" % pts
+		var disabled = pts <= 0
+		str_btn.disabled = disabled
+		dex_btn.disabled = disabled
+		int_btn.disabled = disabled
+		con_btn.disabled = disabled
 	inv_list.clear()
 	# 장비 먼저
 	var equipment: Array = _state.get("equipment", [])

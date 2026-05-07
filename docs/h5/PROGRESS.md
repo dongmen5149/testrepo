@@ -470,6 +470,11 @@ isolated bins. 후속 작업으로 보류.
 | NPC sprite 텍스처 | ✅ sprite_id → sprites/imgN/NNN/frame_00 자동 검색 (없으면 색박스) | `map_renderer.gd::_try_load_npc_sprite` |
 | 포션/장비 사용 | ✅ inv 더블클릭 → 포션 사용 (HP+30) / 무기/방어구 자동 장착 | `status_panel.gd::_use_item` |
 | 세이브 메타 확장 | ✅ play_time/class_id/stats/equipment/unlocked_skills/quest 포함 | `save_manager.gd::make_payload` |
+| Sprite name → dir 매핑 | ✅ 405 sprite_index.json + AssetLoader.sprite_dir() API | `tools/import_to_godot.py`, `asset_loader.gd` |
+| Title 로고 자동 | ✅ `c/sp/imgcom/title.mgr` → 자동 첫 frame 로딩 | `title.gd` |
+| Stat 분배 UI | ✅ Status panel +STR/+DEX/+INT/+CON 버튼, 레벨업당 +3 점수 | `status_panel.gd`, `game_state.gd::allocate_stat` |
+| Battle 적 sprite | ✅ enemy flags_a[0]=sprite_id 로 첫 frame 표시 | `battle_ui.gd::_load_enemy_sprite` |
+| Quest 보상 자동 | ✅ complete 시 gold + exp + 미들포션 자동 지급 | `quest_system.gd::_grant_reward` |
 | .fnt 분석 | ⚠ 헤더만 (HNF eng=8×11/92 chars, kor=16×11/580 chars) | `tools/converter/convert_h5_fnt.py` |
 | SMAF 변환 | ⚠ 미구현 (외부 도구 필요), OGG 42개로 대체 가능 | `tools/converter/convert_h5_smaf.py` |
 | TINY_META 파서 | ✅ 7/356 strict match (kind 3·5 변형 확정) | `tools/converter/convert_h5_meta.py` |

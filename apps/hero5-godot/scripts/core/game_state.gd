@@ -29,6 +29,7 @@ var stat_str: int = 12
 var stat_dex: int = 8
 var stat_int: int = 10
 var stat_con: int = 6
+var stat_points: int = 0   # 사용자 수동 분배 점수
 
 # 해금된 스킬 (skill_id 리스트)
 var unlocked_skills: Array[int] = [0]  # 첫 스킬 (basic attack) 시작부터
@@ -88,6 +89,22 @@ func equipment_bonus() -> Dictionary:
 					bonus["defense"] += int(data.get("attack", 0))  # 방어구도 stats[7]
 				break
 	return bonus
+
+
+## 수동 stat 분배. 단, stat_points 점수가 있어야 가능.
+func allocate_stat(stat_name: String, points: int = 1) -> bool:
+	if stat_points < points: return false
+	match stat_name:
+		"str": stat_str += points
+		"dex": stat_dex += points
+		"int": stat_int += points
+		"con":
+			stat_con += points
+			max_hp += points * 5
+		_: return false
+	stat_points -= points
+	state_changed.emit()
+	return true
 
 
 ## 캐릭터 총 ATK = base STR-derived + equipment bonus.
@@ -169,8 +186,9 @@ func add_battle_reward(exp_gain: int, gold_gain: int) -> void:
 	while exp >= level * 100:
 		exp -= level * 100
 		level += 1
-		# stat 자동 분배 (클래스별 기본 분포 따라)
+		# 절반은 자동 분배, 절반은 수동 (3 ~ 5 점)
 		_apply_levelup_stats()
+		stat_points += 3
 		max_hp += 10 + stat_con
 		hp = max_hp
 		max_sp += 5 + stat_int / 2

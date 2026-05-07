@@ -7,6 +7,41 @@ extends Node
 
 const ASSET_ROOT := "res://assets/"
 
+## sprite VFS name (e.g., "c/sp/imgcom/title.mgr") → 실제 sprite dir.
+## convert_h5_sprite.py 가 카탈로그 인덱스 기반 디렉토리를 만들기 때문에
+## asset_names.tsv 매핑이 필요. 캐시.
+var _sprite_dir_cache: Dictionary = {}
+
+
+func sprite_dir(vfs_name: String) -> String:
+	if _sprite_dir_cache.is_empty():
+		_load_sprite_index()
+	var dir_name = _sprite_dir_cache.get(vfs_name, "")
+	if dir_name.is_empty(): return ""
+	return ASSET_ROOT + "sprites/" + dir_name
+
+
+func _load_sprite_index() -> void:
+	var p := ASSET_ROOT + "sprite_index.json"
+	if not FileAccess.file_exists(p): return
+	var f := FileAccess.open(p, FileAccess.READ)
+	var data = JSON.parse_string(f.get_as_text())
+	if data is Dictionary: _sprite_dir_cache = data
+
+
+## sprite_dir 의 frame_00 첫 PNG 텍스처.
+func first_frame_of(sprite_dir_path: String) -> Texture2D:
+	var d := DirAccess.open(sprite_dir_path)
+	if d == null: return null
+	d.list_dir_begin()
+	var fname := d.get_next()
+	while fname != "":
+		if fname.begins_with("frame_00") and fname.ends_with(".png"):
+			return load(sprite_dir_path + "/" + fname)
+		fname = d.get_next()
+	return null
+
+
 ## VFS 경로 → 변환 후 res:// 경로 매핑.
 ##   c/sp/img0/000.mgr  → assets/sprites/img0/000/  (디렉토리, frame_NN_*.png 들)
 ##   c/sp/pal/123.pal   → assets/palettes/123.json

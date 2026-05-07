@@ -20,6 +20,9 @@ text = "전투"
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 
+[node name="EnemySprite" type="Sprite2D" parent="BG"]
+position = Vector2(160, 100)
+
 [node name="Enemy" type="Label" parent="BG"]
 offset_left = 8.0
 offset_top = 48.0

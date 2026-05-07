@@ -8,6 +8,7 @@ const BattleSystem = preload("res://scripts/core/battle_system.gd")
 
 @onready var bg: ColorRect = $BG
 @onready var enemy_label: Label = $BG/Enemy
+@onready var enemy_sprite: Sprite2D = $BG/EnemySprite
 @onready var enemy_hp: ProgressBar = $BG/EnemyHP
 @onready var player_label: Label = $BG/Player
 @onready var player_hp: ProgressBar = $BG/PlayerHP
@@ -38,6 +39,33 @@ func start(monster_id: int, player_state: Dictionary) -> void:
 	_battle.log_message.connect(_on_log)
 	_battle.start_battle(monster_id)
 	visible = true
+	# 적 스프라이트 (enemy stats flags_a[0] 가 sprite_id 추정)
+	_load_enemy_sprite(monster_id)
+
+
+func _load_enemy_sprite(monster_id: int) -> void:
+	var stats = GameData.enemy_stats(monster_id)
+	if stats.is_empty():
+		enemy_sprite.texture = null
+		return
+	var flags_a = stats.get("flags_a", [])
+	if flags_a.is_empty(): return
+	var sprite_id = int(flags_a[0])
+	if sprite_id == 0xFF: return
+	# img0..6 검색
+	for cat in range(7):
+		var dir := "res://assets/sprites/img%d/%03d" % [cat, sprite_id]
+		if not DirAccess.dir_exists_absolute(dir): continue
+		var d := DirAccess.open(dir)
+		if d == null: continue
+		d.list_dir_begin()
+		var fname := d.get_next()
+		while fname != "":
+			if fname.begins_with("frame_00") and fname.ends_with(".png"):
+				enemy_sprite.texture = load(dir + "/" + fname)
+				return
+			fname = d.get_next()
+	enemy_sprite.texture = null
 
 
 func _on_started(name: String) -> void:

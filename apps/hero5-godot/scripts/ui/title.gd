@@ -13,17 +13,12 @@ func _ready() -> void:
 	new_btn.pressed.connect(_on_new_game)
 	cont_btn.pressed.connect(_on_continue)
 	_refresh_slots()
-	# title sprite 로드 (c/sp/imgcom/title.mgr → assets/sprites/imgcom/title)
-	var path := "res://assets/sprites/imgcom/title"
-	if DirAccess.dir_exists_absolute(path):
-		var d := DirAccess.open(path)
-		d.list_dir_begin()
-		var fname := d.get_next()
-		while fname != "":
-			if fname.begins_with("frame_00") and fname.ends_with(".png"):
-				logo.texture = load(path + "/" + fname)
-				break
-			fname = d.get_next()
+	# 로고: c/sp/imgcom/title.mgr 의 첫 frame
+	var logo_dir = AssetLoader.sprite_dir("c/sp/imgcom/title.mgr")
+	if not logo_dir.is_empty():
+		var tex = AssetLoader.first_frame_of(logo_dir)
+		if tex: logo.texture = tex
+	pass  # logo loading moved to title.gd _ready (sprite_index 기반)
 
 
 func _on_new_game() -> void:

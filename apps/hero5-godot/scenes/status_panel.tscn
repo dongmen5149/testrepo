@@ -60,4 +60,30 @@ text = "인벤토리"
 offset_left = 8.0
 offset_top = 144.0
 offset_right = 244.0
+offset_bottom = 380.0
+
+[node name="StatBox" type="HBoxContainer" parent="BG"]
+offset_left = 8.0
+offset_top = 388.0
+offset_right = 244.0
 offset_bottom = 412.0
+
+[node name="StatPointsLabel" type="Label" parent="BG/StatBox"]
+custom_minimum_size = Vector2(60, 24)
+text = "+0"
+
+[node name="StrBtn" type="Button" parent="BG/StatBox"]
+custom_minimum_size = Vector2(40, 24)
+text = "+STR"
+
+[node name="DexBtn" type="Button" parent="BG/StatBox"]
+custom_minimum_size = Vector2(40, 24)
+text = "+DEX"
+
+[node name="IntBtn" type="Button" parent="BG/StatBox"]
+custom_minimum_size = Vector2(40, 24)
+text = "+INT"
+
+[node name="ConBtn" type="Button" parent="BG/StatBox"]
+custom_minimum_size = Vector2(40, 24)
+text = "+CON"

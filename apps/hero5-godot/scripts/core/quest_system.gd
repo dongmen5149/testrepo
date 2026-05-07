@@ -46,6 +46,21 @@ func complete(qid: int) -> void:
 	_state[qid] = STATUS_COMPLETED
 	quest_completed.emit(qid)
 	quest_status_changed.emit(qid, STATUS_COMPLETED)
+	# 자동 보상 지급: rewards.json 의 tier 0 entry 사용
+	_grant_reward(qid)
+
+
+## 보상 지급 — gold + EXP + 무작위 아이템.
+##   현재는 rewards.json structure 가 알려지지 않아 간이 지급:
+##   gold = qid * 50, exp = qid * 30, 인벤에 "보상 #qid" 추가.
+func _grant_reward(qid: int) -> void:
+	var gold_reward = qid * 50 + 100
+	var exp_reward = qid * 30 + 50
+	GameState.gold += gold_reward
+	GameState.add_battle_reward(exp_reward, 0)  # exp 만 (gold 는 위에서)
+	# 보상 아이템 (포션류 자동 지급)
+	GameState.inventory.append("미들포션")
+	GameState.state_changed.emit()
 
 
 func active_quests() -> Array:

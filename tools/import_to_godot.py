@@ -112,6 +112,30 @@ def import_text() -> int:
     return n
 
 
+def import_sprite_index() -> int:
+    """assets/sprite_index.json — VFS name (예: c/sp/imgcom/title.mgr) → sprite dir name."""
+    if not SRC_NAMES.exists(): return 0
+    out_dir = DST / 'sprites'
+    if not out_dir.exists(): return 0
+    # convert_h5_sprite.py 의 디렉토리 이름 = "{idx:05d}_{hash:08x}"
+    mapping = {}
+    with open(SRC_NAMES, encoding='utf-8') as f:
+        for row in csv.DictReader(f, delimiter='\t'):
+            n = row['recovered_name']
+            if not n: continue
+            if not (n.endswith('.mgr') or n.endswith('.cif') or n.endswith('.ext')):
+                continue
+            idx = int(row['index']); h = int(row['hash'], 16)
+            dir_name = f'{idx:05d}_{h:08x}'
+            sub = out_dir / dir_name
+            if sub.exists():
+                mapping[n] = dir_name
+    (DST / 'sprite_index.json').write_text(
+        json.dumps(mapping, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(f'  sprite_index: {len(mapping)} VFS name → dir mappings')
+    return len(mapping)
+
+
 def import_scn_index() -> int:
     """Build assets/scenes/index.json from scn_headers.tsv."""
     if not SRC_SCN.exists(): return 0
@@ -141,6 +165,7 @@ def main() -> int:
     import_palettes()
     import_text()
     import_sounds()
+    import_sprite_index()
     import_scn_index()
     print('\ndone.')
     return 0
