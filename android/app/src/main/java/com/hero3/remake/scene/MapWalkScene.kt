@@ -172,12 +172,17 @@ class MapWalkScene(
     }
 
     private fun loadHeroWalk(): List<List<Bitmap>> {
-        // h0_cif 베이크 결과: dir0..3 × anim 0..7 (32 PNG). dir 매핑은 GameState.FACING_* 와 동일 순서 가정 (DOWN/UP/LEFT/RIGHT).
+        // h0_cif 베이크 결과: dir0..3 × anim 0..7 (32 PNG).
+        // dir0(0a020b) 와 dir3(0a2208) 는 type byte bit5 flip 으로 좌우 mirror 쌍 → LEFT/RIGHT.
+        // 남은 dir1(0a0501), dir2(0a0208) 가 DOWN/UP. 디바이스에서 시각 검증 후 dirOrder 조정.
         val dir = "${settings.spritesDir()}/hero/h0_walk"
-        return (0..3).map { d ->
+        // FACING_* 인덱스 → cif dir 번호. 현재 가설: DOWN=1, UP=2, LEFT=0, RIGHT=3
+        val dirOrder = intArrayOf(1, 2, 0, 3)
+        return (0..3).map { facing ->
+            val cifDir = dirOrder[facing]
             (0..7).mapNotNull { f ->
                 runCatching {
-                    context.assets.open("$dir/dir${d}_${f}.png").use { BitmapFactory.decodeStream(it) }
+                    context.assets.open("$dir/dir${cifDir}_${f}.png").use { BitmapFactory.decodeStream(it) }
                 }.getOrNull()
             }
         }

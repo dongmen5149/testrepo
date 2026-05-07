@@ -52,8 +52,16 @@
 - 매핑: dir0=DOWN, dir1=UP, dir2=LEFT, dir3=RIGHT (FACING 순서와 동일 가정 — 디바이스에서 시각 검증 필요).
 - 빌드: `:app:assembleDebug` + `:app:testDebugUnitTest` 모두 BUILD SUCCESSFUL.
 
+**A11) walk_sheet 시각 분석 + dirOrder 가설 적용 ✅ (2026-05-07 완료)**
+- 4×8 walk-cycle 비교 시트 생성 → [docs/h3/walk_sheet.png](walk_sheet.png)
+- 시각 관찰: dir0 / dir3 가 명확한 좌우 mirror 쌍 → 각각 LEFT, RIGHT. dir1 / dir2 는 DOWN, UP 후보.
+- `MapWalkScene.loadHeroWalk()` 에 `dirOrder = intArrayOf(1, 2, 0, 3)` 추가 — FACING_DOWN=1, FACING_UP=2, FACING_LEFT=0, FACING_RIGHT=3.
+- 빌드+테스트 BUILD SUCCESSFUL.
+
 **다음 세션 첫 작업** (1~2시간):
-1. 디바이스/에뮬레이터 실행해 4방향 walk-cycle 시각 검증. dir 매핑 어긋나면 dirOrder 배열로 재매핑.
+1. 디바이스/에뮬레이터 실행해 dirOrder 시각 검증. DOWN↔UP 어긋나면 `intArrayOf(2,1,0,3)` 으로 swap.
+2. 흩어진 cell 정리 — 일부 cell 이 sprite body 와 떨어져 보이는 문제. type byte YY (=0x0b) 가 실제 cell count 인지 / 0x44 임계값 외에 cell idx 별 mask 존재하는지 분석.
+3. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
 2. 흩어진 cell 정리 — ref ≤ 0x44 필터를 더 정교하게 (cell idx 0~5 만 렌더, 6~8 은 메타?). 또는 type byte YY (=0x0b/0x08/0x06) 가 실제 cell count 이고 9 가 아니라는 가설 검증.
 3. flag byte 의미 — 0x00 vs 0x01 vs 0x08 패턴 분석 (flip/blend/draw_order 후보).
 4. boss0_cif / e000_cif 같은 cif 에 동일 cumulative 매핑 검증 (boss/enemy 는 b1XXXX_bm / e0XXXX_bm 풀 추정).
