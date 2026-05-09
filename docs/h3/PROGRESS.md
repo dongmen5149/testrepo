@@ -5,13 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-5 — **2P + 2N + 2O 일괄 + 큐 protocol 종합 매핑**. (1) ⭐ disasm_subsystem_func.py backtrace 강화 (register propagation, r0~r3 동시 추적). (2) ⭐ FUN_00056bf8 = **codec 확정** (cmp arm 값 = byte_append immediate 값 = 같은 type tag system reader/writer 둘 다). (3) ⭐⭐ FUN_00008aca = **별도 함수 아님 = FUN_00006334 의 공유 epilogue gadget** (70x BL = 70 early-exit branches). (4) ⭐⭐ **큐 protocol 종합 매핑** — 4 writer 분석으로 11 distinct type tags 식별: type-5 ⭐ (16 emit, 3 함수) / type-0/1/4/0x1f / sub-op 0x3d~0x41. journal/save/replay log 가설. (5) 부수 발견: FUN_00006334 마지막 BL → FUN_000031dc (chain dispatcher 가능성). 상세는 [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-6 — **2R + 2S + 2Q 일괄 + context_getter 정정 + type-tag reader 발견**. (1) ⭐⭐ **FUN_0004ad10 (context_getter) 정체 확정** — raw 디스어셈블로 **단일 GOT 슬롯 getter** (GOT base + 0x444 = 0xB3084) 확정. **인자 없음**. PM-5 의 "r0 인자" 가설 기각 (backtrace false signal). (2) ⭐ **FUN_0009b252** (4KB) = **가장 강력한 type-tag reader 후보** (5 distinct nonzero tags + 86 cmp arms + 53 context_getter calls). (3) FUN_000031dc (6.7KB) = chain dispatcher 검증 (47 arms, helper 적음, FUN_00006334 와 페어 dispatcher). (4) binary 전체 cmp #type_tag 검색: 0x05 = 111 sites, 0x01 = 459, 0x03 = 234, 0x04 = 212. queue reader → cmp #type 직접 패턴 단 2건 (대부분 더 복잡한 dataflow). 상세는 [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md).
 
-**이전 세션** (2026-05-10 PM-4): FUN_00057394 typed record writer + FUN_00006334 광범위 dispatcher + FUN_0003d5d0 sound subsystem 본문 분석. 상세는 [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md).
+**이전 세션** (2026-05-10 PM-5): backtrace 강화 + 큐 codec 확정 + epilogue gadget 발견 + 큐 protocol 11 type tags 종합. 상세는 [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **큐 protocol 11 type tags 종합 매핑** (2026-05-10 PM-5). 큐는 **type-5 dominant (3 writer 16 emits)** + **codec 패턴** (FUN_00056bf8). FUN_00008aca = epilogue gadget 정정으로 main_dispatcher (FUN_00006334) 의 70 early-exit 식별. 다음 진척은 **(1) FUN_000031dc 본문 (chain dispatcher), (2) FUN_0004ad10 인자 패턴 검증, (3) type-5 reader 발견, (4) SMAF/번역 사용자 블로커**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **큐 protocol 11 type tags + 핵심 dispatcher 3개 + context_getter 단일 슬롯 확정** (2026-05-10 PM-6). FUN_0004ad10 은 항상 **GOT base + 0x444 의 글로벌 pointer** 반환. type-tag reader 는 **FUN_0009b252** 가 가장 유력. 다음 진척은 **(1) FUN_0009b252 86 arm 별 핸들러 매핑, (2) 0xB3084 글로벌 슬롯 의미 파악, (3) FUN_00026a80 / FUN_000818f0 본문, (4) SMAF/번역 사용자 블로커**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -39,9 +39,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md)** ⭐⭐⭐ — **최신 PM-5** (큐 protocol 11 type tags + epilogue gadget 발견 + FUN_00056bf8 codec)
-5. (참고) [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md) — PM-4 (FUN_00057394/FUN_00006334/FUN_0003d5d0 본문)
-6. (참고) [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — PM-3 (402 stub ranking + 큐 caller 매핑)
+4. **[ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md)** ⭐⭐⭐ — **최신 PM-6** (context_getter 정정 + FUN_0009b252 reader 후보 + chain dispatcher)
+5. (참고) [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol 11 type tags + epilogue gadget)
+6. (참고) [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md) — PM-4 (FUN_00057394/FUN_00006334/FUN_0003d5d0)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 다음 세션 — 우선순위 (블로커별)
@@ -66,9 +66,12 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | ~~2N~~ | ~~FUN_00056bf8 (queue codec) 본문 분석~~ | ✅ 2026-05-10 PM-5. **codec 확정** — cmp arm 값 = byte_append immediate 값 (0x3d/0x3e/0x1f). 5 records emit (type-0/1×2/4/0x1f). reader (cmp 0x06/0x09/0x07) + writer (byte_append 0x01/0x04 등) 둘 다 |
 | ~~2O~~ | ~~FUN_00008aca 본문 분석~~ | ✅ 2026-05-10 PM-5. **별도 함수 아님 — FUN_00006334 의 공유 epilogue gadget** (70x BL = 70 early-exit). 부수 발견: 0x8ac6 BL → FUN_000031dc (chain dispatcher 후보) |
 | ~~2P~~ | ~~r0 backtrace 강화 (10+ instr propagation)~~ | ✅ 2026-05-10 PM-5. `track_reg_value` 재귀 register propagation + r0~r3 동시 추적 + prev_instrs 컨텍스트. byte_append immediate 80~90% 식별. sound ID 는 모두 메모리 로드라 추적 한계 |
-| ⭐ **2Q** | **FUN_000031dc 본문 분석** | 6.7KB 또 다른 MASSIVE state machine. FUN_00006334 의 마지막 BL chain dispatcher 후보. disasm_subsystem_func.py 재사용. 자동 가능 |
-| ⭐ **2R** | **FUN_0004ad10 (context_getter) 정체 재분석** | r0 backtrace 가 다른 GOT slot offsets 전달하는 인자 사용 발견. Ghidra 의 `void` 시그니처 의심. capstone 으로 인자 사용 패턴 확인. 자동 가능 |
-| 2S | type-5 reader 발견 | cmp #0x05 arm 가진 함수 검색 → reader 측 로직 식별. byte stream parser candidate. 자동 가능 |
+| ~~2Q~~ | ~~FUN_000031dc 본문 분석~~ | ✅ 2026-05-10 PM-6. 47 arms, 4 distinct type tags, helper 거의 없음 (graphics_primitive 1). FUN_00006334 와 페어 chain dispatcher 검증 |
+| ~~2R~~ | ~~FUN_0004ad10 (context_getter) 정체 재분석~~ | ✅ 2026-05-10 PM-6. **단일 GOT 슬롯 getter 확정** (GOT base + 0x444 = 0xB3084). 인자 없음. PM-5 의 "r0 인자" 는 backtrace false signal (consumed before BL). |
+| ~~2S~~ | ~~type-5 reader 발견~~ | ✅ 2026-05-10 PM-6. binary 전체 cmp #type_tag 검색 (`find_type_tag_readers.py`). type-5 cmp = 111 sites widespread. **FUN_0009b252** (4KB, 5 distinct nonzero tags) = 가장 강력한 reader 후보 |
+| ⭐ **2T** | **FUN_0009b252 86 arm 별 BL target 매핑** | type-tag reader 후보의 각 arm 에서 어느 핸들러로 분기하는지 추출 → type tag → handler 함수 매핑 |
+| ⭐ **2U** | **0xB3084 글로벌 슬롯 의미 추적** | FUN_0004ad10 가 항상 반환하는 단일 글로벌. 어느 함수가 이 슬롯을 셋팅하는지 (write 추적) → 게임 핵심 state pointer 식별 |
+| 2V | FUN_00026a80 (8.4KB main subsystem router) / FUN_000818f0 (5.4KB per-entity update) 본문 | top stub 미분석 항목 |
 | 2H | _mp NPC 좌표 외부 init/spawn 함수 추적 | 2D 의존 (main loop 발견 시 부속). 단독으로는 자동 검출 불가 |
 | 2 | SMAF→OGG 변환 (smaf-converter JAR + TiMidity++ + ffmpeg) | §4.5 — BGM/SFX 활성. 게임 체감 큼. **2026-05-10 도구 갱신**: `tools/converter/convert_h3_smaf.py` 실행으로 헤더 분석 + 변환 가이드 생성. JAR 다운받아 `bgm0_mf` 시범 변환 권장 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
@@ -84,8 +87,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 핵심 진입 문서
 
-- [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — **⭐⭐⭐ 최신 PM-5** (큐 protocol 11 type tags + epilogue gadget 발견 + FUN_00056bf8 codec)
-- [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md) — PM-4 (FUN_00057394/FUN_00006334/FUN_0003d5d0 본문 분석 + 큐 record 포맷)
+- [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — **⭐⭐⭐ 최신 PM-6** (context_getter 정정 + FUN_0009b252 reader 후보 + chain dispatcher)
+- [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol 11 type tags + epilogue gadget 발견 + FUN_00056bf8 codec)
+- [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md) — PM-4 (FUN_00057394/FUN_00006334/FUN_0003d5d0 본문 분석)
 - [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — PM-3 (402 stub ranking + 큐 caller 매핑 + top 15 카테고리)
 - [ghidra-mode2-default-handler-2026-05-10.md](ghidra-mode2-default-handler-2026-05-10.md) — PM-2 (mode 2 정정 + default key handler + 402 stub 패턴 첫 발견)
 - [ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md) — AM 차례 (state[0x94] 재해석 + 3 entry caller 한계 확정)
@@ -136,6 +140,9 @@ python tools/recon/disasm_subsystem_func.py 0x3d5d0 0x3e690 --label sound_dispat
 python tools/recon/disasm_subsystem_func.py 0x56bf8 0x56f3c --label queue_codec         # ⭐ 2N (PM-5)
 python tools/recon/disasm_subsystem_func.py 0x64048 0x64852 --label default_key_v2      # 2P 검증 (PM-5)
 python tools/recon/disasm_subsystem_func.py 0x630e8 0x64018 --label cmd_processor       # 2P 검증 (PM-5)
+python tools/recon/find_type_tag_readers.py                                              # ⭐ 2S binary 전체 cmp #type_tag 검색 (PM-6)
+python tools/recon/disasm_subsystem_func.py 0x31dc 0x4c22 --label chain_dispatcher       # 2Q (PM-6)
+python tools/recon/disasm_subsystem_func.py 0x9b252 0x9c280 --label type_tag_reader      # 2S top reader 후보 (PM-6)
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
@@ -146,6 +153,49 @@ python tools/recon/extract_candidate_funcs.py 0xADDR1 0xADDR2  # all_decompiled.
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-10 PM-6 세션 작업 압축 (2R + 2S + 2Q + context_getter 정정)
+
+**테마**: PM-5 의 큐 protocol 매핑 후속. context_getter 의 인자 가설 검증 + type-tag reader 자동 검색 + chain dispatcher 본문.
+
+**A. 2R — `FUN_0004ad10` 정체 확정** ⭐⭐
+- raw 디스어셈블 결과: `mov sl, pcrel + add r3, sl + ldr r0, [r3] + bx lr` 패턴
+- **GOT base + 0x444 (= 0xB3084) 의 단일 슬롯 getter** — 인자 없음
+- PM-5 의 "r0 인자" 가설은 **backtrace false signal**: r0 가 BL 직전에 다른 instruction (`adds r3, r3, r0`) 에서 이미 consumed 되고, BL 의 인자가 아니었음
+- 의미: 이 슬롯은 **모든 함수가 공유하는 single global state pointer** (current task / current scene 류). 매우 빈번 호출.
+
+**B. 2S — type-tag reader 자동 검색** ([find_type_tag_readers.py](../../tools/recon/find_type_tag_readers.py))
+- binary 전체 350K instructions 디스어셈블 → 4575 cmp #type_tag arms 분포
+- type-5 prevalence: **111 cmp 사이트** (PM-5 dominant 와 일관)
+- ⭐ **FUN_0009b252** (rank #1, 4KB) = **5 distinct nonzero type tags + 86 cmp arms + 53 context_getter calls** — 가장 강력한 reader 후보
+- queue reader → cmp #type 직접 패턴은 단 2건 (대부분 더 복잡한 dataflow → 자동 식별 한계)
+- 부수: FUN_00006334 (#5), FUN_000031dc (#30) 도 5/4 distinct type tags 사용
+
+**C. 2Q — `FUN_000031dc` (chain dispatcher) 본문**
+- 6.7KB, 47 cmp arms (다양한 imm: 0x32='2', 0x46='F' 등)
+- interesting BL 단 3 (graphics_primitive 1, context_getter 2)
+- → main_dispatcher (FUN_00006334) 와 같은 카테고리 — chain dispatcher 가설 검증
+
+**D. 큐 protocol 풀이 진척**
+| 측면 | 상태 |
+|---|---|
+| writer (4 함수) type tag emit | ✅ 매핑 완료 (PM-5) |
+| reader (다수 함수) type tag 사용 분포 | ✅ binary 전체 검색 완료 (PM-6) |
+| 큐 reader → cmp #type 직접 패턴 | ❌ 거의 없음 (자동 식별 한계) |
+| FUN_0009b252 정밀 본문 분석 | 미진행 (다음 세션 권장) |
+
+**E. 핵심 교훈**
+1. **raw bytes 검증의 가치**: PM-5 "r0 인자" 가설을 한 capstone 호출로 즉시 정정. Ghidra 디컴파일 의심 시 raw 가 결정적.
+2. **backtrace false signal 패턴**: `ldr r0, [pc, #X]; ... use r0 ...; bl <foo>` — r0 는 BL 직전 consumed 됐을 수 있음. 도구 결과는 검증 필요.
+3. **binary 전체 wide-scan 의 효율**: 350K instructions → 838 함수 type tag 매핑 즉시. specific 분석보다 ROI 높을 때 있음.
+4. **single-slot global pointer** (FUN_0004ad10) = 게임의 핵심 state. 슬롯 0xB3084 의 의미 파악이 다음 큰 진척 후보.
+
+**F. 다음 세션 권장**
+- ⭐ **2T**: FUN_0009b252 86 arm 별 BL target 추출 → type-5 sub-op → handler 매핑
+- ⭐ **2U**: 0xB3084 글로벌 슬롯 의미 추적 (write 측 식별)
+- 2V: FUN_00026a80 / FUN_000818f0 본문 (top stub 미분석)
 
 ---
 
