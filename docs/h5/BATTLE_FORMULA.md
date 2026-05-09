@@ -124,12 +124,15 @@ ProcDemageCalc:
 **바이트코드 명령** (6 종, switch jump table at 0x773e4):
 | op | 동작 |
 |---:|---|
-| 0x11 | XOR |
-| 0x12 | MOD |
-| 0x13 | DIV |
-| 0x14 | MUL |
-| 0x15 | SUB |
-| 0x16 | ADD |
+| 0x11 | ADD |
+| 0x12 | SUB |
+| 0x13 | MUL |
+| 0x14 | DIV |
+| 0x15 | MOD |
+| 0x16 | XOR |
+
+> ⚠ 정정 (2026-05-09): 초기 추정은 jumptable 순서를 반대로 읽었음. 실제 디스어셈블 확인
+> + `tools/h5_formula_disasm.py` 결과 검증 완료 — 위 표가 정답.
 
 **공식 record 구조**: `[u8 body_len, u8 body_count, 4B lower_bound, 4B upper_bound, body_count × 5B instructions]`
 결과는 `clamp(stack_top, lower_bound, upper_bound)`.

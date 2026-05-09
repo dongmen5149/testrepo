@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Polish 라운드 + Formula VM 변수 사전 254개 + ItemTable 19-카테고리 dispatch + interpreter.gd signal 기반 Map/Camera 연결 + GOT gv[0x1474] 식별 + DES 비표준 변종 차단)
+업데이트: 2026-05-09 (DES 변종 완전 해독 + calc_*.dat 평문 dump + Formula VM 디스어셈블러 186 공식)
 
 ---
 
@@ -16,22 +16,18 @@
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
 이번 세션 (2026-05-09) 완료 항목:
-- **통합 파이프라인** — `tools/h5_extract_pipeline.py` 신규. 새 클론에서 1
-  커맨드(=9 단계 6.1s)로 APK unzip → VFS → names → sprite → text → converter →
-  .so disasm → import_to_godot → verify 전체. incremental sentinel + `--force`/`--only`/`--skip`.
-- **scn body 정적 trace** — `tools/h5_scn_body_stats.py` 가 258 body 를 interpreter.gd
-  와 동일 규칙으로 정적 dispatch. opcode 빈도 TSV + 미정의/잘림 보고. 254/258 end-marker,
-  31 미정의 (24 distinct, 모두 1-4 회) — dispatch 정확도 정량 확인.
-- **BATTLER damage disasm** — `tools/h5_extract_battle_funcs.py` 가 11개 핵심 함수
-  ARM disasm + callee 추출 (max 39 callee = `HERO::NewHitEffect`). **`Event_PlayerDamage`
-  완전 추출** = % of max_hp 데미지, 100% 만 즉사 허용. BATTLER 멤버 offset 확정:
-  +0xf0 cur_hp / +0x180 max_hp / +0x210 spirit_buffer. → `docs/h5/BATTLE_FORMULA.md`.
-- **SMAF audit** — `tools/h5_smaf_audit.py` 로 42 SMAF ↔ 42 OGG 가 **완전 1:1 매칭**
-  증명. SMAF→OGG 변환 작업 영구 클로즈 (OGG 만으로 모든 BGM/SFX 충당).
-- **P5 폰트 매핑 정정** — table.dat 가 EUC-KR 이 아니라 **Unicode BMP** (0x8861-0xD3B7,
-  Hanja 773 + Hangul 1246 + 기타 331). `convert_h5_fnt2png.py` 정정 +
-  `docs/h5/P5_FONT_MAPPING.md` 작성. 581-glyph 매핑은 `_midas_funcFntInvalidate`
-  내부 — 시스템 폰트 우회로 게임 무관.
+- **DES 변종 완전 해독** — 표준 DES 와 단 한 가지 차이 (`S1[3][10] = 3 → 2`).
+  나머지 IP, IP_inv, E, P, S2..S8, S1 의 나머지 63 entry, PC1, PC2, shift schedule
+  모두 표준 DES 동일. `MX_desEncrypt`/`MX_desDecrypt` 의 키 reversal + input swap 은
+  Feistel 항등식으로 결국 표준 DES encrypt/decrypt 와 동치. `tools/h5_des.py` 가
+  Python 구현, `tools/h5_decrypt_calc.py` 가 calc_pl/en/sk.dat 평문을 **MD5 검증
+  통과** 로 dump. 자세히 [`DES_VARIANT.md`](DES_VARIANT.md).
+- **Formula VM 디스어셈블러** — `tools/h5_formula_disasm.py` 가 186 공식 전부
+  파싱 (size mismatch 0 건). infix 표현 + 상수 평가 + 옵코드 (`0x11=ADD .. 0x16=XOR`)
+  완전 추출. 산출: `work/h5/analysis/formulas_disasm.txt` (945 줄).
+  → battle_system.gd 의 임시 공식을 100% 정확하게 대체 가능.
+- **opcode 매핑 정정** — `BATTLE_FORMULA.md` 의 opcode 표가 역순이었음
+  (`0x11=ADD`, NOT XOR). 디스어셈블 결과 + 186 공식 정상 파싱으로 검증.
 
 ---
 
@@ -120,14 +116,19 @@ python tools/verify_godot_project.py
   추가 (map_tile_change, map_attribute_change, screen_shake, narration,
   system_message, scene_change_bgm, player_imo/effect/action, end_of_body 등).
   Demo 가 connect 해서 toast 로 trace + Audio.play_bgm 자동 호출.
-- ⚠ **DES 차단 재확인** — `DESdecrypt` 가 `new_decrypt` 를 3번 호출 (3-round 구조)
-  하지만 표준 DES/3DES/EDE/DDD 어떤 변종으로도 MD5 검증 통과하지 않음. S-box
-  또는 PC1/PC2 가 비표준일 가능성 높음. 자체 DES 재구현 필요.
+
+### 추가 진전 (2026-05-09 Round 4 — DES + Formula VM)
+- ✅ **DES 변종 해독** — 표준 DES + S1[3][10]=2 단일 수정. `tools/h5_des.py`.
+  calc_*.dat MD5 검증 통과로 평문 확보 (`work/h5/analysis/calc_*_plain.bin`).
+- ✅ **Formula VM 디스어셈블러** — 186 공식 (39 + 19 + 128) 전부 infix 표현으로
+  dump. 파일 포맷 + opcode 매핑 + body parse 전부 검증.
+  `work/h5/analysis/formulas_disasm.txt`.
 
 ### 남은 자율 가능 작업
-- **DES 자체 재구현** — `desRound` (588B) / `new_decrypt` (168B) / S-box 테이블
-  추출 → calc_*.dat 평문 → Formula VM 디스어셈블러 → 모든 공식 dump.
-- **gv struct 정확한 필드명** — gv+0x1474 sub-struct 에 writes 하는 함수 추적.
+- **gv struct 정확한 필드명** — gv+0x1474 sub-struct 에 writes 하는 함수 추적
+  (var_id 58-160 의 player.gold/exp/atk/def 등 의미 확정).
+- **battle_system.gd 의 Formula VM 평가기** — calc_*.dat 평문 또는 디스어셈블된 공식을
+  GDScript 측 스택 머신으로 평가 → 임시 공식 100% 대체.
 - **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
 - **MapRenderer.set_tile / Camera2D.shake 트윈** — interpreter signal 을 받아
   실제 visual 적용 (현재는 toast 로 trace 만).
@@ -157,6 +158,11 @@ Demo:
 
 | 도구 | 역할 | 추가 |
 |---|---|---|
+| `tools/h5_des.py` | 표준 DES + S1[3][10]=2 변종 (mx_des_encrypt/decrypt) | 2026-05-09 |
+| `tools/h5_disasm_des.py` | DES 함수 disasm + 테이블 후보 dump | 2026-05-09 |
+| `tools/h5_resolve_des_got.py` | PC-relative GOT lookup 해석 | 2026-05-09 |
+| `tools/h5_decrypt_calc.py` | calc_pl/en/sk.dat → 평문 (MD5 검증) | 2026-05-09 |
+| `tools/h5_formula_disasm.py` | Formula VM 186 공식 → infix 표현 dump | 2026-05-09 |
 | `tools/h5_extract_pipeline.py` | 9-step 통합 파이프라인 (incremental + --force/--only) | 2026-05-09 |
 | `tools/h5_scn_body_stats.py` | 258 scn body 정적 trace + opcode 빈도 TSV | 2026-05-09 |
 | `tools/h5_extract_battle_funcs.py` | 11 BATTLER/HERO/Monster 함수 ARM disasm + callee | 2026-05-09 |
@@ -244,6 +250,11 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 
 - [x] ~~Interpreter opcode dispatch (22/77 만 구현)~~ — ✅ 77/77 (2026-05-08)
 - [x] ~~enemy ATK/DEF offset 일부 부정확~~ — ✅ .so disasm 검증 완료 (2026-05-08)
+- [x] ~~DES 복호화 차단~~ — ✅ 표준 DES + S1[3][10]=2 변종 해독 (2026-05-09)
+- [x] ~~calc_*.dat 평문 미확보~~ — ✅ MD5 검증 통과 (2026-05-09)
+- [x] ~~Formula VM 공식 추출 미완~~ — ✅ 186 공식 infix dump (2026-05-09)
+- [ ] battle_system.gd 의 Formula VM 평가기 미구현 (현재 임시 공식)
+- [ ] gv+0x1474 sub-struct 정확한 필드명 (player.gold/atk 등 매핑)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)
@@ -271,6 +282,7 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 
 - [`PROGRESS.md`](PROGRESS.md) — 전체 진행 상세 (Phase 2 분석 단계별 + Phase 3 시스템별)
 - [`PHASE3_ENGINE.md`](PHASE3_ENGINE.md) — Godot 4 엔진 결정 근거
+- [`DES_VARIANT.md`](DES_VARIANT.md) — DES 변종 해독 + calc_*.dat 평문 + Formula VM 디스어셈블러
 - [`BATTLE_FORMULA.md`](BATTLE_FORMULA.md) — BATTLER damage 함수 disasm + Event_PlayerDamage 공식 + Formula VM/DES 키
 - [`FORMULA_VAR_DICT.md`](FORMULA_VAR_DICT.md) — Formula VM 변수 사전 (254 var_id → struct/offset)
 - [`EVENT_OPCODE_REFERENCE.md`](EVENT_OPCODE_REFERENCE.md) — 102개 Event_* opcode 의미 매핑 reference

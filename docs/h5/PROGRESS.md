@@ -432,6 +432,9 @@ isolated bins. 후속 작업으로 보류.
 | Collision 디버그 | ✅ 통과/막힘 오버레이 (C 키 토글) | `MapRenderer.show_collision_debug` |
 | 한글 자모 조합 | ⚠ 게임 자체 인코딩 (표준 EUC-KR 아님), 추가 RE 필요 | — |
 | DES key | ✅ `0EP@KO91` 추출 (MX_desInit caller @ 0x001688b0) | `tools/ghidra/DumpDes.java` |
+| **DES 변종 해독** | ✅ 표준 DES + S1[3][10]=2 단일 수정 — `mx_des_decrypt(body, key)` MD5 검증 통과 | `tools/h5_des.py`, `tools/h5_decrypt_calc.py`, [`DES_VARIANT.md`](DES_VARIANT.md) |
+| **calc_*.dat 평문** | ✅ 3개 파일 MD5 검증 통과 (calc_pl 1584B, calc_en 624B, calc_sk 4680B) | `work/h5/analysis/calc_*_plain.bin` |
+| **Formula VM 디스어셈블러** | ✅ 186 공식 (39+19+128) infix 표현 dump, size mismatch 0 | `tools/h5_formula_disasm.py`, `work/h5/analysis/formulas_disasm.txt` |
 | Fixed-size csv | ✅ enemy_g (166×121B), npc_g (81×27B) → JSON | `tools/converter/decode_h5_fixed.py` |
 | GameState 통합 | ✅ 싱글톤 + state_changed signal + battle 보상 적용 + quick save/load | `apps/hero5-godot/scripts/core/game_state.gd` |
 | enemy_g 121B layout | ✅ HP/MP/ATK/DEF/EXP/Gold + 5×16B skill slot 추출 (15/166 valid) | `tools/converter/decode_h5_enemy.py` |

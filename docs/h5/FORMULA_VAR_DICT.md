@@ -102,23 +102,36 @@ calc_*.dat 평문이 있으면 (DES 복호 후) 각 공식의 바이트코드를
 ```
 
 각 instruction 의 첫 바이트가 var_id (이 표 참조) 면 fetch, 아니면
-operator (0x11 XOR / 0x12 MOD / 0x13 DIV / 0x14 MUL / 0x15 SUB / 0x16 ADD).
+operator (0x11 ADD / 0x12 SUB / 0x13 MUL / 0x14 DIV / 0x15 MOD / 0x16 XOR).
 operand 4 바이트는 즉시값 (스택에 push).
+
+> ⚠ 정정 (2026-05-09): 위 opcode 가 실제 jumptable 기반 정확한 매핑.
+> 초기 추정과는 반대였음 — `tools/h5_formula_disasm.py` 가 186 공식 모두 정상 파싱
+> (size mismatch 0 건) 으로 검증.
+
+또한 첫 바이트 `op` 의 처리:
+- `op == 0`: 4B operand 를 그대로 스택에 push (즉시값)
+- `op == 0x0c`: 4B operand 를 var_id 로 보고 `getValFunc` 호출, 결과 push
+- 그 외 (0x10 비트 미설정): 사실상 무시 (`getNumberInStack` 가 0 반환)
 
 → 각 공식이 어떤 stat 을 어떻게 조합하는지 100% 추출 가능.
 
-**현재 격차**: DES 복호화가 막혀 있어 (비표준 DES, KEY4REAL 768B = bit-array 형식,
-표준 pycryptodome 으로 풀리지 않음) 공식 데이터를 평문으로 못 가져옴. 변수 사전은
-완성 — 평문만 있으면 즉시 공식 추출 가능.
+**~~현재 격차~~ 해결 (2026-05-09)**: DES 복호화 완성. `tools/h5_des.py` 가 평문을
+돌려주고, `tools/h5_formula_disasm.py` 가 186 공식 전부 디스어셈블 (`work/h5/analysis/
+formulas_disasm.txt`). 자세히 [`DES_VARIANT.md`](DES_VARIANT.md).
+
+원인: 비표준 DES 라기보단 **표준 DES 의 S1[3][10] 한 entry (3→2) 만 수정** 된 변종.
++ `MX_desEncrypt` / `MX_desDecrypt` 의 키 reversal + input swap 호출 규약이 직관 반대로
+보였을 뿐 결국 표준 DES encrypt/decrypt 와 동치.
 
 ---
 
 ## 후속 단계
 
-1. **DES 복호화 완성**: `startDes` (0x3923c) 을 Python 으로 재구현 또는
-   `MX_desInit` 의 `char2binary` 산출 KEY4REAL 의 의미 정확히 파악.
+1. ✅ **DES 복호화 완성** — `tools/h5_des.py` (S1[3][10]=2 수정), MD5 검증 통과.
 2. **GOT 매핑**: 전역 singleton 위치 (id 58-160 의 PC-relative 풀이) 에서 정확한
-   필드명 (player.gold/exp/atk/def 등) 식별.
-3. **calc_pl/en/sk.dat 디스어셈블러**: 평문 확보 후 본 사전 + 6 opcode 로 모든 공식 dump.
+   필드명 (player.gold/exp/atk/def 등) 식별 — 미해결.
+3. ✅ **calc_pl/en/sk.dat 디스어셈블러** — 186 공식 모두 사람이 읽을 수 있는 infix
+   표현으로 dump 완료.
 
-이 셋이 완성되면 battle_system.gd 의 임시 공식을 100% 정확하게 재현 가능.
+남은 작업: GOT entry → 전역 변수 의미 매핑 + battle_system.gd 의 Formula VM 평가기 구현.
