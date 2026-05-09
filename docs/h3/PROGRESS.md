@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-09 — boss/enemy cif 디코더 라이브러리화 (FUN_00098ef8 알고리즘) + 39 cif 일괄 통계 도구 + 단위 테스트 13건 추가 (총 Python 59건). h4-h11 broken bake 정리 + Ghidra §4.3 boss decoder 발견 (2026-05-08).
+**최신 커밋 시점**: 2026-05-09 PM — **§4.4 NPC behavior dispatcher 부분 해독**. dispatcher 함수 위치 (`FUN_0008dcd8` / `FUN_0008b2e8`) + jump table 19 entries 디코드 + record 구조 (stride 0x3c4 × 0x3c, +0x3b6 opcode short, +0x3b8 arg short) 확정. Caller chain 은 BL 외부 호출 0건 → function pointer indirect 한계. 자동 분석 도구 8개 신규 (`tools/recon/find_dispatcher_v3.py`, `decode_scn_jumptable.py`, `find_bl_callers.py` 등). 상세는 [ghidra-scn-dispatcher-2026-05-09.md](ghidra-scn-dispatcher-2026-05-09.md).
 
 ### 한 줄 요약 (현재 상태)
 
@@ -26,7 +26,9 @@
 
 | 우선 | 작업 | 비고 |
 |---|---|---|
-| ⭐ **1** | **Ghidra GUI §4.4 dispatcher caller-chain 거꾸로 분석** | 자동 식별 불가능 확정 (2026-05-08 세션). main loop / event pump 에서 시작해 좁혀야. [상세 walkthrough](ghidra-scn-opcode-walkthrough.md) — Step 5 (Symbol Tree 키워드 검색 + Function Call Trees) 부분 다시 읽기. 풀면 _scn opcode 분기/플래그/사운드 트리거 + NPC 위치 동시 unblocking |
+| ⭐ **1A** | **§4.4 handler 영역 (`0x95bfe`~`0x96bf8`) 디컴파일** | 2026-05-09 PM 부분 해독. dispatcher 위치 + jump table + record 구조 확정. 7 distinct case label (`0x95bfe` 공통 + `0x960e8`/`0x962f4`/`0x9651c`/`0x9685c`/`0x96aa6`/`0x96bf8` special 6) 의 본문 의미 파악 필요. 사용자가 GUI에서 `Override Switch Statement` 또는 영역 `Clear + Re-disassemble`. [상세](ghidra-scn-dispatcher-2026-05-09.md) §"다음 시도 방향 A" |
+| ⭐ **1B** | **§4.4 dispatcher caller (NPC update loop) 추적** | BL 외부 호출 0건 → function pointer indirect call. RAM 동적 셋업 위치 찾기 필요. Ghidra Script (Python) 또는 `Search → For Scalars` → `0x8dcd9` (Thumb LSB+1). [상세](ghidra-scn-dispatcher-2026-05-09.md) §"다음 시도 방향 B" |
+| 1C | §4.2 NPC 좌표 가설 검증 (자동 가능) | NPC slot record (0x3c4 stride) 안의 다른 offset 에서 좌표 (x, y short) 찾기. _mp/_scn 데이터에서 같은 record 형태 검색. dispatcher 진척 활용 즉시 가능 |
 | 2 | SMAF→OGG 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 | §4.5 — BGM/SFX 활성. 게임 체감 큼 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
 | 4 | 추가 게임 콘텐츠 (보스/맵/퀘스트) 디자인 결정 | 1주차 콘텐츠는 완성. 확장 여부 미정 |
@@ -41,8 +43,9 @@
 
 ### 핵심 진입 문서
 
-- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 Ghidra 세션 종합 결과 (16개 함수 분석, dispatcher 자동 식별 한계 확정)
-- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 dispatcher detailed walkthrough (사용자 GUI 작업용)
+- [ghidra-scn-dispatcher-2026-05-09.md](ghidra-scn-dispatcher-2026-05-09.md) — **2026-05-09 PM §4.4 부분 해독** (dispatcher 위치 + jump table + record 구조 + 다음 시도 방향)
+- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 Ghidra 세션 종합 결과 (16개 함수 분석, dispatcher 자동 식별 한계 확정 — 이번 세션 부분 해독으로 일부 갱신됨)
+- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 dispatcher 초기 walkthrough (5 후보 검토 — 모두 sprite drawer 였음, 참고용)
 - [ghidra-gui-guide.md](ghidra-gui-guide.md) — Ghidra 일반 가이드 (환경 + 4 진입점 단서표)
 - [asset-formats.md](asset-formats.md) — 자산 포맷 사양
 
@@ -73,7 +76,53 @@ python tools/recon/dump_boss_cif.py
 
 ---
 
-## 📜 2026-05-09 세션 작업 압축
+## 📜 2026-05-09 PM 세션 작업 압축 (§4.4 NPC dispatcher 부분 해독)
+
+**테마**: 2026-05-08 에서 "자동 식별 불가능 확정" 이었던 §4.4 를 사용자 GUI + 자동 분석 도구 8개 결합으로 부분 해독. dispatcher 함수 + jump table + record 구조 확정. caller 추적은 indirect call 한계 도달.
+
+**A. NPC behavior dispatcher 발견** ⭐⭐
+- 자동 분석 흐름:
+  1. v3 통계 (find_dispatcher_v3.py) — `0x8e112` 후보 (UNRECOVERED_JUMPTABLE 검색)
+  2. Ghidra GUI (사용자) — 실제 디컴파일 코드에서 dispatcher 패턴 확인 (`if (0x12 < opcode) ...; jump table call`)
+  3. raw binary scan (decode_scn_jumptable.py) — jump table 19 entries → 7 distinct case label
+  4. 함수 boundary 검증 (find_real_func_start.py) — push prologue 위치로 진짜 함수 영역 (`0x8dcd8` ~) 확정
+  5. caller 추적 (find_bl_callers.py) — Thumb-2 BL 디코드, 외부 호출 0건 확정 (function pointer indirect)
+- **핵심 결과**:
+  - dispatcher 1: **`FUN_0008dcd8`** (size ~3KB, Ghidra 미인식 — 사용자 수동 생성 필요)
+    - sub-block 1: `0x8e112` (사용자 rename: `scn_dispatch_evt`)
+    - sub-block 2: `0x8e89e` (jump table call site)
+  - dispatcher 2: **`FUN_0008b2e8`** (size ~9.6KB, sister, 다른 jump table) — 추정 battle/dialog dispatcher
+  - jump table @ `0x000abc68`, 19 entries (opcode 0~0x12)
+  - 7 distinct case label (0x00~0x0c 공통 `0x95bfe` + 0x0d~0x12 6 unique)
+  - NPC slot record: stride 0x3c4 × 0x3c, +0x3b3 flag, +0x3b6 opcode short, +0x3b8 arg short
+
+**B. 자동 분석 도구 8개 신규** (`tools/recon/`)
+- `find_dispatcher_v3.py` — 1,470 함수 통계 (UNRECOVERED_JUMPTABLE / switch / chain compare)
+- `extract_candidate_funcs.py` — all_decompiled.c 에서 함수 본문 추출
+- `rank_size_top.py` — Function Size sort 결과 우선순위 정렬
+- `decode_scn_jumptable.py` — raw binary 에서 jump table 디코드
+- `check_handler_prologues.py` — handler 주소가 함수 시작인지 ARM Thumb prologue 검증
+- `find_real_func_start.py` — 영역에서 push prologue 위치 → 진짜 함수 boundary
+- `find_dispatcher_caller.py` — 절대/GOT-relative 주소 패턴 검색
+- `find_bl_callers.py` — Thumb-2 BL 명령어 디코드 → caller 검색
+
+**C. 한계 도달**
+- caller chain: dispatcher 안의 self-loop (0x8e89a → 0x8e112, 0x8e12a → 0x8e89e) 만 발견. 외부 BL 호출 0건. function pointer indirect call 만으로 진입 — Ghidra 자동 추적 본질적 한계.
+- handler 본문: Ghidra 가 `0x95xxx ~ 0x96xxx` 영역을 작은 stub 함수들로 잘못 분리 → 디컴파일 끊김. 사용자 GUI 에서 `Override Switch Statement` 또는 영역 재분석 필요.
+
+**D. 다음 세션 진척 가능**
+- §4.4 1A: handler 영역 디컴파일 (사용자 GUI, 30~60분)
+- §4.4 1B: caller RAM 동적 셋업 위치 추적
+- §4.2: NPC slot record 안의 다른 offset (좌표) 검증 — 자동 가능, 발견된 stride 활용
+
+**핵심 교훈**:
+1. dispatcher 가 BL 직접 caller 0건이라는 건 **function pointer indirect call** 이라는 뜻. Ghidra 자동 추적은 PIC 환경에서 본질적 한계.
+2. Ghidra 가 jump table 자동 복구 실패 시 case 영역을 작은 stub 함수로 잘못 분리. 진짜 함수 boundary 는 raw binary 의 push prologue 위치로 직접 확정해야.
+3. dispatcher 후보 자동 식별 휴리스틱: switch 문은 신뢰도 낮음 (UNRECOVERED_JUMPTABLE 로 분류됨). UNRECOVERED_JUMPTABLE 표지 + 작은 정수 chain compare + RGB565/4-bit nibble 표지 없음 = 강력 후보.
+
+---
+
+## 📜 2026-05-09 AM 세션 작업 압축
 
 **테마**: 사용자 블로커 (Ghidra/SMAF/번역/디자인) 제외하고 자동 진행 가능 항목 소진. 우선순위 #7 (enemy/boss cif 디코더) 코드화 완료.
 
