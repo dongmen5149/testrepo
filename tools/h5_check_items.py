@@ -1,17 +1,20 @@
-"""items.json 모든 카테고리에 item_id + sub_record_hex 부여 검증."""
+"""items.json cat 12+ extra 길이 + sb_start 분석."""
 import json, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 with open(ROOT / 'apps/hero5-godot/assets/gamedata/items.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-print("== 모든 슬롯의 첫 record (Round 18 common fields) ==")
+print("== extra 길이 vs sb_start ==")
 for slot in range(19):
     key = f'slot_{slot}'
     if key not in data: continue
     recs = data[key]
     if not recs: continue
     r = recs[0]
-    iid = r.get('item_id', '?')
-    sblen = r.get('sub_record_len', '?')
-    sbhex = r.get('sub_record_hex', '')[:20] + ('...' if len(r.get('sub_record_hex', '')) > 20 else '')
-    print(f"  {key:>8s}  {r['name'][:14]:>14s}  item_id={iid:>5}  sblen={sblen:>3}  sub_record={sbhex}")
+    eh = r.get('extra_hex', '')
+    extra_len = len(eh) // 2
+    sblen = r.get('sub_record_len', 0)
+    sb_start = 5 + (sblen or 0)
+    rem = extra_len - sb_start
+    cat = data.get('_meta', {}).get('category_dispatch', {}).get(str(slot), {}).get('category', '?')
+    print(f"  slot_{slot:>2}  cat={cat:<10s}  extra_len={extra_len:>3}  sblen={sblen:>3}  sb_start={sb_start:>3}  rem={rem}  {r['name'][:14]}")

@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 18 — SetItemOption 분석으로 +0x15f 가 random option_type byte 임 확인 + 모든 카테고리에 common base (item_id + sub_record) 부여)
+업데이트: 2026-05-10 (Round 19 — cat 12+ 카테고리별 추가 fields layout 추출 + decode_h5_item.py 카테고리별 parser 부여 (BattleUseItem 4 byte 정확 검증))
 
 ---
 
@@ -43,6 +43,16 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 19**: LoadItemTable 의 cat 12+ jumptable case 별 추가 fields disasm:
+  - cat 12 (BattleUseItem, 0xa4060): +0x134/0x135/0x136/0x137 (4 byte u8) — csv 에서 매칭 ✓
+  - cat 13 (OrbItem, 0xa423c): +0x134/0x135 (2 byte, csv 에 보통 없음)
+  - cat 14, 15 (MixItem, 0xa43f4): 추가 fields 없음 (record_size = base 만)
+  - cat 16 (MixBookItem, 0xa4578): sub-loop +0x135..+0x140 (12+ byte, csv 에 4 만)
+  - cat 17, 18 (SkillBook/Cash, 0xa47c0): 다음 라운드
+  decode_h5_item.py 에 `parse_battle_use_extra` / `parse_orb_extra` /
+  `parse_mix_book_extra` 추가 + dispatch wire-up. items.json 의 slot_11 포션이
+  정확한 4 byte (val_134=91, val_135=100, val_136=4, val_137=50) 추출 — disasm
+  매핑이 csv 와 정확 일치 검증.
 - ✅ **Round 18**: ItemTable::SetItemOption (240B, @0xa0ff8) 디스어셈블 →
   `+0x15f` 가 random option_type byte 임 확인. SetItemOption 가 호출 시 random
   option 픽 → +0x15f = option_type, +0x162 = option_value (level*param*rand).
@@ -161,12 +171,18 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. cat 12+ 카테고리별 추가 fields 식별 (자율 가능)
+### 1. cat 17/18 (SkillBookItem/CashItem) layout 추출 (자율 가능)
 
-Round 18 에서 모든 카테고리에 common base 부여. cat 12 (BattleUseItem) 의
-struct +0x134..+0x137 (4 byte) 와 cat 13/14/16/17 의 추가 fields 정확 의미는
-미식별. 각 카테고리 jumptable case (0xa4060/0xa423c/0xa43f4/0xa4578/0xa47c0)
-의 sb 영역 분석 필요.
+Round 19 에서 cat 12-16 layout 추출 완료. cat 17/18 (jumptable 0xa47c0) 가
+LoadItemTable 함수 끝 영역 — dump_caller 가 함수 size 까지 안 dump 한 듯.
+다시 disasm 해서 cat 17/18 의 sb 영역 fields 분석 필요. items.json 의 slot_17
+연속사격LV1 의 4 byte 가 어떤 fields 인지 식별.
+
+### 2. BattleUseItem 의 +0x134..+0x137 의미 식별 (자율 가능)
+
+Round 19 에서 정확한 csv 매칭 확인. 각 byte 의 의미 (cooldown / heal_amount
+/ duration / etc) 식별을 위해 BattleUseItemInfo::Use 또는 사용 함수 disasm 필요.
+items.json 의 슬롯 11 records 의 분포 분석 가능.
 
 ### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
 
@@ -249,6 +265,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | val_15f upper 3 bit 분포 | ✅ Round 17: upper=0/1/3/7 만 등장 (170/248/9/362), 정확 의미 미완 | `tools/h5_check_items.py` |
 | SetItemOption: +0x15f=option_type / +0x162=option_value | ✅ Round 18 | `_ZN9ItemTable13SetItemOptionEP8ItemInfoa` disasm |
 | 모든 카테고리 (cat 1-18) common base | ✅ Round 18: item_id + sub_record_hex | `decode_h5_item.py::parse_common_extra` |
+| cat 12-16 카테고리별 추가 fields layout | ✅ Round 19: BattleUseItem 4 byte / OrbItem 2 byte / MixItem 0 / MixBookItem 12 byte | `parse_battle_use_extra` / `parse_orb_extra` / `parse_mix_book_extra` |
+| BattleUseItem (cat 12) +0x134..+0x137 csv 매칭 검증 | ✅ Round 19: slot_11 포션 4 byte 정확 추출 | items.json |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

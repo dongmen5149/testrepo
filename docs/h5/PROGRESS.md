@@ -580,6 +580,25 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 19 — 2026-05-10 완료]**
+- ✅ LoadItemTable 의 cat 12+ jumptable case 별 sb 영역 (struct +0x134..+0x140)
+  추가 fields layout 추출:
+  - cat 12 (BattleUseItem, 0xa4060): +0x134/0x135/0x136/0x137 (4 byte u8) — slot_11
+    포션 csv 와 정확 일치 (val_134=91, 135=100, 136=4, 137=50) ✓
+  - cat 13 (OrbItem, 0xa423c): +0x134/0x135 (2 byte, csv 에 보통 없음 — record_size 가 base 만 cover)
+  - cat 14, 15 (MixItem, 0xa43f4): 추가 fields 없음
+  - cat 16 (MixBookItem, 0xa4578): sub-loop +0x135..+0x140 (12+ byte, csv 에 4 만)
+  - cat 17, 18 (SkillBook/Cash, 0xa47c0): 함수 끝 영역 — dump_caller size 부족
+- ✅ `decode_h5_item.py` 에 카테고리별 parser 추가:
+  - `parse_battle_use_extra`: val_134/135/136/137
+  - `parse_orb_extra`: val_134/135
+  - `parse_mix_book_extra`: sb_extra_hex (raw 12+ byte)
+- ✅ parse_items() 에 SLOT_META[cat]['category'] 별 dispatch 적용:
+  - 'equip' (cat 1-11) → parse_equip_extra
+  - 'battle_use' (cat 11/12) → parse_battle_use_extra
+  - 'orb' (cat 13) → parse_orb_extra
+  - 'mix_book' (cat 16) → parse_mix_book_extra
+
 **[Round 18 — 2026-05-10 완료]**
 - ✅ `ItemTable::SetItemOption` (240B, @0xa0ff8) 디스어셈블 → `+0x15f` 가
   **random option_type byte** 임을 확인. 함수가 random `option_table[i]` 픽:

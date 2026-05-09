@@ -271,6 +271,46 @@ cat 17, 18 (SkillBookItem/CashItem): 같은 base + 추가 5+ byte.
 검증: 모든 19 slot 의 첫 record 모두 item_id + sub_record 부여 확인 (롱소드,
 포션, 살코기, 양손베기LV1, 창고확장 등).
 
+## Round 19 (2026-05-10) — 카테고리별 추가 fields 정확 매핑
+
+### LoadItemTable 의 jumptable case 별 추가 fields
+
+| cat | record_size | 함수 위치 | 추가 fields (struct) |
+|---:|---:|---|---|
+| 1-11 | 0x178 (376B) | 0xa3cf0 (EquipItem) | sb 영역 +0x150..+0x167 (24+ byte) |
+| 12 | 0x138 (312B) | 0xa4060 (BattleUseItem) | +0x134/0x135/0x136/0x137 (4 byte) |
+| 13 | 0x138 (312B) | 0xa423c (OrbItem) | +0x134/0x135 (2 byte, csv 에 실제 없음) |
+| 14, 15 | 0x134 (308B) | 0xa43f4 (MixItem) | 추가 fields 없음 (base layout 만) |
+| 16 | 0x144 (324B) | 0xa4578 (MixBookItem) | +0x134, sub-loop +0x135..+0x140 (12+ byte, csv 에 실제 없음) |
+| 17, 18 | 0x138 (312B) | 0xa47c0 (SkillBook/Cash) | 미분석 |
+
+### items.json 에서 sb 영역 (rem = extra_len - sb_start) 분포
+
+```
+slot_0..10  (equip)        rem=21  sb 영역 가능 (Round 15 매핑)
+slot_11     (battle_use)   rem= 4  +0x134..+0x137 4 byte 모두 csv 에 있음 ✓
+slot_12     (battle_use)   rem= 2  빈소켓류 (불완전)
+slot_13     (orb)          rem= 0  csv 에 추가 fields 없음
+slot_14     (mix)          rem= 0
+slot_15     (mix)          rem=13  특수 layout
+slot_16     (mix_book)     rem= 4  추가 4 byte (disasm 가설은 12+ byte 였으나 csv 에 없음)
+slot_17,18  (skill_book)   rem= 4 / 2  추가 fields 분석 필요
+```
+
+**LoadItemTable disasm 가 read 하는 추가 byte 들 중 일부는 csv 에 없을 수 있음** —
+실제 게임이 그 위치에서 garbage 값 또는 다음 record 의 첫 byte 를 read.
+또는 record_size (csv prefix) 가 모든 byte 를 cover 하지 않음.
+
+slot_11 (포션) 만 disasm 매핑이 csv 에 정확 일치 → BattleUseItem 의 추가 4 byte
+가 검증된 매핑.
+
+### decode_h5_item.py 새 카테고리별 parsers
+
+- `parse_battle_use_extra` (cat 11/12): val_134/135/136/137 (4 byte u8)
+- `parse_orb_extra` (cat 13): val_134/135 (2 byte) — csv 에 보통 없음
+- `parse_mix_book_extra` (cat 16): sb_extra_hex (raw 12+ byte) — csv 에 보통 4 byte
+- mix (cat 14/15) / skill_book (cat 17/18) 는 다음 라운드
+
 ---
 
 ## 카테고리 dispatch (GetItemTableInfo 분석 결과, 2026-05-09)

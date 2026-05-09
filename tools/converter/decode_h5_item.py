@@ -106,6 +106,71 @@ def parse_common_extra(extra: bytes) -> dict:
     }
 
 
+def parse_battle_use_extra(extra: bytes) -> dict:
+    """BattleUseItem (cat 12) 의 추가 4 byte fields (struct +0x134..+0x137).
+
+    LoadItemTable @0xa4060 disasm:
+      record_size = 0x138 (312B). common base 후 sb 시작 위치 (5+sblen) 부터 4 byte:
+        +0: u8 → struct +0x134
+        +1: u8 → struct +0x135
+        +2: u8 → struct +0x136
+        +3: u8 → struct +0x137
+    """
+    if len(extra) < 5:
+        return {}
+    sblen = extra[4]
+    sb_start = 5 + sblen
+    if sb_start + 4 > len(extra):
+        return {}
+    return {
+        'val_134': extra[sb_start + 0],
+        'val_135': extra[sb_start + 1],
+        'val_136': extra[sb_start + 2],
+        'val_137': extra[sb_start + 3],
+    }
+
+
+def parse_orb_extra(extra: bytes) -> dict:
+    """OrbItem (cat 13) 의 추가 2 byte fields (struct +0x134..+0x135)."""
+    if len(extra) < 5:
+        return {}
+    sblen = extra[4]
+    sb_start = 5 + sblen
+    if sb_start + 2 > len(extra):
+        return {}
+    return {
+        'val_134': extra[sb_start + 0],
+        'val_135': extra[sb_start + 1],
+    }
+
+
+def parse_mix_book_extra(extra: bytes) -> dict:
+    """MixBookItem (cat 16) 의 추가 fields.
+
+    LoadItemTable @0xa4578 disasm: record_size = 0x144 (324B). sb 영역:
+      +0: u8 → struct +0x134
+      +(loop 3회 idx=0,1,2):
+        +(loop_idx + 0x1)*1: u8 → struct +0x135 + loop_idx (의미상 +0x135, +0x136, +0x137)
+        +(loop_idx + 0x2)*1: u8 → struct +0x138 + loop_idx
+        +(loop_idx + 0x3): u8 → struct +0x13b + loop_idx
+      +0xa: u8 → struct +0x13e
+      +0xb: u8 → struct +0x13f
+      +0xc: u8 → struct +0x140
+
+    실제 disasm 는 sub-byte indexing 가 더 복잡해서 추가 RE 필요 — 일단 단순 12 byte
+    raw dump.
+    """
+    if len(extra) < 5:
+        return {}
+    sblen = extra[4]
+    sb_start = 5 + sblen
+    if sb_start + 13 > len(extra):
+        return {}
+    return {
+        'sb_extra_hex': extra[sb_start:sb_start + 13].hex(),
+    }
+
+
 def parse_equip_extra(extra: bytes) -> dict:
     """EquipItem (cat 1-11) extra 의 가변 layout parse.
 
@@ -216,10 +281,19 @@ def parse_items(d: bytes, slot_idx: int = -1) -> list[dict]:
             'extra_hex': extra.hex(),
         }
         # Round 18: 모든 카테고리에 common base (item_id + sub_record_hex) 부여.
-        # cat 1-11 (EquipItem) 만 sb-area named fields (subtype/class_mask/level_limit) 추가.
+        # Round 19: 카테고리별 추가 fields parser dispatch.
         rec.update(parse_common_extra(extra))
-        if is_equip:
+        cat = SLOT_META.get(slot_idx, {}).get("category", "")
+        if cat == "equip":              # cat 1-11
             rec.update(parse_equip_extra(extra))
+        elif cat == "battle_use":       # cat 11, 12 (slot 11, 12 in items.json)
+            rec.update(parse_battle_use_extra(extra))
+        elif cat == "orb":              # cat 13 (slot 13 in items.json)
+            rec.update(parse_orb_extra(extra))
+        elif cat == "mix_book":         # cat 16 (slot 16 in items.json)
+            rec.update(parse_mix_book_extra(extra))
+        # 'mix' (cat 14, 15) 는 추가 fields 없음 (record_size 0x134 = base)
+        # 'skill_book' (cat 17, 18) 는 다음 라운드 분석
         out.append(rec)
     return out
 
