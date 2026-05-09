@@ -98,8 +98,55 @@ def Event_PlayerDamage(percent: int) -> None:
 
 ---
 
-## 6. 후속 진행 (남은 분석)
+## 6. ★ 데미지 공식 진짜 위치 발견 (2026-05-09 후속 분석)
 
-- `HERO::NewHitEffect` 1712B → 정공식 (atk × pct − def × ?) 추출.
-- `HeroSkillAtkHardCode` → 스킬별 분기 (대시/베기/원거리 modifier).
-- Event_PlayerDamage 처럼 100% 추출 가능한 `Event_PlayerHeal`, `Event_QuestBoss` 등 시리즈도 동일 패턴 가능.
+`HERO::NewHitEffect` 는 시각 이펙트 spawn 만 — 실제 데미지 계산은
+**`TargetEffect::ProcDemageCalc`** (이름 typo "Demage", 0x000638e8, 3588B) 에서:
+
+```
+ProcDemageCalc:
+  ...
+  Formula::calc(formula_id, attacker, defender, skill, item)  ← 여러 번 호출
+  ...
+  IncreaseHP(-result)
+```
+
+### Formula VM 구조 ─ Hero5 는 데미지 공식이 **데이터로 인코딩** 됨
+
+| 함수 | 역할 |
+|---|---|
+| `Formula::dataLoad()` | 3개 외부 파일 로드: `c/calc/calc_pl.dat`, `calc_en.dat`, `calc_sk.dat` |
+| `Formula::calc(id, ...)` | id 범위로 분기: 0-999 → calc_pl, 1000-1999 → calc_en, 2000-3007 → calc_sk |
+| `Formula::calcByFormula(...)` | 600B 스택 기반 인터프리터 |
+| `Formula::getValFunc(...)` | **6372B** — 변수 ID → 값(ATK/DEF/Lv/Gold/MP 등) 거대 switch |
+| `Formula::getNumberInStack(...)` | 즉시값 vs 변수 참조 fetch |
+
+**바이트코드 명령** (6 종, switch jump table at 0x773e4):
+| op | 동작 |
+|---:|---|
+| 0x11 | XOR |
+| 0x12 | MOD |
+| 0x13 | DIV |
+| 0x14 | MUL |
+| 0x15 | SUB |
+| 0x16 | ADD |
+
+**공식 record 구조**: `[u8 body_len, u8 body_count, 4B lower_bound, 4B upper_bound, body_count × 5B instructions]`
+결과는 `clamp(stack_top, lower_bound, upper_bound)`.
+
+### ★ DES 키 발견
+
+calc_*.dat 는 LoadResDecrypt 로 로드 — `[16B MD5][DES-ECB-encrypted body]` 레이아웃.
+
+DES 키 추출 성공: **`'0EP@KO91'`** (8 ASCII 바이트) at .rodata 0x001588b0.
+`onStartApp` 에서 `MX_desInit("0EP@KO91")` 호출 확인.
+
+⚠ 본 키로 ECB-decrypt 했을 때 첫 시도는 MD5 불일치 — `MX_desInit` 의 char→bin
+처리 (0x35818) 와 호환되는 키 변환을 추가 검증해야 plain text 확보 가능. 후속.
+
+### 다음 분석 가능
+
+- DES 키 변환 검증 → calc_*.dat 평문 확보 → Formula VM 디스어셈블러 작성 →
+  실제 공식 DSL 추출 → battle_system.gd 의 임시 공식을 100% 정확하게 재현.
+- `Formula::getValFunc` 의 6372B 거대 switch → 변수 ID 사전 추출 (어떤 ID 가 ATK,
+  어떤 게 player.lv 인지 등). 공식 해석에 필수.

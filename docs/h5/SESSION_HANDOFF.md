@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Polish 라운드 — 통합 파이프라인, scn body 정적 trace, BATTLER damage disasm, SMAF↔OGG audit, P5 폰트 매핑 정정)
+업데이트: 2026-05-09 (Polish 라운드 + 심층 데미지/Formula VM 분석 + 102개 Event_* opcode 1:1 매핑 + 아이템 struct 부분 추출 + DES 키 식별)
 
 ---
 
@@ -79,18 +79,27 @@ python tools/verify_godot_project.py
 - `apps/hero5-godot/export_presets.cfg.template` 참조 (arm64-v8a, min SDK 23, target 34).
 - 이 머신에서 자동화 불가 — 사용자가 GUI 로 진행 필요.
 
-### Polish — ✅ 모두 완료 (2026-05-09)
+### Polish + 심층 분석 — ✅ 모두 완료 (2026-05-09)
 - ✅ **scene body 실행 trace** — `tools/h5_scn_body_stats.py` (258/258 dispatch 99%+ 정확).
-- ✅ **damage formula 정확도** — `tools/h5_extract_battle_funcs.py` + `docs/h5/BATTLE_FORMULA.md`.
-  `Event_PlayerDamage` 완전 추출, BATTLER offset 확정. `HERO::NewHitEffect` (1712B) 는
-  callee 39개로 후속 분석 시 스킬 multiplier / 크리티컬 공식 추출 가능.
-- ✅ **SMAF → OGG 변환** — `tools/h5_smaf_audit.py` 가 변환 불필요함을 1:1 매칭으로 증명.
+- ✅ **damage formula 분석 (심층)** — Event_PlayerDamage 100% 추출 + BATTLER offset 확정.
+  `HERO::NewHitEffect`/`HeroSkillAtkHardCode` 는 시각 이펙트와 KnockBack/Snatch 로직만.
+  실제 데미지는 **`TargetEffect::ProcDemageCalc` → `Formula::calc()` (스택 기반 VM)**.
+- ✅ **Formula VM 식별** — 공식이 외부 데이터 (`calc_pl/en/sk.dat`, DES 암호화) 에 인코딩.
+  6 opcode (XOR/MOD/DIV/MUL/SUB/ADD) 의 스택 머신. 자세히 `BATTLE_FORMULA.md` §6.
+- ✅ **DES 키 발견** — `'0EP@KO91'` (`onStartApp` 의 `MX_desInit` 인자 추적).
+- ✅ **SMAF → OGG 변환** — 변환 불필요 (1:1 매칭).
+- ✅ **Event_* opcode 102개 1:1 매핑** — `docs/h5/EVENT_OPCODE_REFERENCE.md`.
+  4B stub 13개 식별 (DRM 잔재). interpreter.gd 핸들러 disasm-confirmed semantics 로 보강.
+- ✅ **EquipItemInfo struct 부분 layout** — `docs/h5/ITEM_STRUCT.md` (CopyData offset 분석).
 
-### 다음 가치 있는 후속 작업
-- `HERO::NewHitEffect` (1712B) / `HeroSkillAtkHardCode` (888B) 디스어셈블 → 정확한
-  ATK/DEF/Crit 공식 + 스킬별 multiplier (skill.dat stats[5] = damage% 가설 검증).
-- `_midas_funcFntInvalidate` 디스어셈블 → kor.fnt 581 글리프 ↔ Unicode 매핑 추출.
-- 추가 Event_* opcode (Event_PlayerDamage 패턴 확장 — 100B 짜리 작은 함수 다수).
+### 후속 자율 가능 작업 (남은 가치)
+- DES 키 변환 검증 → calc_*.dat 평문 확보 → Formula VM 디스어셈블러 작성 → 정확한 공식
+  추출 → battle_system.gd 100% 재현. (`BATTLE_FORMULA.md` §6 참조)
+- `Formula::getValFunc` (6372B) 변수 ID 사전 추출 → 어떤 ID 가 ATK/DEF/Lv 인지 매핑.
+- `ItemTable::GetItemTableInfo` (288B) → ItemInfo struct 완전 매핑.
+- `_midas_funcFntInvalidate` → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
+- interpreter.gd `_dispatch` 핸들러 → 실제 GameState/MapRenderer/Quest 호출 채우기
+  (`EVENT_OPCODE_REFERENCE.md` §4 가이드 참조).
 
 ---
 
@@ -121,6 +130,12 @@ Demo:
 | `tools/h5_scn_body_stats.py` | 258 scn body 정적 trace + opcode 빈도 TSV | 2026-05-09 |
 | `tools/h5_extract_battle_funcs.py` | 11 BATTLER/HERO/Monster 함수 ARM disasm + callee | 2026-05-09 |
 | `tools/h5_smaf_audit.py` | 42 SMAF ↔ 42 OGG 1:1 매칭 검증 + 청크 dump | 2026-05-09 |
+| `tools/h5_disasm_newhiteffect.py` | NewHitEffect / HeroSkillAtkHardCode disasm | 2026-05-09 |
+| `tools/h5_find_damage_callers.py` | IncreaseHP/AddEffectDamage caller 추적 | 2026-05-09 |
+| `tools/h5_disasm_formula.py` | Formula VM 4 함수 (dataLoad/calc/calcByFormula/getNumberInStack) | 2026-05-09 |
+| `tools/h5_disasm_skill_hardcode.py` | HeroSkillAtkHardCode 단독 disasm | 2026-05-09 |
+| `tools/h5_extract_event_funcs.py` | EventProc::Event_* 102개 일괄 disasm | 2026-05-09 |
+| `tools/h5_disasm_item_funcs.py` | EquipItemInfo CopyData 등 7개 함수 → struct offset 추출 | 2026-05-09 |
 | `tools/h5_extract_opcode_disasm.py` | EventProc::onFunction jumptable → opcode_table.json 77 entries | 2026-05-08 |
 | `tools/h5_event_arg_sizes.py` | Itanium ABI mangle parser → 105 Event_* arg_size | 2026-05-08 |
 | `tools/h5_extract_enemy_layout.py` | Map::MapEnemyG_set → 121B record layout 검증 | 2026-05-08 |
@@ -224,7 +239,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 
 - [`PROGRESS.md`](PROGRESS.md) — 전체 진행 상세 (Phase 2 분석 단계별 + Phase 3 시스템별)
 - [`PHASE3_ENGINE.md`](PHASE3_ENGINE.md) — Godot 4 엔진 결정 근거
-- [`BATTLE_FORMULA.md`](BATTLE_FORMULA.md) — BATTLER damage 함수 disasm + Event_PlayerDamage 공식
+- [`BATTLE_FORMULA.md`](BATTLE_FORMULA.md) — BATTLER damage 함수 disasm + Event_PlayerDamage 공식 + Formula VM/DES 키
+- [`EVENT_OPCODE_REFERENCE.md`](EVENT_OPCODE_REFERENCE.md) — 102개 Event_* opcode 의미 매핑 reference
+- [`ITEM_STRUCT.md`](ITEM_STRUCT.md) — EquipItemInfo struct 부분 layout
 - [`P5_FONT_MAPPING.md`](P5_FONT_MAPPING.md) — table.dat=Unicode (EUC-KR 아님) 정정 + 매핑 위치
 - [`apps/hero5-godot/README.md`](../../apps/hero5-godot/README.md) — Godot 프로젝트 사용법
 - [`apps/hero5-godot/export_presets.cfg.template`](../../apps/hero5-godot/export_presets.cfg.template) — Android export 템플릿

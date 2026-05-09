@@ -257,11 +257,45 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 			if args.size() >= 1:
 				print("[Interp] CameraTarget(target=%d)" % args[0])
 		"Event_SituateSystemMessage":
-			print("[Interp] SystemMessage")
+			# args = u16 str_id (Strings::getString → Battle::SetSystemMsgUi)
+			if args.size() >= 2:
+				var sid = args[0] | (args[1] << 8)
+				print("[Interp] SystemMessage(str_id=%d)" % sid)
 		"Event_screenEffect":
 			if args.size() >= 1:
 				print("[Interp] ScreenEffect(%d)" % args[0])
 		"Event_Scene_WarpAble", "Event_Scene_WarpPoint", "Event_Scene_SaveAble":
 			print("[Interp] %s %s" % [name, args.hex_encode()])
+		# disasm 확정 (EVENT_OPCODE_REFERENCE.md):
+		"Event_PlayerDamage":
+			# arg = u8 percent. dmg = pct × max_hp / 100.
+			# percent != 100 일 때 dmg = min(dmg, cur_hp - 1) — 즉사 방지.
+			# → BATTLER::IncreaseHP(-dmg).
+			if args.size() >= 1:
+				print("[Interp] PlayerDamage(pct=%d%%)" % args[0])
+		"Event_PlayerRestoreHp":
+			# arg = u8 percent. heal = pct × max_hp / 100.
+			if args.size() >= 1:
+				print("[Interp] PlayerRestoreHp(pct=%d%%)" % args[0])
+		"Event_PlayerRestoreSp":
+			# arg = u8 percent. → HERO::IncreaseSP.
+			if args.size() >= 1:
+				print("[Interp] PlayerRestoreSp(pct=%d%%)" % args[0])
+		"Event_PlayerImo":
+			# arg = u8 emo_id (머리 위 이모티콘).
+			if args.size() >= 1:
+				print("[Interp] PlayerImo(emo=%d)" % args[0])
+		"Event_EnemyChange":
+			# args = u8 slot_idx, u8 monster_id. → Map::MonsterChange.
+			if args.size() >= 2:
+				print("[Interp] EnemyChange(slot=%d, mon=%d)" % [args[0], args[1]])
+		"Event_MapCollision":
+			# args = u8 x, u8 y, u8 attr. → Map::MapAttributeChange.
+			if args.size() >= 3:
+				print("[Interp] MapCollision(x=%d, y=%d, attr=%d)" % [args[0], args[1], args[2]])
+		"Event_SituateSlowMotion":
+			# args = u8 a, u8 b, u8 c. → Battle::SetSlowFrame + InitSlowFrame.
+			if args.size() >= 3:
+				print("[Interp] SituateSlowMotion(%d, %d, %d)" % [args[0], args[1], args[2]])
 		_:
 			print("  0x%02x %s %s" % [op, name, args.hex_encode()])
