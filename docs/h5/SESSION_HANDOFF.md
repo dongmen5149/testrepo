@@ -6,19 +6,40 @@
 
 ---
 
-## 30초 요약
+## 30초 요약 (Round 19 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
-+ **모든 우선순위 작업 (P1~P4) + DES 해독 + Formula VM 통합** 완료.
-Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`apps/hero5-godot/`).
-38 GDScript / 14 씬 / **6 싱글톤 (FormulaVM 추가)** / OPCODE_TABLE 77/77.
++ **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
+Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/hero5-godot/`).
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-**현재 상태**:
-- ✅ DES 변종 완전 해독 (S1[3][10]=2 단일 수정), calc_*.dat MD5 검증 평문 dump
+### Round 6~19 누적 발견 (요약)
+
+| 영역 | 핵심 결과 |
+|---|---|
+| Formula VM stat field | V[58]=level, V[60..63]=str/dex/**con/int** (R11 정정), V[69]=SP, V[70]=CP |
+| V[111..116] secondary | atk_growth_coef + 5 secondary stat = **근접명중/장거리명중/회피/방패방어/크리티컬** (R11 buildup csv 매핑) |
+| V[118..133] buff/temp bonus | str/dex/con/int bonus + 5 buff slot (EXP%/SP감소%/CP충전/쿨타임/포션효과 — R12) + def_red% + atk%bonus + 5 secondary bonus |
+| V[134..148] equipment | element bonus 영역, calc_sk[2003]/[2004] 가 EquipItem stat 합산 → cache |
+| V[151..155] derived | V[151,152]=magic stat (둘 다 INT, R12 정정), V[153]=con, V[154]=str, V[155]=max_sp |
+| V[168..182] ItemBase | V[168]=SP cost, V[170]=cooldown, V[174]=damage growth, V[181]=divisor (R13) |
+| EquipItemInfo struct | +0x14=item_subtype, +0x155=class subtype code, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S, R16), +0x165..+0x167=refine_count/sub/locked (R17), +0x168..+0x16d=6 socket slots |
+| LoadItemTable csv layout | 모든 카테고리 공통 base (item_id u32 + sub_record + sub_record_data 256B memcpy). EquipItem 만 sb-area (struct +0x150..+0x167) 추가 (R14/18) |
+| cat 12-16 추가 fields | BattleUseItem +0x134..+0x137 (4 byte ✓ csv 매칭), OrbItem +0x134..+0x135, MixBookItem +0x134..+0x140 (R19) |
+
+### Phase 2/3 인프라 완료
+- ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
 - ✅ Formula VM 186 공식 (39+19+128) 디스어셈블 + GDScript 평가기 + battle_system 통합
 - ✅ gv+0x1474 sub-struct 111 fields 정확 매핑
+- ✅ ItemTable / EquipItemInfo / ItemBase 구조체 layout 추출 (R13~R19)
+- ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
+
+### 직전 작업 (이어서 진행 시 시작점)
+- Round 19 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **cat 17/18 (SkillBookItem/CashItem) layout 추출**
+  (LoadItemTable 0xa47c0 영역 — dump_caller size 부족으로 미분석).
+- 또는: BattleUseItem +0x134..+0x137 의미 식별 (BattleUseItemInfo::Use 함수 분석).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup

@@ -398,7 +398,21 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-07 기준)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 19 종료)
+
+**최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
+
+| 영역 | 라운드 | 핵심 결과 |
+|---|---|---|
+| Formula VM gv stat | R6~12 | V[58]=level, V[60..63]=str/dex/con/int (R11 정정), V[111..116]=근접명중/장거리명중/회피/방패방어/크리티컬, V[122..126]=5 buff slot (EXP%/SP감소%/CP충전/쿨타임/포션효과), V[151..155]=magic/con/str/max_sp |
+| ApplyBuildupEffect entry table | R9 | jumptable 자동 추출 (`tools/h5_apply_buildup_disasm.py`), 56 entry × 2 함수 |
+| EquipItemInfo struct field | R13~17 | +0x14=subtype, +0x155=class subtype, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S), +0x165..+0x167=refine fields, +0x168..+0x16d=6 socket |
+| ItemBase struct (Formula VM 5번째 인수) | R13 | V[168..182] = SP cost / cooldown / damage growth / divisor 등 |
+| LoadItemTable csv 매핑 | R14/18/19 | 가변 layout (name + sub_record) + u8/u16 mixed sequence. cat 12-16 카테고리별 추가 fields 추출 |
+| items.json named fields | R15/16/19 | subtype / class_mask / class_label / level_limit / item_id / sub_record / val_134..val_167 / triplet_162 / sub_record_hex |
+
+**전체 진행 (Phase 2/3 완료 항목)**:
+
 
 | 영역 | 상태 | 산출물 |
 |---|---|---|
