@@ -83,10 +83,68 @@ def find(target: str) -> pathlib.Path | None:
     return find_by_hash(target)
 
 
-def parse_items(d: bytes) -> list[dict]:
+def parse_equip_extra(extra: bytes) -> dict:
+    """EquipItem (cat 1-11) extra 의 가변 layout parse.
+
+    Round 14 의 LoadItemTable disasm 으로 확정된 layout:
+      +0..+3: u32 → struct +0x30 (item_id 또는 large flag)
+      +4: u8 sub_record_len (sblen)
+      +5..(4+sblen): sub-record bytes (struct +0x34..+0x134, 256B padded)
+      sb 위치 (= 5+sblen) 부터:
+        +0..+1: u16 → struct +0x150
+        +2..+3: u16 → struct +0x152
+        +4: u8 → struct +0x154
+        +5: u8 → struct +0x155 (class_restriction)
+        +6..+7: u16 → struct +0x156
+        +8..+9: u16 → struct +0x158
+        +0xa..+0xb: u16 → struct +0x15a
+        +0xc: u8 → struct +0x15c
+        +0xd: u8 → struct +0x15d (level_limit)
+        +0xe: u8 → struct +0x15e
+        +0xf: u8 → struct +0x15f
+        +0x10: u8 → struct +0x160
+        +0x11..+0x13: u8 ×3 → struct +0x162..+0x164
+    """
+    if len(extra) < 5:
+        return {}
+    pos = 0
+    item_id = struct.unpack_from('<I', extra, pos)[0]; pos += 4
+    sblen = extra[pos]; pos += 1
+    if pos + sblen > len(extra):
+        return {'item_id': item_id, 'sub_record_len': sblen}
+    sub_record = extra[pos:pos + sblen]; pos += sblen
+    res: dict = {'item_id': item_id, 'sub_record_hex': sub_record.hex()}
+    # sb 영역 — 안전하게 length check
+    def _u16(o: int) -> int | None:
+        return struct.unpack_from('<H', extra, pos + o)[0] if pos + o + 2 <= len(extra) else None
+    def _u8(o: int) -> int | None:
+        return extra[pos + o] if pos + o < len(extra) else None
+    res['val_150'] = _u16(0)
+    res['val_152'] = _u16(2)
+    res['val_154'] = _u8(4)
+    res['class_restriction'] = _u8(5)   # struct +0x155
+    res['val_156'] = _u16(6)
+    res['val_158'] = _u16(8)
+    res['val_15a'] = _u16(0xa)
+    res['val_15c'] = _u8(0xc)
+    res['level_limit'] = _u8(0xd)        # struct +0x15d
+    res['val_15e'] = _u8(0xe)
+    res['val_15f'] = _u8(0xf)
+    res['val_160'] = _u8(0x10)
+    triplet = []
+    for o in (0x11, 0x12, 0x13):
+        b = _u8(o)
+        if b is None: break
+        triplet.append(b)
+    res['triplet_162'] = triplet
+    return res
+
+
+def parse_items(d: bytes, slot_idx: int = -1) -> list[dict]:
     if len(d) < 2: return []
     count = struct.unpack_from('<H', d, 0)[0]
     pos = 2
+    is_equip = SLOT_META.get(slot_idx, {}).get("category") == "equip"
     out = []
     for i in range(count):
         if pos + 5 > len(d): break
@@ -107,24 +165,21 @@ def parse_items(d: bytes) -> list[dict]:
         extra_len = rec_sz - 3 - strlen
         extra = d[pos:pos + extra_len]
         pos += extra_len
-        # extra 는 stat fields (u16 LE 배열)
         n_u16 = len(extra) // 2
         u16 = list(struct.unpack(f'<{n_u16}H', extra[:n_u16*2])) if n_u16 else []
-        # 주의 (Round 13): csv extra 는 압축된 stat data (33..80 byte) — in-memory
-        # EquipItemInfo struct (376B) 와 layout 다름. ItemTable::GetItemTableInfo 가
-        # csv stat 들을 EquipItemInfo offset 에 store 하는 매핑은 다음 라운드 RE 필요.
-        # 현재 stats_u16 순서:
-        #   stats_u16[0] = 가격 (gold)
-        #   stats_u16[1] = pad/flags
-        #   stats_u16[2..] = stat 들 (정확한 의미 = csv→struct 매핑 후 결정)
-        out.append({
+        rec = {
             'idx': i,
             'name': name,
             'prefix': prefix,    # icon_id 또는 category
             'price': u16[0] if u16 else 0,
             'stats_u16': u16,
             'extra_hex': extra.hex(),
-        })
+        }
+        # Round 15: EquipItem (cat 1-11) 만 named fields 부여.
+        # 다른 카테고리 (battle_use/orb/mix/skill_book) 는 별도 layout — 다음 라운드.
+        if is_equip:
+            rec.update(parse_equip_extra(extra))
+        out.append(rec)
     return out
 
 
@@ -137,7 +192,7 @@ def main() -> int:
     for slot in range(19):  # item_00..item_18
         p = find(f'c/csv/item_{slot:02d}.dat')
         if not p: continue
-        items = parse_items(p.read_bytes())
+        items = parse_items(p.read_bytes(), slot_idx=slot)
         all_items[f'slot_{slot}'] = items
         meta = SLOT_META.get(slot, {})
         named = sum(1 for x in items if x.get('name', '').strip() and x['name'] != '?')

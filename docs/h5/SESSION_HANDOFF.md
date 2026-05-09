@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 14 — LoadItemTable 디스어셈블로 csv → EquipItemInfo struct 매핑 layout 추출)
+업데이트: 2026-05-10 (Round 15 — decode_h5_item.py 의 parse_equip_extra 추가로 items.json 에 named fields 부여 (class_restriction/level_limit/item_id/sockets))
 
 ---
 
@@ -43,6 +43,14 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 15**: `decode_h5_item.py` 에 `parse_equip_extra` 함수 추가 — Round 14
+  의 csv layout 활용해 EquipItem (cat 1-11) extra body 가변 parse + items.json
+  에 named fields (`class_restriction`, `level_limit`, `item_id`,
+  `sub_record_hex`, `val_150..val_160`, `triplet_162`) 부여.
+  검증: 롱소드 cls=0/lv=1, 나이트롱소드 lv=5, 버클러(방패) cls=3 (워리어/나이트),
+  서클릿(헬멧) cls=5/lv=1 — 모두 합리적 매핑.
+  cls 가 비트 마스크로 추정 (1=warrior, 2=rogue, 4=gunslinger, 8=knight, 16=sorcerer)
+  — 다음 라운드 IsEquipPossible cross-check 필요.
 - ✅ **Round 14**: ItemTable::LoadItemTable (4320B) 의 EquipItem 처리 영역
   (0xa3cf0~0xa4060) 디스어셈블 분석 → csv record body → in-memory EquipItemInfo
   struct field 매핑 layout 추출:
@@ -123,16 +131,23 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. decode_h5_item.py 정확화 — csv layout 활용 (자율 가능, 큰 임팩트)
+### 1. class_restriction 비트 마스크 의미 확정 (자율 가능, 작은 임팩트)
 
-Round 14 에서 LoadItemTable 의 csv→struct 매핑 추출 완료. 이제 decode_h5_item.py
-가 csv extra 를 단순 u16 array 로 dump 하는 대신, ITEM_STRUCT.md 의 csv layout
-(name_len/sub_record_len 가변 길이 + u8/u16 mixed) 을 정확히 parse 해서
-items.json 에 named field (`name`, `class_restriction`, `level_limit`,
-`socket[0..5]`, etc) 부여 가능.
+Round 15 에서 items.json 에 class_restriction 부여. cls 값의 비트 마스크 가설
+(1=W, 2=R, 4=G, 8=K, 16=S) 을 IsEquipPossible disasm 의 0x155 비교 패턴 분석으로
+검증. items.json 에 cls 별 한글 라벨 (e.g. "W+K") 부여 가능.
 
-또한 RefineItem::ApplyItemRefine (956B) 디스어셈블로 강화 시 어느 struct field 가
-변경되는지 확정. ApplyOrbCombine (1208B) 도 socket slot 동작 확인.
+### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
+
+강화/orb 결합 시 어느 struct field 가 변경되는지 추적. socket slot
+(struct +0x168..+0x16d) 의 read/write 패턴 + level_limit / refine_value
+(+0x16) 변경 패턴 식별.
+
+### 3. 비-EquipItem (cat 12+) parse 추가 (자율 가능)
+
+decode_h5_item.py 의 parse_equip_extra 와 같은 방식으로 BattleUseItem (cat 12),
+OrbItem (13), MixItem (14-15), MixBookItem (16), SkillBookItem (17-18) 의 csv
+layout 분석. LoadItemTable 의 idx 12..18 jumptable case 디스어셈블 필요.
 
 ### 2. V[151] vs V[152] 의 element 차이 식별 (자율 가능, 작은 임팩트)
 
@@ -196,6 +211,7 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | EquipItemInfo struct 핵심 5 field | ✅ Round 13: +0x14/+0x155/+0x15d/+0x168..0x16d | `tools/h5_dump_caller.py _ZN13EquipItemInfo*` |
 | V[168..182] ItemBase formula 영역 | ✅ Round 13: V[168]=SP cost, V[170]=cooldown, V[174]=damage growth, V[181]=divisor | `formulas_disasm.txt` cross-check |
 | csv → EquipItemInfo struct layout 매핑 | ✅ Round 14: 가변길이 (name + sub_record) + u8/u16 mixed sequence | `tools/h5_extract_loaditem_layout.py`, ITEM_STRUCT.md "CSV → EquipItemInfo struct 매핑" 섹션 |
+| items.json EquipItem named fields | ✅ Round 15: class_restriction/level_limit/item_id/sub_record/val_150..val_160 부여 | `tools/converter/decode_h5_item.py::parse_equip_extra` |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

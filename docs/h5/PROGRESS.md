@@ -580,6 +580,22 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 15 — 2026-05-10 완료]**
+- ✅ `tools/converter/decode_h5_item.py` 에 `parse_equip_extra` 함수 추가 —
+  Round 14 의 csv layout 활용해 EquipItem (cat 1-11) extra body 가변 parse.
+- ✅ items.json 에 새 named fields 부여 (cat 1-11 only):
+  - `item_id` (u32 from extra+0)
+  - `sub_record_hex` (variable len byte sequence)
+  - `class_restriction` (u8 — 비트 마스크 추정)
+  - `level_limit` (u8)
+  - `val_150..val_160` (u8/u16 raw stat slots)
+  - `triplet_162` (3-byte triplet)
+- ✅ 비-EquipItem (cat 12+) 슬롯은 named fields 없음 (별도 layout 필요).
+- ✅ 검증 완료: 롱소드 cls=0/lv=1, 나이트롱소드 lv=5, 버클러(방패) cls=3
+  (워리어/나이트), 서클릿(헬멧) cls=5/lv=1 — 모두 합리적 매핑.
+  cls 비트 마스크 가설: 1=warrior, 2=rogue, 4=gunslinger, 8=knight, 16=sorcerer
+  (다음 라운드 IsEquipPossible cross-check).
+
 **[Round 14 — 2026-05-10 완료]**
 - ✅ `tools/h5_extract_loaditem_layout.py` — ItemTable::LoadItemTable (4320B,
   @0xa38e0) 디스어셈블 + csv read → struct store 시퀀스 자동 추출 도구.
