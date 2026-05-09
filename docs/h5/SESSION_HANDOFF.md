@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 17 — RefineItem::ApplyItemRefine 디스어셈블 → +0x165/166/167 = refine fields 식별 + val_15f upper 3 bit 분포 통계 (170/248/9/362))
+업데이트: 2026-05-10 (Round 18 — SetItemOption 분석으로 +0x15f 가 random option_type byte 임 확인 + 모든 카테고리에 common base (item_id + sub_record) 부여)
 
 ---
 
@@ -43,6 +43,15 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 18**: ItemTable::SetItemOption (240B, @0xa0ff8) 디스어셈블 →
+  `+0x15f` 가 random option_type byte 임 확인. SetItemOption 가 호출 시 random
+  option 픽 → +0x15f = option_type, +0x162 = option_value (level*param*rand).
+  csv 의 val_15f 는 init default — runtime 변경 가능. items.json 의 class_label
+  통계가 default 값 (Round 16 의 5-class mask 해석은 csv 시점에는 유효).
+  LoadItemTable 의 cat 12+ jumptable 분석 — 모든 카테고리가 공통 base layout
+  (item_id u32 + sub_record_len + sub_record bytes) 공유. EquipItem (cat 1-11)
+  만 sb-area 추가. `decode_h5_item.py` 에 `parse_common_extra` 함수 추가 →
+  모든 19 슬롯에 item_id + sub_record_hex 부여.
 - ✅ **Round 17**: `RefineItem::ApplyItemRefine` (956B) 디스어셈블 → 강화 시
   변경되는 EquipItemInfo struct field 식별:
   - `+0x165` = refine_count (강화 횟수 u8)
@@ -152,16 +161,12 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. val_15f upper 3 bit 의 정확 의미 식별 (자율 가능, 작은 임팩트)
+### 1. cat 12+ 카테고리별 추가 fields 식별 (자율 가능)
 
-Round 17 에서 분포 통계 추출 — upper=0/1/3/7 만 등장 (170/248/9/362).
-- upper=7 (224) = common 기본 아이템 (롱소드/서클릿)
-- upper=1 (32) = 강화/보스 무기 (스톰브링거/캘라보그)
-- upper=3 (96) = 보석 헤어핀 (slot_5 only, 9 records)
-- upper=0 (0) = 중급/희귀 무기
-
-가설: bit6 (64) = gem accessory, bit7 (128) = common/default flag, bit5 (32) = ?
-ItemTable::SetItemOption (240B) 또는 DropTable 분석으로 확정 가능.
+Round 18 에서 모든 카테고리에 common base 부여. cat 12 (BattleUseItem) 의
+struct +0x134..+0x137 (4 byte) 와 cat 13/14/16/17 의 추가 fields 정확 의미는
+미식별. 각 카테고리 jumptable case (0xa4060/0xa423c/0xa43f4/0xa4578/0xa47c0)
+의 sb 영역 분석 필요.
 
 ### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
 
@@ -242,6 +247,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | 진짜 class_mask (val_15f & 0x1f) | ✅ Round 16: 5-class 비트 마스크 확정 (W/R/G/K/S) | items.json `class_mask` + `class_label` 필드 |
 | EquipItemInfo refine fields | ✅ Round 17: +0x165=count, +0x166=sub_count, +0x167=locked | `applyitemrefine_disasm.txt` |
 | val_15f upper 3 bit 분포 | ✅ Round 17: upper=0/1/3/7 만 등장 (170/248/9/362), 정확 의미 미완 | `tools/h5_check_items.py` |
+| SetItemOption: +0x15f=option_type / +0x162=option_value | ✅ Round 18 | `_ZN9ItemTable13SetItemOptionEP8ItemInfoa` disasm |
+| 모든 카테고리 (cat 1-18) common base | ✅ Round 18: item_id + sub_record_hex | `decode_h5_item.py::parse_common_extra` |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

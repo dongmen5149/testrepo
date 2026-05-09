@@ -580,6 +580,24 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 18 — 2026-05-10 완료]**
+- ✅ `ItemTable::SetItemOption` (240B, @0xa0ff8) 디스어셈블 → `+0x15f` 가
+  **random option_type byte** 임을 확인. 함수가 random `option_table[i]` 픽:
+  - `+0x15f` (offset+0x15f) = option_type (option_table[i].byte 0)
+  - `+0x162` = option_value (level_limit * option_param * randint(0x50,0x78) / 32)
+  csv 의 val_15f 는 init default — runtime 변경 가능. items.json 의 class_label
+  통계 (Round 16 의 5-class mask 해석) 는 csv 시점에 유효.
+- ✅ `LoadItemTable` 의 cat 12+ jumptable cases (0xa4060/0xa423c/0xa43f4/0xa4578/
+  0xa47c0) 분석 → 모든 카테고리가 **공통 base layout** 공유:
+  - record_size=0x138 (BattleUseItem/Orb), 0x134 (Mix), 0x144 (MixBook), 0x138 (SkillBook/Cash)
+  - 공통: csv +2 (read+discarded), +4 (u16 → struct +0x16), +6 (strlen),
+    name → struct +0x18, u32 → struct +0x30, sub_record_len + memcpy → struct +0x34..+0x134
+  - EquipItem (cat 1-11) 만 sb-area (struct +0x150..+0x167) 추가
+  - 다른 카테고리는 struct +0x134.. 에 카테고리별 추가 fields (4..N byte)
+- ✅ `decode_h5_item.py` 에 `parse_common_extra` 함수 추가 — 모든 카테고리에
+  `item_id` (u32) + `sub_record_len` + `sub_record_hex` 부여. 검증: 19 슬롯
+  모두 첫 record 에 새 필드 적용 (롱소드/포션/살코기/양손베기LV1/창고확장 등).
+
 **[Round 17 — 2026-05-10 완료]**
 - ✅ `RefineItem::ApplyItemRefine` (956B, @0xa292c) 디스어셈블 → 강화 시
   변경되는 EquipItemInfo struct field 식별:

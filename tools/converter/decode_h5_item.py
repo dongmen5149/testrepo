@@ -83,6 +83,29 @@ def find(target: str) -> pathlib.Path | None:
     return find_by_hash(target)
 
 
+def parse_common_extra(extra: bytes) -> dict:
+    """모든 카테고리 공통 layout (Round 18 — LoadItemTable 의 cat 12-18 cross-check):
+       extra +0..+3: u32 → struct +0x30 (item_id)
+       extra +4: u8 sub_record_len
+       extra +5..(4+sblen): sub-record bytes (struct +0x34..+0x134, 256B padded)
+
+    EquipItem (cat 1-11) 만 sb 영역 (struct +0x150..+0x167) 가 추가로 있음 —
+    parse_equip_extra 가 추가 처리.
+    """
+    if len(extra) < 5:
+        return {}
+    item_id = struct.unpack_from('<I', extra, 0)[0]
+    sblen = extra[4]
+    if 5 + sblen > len(extra):
+        return {'item_id': item_id, 'sub_record_len': sblen}
+    sub_record = extra[5:5 + sblen]
+    return {
+        'item_id': item_id,
+        'sub_record_len': sblen,
+        'sub_record_hex': sub_record.hex(),
+    }
+
+
 def parse_equip_extra(extra: bytes) -> dict:
     """EquipItem (cat 1-11) extra 의 가변 layout parse.
 
@@ -192,8 +215,9 @@ def parse_items(d: bytes, slot_idx: int = -1) -> list[dict]:
             'stats_u16': u16,
             'extra_hex': extra.hex(),
         }
-        # Round 15: EquipItem (cat 1-11) 만 named fields 부여.
-        # 다른 카테고리 (battle_use/orb/mix/skill_book) 는 별도 layout — 다음 라운드.
+        # Round 18: 모든 카테고리에 common base (item_id + sub_record_hex) 부여.
+        # cat 1-11 (EquipItem) 만 sb-area named fields (subtype/class_mask/level_limit) 추가.
+        rec.update(parse_common_extra(extra))
         if is_equip:
             rec.update(parse_equip_extra(extra))
         out.append(rec)

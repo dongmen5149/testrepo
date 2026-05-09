@@ -237,6 +237,40 @@ Sample analysis:
 정확 의미 식별을 위해 ItemTable::SetItemOption (240B) 또는 DropTable 분석 필요
 (다음 라운드).
 
+### Round 18 (2026-05-10) — SetItemOption + 모든 카테고리 common base 부여
+
+#### ItemTable::SetItemOption (240B, @0xa0ff8) 분석
+
+- 인수: r0=this(ItemTable), r1=item_ptr (sb), r2=offset (sl)
+- random `option_table[i]` 을 픽 해서 item 의 +0x15f, +0x162 영역에 store:
+  - `+0x15f` (offset+0x15f) = option_type (option_table[i].byte 0)
+  - `+0x162` (offset+0x162) = option_value (level_limit * option_param * randint(0x50,0x78) / 32)
+
+`+0x15f` 가 random option_type byte 임을 확인. 즉 csv 의 `val_15f` 가 init
+default 이지만 SetItemOption 가 호출되면 random change 될 수 있음. items.json
+에 보이는 `class_label` 통계는 csv default 값 — runtime 변경 가능성 있음.
+
+#### LoadItemTable cat 12+ jumptable 모두 analyzed (Round 18)
+
+cat 12 (BattleUseItem, 0xa4060): record_size=0x138 (312B). 같은 base layout
+(csv +2 read+discarded, +4 strh +0x16, +6 strlen, name → +0x18, u32 → +0x30,
+sub_record_len + memcpy → +0x34..+0x134) + 4 byte (struct +0x134..+0x137).
+
+cat 13 (OrbItem, 0xa423c): 같은 base. 추가 fields 미상.
+cat 14, 16 (MixItem/MixBookItem): 같은 base.
+cat 17, 18 (SkillBookItem/CashItem): 같은 base + 추가 5+ byte.
+
+→ 모든 카테고리가 **공통 base layout** (item_id u32 + sub_record bytes) 을
+공유. EquipItem (cat 1-11) 만 sb-area (struct +0x150..+0x167) 추가.
+
+`decode_h5_item.py` 에 `parse_common_extra` 함수 추가 — 모든 cat 에 적용:
+- `item_id` (u32 from extra+0)
+- `sub_record_len` (u8)
+- `sub_record_hex` (variable length bytes)
+
+검증: 모든 19 slot 의 첫 record 모두 item_id + sub_record 부여 확인 (롱소드,
+포션, 살코기, 양손베기LV1, 창고확장 등).
+
 ---
 
 ## 카테고리 dispatch (GetItemTableInfo 분석 결과, 2026-05-09)
