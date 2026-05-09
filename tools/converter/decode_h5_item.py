@@ -122,14 +122,31 @@ def parse_equip_extra(extra: bytes) -> dict:
     res['val_150'] = _u16(0)
     res['val_152'] = _u16(2)
     res['val_154'] = _u8(4)
-    res['class_restriction'] = _u8(5)   # struct +0x155
+    # Round 16: +0x155 가 class_restriction 아니라 subtype code 임이 IsEquipPossible
+    # cross-check 로 확인됨 (slot_10 spirit 의 cls=5 가 17 records 인데 SpiritEquip
+    # 은 cls=7 만 허용 — 즉 cls 가 weapon/armor sub-type 분류). 진짜 class mask 는
+    # val_15f 후보 (다음 라운드 검증).
+    res['subtype'] = _u8(5)              # struct +0x155 (이전 class_restriction 잘못)
     res['val_156'] = _u16(6)
     res['val_158'] = _u16(8)
     res['val_15a'] = _u16(0xa)
     res['val_15c'] = _u8(0xc)
     res['level_limit'] = _u8(0xd)        # struct +0x15d
     res['val_15e'] = _u8(0xe)
-    res['val_15f'] = _u8(0xf)
+    # Round 16: val_15f & 0x1f = 5 클래스 비트 마스크 (W=1/R=2/G=4/K=8/S=16)
+    # 검증: val=31 (WRGKS all) 385 records, val=0 43 records, val=9 (WK) 31, val=17 (WS) 40.
+    val_15f = _u8(0xf)
+    res['val_15f'] = val_15f
+    if val_15f is not None:
+        mask = val_15f & 0x1f
+        res['class_mask'] = mask
+        labels = []
+        if mask & 1:  labels.append('W')
+        if mask & 2:  labels.append('R')
+        if mask & 4:  labels.append('G')
+        if mask & 8:  labels.append('K')
+        if mask & 16: labels.append('S')
+        res['class_label'] = ''.join(labels) or '-'
     res['val_160'] = _u8(0x10)
     triplet = []
     for o in (0x11, 0x12, 0x13):

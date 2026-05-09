@@ -147,22 +147,50 @@ items.json 에 새 named fields 부여 (cat 1-11 only):
   `val_15c`, `val_15e`, `val_15f`, `val_160`: u8/u16 raw stat slots
 - `triplet_162`: 3-byte triplet (struct +0x162..+0x164)
 
-검증 결과 (items.json):
-| slot | item | cls | lv |
-|---|---|---:|---:|
-| slot_0 (무기) | 롱소드 | 0 (any) | 1 |
-| slot_0 | 나이트롱소드 | 0 | 5 |
-| slot_5 (헬멧) | 서클릿 | 5 | 1 |
-| slot_5 | 나이트기어 | 5 | 6 |
-| slot_9 (방패) | 버클러 | 3 (워리어/나이트) | 1 |
-| slot_10 (스피릿) | 고렘의인장 | 5 | 1 |
+## Round 16 (2026-05-10) 정정 — `+0x155` 는 subtype, 진짜 class mask 는 `val_15f`
 
-`cls` (class_restriction) 의 각 값 의미:
-- 0 = any class
-- 3 = 워리어 + 나이트 (방패 사용 클래스)
-- 5 = 다른 조합 (헬멧/스피릿)
-- 추가 분석으로 비트 마스크 (1=warrior, 2=rogue, 4=gunslinger, 8=knight, 16=sorcerer)
-  으로 추정 — IsEquipPossible disasm 으로 확인 가능 (다음 라운드).
+이전 라운드 (Round 13/15) 의 `class_restriction = struct +0x155` 매핑은 **오류**.
+IsEquipPossible / IsEquipPossibleSpirit cross-check 결과:
+
+`+0x155` = **item subtype code** (slot_0..3 무기 4종류 = 0/1/2/3, slot_4 = 4,
+slot_5..8 = 5/6/7 helmet/boots/accessory, slot_9 shield = 3, slot_10 spirit = 5/7).
+`IsEquipPossibleSpirit` 가 `0x155 == 7` 만 spirit 으로 허용. 즉 single-byte category code.
+
+**진짜 class restriction** = `val_15f` (struct +0x15f) 의 lower 5 bit:
+- bit 0 (1)  = W (워리어)
+- bit 1 (2)  = R (로그)
+- bit 2 (4)  = G (건슬링어)
+- bit 3 (8)  = K (나이트)
+- bit 4 (16) = S (소서러)
+
+검증 (items.json 의 val_15f 분포):
+- val=31 (`0b11111`) WRGKS (모든 클래스) → 385 records (가장 많음)
+- val=0 → 43 records (특수 — class restrict 없음 또는 다른 의미)
+- val=9 (WK) → 31 records (방패형)
+- val=17 (WS) → 40 records
+- val=15 (WRGK) → 32 records (소서러 제외)
+
+검증 결과 (items.json):
+| slot | item | subtype | class_mask | class_label | lv |
+|---|---|---:|---:|---|---:|
+| slot_0 (검류) | 롱소드 | 0 | 31 | WRGKS | 1 |
+| slot_5 (헬멧) | 서클릿 | 5 | 31 | WRGKS | 1 |
+| slot_9 (방패) | 버클러 | 3 | 31 | WRGKS | 1 |
+| slot_10 (스피릿) | 고렘의인장 | 5 | 18 | RS | 1 |
+| slot_10 | 데몬의뿔 | 5 | 1 | W | 1 |
+| slot_10 | 팬텀의부적 | 5 | 17 | WS | 1 |
+| slot_10 | 기사의징표 | 5 | 14 | RGK | 1 |
+
+Spirit (slot_10) 의 class_mask 분포가 다양 (W/RS/WS/RGK) → class restriction 가
+정확히 `val_15f & 0x1f` 임이 확정.
+
+`val_15f` 의 upper 3 bit (값 32, 64, 128) — 추가 의미 (career/tier/cash) 가능성,
+다음 라운드 분석.
+
+decode_h5_item.py 의 출력 fields:
+- `subtype` (이전 `class_restriction` 잘못, 정정됨)
+- `class_mask` (val_15f & 0x1f)
+- `class_label` (W/R/G/K/S 조합 또는 "-")
 
 ---
 

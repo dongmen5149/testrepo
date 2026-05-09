@@ -580,6 +580,24 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 16 — 2026-05-10 완료]**
+- ✅ items.json 의 `class_restriction` (struct +0x155) 매핑이 **잘못됨**을 발견.
+  IsEquipPossible / IsEquipPossibleSpirit cross-check 로 +0x155 가 단순 byte 비교
+  (== N) 형태 — 즉 **subtype code** (5=weapon, 7=spirit, 0..4=weapon/armor sub-cat).
+  slot_10 spirit 의 cls=5 가 17 records 인데 IsEquipPossibleSpirit 는 cls==7 만
+  허용 → cls 가 weapon/armor sub-type 분류 임이 확인.
+- ✅ **진짜 class restriction = `val_15f & 0x1f`** (struct +0x15f 의 lower 5 bit).
+  비트 마스크: bit0=W (워리어), bit1=R (로그), bit2=G (건슬링어), bit3=K (나이트),
+  bit4=S (소서러).
+- ✅ items.json 통계 검증:
+  - val=31 (WRGKS, 모든 클래스) 385 records (가장 많음 — 일반 무기/방어구)
+  - val=9 (WK), val=17 (WS), val=14 (RGK), val=18 (RS), val=15 (WRGK) 다양
+  - spirit 검증: 데몬의뿔 W / 고렘의인장 RS / 팬텀의부적 WS / 기사의징표 RGK
+- ✅ `decode_h5_item.py` 의 fields 업데이트:
+  - `class_restriction` → `subtype` 으로 rename (정확)
+  - `class_mask` (val_15f & 0x1f) + `class_label` (W/R/G/K/S 조합 string) 추가
+- ⏸ val_15f upper 3 bit (값 32, 64, 128) 의 추가 의미는 다음 라운드.
+
 **[Round 15 — 2026-05-10 완료]**
 - ✅ `tools/converter/decode_h5_item.py` 에 `parse_equip_extra` 함수 추가 —
   Round 14 의 csv layout 활용해 EquipItem (cat 1-11) extra body 가변 parse.

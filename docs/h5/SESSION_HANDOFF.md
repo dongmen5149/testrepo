@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 15 — decode_h5_item.py 의 parse_equip_extra 추가로 items.json 에 named fields 부여 (class_restriction/level_limit/item_id/sockets))
+업데이트: 2026-05-10 (Round 16 — items.json: +0x155 가 subtype 임을 정정 + val_15f & 0x1f = 5-class bit mask 확정 (W/R/G/K/S) → class_mask/class_label 정확 부여)
 
 ---
 
@@ -43,6 +43,17 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 16**: items.json 정정 — `+0x155` 가 class_restriction 이 아니라
+  **subtype code** 임을 IsEquipPossible / IsEquipPossibleSpirit cross-check 로
+  확인 (slot_10 spirit 의 cls=5/7 분포 + IsEquipPossibleSpirit 가 0x155==7 만 허용).
+  진짜 class restriction 은 **`val_15f & 0x1f`** = **5-class 비트 마스크**
+  (bit0=W, bit1=R, bit2=G, bit3=K, bit4=S):
+  - val=31 (WRGKS, 모든 클래스) 385 records (가장 많음)
+  - val=9 (WK), val=17 (WS), val=14 (RGK), val=18 (RS) 등 다양
+  - spirit 검증: 데몬의뿔 W only / 고렘의인장 RS / 팬텀의부적 WS / 기사의징표 RGK
+  - decode_h5_item.py 가 `subtype` (이전 class_restriction 정정) + `class_mask`
+    + `class_label` (W/R/G/K/S 조합 string) 부여.
+  - val_15f upper 3 bit (32, 64, 128) 의 추가 의미 (career/tier/cash) 는 다음 라운드.
 - ✅ **Round 15**: `decode_h5_item.py` 에 `parse_equip_extra` 함수 추가 — Round 14
   의 csv layout 활용해 EquipItem (cat 1-11) extra body 가변 parse + items.json
   에 named fields (`class_restriction`, `level_limit`, `item_id`,
@@ -131,11 +142,11 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. class_restriction 비트 마스크 의미 확정 (자율 가능, 작은 임팩트)
+### 1. val_15f upper 3 bit 의미 (자율 가능, 작은 임팩트)
 
-Round 15 에서 items.json 에 class_restriction 부여. cls 값의 비트 마스크 가설
-(1=W, 2=R, 4=G, 8=K, 16=S) 을 IsEquipPossible disasm 의 0x155 비교 패턴 분석으로
-검증. items.json 에 cls 별 한글 라벨 (e.g. "W+K") 부여 가능.
+Round 16 에서 val_15f & 0x1f = 5-class mask 확정. upper 3 bit (값 32, 64, 128) 가
+career/tier/cash 등 추가 의미 가능성. items.json 의 val=109 (0b01101101) 등
+6 비트 set 사례 분석 필요.
 
 ### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
 
@@ -212,6 +223,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | V[168..182] ItemBase formula 영역 | ✅ Round 13: V[168]=SP cost, V[170]=cooldown, V[174]=damage growth, V[181]=divisor | `formulas_disasm.txt` cross-check |
 | csv → EquipItemInfo struct layout 매핑 | ✅ Round 14: 가변길이 (name + sub_record) + u8/u16 mixed sequence | `tools/h5_extract_loaditem_layout.py`, ITEM_STRUCT.md "CSV → EquipItemInfo struct 매핑" 섹션 |
 | items.json EquipItem named fields | ✅ Round 15: class_restriction/level_limit/item_id/sub_record/val_150..val_160 부여 | `tools/converter/decode_h5_item.py::parse_equip_extra` |
+| +0x155 = subtype (class_restriction 정정) | ✅ Round 16: IsEquipPossibleSpirit cross-check | items.json `subtype` 필드 |
+| 진짜 class_mask (val_15f & 0x1f) | ✅ Round 16: 5-class 비트 마스크 확정 (W/R/G/K/S) | items.json `class_mask` + `class_label` 필드 |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---
