@@ -165,23 +165,43 @@ struct Frame {
 
 ```
 struct CifFile {
-    uint16 slot_count;                  // 0..1
+    uint8  slot_count;                  // 0..8
+    uint8  category;                    // 0=hero/boss, 1=enemy 추정, 2=일부 보스
     uint8  sprite_indices[slot_count];  // 2..2+count
-    bytes  animation_data[];            // 나머지 (timing/event 데이터, 포맷 미확정)
+    bytes  animation_data[];            // 나머지 (frame/cell 데이터, 디코더 종류 별)
 };
 ```
 
 **확정 부분 (검증됨)**:
-- `slot_count` = 캐릭터의 키 슬롯 수 (영웅 7~8, 적 1~4, 보스 1, 맵 스프라이트 1)
+- `slot_count` = 캐릭터의 키 슬롯 수 (영웅 8, 적 1~5, 보스 1, 맵 스프라이트 1)
 - `sprite_indices` = 각 슬롯이 가리키는 BM 프레임 인덱스
 - enemy/map: 인덱스 = `_bm` 파일 번호 (예: `e100_cif` indices [1,2,3,4] → `e1001_bm`, `e1002_bm`, `e1003_bm`, `e1004_bm`)
 - hero/boss: 인덱스가 파일 번호와 직접 매핑되지 않음 — 멀티프레임 BM의 글로벌 프레임 인덱스로 추정
 
-**미확정**:
-- `animation_data` 영역의 timing/event 인코딩 (보스/영웅의 9-byte 레코드 패턴 일부 관찰: `?? ?? ?? ?? ?? 19 19 ?? ff` 형태, 끝 0xff 구분자, `19 19` 고정값 추정)
-- 슬롯과 게임 로직 간 매핑 (예: 슬롯 0 = idle, 1 = walk-up 등 표준화 여부)
+**Hero (h0_cif) frame 인코딩 (2026-05-07 해독)**:
+- 41 byte fixed-stride 레코드, 헤더 3 byte (`0a XX YY` = duration, type, count) + 9 cells × 4 byte + 2 byte 트레일러
+- Cell 4 byte: `[x_s8, y_s8, bm_ref_u8, flag_u8]`
+- 4 그룹 × 8 frame = 32 walk-cycle frame (h0 만 이 구조, h4-h11 은 다른 인코딩)
 
-→ 향후 보강 분석 가능. 현재는 슬롯 인덱스 정보만으로도 캐릭터 키 프레임 매핑 가능.
+**Boss/enemy frame 인코딩 (2026-05-09 해독, FUN_00098ef8 @ 0x98ef8)**:
+- 헤더 직후부터 4-byte stride 셀 스트림 (별도 frame 헤더 없음)
+- Cell byte 0 분해:
+  - `bit 7` = special flag (특수 셀)
+  - `bits 5..6` = orientation (0/1/2; sentinel 시 3)
+  - `bits 0..4` = cell ref / type (5-bit)
+- Sentinel cell = `byte 0 == 0x7f` (전체로는 `7f 00 ff ff` 4-byte 패턴 일반적). 디코더가 skip
+- bytes 1..3 = `(x_s8, y_s8, extra_u8)` 추정 (BM 매핑까지 확정 후 검증 가능)
+- 통계 (39 cif): boss0 sentinel 46개, boss3 86개, boss4 147개. 대부분 enemy 는 sentinel 0개 → 단일 frame
+- 라이브러리: `tools/recon/analyze_cif.py` 의 `decode_cell_byte / parse_boss_header / parse_boss_cells / split_frames_by_sentinel / boss_cif_summary`
+- 일괄 통계 도구: `tools/recon/dump_boss_cif.py` → `work/h3/boss_cif_summary.json`
+
+**미확정**:
+- Boss/enemy cell 의 bytes 1..3 정확한 의미 (좌표/플래그 가설) — BM 매핑까지 검증되면 확정 가능
+- h4-h11 walk-cycle 인코딩 (h0 의 4×8 그룹 구조와 다름; 4-5 frame 짧은 그룹 흩어짐)
+- 슬롯과 게임 로직 간 매핑 (예: 슬롯 0 = idle, 1 = walk-up 등 표준화 여부)
+- Animation tick handler `UndefinedFunction_00041172` 이 frame_idx++ + frame_count wrap 으로 동작 — `frame_count` 위치 미확정
+
+→ 향후 보강 분석 가능. 현재는 슬롯 인덱스 정보 + boss/enemy decoder 라이브러리로 cell 단위 해석 가능.
 
 ### `_scn` (이벤트 스크립트) — ⚠️ 부분 분석, 대사 코퍼스 추출 완료
 

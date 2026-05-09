@@ -1,20 +1,21 @@
 """
-Hero3 _cif → JSON 메타데이터 (부분 파싱).
+Hero3 _cif → JSON 메타데이터.
 
-2026-05-04 헤더 재해석:
-    uint8  slot_count          // 0..8 (hero/boss=8, enemy=0~7)
-    uint8  type_or_category    // 0=hero/boss, 1=enemy 추정
+헤더:
+    uint8  slot_count          // 0..8 (hero=8, enemy=1~5, boss=1)
+    uint8  category            // 0=hero/boss, 1=enemy, 2=일부 보스
     uint8  sprite_indices[slot_count]
-    bytes  animation_data[]    // 미해독 (timing/event)
-
-`19 19` 패턴이 76% 파일에 존재 → frame size 마커.
-animation_data 의 정확한 record 구조는 Ghidra 분석 필요 (보류).
+    bytes  animation_data[]    // hero=41B fixed stride, boss/enemy=4B cell stream
 
 사용:
-    python convert_cif.py <input.cif> <output.json>
+    python convert_cif.py <input.cif> <output.json>           # header only
+    python convert_cif.py <input.cif> <output.json> --boss    # FUN_00098ef8 디코더로 cell 까지 dump
 """
 from __future__ import annotations
-import struct, sys, json, pathlib
+import sys, json, pathlib
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'recon'))
+from analyze_cif import boss_cif_summary, parse_boss_header, parse_boss_cells, split_frames_by_sentinel
 
 
 def parse_cif(data: bytes) -> dict:
@@ -35,15 +36,58 @@ def parse_cif(data: bytes) -> dict:
     }
 
 
+def parse_cif_boss(data: bytes) -> dict:
+    """Boss/enemy cif 를 FUN_00098ef8 디코더로 풀어 cell 까지 dump."""
+    h = parse_boss_header(data)
+    body = data[h['body_offset']:]
+    cells = parse_boss_cells(body)
+    frames = split_frames_by_sentinel(cells)
+    summary = boss_cif_summary(data)
+    return {
+        'slot_count': h['slot_count'],
+        'category': h['category'],
+        'indices': h['indices'],
+        'body_bytes': summary['body_bytes'],
+        'cells_total': summary['cells_total'],
+        'sentinels': summary['sentinels'],
+        'specials': summary['specials'],
+        'frames': summary['frames'],
+        'frame_len_min': summary['frame_len_min'],
+        'frame_len_max': summary['frame_len_max'],
+        'top_refs': summary['top_refs'],
+        'frame_summaries': [
+            {
+                'idx': i,
+                'cells': len(f),
+                'orient_dist': _count_field(f, 'orient'),
+                'ref_dist': _count_field(f, 'ref'),
+            }
+            for i, f in enumerate(frames[:64])  # 첫 64 frame 만 dump (boss4 같은 큰 파일 제한)
+        ],
+    }
+
+
+def _count_field(cells: list[dict], key: str) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for c in cells:
+        k = str(c.get(key, ''))
+        out[k] = out.get(k, 0) + 1
+    return out
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
+    args = [a for a in argv[1:] if not a.startswith('-')]
+    boss_mode = '--boss' in argv
+    if len(args) != 2:
         print(__doc__)
         return 2
-    src, dst = pathlib.Path(argv[1]), pathlib.Path(argv[2])
-    out = parse_cif(src.read_bytes())
+    src, dst = pathlib.Path(args[0]), pathlib.Path(args[1])
+    data = src.read_bytes()
+    out = parse_cif_boss(data) if boss_mode else parse_cif(data)
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(json.dumps(out, indent=2), encoding='utf-8')
-    print(f'  {src.name} -> {dst.name} (slots={out["slot_count"]}, indices={out["indices"]})')
+    tag = ' [boss]' if boss_mode else ''
+    print(f'  {src.name} -> {dst.name}{tag} (slots={out["slot_count"]}, indices={out["indices"]})')
     return 0
 
 

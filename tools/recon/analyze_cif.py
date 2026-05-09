@@ -90,7 +90,12 @@ def decode_cell_byte(cb: int) -> dict:
 
 
 def parse_boss_header(data: bytes) -> dict:
-    """Boss/enemy cif 헤더 파싱. body 시작 offset 도 반환."""
+    """Boss/enemy cif 헤더 파싱. body 시작 offset 도 반환.
+
+    body_offset 은 `2 + slot_count` (indices end). 실제 binary 의 FUN_00098ef8 은
+    indices 이후 추가 metadata bytes (h0 = 2B `04 08`, boss0 = 3B `01 09 12`) 를 더 skip 할
+    가능성 있음 — 이 metadata 가 anim/frame count 일 것으로 추정. 미확정.
+    """
     if len(data) < 2:
         return {'slot_count': 0, 'category': 0, 'indices': [], 'body_offset': 0}
     sc = data[0]
