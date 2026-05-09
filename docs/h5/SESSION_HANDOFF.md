@@ -2,32 +2,33 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Formula VM GDScript 평가기 + battle_system 통합 + gv+0x1474 sub-struct 111 fields 정확 추출)
+업데이트: 2026-05-09 (Round 5 — Formula VM GDScript 평가기 + battle_system 통합 완료)
 
 ---
 
 ## 30초 요약
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
-+ **모든 우선순위 작업 (P1/P2/P3/P4)** 완료. Title → ClassSelect → Demo 흐름이 동작
-가능한 Godot 4 프로젝트 (`apps/hero5-godot/`). 38 GDScript / 14 씬 / 5 싱글톤 /
-**OPCODE_TABLE 77/77 (.so ARM disasm 자동 추출, Ghidra 불필요)**.
++ **모든 우선순위 작업 (P1~P4) + DES 해독 + Formula VM 통합** 완료.
+Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`apps/hero5-godot/`).
+38 GDScript / 14 씬 / **6 싱글톤 (FormulaVM 추가)** / OPCODE_TABLE 77/77.
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-이번 세션 (2026-05-09) 완료 항목:
-- **DES 변종 완전 해독** — 표준 DES 와 단 한 가지 차이 (`S1[3][10] = 3 → 2`).
-  나머지 IP, IP_inv, E, P, S2..S8, S1 의 나머지 63 entry, PC1, PC2, shift schedule
-  모두 표준 DES 동일. `MX_desEncrypt`/`MX_desDecrypt` 의 키 reversal + input swap 은
-  Feistel 항등식으로 결국 표준 DES encrypt/decrypt 와 동치. `tools/h5_des.py` 가
-  Python 구현, `tools/h5_decrypt_calc.py` 가 calc_pl/en/sk.dat 평문을 **MD5 검증
-  통과** 로 dump. 자세히 [`DES_VARIANT.md`](DES_VARIANT.md).
-- **Formula VM 디스어셈블러** — `tools/h5_formula_disasm.py` 가 186 공식 전부
-  파싱 (size mismatch 0 건). infix 표현 + 상수 평가 + 옵코드 (`0x11=ADD .. 0x16=XOR`)
-  완전 추출. 산출: `work/h5/analysis/formulas_disasm.txt` (945 줄).
-  → battle_system.gd 의 임시 공식을 100% 정확하게 대체 가능.
-- **opcode 매핑 정정** — `BATTLE_FORMULA.md` 의 opcode 표가 역순이었음
-  (`0x11=ADD`, NOT XOR). 디스어셈블 결과 + 186 공식 정상 파싱으로 검증.
+**현재 상태**:
+- ✅ DES 변종 완전 해독 (S1[3][10]=2 단일 수정), calc_*.dat MD5 검증 평문 dump
+- ✅ Formula VM 186 공식 (39+19+128) 디스어셈블 + GDScript 평가기 + battle_system 통합
+- ✅ gv+0x1474 sub-struct 111 fields 정확 매핑
+- ⚠ **남은 작업**: gv_sub 필드명 정확화 (offset 0x278+ s16 → atk/def/hp/mp 매핑 RE 필요)
+
+**이번 세션 (2026-05-09) 완료 항목**:
+- **DES 변종 해독** — 표준 DES + S1[3][10]=2 단일 수정. `tools/h5_des.py`.
+  자세히 [`DES_VARIANT.md`](DES_VARIANT.md).
+- **Formula VM 디스어셈블러** — 186 공식 infix dump. `tools/h5_formula_disasm.py`.
+- **GDScript Formula VM 평가기** — `formula_vm.gd` autoload + battle_system 통합.
+  `tools/h5_test_formula_eval.py` Python sanity test 통과 (id=0 → 4437 정확).
+- **gv_sub 111 fields 추출** — `tools/h5_extract_gv_subStruct.py` (var_id 58-167+249).
+- **opcode 매핑 정정** — `0x11=ADD .. 0x16=XOR` (이전 docs 가 역순이었음).
 
 ---
 
@@ -60,93 +61,69 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 우선순위 작업
+## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### P5: 한글 자모 인코딩 정밀 — ✅ 부분 완료 (2026-05-09)
-정정 사항: table.dat 는 EUC-KR 이 아니라 **Unicode BMP**. 자세히 `docs/h5/P5_FONT_MAPPING.md`.
-- ✅ table.dat → Unicode codepoint list (Hanja 773 + Hangul 1246 + 기타 331).
-- ✅ 폰트 그리기 호출 경로 추적 (`MX_fntDrawString` → `_midas_funcFntInvalidate`).
-- ⏳ 581-glyph 매핑 자체는 `_midas_funcFntInvalidate` 디스어셈블 시 추출 가능.
-- 게임 영향 0 — Noto Sans CJK KR 시스템 폰트로 충분.
+### 1. gv_sub 필드명 정확화 (RECOMMENDED — 자율 가능, 큰 임팩트)
 
-### P6: Android APK 실 빌드 검증 — 사용자 직접 진행 필요
-- Godot Editor 4.2+ + Install Android Build Template + Export Templates (~1GB) +
-  JDK 17 + Android SDK + NDK 필수.
-- `apps/hero5-godot/export_presets.cfg.template` 참조 (arm64-v8a, min SDK 23, target 34).
-- 이 머신에서 자동화 불가 — 사용자가 GUI 로 진행 필요.
+**현재 상태**: `gv+0x1474` sub-struct 의 111 offset 추출 완료, 그러나 각 offset 이
+정확히 무엇인지 (player.atk vs player.hp vs player.lv 등) 미확정.
+임시 매핑 (632=atk, 634=def, 636=hp, ...) 을 `battle_system.gd::_player_ctx()` 에서 사용 중 —
+틀려도 임시 공식 fallback 으로 동작 보장하지만 정확도 떨어짐.
 
-### Polish + 심층 분석 — ✅ 모두 완료 (2026-05-09)
-- ✅ **scene body 실행 trace** — `tools/h5_scn_body_stats.py` (258/258 dispatch 99%+ 정확).
-- ✅ **damage formula 분석 (심층)** — Event_PlayerDamage 100% 추출 + BATTLER offset 확정.
-  `HERO::NewHitEffect`/`HeroSkillAtkHardCode` 는 시각 이펙트와 KnockBack/Snatch 로직만.
-  실제 데미지는 **`TargetEffect::ProcDemageCalc` → `Formula::calc()` (스택 기반 VM)**.
-- ✅ **Formula VM 식별** — 공식이 외부 데이터 (`calc_pl/en/sk.dat`, DES 암호화) 에 인코딩.
-  6 opcode (XOR/MOD/DIV/MUL/SUB/ADD) 의 스택 머신. 자세히 `BATTLE_FORMULA.md` §6.
-- ✅ **DES 키 발견** — `'0EP@KO91'` (`onStartApp` 의 `MX_desInit` 인자 추적).
-- ✅ **SMAF → OGG 변환** — 변환 불필요 (1:1 매칭).
-- ✅ **Event_* opcode 102개 1:1 매핑** — `docs/h5/EVENT_OPCODE_REFERENCE.md`.
-  4B stub 13개 식별 (DRM 잔재). interpreter.gd 핸들러 disasm-confirmed semantics 로 보강.
-- ✅ **EquipItemInfo struct 부분 layout** — `docs/h5/ITEM_STRUCT.md` (CopyData offset 분석).
+**필요 작업**: gv+0x1474 sub-struct 에 **writes 하는 함수** 추적해서 의미 식별.
+- `HERO::SetHP`, `HERO::SetAttack`, `HERO::AddExp` 등 setter 추적
+- 또는 `BATTLER::IncreaseHP` (이미 분석됨, 0x4b41c) 가 어떤 offset 에 write 하는지 확인
+- capstone+lief 로 `*(gv_sub + 0x278..0x2fa)` 에 store 하는 모든 함수 찾기
 
-### 추가 심층 분석 — ✅ 완료 (2026-05-09 후속)
-- ✅ **Formula VM 변수 사전 254개** — `tools/h5_extract_formula_vars.py` +
-  `docs/h5/FORMULA_VAR_DICT.md`. var_id → struct (skill/defender/item/global) +
-  offset 매핑. var_id 1-60 = skill struct, 192-251 = defender (skill 과 동일 layout),
-  168-182 = item, 58-160 = 전역 state.
-- ✅ **ItemTable 19-카테고리 dispatch** — `GetItemTableInfo` 분석으로 record_size
-  별 sub-table dispatch 확정. EquipItem (376B, cat 1-11) / Battle/Cash/Orb/SkillBook
-  (312B) / MixItem (308B) / MixBookItem (324B). `docs/h5/ITEM_STRUCT.md` 갱신.
-- ✅ **interpreter.gd 실제 핸들러 보강** — Event_PlayerDamage/RestoreHp/RestoreSp/
-  Direction/Teleport/QuestStatus/QuestSwitch 가 GameState.hp/sp/player_x/y/dir
-  와 Quest.start/complete/_state 직접 호출하도록 연결. 이제 .scn body 가
-  실제 게임 상태를 변경.
-- ⚠ **DES 복호화 차단** — 비표준 DES 변종 (KEY4REAL 768B = 16 round × 48 byte
-  bit-array). 표준 pycryptodome 으로 안 풀림. `startDes` (0x3923c) 자체 재구현
-  필요. `BATTLE_FORMULA.md` §6 참조.
+**시작 명령**:
+```bash
+# 도구 작성: tools/h5_find_gv_writers.py 신규
+# 패턴: ldr rN, [GOT_ptr + 0x1474]; str/strh/strb rM, [rN, #OFFSET]
+# 결과: work/h5/analysis/gv_substruct_writers.tsv (offset → writer function)
+python tools/h5_find_gv_writers.py
+```
 
-### 추가 진전 (2026-05-09 Round 3)
-- ✅ **GOT 매핑** — Formula::getValFunc 의 var_id 58-160 (전역 state) 113개가
-  모두 동일 GOT entry 0x00164368 → `gv` (0x0016fcf0, 7656B 글로벌 struct) 의
-  +0x1474 포인터 참조. 즉 `gv[0x1474]` = player/hero 데이터 sub-struct.
-  변수 사전 cases 에서 읽는 offset 0x22d-0x27d 가 그 sub-struct 의 stat 필드.
-- ✅ **decode_h5_item.py 카테고리 메타** — SLOT_META (slot_0..18 → category/kind/
-  runtime_struct/runtime_size). 각 item 에 `price` 필드 추가. items.json 에 `_meta.
-  category_dispatch` 노출. GameData.item_slot_meta() / item_stat() 갱신.
-- ✅ **interpreter.gd signal 기반 Map/Camera 연결** — H5Interpreter 에 13개 signal
-  추가 (map_tile_change, map_attribute_change, screen_shake, narration,
-  system_message, scene_change_bgm, player_imo/effect/action, end_of_body 등).
-  Demo 가 connect 해서 toast 로 trace + Audio.play_bgm 자동 호출.
+**산출**: `work/h5/analysis/gv_substruct_writers.tsv` + `_player_ctx()` 정확화.
 
-### 추가 진전 (2026-05-09 Round 4 — DES + Formula VM)
-- ✅ **DES 변종 해독** — 표준 DES + S1[3][10]=2 단일 수정. `tools/h5_des.py`.
-  calc_*.dat MD5 검증 통과로 평문 확보 (`work/h5/analysis/calc_*_plain.bin`).
-- ✅ **Formula VM 디스어셈블러** — 186 공식 (39 + 19 + 128) 전부 infix 표현으로
-  dump. 파일 포맷 + opcode 매핑 + body parse 전부 검증.
-  `work/h5/analysis/formulas_disasm.txt`.
+### 2. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
-### 추가 진전 (2026-05-09 Round 5 — Formula VM 통합)
-- ✅ **gv+0x1474 sub-struct layout** — 111 fields 정확 추출 (`tools/h5_extract_gv_subStruct.py`).
-  s8 영역 0x22d-0x2fc, s16 영역 0x234-0x2fa. var_id 58-167 + 249 매핑 완료.
-  산출: `work/h5/analysis/gv_substruct_layout.tsv`.
-- ✅ **Formula JSON export** — 186 공식 + 254 var_dict 를 GDScript 가 로드할 JSON 으로
-  변환. `tools/h5_export_formulas.py` → `apps/hero5-godot/assets/data/formula/{formulas,var_dict}.json`.
-  `tools/import_to_godot.py` 파이프라인에 추가됨.
-- ✅ **GDScript Formula VM 평가기** — `formula_vm.gd` autoload 신규.
-  스택 머신 + 6 opcode + var lookup (skill/defender/item/gv_sub/const).
-  Python 측 sanity test 통과 (`tools/h5_test_formula_eval.py`): id=0 → 4437 (정확).
-- ✅ **battle_system.gd 통합** — player attack 은 Formula id=0, skill 은 2000+skill_id,
-  enemy turn 은 1000 호출. var_lookup 미완 시 임시 공식 fallback.
-  Player/enemy ctx + equipped weapon ctx 자동 구성.
-- ⚠ **player gv_sub 필드명 매핑** — offset 0x278+ s16 들이 정확히 atk/def/hp/mp/...
-  중 무엇인지는 RE 추가 필요 (gv+0x1474 sub-struct 에 writes 하는 함수 추적).
-  현재는 추정 매핑 (632=atk, 634=def, ...) — 추정 틀려도 fallback 임시 공식이 동작 보장.
+`_midas_funcFntInvalidate` 디스어셈블로 581 glyph index ↔ Unicode 매핑 추출.
+시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 — 폰트 충실도 향상 only.
 
-### 남은 자율 가능 작업
-- **gv_sub 정확한 필드명** — `gv+0x1474+0x278..0x2fa` 에 writes 하는 함수 (HERO::SetHP,
-  HERO::SetAttack 등) 추적 → var_id 111-160 의 정확한 의미 확정.
-- **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
-- **MapRenderer.set_tile / Camera2D.shake 트윈** — interpreter signal 을 받아
-  실제 visual 적용 (현재는 toast 로 trace 만).
+### 3. MapRenderer.set_tile / Camera2D.shake 트윈 (POLISH)
+
+`H5Interpreter` 의 13 signal (map_tile_change/screen_shake/...) 이 현재 toast 로 trace 만.
+실제 visual 적용 (tile 교체 + camera shake tween + narration overlay) 추가하면 .scn body
+실행 결과가 시각적으로 드러남. 게임플레이 영향 적음.
+
+### 4. P6: Android APK 실 빌드 검증 (USER TASK)
+
+자동화 불가. Godot Editor 4.2+ + Build Template + Export Templates (~1GB) + JDK 17 + Android SDK 필수.
+사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets.cfg.template` 참조.
+
+---
+
+## 과거 우선순위 작업 (모두 완료)
+
+| 영역 | 상태 | 산출 |
+|---|---|---|
+| P1: OPCODE_TABLE 77개 | ✅ EventProc::onFunction jumptable 자동 추출 | `work/h5/analysis/opcode_table.tsv`, capstone+lief |
+| P2: enemy_g 121B layout | ✅ HP/MP/ATK/DEF/EXP/Gold + 5 skill slot | .so disasm 검증 |
+| P3: Hero/CHAR 시스템 | ✅ 4방향 이동 + walk_frames | `character.gd` |
+| P4: 전투/퀘스트/UI | ✅ 골격 + 실제 데이터 통합 | battle_system, quest_system |
+| P5: 한글 폰트 | ✅ table.dat=Unicode (시스템 폰트로 우회) | `P5_FONT_MAPPING.md` |
+| Damage formula 심층 | ✅ Event_PlayerDamage + BATTLER offset 확정 | `BATTLE_FORMULA.md` |
+| Formula VM 식별 | ✅ 6 opcode 스택 머신 (calc_pl/en/sk.dat) | `BATTLE_FORMULA.md` §6 |
+| Event_* 102개 매핑 | ✅ 1:1 mapping reference | `EVENT_OPCODE_REFERENCE.md` |
+| ItemTable 19-카테고리 | ✅ runtime_size dispatch | `ITEM_STRUCT.md` |
+| Formula VM 변수 사전 | ✅ 254 var_id → struct/offset | `FORMULA_VAR_DICT.md` |
+| GOT gv 식별 | ✅ var_id 58-160 → gv[0x1474] sub-struct | Round 3 |
+| interpreter.gd signal | ✅ 13 signal (map/camera/narration/...) | Round 3 |
+| DES 변종 해독 | ✅ 표준 DES + S1[3][10]=2 단일 수정 | `DES_VARIANT.md`, Round 4 |
+| calc_*.dat 평문 | ✅ 3 파일 MD5 검증 통과 | `work/h5/analysis/calc_*_plain.bin` |
+| Formula VM 186 공식 | ✅ infix 표현 dump | `work/h5/analysis/formulas_disasm.txt` |
+| gv_sub 111 fields | ✅ var_id 58-167+249 offset/type 매핑 | `gv_substruct_layout.tsv`, Round 5 |
+| GDScript Formula VM | ✅ FormulaVM autoload + battle 통합 | `formula_vm.gd`, Round 5 |
 
 ---
 
@@ -214,21 +191,29 @@ Demo:
 - `analysis/event_arg_sizes.tsv` — 105 Event_* arg sizes
 - `analysis/enemy_g_layout.tsv` — record byte → struct field 매핑
 - `analysis/scn_headers.tsv` — 258 scene 헤더
+- `analysis/formula_var_dict.tsv` — 254 var_id → struct/offset (Round 3)
+- `analysis/gv_substruct_layout.tsv` — 111 gv+0x1474 sub-struct fields (Round 5)
+- `analysis/calc_pl/en/sk_plain.bin` — DES 복호 평문 (Round 4)
+- `analysis/formulas_disasm.txt` — 186 공식 infix dump (Round 4, 945 줄)
+- `analysis/des_disasm.txt`, `des_got_resolved.json`, `des_tables.json` — DES RE 산출
 - `converted/sprites/<idx>/frame_NN_*.png`
 - `converted/text/_corpus.txt` — 18,837 unique 한글
 
 ### Phase 3 (`apps/hero5-godot/`)
 ```
-project.godot           # autoload 5: GameState/AssetLoader/GameData/Audio/Quest
+project.godot           # autoload 6: GameState/AssetLoader/GameData/Audio/Quest/FormulaVM
 scenes/                 # 14 씬
-scripts/core/           # 10 싱글톤/게임 로직
+scripts/core/           # 11 싱글톤/게임 로직
   game_state.gd, asset_loader.gd, game_data.gd, audio_manager.gd, quest_system.gd
   map_renderer.gd, character.gd, interpreter.gd, battle_system.gd, save_manager.gd
+  formula_vm.gd            # ← Round 5: Formula VM 평가기 (calc_*.dat 186 공식)
 scripts/ui/             # 17 UI 스크립트 (scene_fader.gd 추가)
 assets/                 # gitignore — import_to_godot.py 가 채움
   sprites/, gbm/, palettes/, text/, sounds/, fonts/, gamedata/, maps/, scenes/
   scenes/opcode_table.json   # ← P1 산출물 (capstone+lief 있으면 자동 생성)
   scenes/bodies/<idx>.bin    # ← P1 scene body 자동 실행용
+  data/formula/formulas.json # ← Round 5: 186 공식 (id → body)
+  data/formula/var_dict.json # ← Round 5: 254 var_id → struct/offset
 ```
 
 ### 도구 (`tools/`)
