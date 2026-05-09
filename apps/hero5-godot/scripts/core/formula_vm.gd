@@ -259,24 +259,60 @@ func _read_player(player: Dictionary, var_id: int, offset: int, type_str: String
 
 
 ## GameState 와 직접 연동된 기본 매핑 — autoload GameState 사용.
+##
+## var_id ↔ field 매핑은 .so writer 분석 (h5_find_gv_writers.py) +
+## calc_pl 공식 cross-check 로 확정 (battle_system.gd::_player_ctx 와 동일).
 func _player_default(var_id: int, _offset: int) -> int:
-	# 흔히 쓰이는 var_id 직접 매핑 (formulas_disasm.txt 분석 기반)
-	#   V[58] - 자주 등장 (player base attack power 추정)
-	#   V[20+] skill stats - skill 측에서 처리
-	#   V[111+] - HP/MP/방어/체력 추정
-	if not Engine.has_singleton("GameState"):
-		# ProjectSettings autoload — Engine.get_singleton 은 작동 안 할 수 있으니 대안:
-		var gs := get_node_or_null("/root/GameState")
-		if gs == null:
+	var gs := get_node_or_null("/root/GameState")
+	if gs == null:
+		return 0
+	match var_id:
+		58: return int(gs.level)              # 0x22d  V[58]  level (확정)
+		60: return int(gs.stat_str)           # 0x236  base_str
+		61: return int(gs.stat_dex)           # 0x238  base_dex
+		62: return int(gs.stat_int)           # 0x23a  base_int
+		63: return int(gs.stat_con)           # 0x23c  base_con
+		69: return int(gs.sp)                 # 0x248  SP (cur)
+		# V[111..116] = LoadResClassInfo 가 6 sequential s16 store — 클래스 base 계수 (Round 7).
+		# id=24 ATK 공식: V[5] + V[111] * ((V[58]*2) + V[154])
+		# → V[111] = atk_growth_per_(level*2+str) coefficient.
+		# id=25..29 의 V[112..116] = 5 secondary stats base (각각 V[129..133] 와 짝).
+		111: return max(1, int(gs.total_attack() if gs.has_method("total_attack") else 10) / max(1, int(gs.level) * 2 + int(gs.stat_str)))
+		112: return 0                         # 0x27a  secondary stat #1 base
+		113: return 0                         # 0x27c  secondary stat #2 base
+		114: return 0                         # 0x27e  secondary stat #3 base
+		115: return 0                         # 0x280  secondary stat #4 base
+		116: return 0                         # 0x282  secondary stat #5 base
+		118: return 0                         # 0x298  bonus_str (장비/버프, 미보유)
+		119: return 0                         # 0x29a  bonus_dex
+		120: return 0                         # 0x29c  bonus_int
+		121: return 0                         # 0x29e  bonus_con
+		# 0x294/0x295/0x296 active buff descriptor (HERO::ApplyBuildupEffect 가 store) 는
+		# Formula VM 의 var_dict 에 없음 — gameplay 코드(UI 아이콘 표시 등) 전용 필드.
+		# 따라서 V[125]/V[126] 매핑 대상이 아님 (V[125]=0x2a6 / V[126]=0x2a8 는 별개).
+		125: return 0                         # 0x2a6  buff stack slot (InitStatusComputation resets)
+		126: return 0                         # 0x2a8  buff stack slot
+		# V[127..148] = buff/equipment 가 추가하는 bonus stat (Round 8 — calc_pl 공식 패턴).
+		127: return 0                         # 0x2aa s8  defense_reduction_percent (id=84..85 0..99 bound)
+		128: return 0                         # 0x2ac  atk_percent_bonus (id=24 (100+V[128])/100)
+		129: return 0                         # 0x2ae  secondary stat #1 bonus (id=25 V[129]*10)
+		130: return 0                         # 0x2b0  secondary stat #2 bonus (id=26 V[130]*10)
+		131: return 0                         # 0x2b2  secondary stat #3 bonus (id=27 flat)
+		132: return 0                         # 0x2b4  secondary stat #4 bonus (id=28 flat)
+		133: return 0                         # 0x2b6  secondary stat #5 bonus (id=29 flat)
+		134, 135: return 0                    # 0x2b8, 0x2ba magic atk paired (element 1/2)
+		136, 137, 138, 139, 140, 141, 142, 143: return 0  # 0x2bc..0x2ca 4-pair element bonuses
+		144, 145: return 0                    # 0x2cc, 0x2ce main element bonuses (id=7,8)
+		146, 148: return 0                    # 0x2d0, 0x2d4 sub-stats for 255-bound formula (id=16)
+		147: return 0                         # 0x2d2  element bonus
+		# V[151..154] = formula 의존 stat (Round 7 — id=0 MaxHP / id=24 ATK 공식 cross-check).
+		151: return int(gs.stat_int)          # magic stat base (id=4 magic atk +V[151])
+		152: return int(gs.stat_dex)          # magic stat base (id=5 paired with V[151])
+		153: return int(gs.stat_con)          # con 보정 (id=0 max_hp 공식 10*V[153])
+		154: return int(gs.stat_str)          # str 보정 (id=24 atk 공식 V[58]*2+V[154])
+		155: return int(gs.max_sp)            # 0x2e6  max_sp 확정 (ApplyBuildupEffect SP clamp upper bound)
+		_:
 			return 0
-		match var_id:
-			58: return int(gs.stat_str)
-			60: return int(gs.level)
-			153: return int(gs.stat_str + gs.level)
-			# 자주 쓰이는 var_id → GameState 매핑
-			_:
-				return 0
-	return 0
 
 
 ## 디버그: formula 의 infix 표현 반환 (formula_id 별로).
