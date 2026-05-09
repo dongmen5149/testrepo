@@ -25,10 +25,49 @@
 
 ---
 
+## 카테고리 dispatch (GetItemTableInfo 분석 결과, 2026-05-09)
+
+`ItemTable::GetItemTableInfo(ItemInfo* dst, char category, char idx)` 가
+**19 카테고리 switch** 로 record_size 별 sub-table 에서 fetch + Copy:
+
+| category | record size | 구조 | 호출되는 CopyData |
+|---:|---:|---|---|
+| 0 | (return) | null/invalid | — |
+| **1-11** | 0x178 (376B) | **EquipItemInfo** | `EquipItemInfo::CopyData` |
+| 12 | 0x138 (312B) | BattleUseItemInfo | `BattlelUseItemInfo::CopyData` (sic) |
+| 13 | 0x138 | OrbItemInfo | `OrbItemInfo::CopyData` |
+| 14 | 0x134 (308B) | MixItemInfo | `MixItemInfo::CopyData` |
+| 15 | 0x134 | MixItemInfo (변종) | 동일 |
+| 16 | 0x144 (324B) | MixBookItemInfo | `MixBookItemInfo::CopyData` |
+| 17, 18 | 0x138 | SkillBookItemInfo | `SkillBookItemInfo::CopyData` |
+| 19 | 0x138 | CashItemInfo | `CashItemInfo::CopyData` |
+
+**카테고리 1-11 (장비) 의 sub-table 위치**: `ItemTable[r0, +0xa+(category)*4]` —
+ItemTable 객체 안 0x28-0x54 영역에 11개 sub-table 포인터가 배열로 있음.
+
+**카테고리 12+의 sub-table 위치**: `[r0, +0x54], +0x58, +0x5c, +0x60, +0x64, +0x70`
+(고정 offset 으로 직접 dispatch).
+
+**EquipItem 만 socket 초기화**: `dst[0x168] = 0; memset(dst+0x169, 0xff, 5)` —
+6 슬롯 중 1번째는 0, 나머지 5는 0xff (빈 슬롯). 이는 ITEM_STRUCT 의 +0x154-+0x168
+관찰과 일치.
+
+## 현재 Godot 디코더 (`decode_h5_item.py`) 와의 차이
+
+현재 출력 `items.json`:
+```json
+"slot_0": [{ "idx": 0, "name": "롱소드", "stats_u16": [200, 0, 48647, ...] }]
+```
+
+- `slot_N` 의 N 이 **category** 와 일치 (확인됨: slot_0 = 무기 = category 1).
+- `stats_u16` 의 16 × 2B = 32B = 레코드의 앞 32 바이트.
+- 376B EquipItem 레코드의 나머지 344B 는 `extra_hex` 에 hex 로 dump 됨 — **파싱 안 됨**.
+
+후속 작업으로 `decode_h5_item.py` 를 EquipItemInfo CopyData offset 에 맞춰
+정식 필드명 (atk/def/level_req/class_req/socket[5]) 으로 라벨링 가능.
+
 ## 다음 분석 가능
 
-- `ItemTable::GetItemTableInfo(ItemInfo*, char, char)` (288B) ─ 외부 데이터에서
-  ItemInfo 채우는 함수. csv/dat 파일 → struct field 매핑 직접 노출.
 - `EquipItemInfo::IsEquipPossible(char class_id)` (272B) ─ 클래스 제한 체크.
   어떤 byte 가 "허용 클래스 비트마스크" 인지 확인 가능.
 - `EquipItemSpirit::SetEquipItemSpirit(char, short)` (200B) ─ 스피릿 슬롯 처리.

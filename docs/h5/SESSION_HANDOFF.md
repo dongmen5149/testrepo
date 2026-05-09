@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Polish 라운드 + 심층 데미지/Formula VM 분석 + 102개 Event_* opcode 1:1 매핑 + 아이템 struct 부분 추출 + DES 키 식별)
+업데이트: 2026-05-09 (Polish 라운드 + Formula VM 변수 사전 254개 + ItemTable 19-카테고리 dispatch + interpreter.gd 실제 핸들러 + DES 비표준 변종 식별)
 
 ---
 
@@ -92,14 +92,33 @@ python tools/verify_godot_project.py
   4B stub 13개 식별 (DRM 잔재). interpreter.gd 핸들러 disasm-confirmed semantics 로 보강.
 - ✅ **EquipItemInfo struct 부분 layout** — `docs/h5/ITEM_STRUCT.md` (CopyData offset 분석).
 
+### 추가 심층 분석 — ✅ 완료 (2026-05-09 후속)
+- ✅ **Formula VM 변수 사전 254개** — `tools/h5_extract_formula_vars.py` +
+  `docs/h5/FORMULA_VAR_DICT.md`. var_id → struct (skill/defender/item/global) +
+  offset 매핑. var_id 1-60 = skill struct, 192-251 = defender (skill 과 동일 layout),
+  168-182 = item, 58-160 = 전역 state.
+- ✅ **ItemTable 19-카테고리 dispatch** — `GetItemTableInfo` 분석으로 record_size
+  별 sub-table dispatch 확정. EquipItem (376B, cat 1-11) / Battle/Cash/Orb/SkillBook
+  (312B) / MixItem (308B) / MixBookItem (324B). `docs/h5/ITEM_STRUCT.md` 갱신.
+- ✅ **interpreter.gd 실제 핸들러 보강** — Event_PlayerDamage/RestoreHp/RestoreSp/
+  Direction/Teleport/QuestStatus/QuestSwitch 가 GameState.hp/sp/player_x/y/dir
+  와 Quest.start/complete/_state 직접 호출하도록 연결. 이제 .scn body 가
+  실제 게임 상태를 변경.
+- ⚠ **DES 복호화 차단** — 비표준 DES 변종 (KEY4REAL 768B = 16 round × 48 byte
+  bit-array). 표준 pycryptodome 으로 안 풀림. `startDes` (0x3923c) 자체 재구현
+  필요. `BATTLE_FORMULA.md` §6 참조.
+
 ### 후속 자율 가능 작업 (남은 가치)
-- DES 키 변환 검증 → calc_*.dat 평문 확보 → Formula VM 디스어셈블러 작성 → 정확한 공식
-  추출 → battle_system.gd 100% 재현. (`BATTLE_FORMULA.md` §6 참조)
-- `Formula::getValFunc` (6372B) 변수 ID 사전 추출 → 어떤 ID 가 ATK/DEF/Lv 인지 매핑.
-- `ItemTable::GetItemTableInfo` (288B) → ItemInfo struct 완전 매핑.
-- `_midas_funcFntInvalidate` → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
-- interpreter.gd `_dispatch` 핸들러 → 실제 GameState/MapRenderer/Quest 호출 채우기
-  (`EVENT_OPCODE_REFERENCE.md` §4 가이드 참조).
+- **DES 비표준 변종 재구현** → calc_*.dat 평문 확보 → Formula VM 디스어셈블러 →
+  본 var_id 사전 + 6 opcode (XOR/MOD/DIV/MUL/SUB/ADD) 로 모든 공식 dump →
+  battle_system.gd 100% 재현.
+- **GOT 매핑** — Formula 의 var_id 58-160 (전역 state) PC-relative 풀이로 정확한
+  필드명 (player.gold/exp/atk/def 등) 식별.
+- **decode_h5_item.py 재라벨링** — EquipItemInfo CopyData offset 활용해 stats_u16
+  슬롯에 정식 필드명 (atk/def/level_req/class_req/socket[5]) 부여.
+- **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
+- **interpreter.gd 추가 핸들러** — Map/Effect/Camera 계열은 별도 시스템 연결 필요
+  (MapRenderer 의 set_tile, Camera2D shake 트윈 등).
 
 ---
 
@@ -136,6 +155,7 @@ Demo:
 | `tools/h5_disasm_skill_hardcode.py` | HeroSkillAtkHardCode 단독 disasm | 2026-05-09 |
 | `tools/h5_extract_event_funcs.py` | EventProc::Event_* 102개 일괄 disasm | 2026-05-09 |
 | `tools/h5_disasm_item_funcs.py` | EquipItemInfo CopyData 등 7개 함수 → struct offset 추출 | 2026-05-09 |
+| `tools/h5_extract_formula_vars.py` | Formula::getValFunc 254-entry switch → var_id 사전 | 2026-05-09 |
 | `tools/h5_extract_opcode_disasm.py` | EventProc::onFunction jumptable → opcode_table.json 77 entries | 2026-05-08 |
 | `tools/h5_event_arg_sizes.py` | Itanium ABI mangle parser → 105 Event_* arg_size | 2026-05-08 |
 | `tools/h5_extract_enemy_layout.py` | Map::MapEnemyG_set → 121B record layout 검증 | 2026-05-08 |
@@ -240,8 +260,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [`PROGRESS.md`](PROGRESS.md) — 전체 진행 상세 (Phase 2 분석 단계별 + Phase 3 시스템별)
 - [`PHASE3_ENGINE.md`](PHASE3_ENGINE.md) — Godot 4 엔진 결정 근거
 - [`BATTLE_FORMULA.md`](BATTLE_FORMULA.md) — BATTLER damage 함수 disasm + Event_PlayerDamage 공식 + Formula VM/DES 키
+- [`FORMULA_VAR_DICT.md`](FORMULA_VAR_DICT.md) — Formula VM 변수 사전 (254 var_id → struct/offset)
 - [`EVENT_OPCODE_REFERENCE.md`](EVENT_OPCODE_REFERENCE.md) — 102개 Event_* opcode 의미 매핑 reference
-- [`ITEM_STRUCT.md`](ITEM_STRUCT.md) — EquipItemInfo struct 부분 layout
+- [`ITEM_STRUCT.md`](ITEM_STRUCT.md) — EquipItemInfo struct 부분 layout + 19-카테고리 dispatch
 - [`P5_FONT_MAPPING.md`](P5_FONT_MAPPING.md) — table.dat=Unicode (EUC-KR 아님) 정정 + 매핑 위치
 - [`apps/hero5-godot/README.md`](../../apps/hero5-godot/README.md) — Godot 프로젝트 사용법
 - [`apps/hero5-godot/export_presets.cfg.template`](../../apps/hero5-godot/export_presets.cfg.template) — Android export 템플릿

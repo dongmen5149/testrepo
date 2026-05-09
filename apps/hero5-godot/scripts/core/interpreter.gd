@@ -272,19 +272,66 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 			# percent != 100 일 때 dmg = min(dmg, cur_hp - 1) — 즉사 방지.
 			# → BATTLER::IncreaseHP(-dmg).
 			if args.size() >= 1:
-				print("[Interp] PlayerDamage(pct=%d%%)" % args[0])
+				var pct: int = args[0]
+				var dmg: int = pct * GameState.max_hp / 100
+				if pct == 100:
+					dmg = GameState.hp
+				elif dmg >= GameState.hp:
+					dmg = max(0, GameState.hp - 1)
+				GameState.hp = max(0, GameState.hp - dmg)
+				print("[Interp] PlayerDamage(pct=%d%%) -> -%d HP (now %d/%d)" % [pct, dmg, GameState.hp, GameState.max_hp])
 		"Event_PlayerRestoreHp":
-			# arg = u8 percent. heal = pct × max_hp / 100.
+			# arg = u8 percent. heal = pct × max_hp / 100. clamp ≤ max_hp.
 			if args.size() >= 1:
-				print("[Interp] PlayerRestoreHp(pct=%d%%)" % args[0])
+				var pct: int = args[0]
+				var heal: int = pct * GameState.max_hp / 100
+				GameState.hp = min(GameState.max_hp, GameState.hp + heal)
+				print("[Interp] PlayerRestoreHp(pct=%d%%) -> +%d HP (now %d/%d)" % [pct, heal, GameState.hp, GameState.max_hp])
 		"Event_PlayerRestoreSp":
-			# arg = u8 percent. → HERO::IncreaseSP.
+			# arg = u8 percent. → HERO::IncreaseSP. clamp ≤ max_sp.
 			if args.size() >= 1:
-				print("[Interp] PlayerRestoreSp(pct=%d%%)" % args[0])
+				var pct: int = args[0]
+				var heal: int = pct * GameState.max_sp / 100
+				GameState.sp = min(GameState.max_sp, GameState.sp + heal)
+				print("[Interp] PlayerRestoreSp(pct=%d%%) -> +%d SP (now %d/%d)" % [pct, heal, GameState.sp, GameState.max_sp])
+		"Event_PlayerDirection":
+			# arg = u8 dir (0..3). 외부 핸들러 없으면 GameState 만 갱신.
+			if args.size() >= 1:
+				GameState.player_dir = args[0]
+				print("[Interp] PlayerDirection(%d)" % args[0])
+		"Event_PlayerTeleport":
+			# args = u16 x, u16 y, u8 dir. GameState 좌표 갱신.
+			if args.size() >= 5:
+				var tx: int = args[0] | (args[1] << 8)
+				var ty: int = args[2] | (args[3] << 8)
+				GameState.player_x = tx
+				GameState.player_y = ty
+				GameState.player_dir = args[4]
+				print("[Interp] PlayerTeleport(%d, %d, dir=%d)" % [tx, ty, args[4]])
 		"Event_PlayerImo":
 			# arg = u8 emo_id (머리 위 이모티콘).
 			if args.size() >= 1:
 				print("[Interp] PlayerImo(emo=%d)" % args[0])
+		"Event_QuestStatus":
+			# args = u8 qid, u8 status. 0=inactive 1=active 2=completed 3=failed.
+			if args.size() >= 2:
+				var qid: int = args[0]; var status: int = args[1]
+				if status == Quest.STATUS_ACTIVE:
+					Quest.start(qid)
+				elif status == Quest.STATUS_COMPLETED:
+					Quest.complete(qid)
+				else:
+					Quest._state[qid] = status
+				print("[Interp] QuestStatus(qid=%d, status=%d)" % [qid, status])
+		"Event_QuestSwitch", "Event_QuestQSwitch":
+			# args = u8 qid, u8 on_off. on=1 → start, off=0 → reset.
+			if args.size() >= 2:
+				var qid: int = args[0]; var on_off: int = args[1]
+				if on_off:
+					Quest.start(qid)
+				else:
+					Quest._state[qid] = Quest.STATUS_INACTIVE
+				print("[Interp] %s(qid=%d, on=%d)" % [name, qid, on_off])
 		"Event_EnemyChange":
 			# args = u8 slot_idx, u8 monster_id. → Map::MonsterChange.
 			if args.size() >= 2:
