@@ -580,6 +580,26 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 17 — 2026-05-10 완료]**
+- ✅ `RefineItem::ApplyItemRefine` (956B, @0xa292c) 디스어셈블 → 강화 시
+  변경되는 EquipItemInfo struct field 식별:
+  - `+0x165` = refine_count (강화 횟수, u8)
+  - `+0x166` = refine_sub_count (보조 강화, u8)
+  - `+0x167` = refine_locked (1=영구 잠금, u8)
+  ApplyItemRefine 의 r7 jumptable 결과:
+  - r7=0/1: 강화 +1 success — +0x165 += 1, +0x166 += 1 또는 +2
+  - r7=3: refine lock 적용 — +0x167 = 1
+  - r7=4: 강화 실패 — `EquipItem::ClearEquipItem` (아이템 destroy)
+- ✅ `EquipItemInfo::CopyData` (0xa8884) 가 +0x165, +0x166, +0x168 모두 복사 →
+  runtime 강화 결과가 saved 형태로 보존.
+- ✅ val_15f upper 3 bit (`>>5`) 분포 통계 추출 (`tools/h5_check_items.py`):
+  - upper=0 (no upper bit) — 170 items (중급/희귀 무기)
+  - upper=1 (32, bit5) — 248 items (강화/보스 무기 — 스톰브링거/캘라보그)
+  - upper=3 (96, bits5+6) — 9 items (slot_5 헤어핀/서클릿 보석 액세서리)
+  - upper=7 (224, all) — 362 items (common 기본 아이템 — 롱소드/서클릿)
+- ⏸ upper 3 bit 의 정확 의미 식별 미완 — bit6=gem accessory, bit7=common flag
+  가설. ItemTable::SetItemOption / DropTable 분석으로 확정 가능 (다음 라운드).
+
 **[Round 16 — 2026-05-10 완료]**
 - ✅ items.json 의 `class_restriction` (struct +0x155) 매핑이 **잘못됨**을 발견.
   IsEquipPossible / IsEquipPossibleSpirit cross-check 로 +0x155 가 단순 byte 비교

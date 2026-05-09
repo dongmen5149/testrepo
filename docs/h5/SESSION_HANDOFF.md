@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 16 — items.json: +0x155 가 subtype 임을 정정 + val_15f & 0x1f = 5-class bit mask 확정 (W/R/G/K/S) → class_mask/class_label 정확 부여)
+업데이트: 2026-05-10 (Round 17 — RefineItem::ApplyItemRefine 디스어셈블 → +0x165/166/167 = refine fields 식별 + val_15f upper 3 bit 분포 통계 (170/248/9/362))
 
 ---
 
@@ -43,6 +43,16 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 17**: `RefineItem::ApplyItemRefine` (956B) 디스어셈블 → 강화 시
+  변경되는 EquipItemInfo struct field 식별:
+  - `+0x165` = refine_count (강화 횟수 u8)
+  - `+0x166` = refine_sub_count (보조 강화 u8)
+  - `+0x167` = refine_locked (1=영구 잠금)
+  ApplyItemRefine 의 r7 jumptable: r7=0/1=success +N, r7=3=lock, r7=4=실패(아이템 destroy).
+  CopyData (0xa8884) 가 +0x165..+0x168 모두 복사 → runtime 변경 saved.
+  val_15f upper 3 bit 통계: upper=7 (224, "common") 362 records, upper=1 (32, "강화")
+  248 records, upper=0 ("중급") 170, upper=3 ("보석 액세서리") 9 (slot_5 헤어핀/서클릿).
+  정확 의미 식별 미완 — bit6 (64)=gem accessory, bit7 (128)=common flag 가설.
 - ✅ **Round 16**: items.json 정정 — `+0x155` 가 class_restriction 이 아니라
   **subtype code** 임을 IsEquipPossible / IsEquipPossibleSpirit cross-check 로
   확인 (slot_10 spirit 의 cls=5/7 분포 + IsEquipPossibleSpirit 가 0x155==7 만 허용).
@@ -142,11 +152,16 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. val_15f upper 3 bit 의미 (자율 가능, 작은 임팩트)
+### 1. val_15f upper 3 bit 의 정확 의미 식별 (자율 가능, 작은 임팩트)
 
-Round 16 에서 val_15f & 0x1f = 5-class mask 확정. upper 3 bit (값 32, 64, 128) 가
-career/tier/cash 등 추가 의미 가능성. items.json 의 val=109 (0b01101101) 등
-6 비트 set 사례 분석 필요.
+Round 17 에서 분포 통계 추출 — upper=0/1/3/7 만 등장 (170/248/9/362).
+- upper=7 (224) = common 기본 아이템 (롱소드/서클릿)
+- upper=1 (32) = 강화/보스 무기 (스톰브링거/캘라보그)
+- upper=3 (96) = 보석 헤어핀 (slot_5 only, 9 records)
+- upper=0 (0) = 중급/희귀 무기
+
+가설: bit6 (64) = gem accessory, bit7 (128) = common/default flag, bit5 (32) = ?
+ItemTable::SetItemOption (240B) 또는 DropTable 분석으로 확정 가능.
 
 ### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
 
@@ -225,6 +240,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | items.json EquipItem named fields | ✅ Round 15: class_restriction/level_limit/item_id/sub_record/val_150..val_160 부여 | `tools/converter/decode_h5_item.py::parse_equip_extra` |
 | +0x155 = subtype (class_restriction 정정) | ✅ Round 16: IsEquipPossibleSpirit cross-check | items.json `subtype` 필드 |
 | 진짜 class_mask (val_15f & 0x1f) | ✅ Round 16: 5-class 비트 마스크 확정 (W/R/G/K/S) | items.json `class_mask` + `class_label` 필드 |
+| EquipItemInfo refine fields | ✅ Round 17: +0x165=count, +0x166=sub_count, +0x167=locked | `applyitemrefine_disasm.txt` |
+| val_15f upper 3 bit 분포 | ✅ Round 17: upper=0/1/3/7 만 등장 (170/248/9/362), 정확 의미 미완 | `tools/h5_check_items.py` |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

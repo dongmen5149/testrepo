@@ -192,6 +192,51 @@ decode_h5_item.py 의 출력 fields:
 - `class_mask` (val_15f & 0x1f)
 - `class_label` (W/R/G/K/S 조합 또는 "-")
 
+## Round 17 (2026-05-10) — refine field 매핑 + val_15f upper bits 분석
+
+### RefineItem::ApplyItemRefine (956B) disasm 결과
+
+강화 결과 (r7 jumptable, 0xa2b60):
+- r7=0 (0xa2c98): 강화 +1 success — `+0x165 += 1`, `+0x166 += 2`
+- r7=1 (0xa2c6c): 강화 +1 success — `+0x165 += 1`, `+0x166 += 1`
+- r7=2 (0xa2a14): 다른 path
+- r7=3 (0xa2c58): refine lock 적용 — `+0x167 = 1`
+- r7=4 (0xa2bd0): 강화 실패 — `ClearEquipItem` (아이템 destroy)
+
+| offset | 의미 | 변경 함수 |
+|---:|---|---|
+| `+0x165` | refine_count (강화 횟수, u8) | ApplyItemRefine 성공 시 +1 |
+| `+0x166` | refine_sub_count (보조 강화, u8) | 성공 시 +1 또는 +2 |
+| `+0x167` | refine_locked (1=영구 잠금) | r7=3 case |
+
+CopyData 가 위 3 byte 모두 복사 (0x000a8884..8890) — runtime 변경 후 saved
+across copies.
+
+### val_15f upper 3 bit (>>5) 분포
+
+items.json EquipItem 통계:
+
+| upper | bit pattern | count | 추정 의미 |
+|---:|---|---:|---|
+| 0 | `0b000` | 170 | 중급/희귀 |
+| 1 | `0b001` (bit5=32) | 248 | 강화 무기/방어구 (스톰브링거/캘라보그 등) |
+| 3 | `0b011` (bit5+6=96) | 9 | 헤어핀/서클릿 보석 (slot_5 only) |
+| 7 | `0b111` (all=224) | 362 | common 기본 아이템 (롱소드/브로드액스/서클릿 등) |
+
+Sample analysis:
+- upper=7: 롱소드/나이트롱소드/브로드액스 — 일반 시작 무기 (cls_mask=31 다수)
+- upper=1: 스톰브링거/캘라보그/지옥수호도끼 — 보스/희귀 무기
+- upper=0: 실가라스/투란기어/바리사다 — 중급 무기
+- upper=3: 청금석헤어핀/석류석서클릿 — 보석 액세서리
+
+가설:
+- bit5 (32) = ?
+- bit6 (64) = "gem" 또는 "사회술 액세서리"
+- bit7 (128) = "common/default" flag
+
+정확 의미 식별을 위해 ItemTable::SetItemOption (240B) 또는 DropTable 분석 필요
+(다음 라운드).
+
 ---
 
 ## 카테고리 dispatch (GetItemTableInfo 분석 결과, 2026-05-09)
