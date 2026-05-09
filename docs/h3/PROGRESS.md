@@ -59,8 +59,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 # Android 빌드 + 테스트 (32/32 Kotlin 테스트)
 & "C:\gameRemake\testrepo\android\gradlew.bat" -p "C:\gameRemake\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
 
-# Python 회귀 테스트 (59 test: cif 22 + mp 18 + scn 17 + walk-cycle 3 skip-able)
-python -m unittest tools.recon.test_analyze_cif tools.converter.test_convert_mp tools.converter.test_convert_scn
+# Python 회귀 테스트 (89 test: cif 22 + cif-conv 5 + mp 18 + scn 17 + text 5 + palette 6 + dat 8 + translation_dict 9 + walk-cycle 3 PIL-skip)
+python -m unittest tools.recon.test_analyze_cif tools.converter.test_convert_mp tools.converter.test_convert_scn tools.converter.test_convert_cif tools.converter.test_convert_text tools.converter.test_convert_palette tools.converter.test_convert_dat tools.i18n.test_translation_dict
 
 # Boss/enemy cif 일괄 통계 (39 파일 → work/h3/boss_cif_summary.json)
 python tools/recon/dump_boss_cif.py
@@ -93,8 +93,19 @@ python tools/recon/dump_boss_cif.py
 - **#6 h4-h11 walk-cycle 추가 분석** — Ghidra 진척 의존 + 게임 영향 없음 (h0 만 wire). 4시간+ ROI 낮음 → 스킵.
 - **결론**: 자동 진행 가능 항목 모두 소진. 다음 진척 은 모두 사용자 입력 (Ghidra §4.4 caller chain / SMAF 도구 / 번역 API / 디자인 결정).
 
-**C. 검증**
-- Python 59 test 통과 (cif 22 + mp 18 + scn 17 + walk-cycle 3 PIL-dep skip — skip 처리 graceful 화).
+**C. convert_cif --boss 모드 + asset-formats 문서화** (커밋 `169d6ba`)
+- `convert_cif.py` 에 `--boss` 옵션: FUN_00098ef8 디코더로 cell 까지 JSON dump (frame_summaries 64 frame cap).
+- `test_convert_cif.py` 신규: 5 단위 테스트.
+- `docs/asset-formats.md` _cif 섹션 갱신: hero/boss/enemy frame 인코딩 명세 + cell byte 분해 + 미확정 항목.
+
+**D. 테스트 커버리지 확장** (커밋 ⌛)
+- `test_convert_text.py` (5건): build_text_table fixture + EUC-KR 라운드트립 + InGame_txt 통합.
+- `test_convert_palette.py` (6건): Hero3 4-byte / Hero4 8-byte 양 포맷, size 미스매치 검증.
+- `test_convert_dat.py` (8건): EUC-KR 한글 시퀀스 추출 (단일/다중/min_chars/ASCII 거부/incomplete lead byte).
+- `test_translation_dict.py` (9건): for_game H3/H4 분리, all_translations 병합, alias 호환, 캐릭터 leak 검사, 사전 무결성.
+
+**E. 검증**
+- Python **89 test 통과** (skip 8: PIL 3 + work/h3 미추출 5 — 사용자 PC 에서는 통과).
 - Android 빌드 검증 — 본 세션 환경(Linux 샌드박스)은 Android SDK + 네트워크 부재로 미실행. 사용자 PC 에서 `:app:assembleDebug` + `:app:testDebugUnitTest` 32 통과 확인 필요. 변경분이 Android 코드에 영향을 주지 않으므로 회귀 위험 0.
 
 **핵심 교훈**:
