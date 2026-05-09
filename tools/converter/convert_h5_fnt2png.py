@@ -9,8 +9,12 @@ Hero5 .fnt → PNG sprite sheet 변환기.
            offset 31 부터 581 glyphs × 22 bytes (각 row 가 2 bytes BE = 16 bits MSB first)
            total = 31 + 581×22 = 12813 ✓
 
-table.dat: 2350 EUC-KR codepoints sorted (BE u16 array). 정확한 글리프 인덱스
-연결은 별도 분석 (subset 가설 — 게임에 쓰인 한글만 581개).
+table.dat: 2350 **Unicode** codepoints sorted (BE u16 array, range 0x8861-0xD3B7).
+  - 0x8861-0x9FFF: Hanja (CJK Unified Ideographs subset)
+  - 0xAC00-0xD3B7: Hangul Syllables subset
+  EUC-KR 이 아니라 Unicode BMP 임 — 이전 가정 정정 (P5, 2026-05-09).
+  581-glyph 매핑: type.dat (148B) 가 codepoint 분류, 정확한 lookup 은
+  `_midas_funcFntInvalidate` 내부에 있음.
 
 산출:
   apps/hero5-godot/assets/fonts/eng.png  (95 glyphs grid)
@@ -79,11 +83,23 @@ def main() -> int:
     cps = []
     for i in range(0, len(table), 2):
         cps.append(struct.unpack_from('>H', table, i)[0])
+    # 분류: Hanja (CJK Unified, 0x4E00-0x9FFF) vs Hangul (0xAC00-0xD7AF)
+    hanja = [c for c in cps if 0x4E00 <= c <= 0x9FFF]
+    hangul = [c for c in cps if 0xAC00 <= c <= 0xD7AF]
     cps_data = {
-        'note': '2350 EUC-KR codepoints sorted. glyph index = position in this list (mod 581 — subset hypothesis).',
+        'note': ('2350 Unicode codepoints (sorted BE u16). Mix of CJK Hanja '
+                 '(0x4E00-0x9FFF, 한자) and Hangul Syllables (0xAC00-0xD7AF). '
+                 'NOT EUC-KR.'),
         'count': len(cps),
+        'range': [f'0x{min(cps):04x}', f'0x{max(cps):04x}'],
+        'hanja_count': len(hanja),
+        'hangul_count': len(hangul),
         'codepoints_hex': [f'0x{c:04x}' for c in cps[:50]],
         'glyph_count': 581,
+        'mapping_status': ('table.dat 의 2350 항목 → kor.fnt 의 581 글리프 매핑은 '
+                           'type.dat (148B per-codepoint 분류) + native '
+                           '_midas_funcFntInvalidate 내부 lookup 의존. '
+                           '시스템 폰트(Noto Sans CJK KR) 우회로 게임 동작은 무관.'),
     }
     (OUT_DIR / 'eucKR_index.json').write_text(
         json.dumps(cps_data, indent=2, ensure_ascii=False), encoding='utf-8')
