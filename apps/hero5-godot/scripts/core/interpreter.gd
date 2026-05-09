@@ -11,6 +11,21 @@
 class_name H5Interpreter
 extends RefCounted
 
+# ── 외부 구독용 signal (Demo/MapRenderer/Camera 가 connect) ─────────
+signal map_tile_change(x: int, y: int, layer: int, tile_id: int)
+signal map_tile_change_all(theme: int, layer: int)
+signal map_attribute_change(x: int, y: int, attr: int)
+signal enemy_change(slot_idx: int, monster_id: int)
+signal screen_shake(a: int, b: int, c: int)
+signal slow_motion(a: int, b: int, c: int)
+signal narration(str_id: int, flag: int)
+signal system_message(str_id: int)
+signal scene_change_bgm(bgm_id: int)
+signal player_imo(emo_id: int)
+signal player_effect(eff_id: int)
+signal player_action(args_hex: String)
+signal end_of_body                                   # 0xFF + END_marker
+
 const EXTERNAL_TABLE_PATH := "res://assets/scenes/opcode_table.json"
 
 # opcode → (name, arg_size). 0x00-0x1d = ARM disasm 자동 추출 결과 (.so 의 EventProc::onFunction).
@@ -128,6 +143,7 @@ func step(body: PackedByteArray, max_steps: int = 64) -> void:
 			if pos >= n: break
 			var argc := body[pos]; pos += 1
 			if argc > 0x13:
+				end_of_body.emit()
 				print("[Interp] END marker"); break
 			var sizes: Array = []
 			for i in argc:
@@ -189,15 +205,18 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 		"Event_MapTileChange":
 			# args: x, y, tileID_lo, tileID_hi, layer, ?
 			if args.size() >= 6:
+				var tile_id := args[2] | (args[3] << 8)
+				map_tile_change.emit(args[0], args[1], args[4], tile_id)
 				print("[Interp] MapTileChange x=%d y=%d tile=%d layer=%d" % [
-					args[0], args[1],
-					args[2] | (args[3] << 8),
-					args[4]])
+					args[0], args[1], tile_id, args[4]])
 		"Event_MapTileChangeAll":
+			if args.size() >= 4:
+				map_tile_change_all.emit(args[0], args[1])
 			print("[Interp] MapTileChangeAll %s" % args.hex_encode())
 		# BASE_TABLE 의 Player* (0x1b-0x1d)
 		"Event_PlayerAction":
 			if args.size() >= 5:
+				player_action.emit(args.hex_encode())
 				print("[Interp] PlayerAction %s" % args.hex_encode())
 		"Event_PlayerAppearSpirit":
 			print("[Interp] PlayerAppearSpirit %s" % args.hex_encode())
@@ -224,11 +243,16 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 		"Event_SituateDialogText":
 			print("[Interp] DialogText %s" % args.hex_encode())
 		"Event_SituateNarration":
+			# args = u16 str_id, u8 flag.
+			if args.size() >= 3:
+				var sid := args[0] | (args[1] << 8)
+				narration.emit(sid, args[2])
 			print("[Interp] Narration %s" % args.hex_encode())
 		"Event_SituatePopup":
 			print("[Interp] Popup")
 		"Event_Scene_ChangeBgm":
 			if args.size() >= 1:
+				scene_change_bgm.emit(args[0])
 				print("[Interp] ChangeBgm(%d)" % args[0])
 		# 외부 JSON 에서 활성화될 수 있는 이름들 (BASE_TABLE 외).
 		"Event_PlayerTeleport":
@@ -244,13 +268,17 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 				print("[Interp] PlayerMove %s" % args.hex_encode())
 		"Event_PlayerEffect":
 			if args.size() >= 1:
+				player_effect.emit(args[0])
 				print("[Interp] PlayerEffect(%d)" % args[0])
 		"Event_SituateDelay":
 			if args.size() >= 2:
 				var ms = args[0] | (args[1] << 8)
 				print("[Interp] SituateDelay(%dms)" % ms)
 		"Event_SituateScreenShake":
-			print("[Interp] SituateScreenShake")
+			# args = u8 a, u8 b, u8 c.
+			if args.size() >= 3:
+				screen_shake.emit(args[0], args[1], args[2])
+			print("[Interp] SituateScreenShake %s" % args.hex_encode())
 		"Event_SituateCamera":
 			print("[Interp] SituateCamera %s" % args.hex_encode())
 		"Event_SituateCameraTarget":
@@ -260,6 +288,7 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 			# args = u16 str_id (Strings::getString → Battle::SetSystemMsgUi)
 			if args.size() >= 2:
 				var sid = args[0] | (args[1] << 8)
+				system_message.emit(sid)
 				print("[Interp] SystemMessage(str_id=%d)" % sid)
 		"Event_screenEffect":
 			if args.size() >= 1:
@@ -311,6 +340,7 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 		"Event_PlayerImo":
 			# arg = u8 emo_id (머리 위 이모티콘).
 			if args.size() >= 1:
+				player_imo.emit(args[0])
 				print("[Interp] PlayerImo(emo=%d)" % args[0])
 		"Event_QuestStatus":
 			# args = u8 qid, u8 status. 0=inactive 1=active 2=completed 3=failed.
@@ -335,14 +365,17 @@ func _dispatch(op: int, name: String, args: PackedByteArray) -> void:
 		"Event_EnemyChange":
 			# args = u8 slot_idx, u8 monster_id. → Map::MonsterChange.
 			if args.size() >= 2:
+				enemy_change.emit(args[0], args[1])
 				print("[Interp] EnemyChange(slot=%d, mon=%d)" % [args[0], args[1]])
 		"Event_MapCollision":
 			# args = u8 x, u8 y, u8 attr. → Map::MapAttributeChange.
 			if args.size() >= 3:
+				map_attribute_change.emit(args[0], args[1], args[2])
 				print("[Interp] MapCollision(x=%d, y=%d, attr=%d)" % [args[0], args[1], args[2]])
 		"Event_SituateSlowMotion":
 			# args = u8 a, u8 b, u8 c. → Battle::SetSlowFrame + InitSlowFrame.
 			if args.size() >= 3:
+				slow_motion.emit(args[0], args[1], args[2])
 				print("[Interp] SituateSlowMotion(%d, %d, %d)" % [args[0], args[1], args[2]])
 		_:
 			print("  0x%02x %s %s" % [op, name, args.hex_encode()])

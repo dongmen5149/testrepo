@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Polish 라운드 + Formula VM 변수 사전 254개 + ItemTable 19-카테고리 dispatch + interpreter.gd 실제 핸들러 + DES 비표준 변종 식별)
+업데이트: 2026-05-09 (Polish 라운드 + Formula VM 변수 사전 254개 + ItemTable 19-카테고리 dispatch + interpreter.gd signal 기반 Map/Camera 연결 + GOT gv[0x1474] 식별 + DES 비표준 변종 차단)
 
 ---
 
@@ -108,17 +108,29 @@ python tools/verify_godot_project.py
   bit-array). 표준 pycryptodome 으로 안 풀림. `startDes` (0x3923c) 자체 재구현
   필요. `BATTLE_FORMULA.md` §6 참조.
 
-### 후속 자율 가능 작업 (남은 가치)
-- **DES 비표준 변종 재구현** → calc_*.dat 평문 확보 → Formula VM 디스어셈블러 →
-  본 var_id 사전 + 6 opcode (XOR/MOD/DIV/MUL/SUB/ADD) 로 모든 공식 dump →
-  battle_system.gd 100% 재현.
-- **GOT 매핑** — Formula 의 var_id 58-160 (전역 state) PC-relative 풀이로 정확한
-  필드명 (player.gold/exp/atk/def 등) 식별.
-- **decode_h5_item.py 재라벨링** — EquipItemInfo CopyData offset 활용해 stats_u16
-  슬롯에 정식 필드명 (atk/def/level_req/class_req/socket[5]) 부여.
+### 추가 진전 (2026-05-09 Round 3)
+- ✅ **GOT 매핑** — Formula::getValFunc 의 var_id 58-160 (전역 state) 113개가
+  모두 동일 GOT entry 0x00164368 → `gv` (0x0016fcf0, 7656B 글로벌 struct) 의
+  +0x1474 포인터 참조. 즉 `gv[0x1474]` = player/hero 데이터 sub-struct.
+  변수 사전 cases 에서 읽는 offset 0x22d-0x27d 가 그 sub-struct 의 stat 필드.
+- ✅ **decode_h5_item.py 카테고리 메타** — SLOT_META (slot_0..18 → category/kind/
+  runtime_struct/runtime_size). 각 item 에 `price` 필드 추가. items.json 에 `_meta.
+  category_dispatch` 노출. GameData.item_slot_meta() / item_stat() 갱신.
+- ✅ **interpreter.gd signal 기반 Map/Camera 연결** — H5Interpreter 에 13개 signal
+  추가 (map_tile_change, map_attribute_change, screen_shake, narration,
+  system_message, scene_change_bgm, player_imo/effect/action, end_of_body 등).
+  Demo 가 connect 해서 toast 로 trace + Audio.play_bgm 자동 호출.
+- ⚠ **DES 차단 재확인** — `DESdecrypt` 가 `new_decrypt` 를 3번 호출 (3-round 구조)
+  하지만 표준 DES/3DES/EDE/DDD 어떤 변종으로도 MD5 검증 통과하지 않음. S-box
+  또는 PC1/PC2 가 비표준일 가능성 높음. 자체 DES 재구현 필요.
+
+### 남은 자율 가능 작업
+- **DES 자체 재구현** — `desRound` (588B) / `new_decrypt` (168B) / S-box 테이블
+  추출 → calc_*.dat 평문 → Formula VM 디스어셈블러 → 모든 공식 dump.
+- **gv struct 정확한 필드명** — gv+0x1474 sub-struct 에 writes 하는 함수 추적.
 - **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
-- **interpreter.gd 추가 핸들러** — Map/Effect/Camera 계열은 별도 시스템 연결 필요
-  (MapRenderer 의 set_tile, Camera2D shake 트윈 등).
+- **MapRenderer.set_tile / Camera2D.shake 트윈** — interpreter signal 을 받아
+  실제 visual 적용 (현재는 toast 로 trace 만).
 
 ---
 
