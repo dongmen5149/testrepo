@@ -59,8 +59,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 # Android 빌드 + 테스트 (32/32 Kotlin 테스트)
 & "C:\gameRemake\testrepo\android\gradlew.bat" -p "C:\gameRemake\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
 
-# Python 회귀 테스트 (89 test: cif 22 + cif-conv 5 + mp 18 + scn 17 + text 5 + palette 6 + dat 8 + translation_dict 9 + walk-cycle 3 PIL-skip)
-python -m unittest tools.recon.test_analyze_cif tools.converter.test_convert_mp tools.converter.test_convert_scn tools.converter.test_convert_cif tools.converter.test_convert_text tools.converter.test_convert_palette tools.converter.test_convert_dat tools.i18n.test_translation_dict
+# Python 회귀 테스트 (120 test: cif 22 + cif-conv 5 + mp 18 + scn 17 + text 5 + palette 6 + dat 8 + bm_v2 9 + extract_strings 22 + translation_dict 9 + walk-cycle 3 PIL-skip)
+python -m unittest tools.recon.test_analyze_cif tools.recon.test_extract_strings tools.converter.test_convert_mp tools.converter.test_convert_scn tools.converter.test_convert_cif tools.converter.test_convert_text tools.converter.test_convert_palette tools.converter.test_convert_dat tools.converter.test_convert_bm_v2 tools.i18n.test_translation_dict
 
 # Boss/enemy cif 일괄 통계 (39 파일 → work/h3/boss_cif_summary.json)
 python tools/recon/dump_boss_cif.py

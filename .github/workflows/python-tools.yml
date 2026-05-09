@@ -38,6 +38,7 @@ jobs:
         run: |
           python -m unittest \
             tools.recon.test_analyze_cif \
+            tools.recon.test_extract_strings \
             tools.converter.test_convert_cif \
             tools.converter.test_convert_mp \
             tools.converter.test_convert_scn \
