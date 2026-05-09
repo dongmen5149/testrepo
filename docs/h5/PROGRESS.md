@@ -580,6 +580,23 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 14 — 2026-05-10 완료]**
+- ✅ `tools/h5_extract_loaditem_layout.py` — ItemTable::LoadItemTable (4320B,
+  @0xa38e0) 디스어셈블 + csv read → struct store 시퀀스 자동 추출 도구.
+  EquipItem 영역 (cat 1-11, 0xa3cf0~0xa4060) 분석.
+- ✅ csv record body → in-memory EquipItemInfo struct field 매핑 추출:
+  - csv +0..1 = record count (loop init)
+  - csv +2..3 = u16 read but discarded (struct +0x14 = function arg category)
+  - csv +4..5 → struct +0x16 (refine_value u16)
+  - csv +6 (u8 name_len `nl`) → 7..6+nl name string memcpy → struct +0x18
+  - csv +7+nl..+10+nl (u32) → struct +0x30
+  - csv +11+nl (u8 sub_record_len `sblen`) → 256B sub-record memcpy → struct +0x34
+  - 그 후 sb 시작 위치에서 u16/u8 mixed sequence → struct +0x150..+0x162
+- ✅ LoadItemTable 안에서 `Formula::calc(formula_id=0x7f3=2035)` 호출 — load
+  시점 base stat 즉시 계산 패턴 확인.
+- ⏸ csv extra (가변 길이) 는 단순 u16 array 와 다름 — items.json 의 stats_u16
+  가 부정확. decode_h5_item.py 정확화는 다음 라운드.
+
 **[Round 13 — 2026-05-10 완료]**
 - ✅ EquipItemInfo struct 핵심 field 5개 식별 — `tools/h5_dump_caller.py` 로
   CopyData / IsEquipPossible / GetLevelLimit 디스어셈블:

@@ -88,6 +88,50 @@ ItemBase 는 EquipItemInfo / OrbItemInfo / SkillBookItemInfo 등의 base class �
 
 ---
 
+## CSV → EquipItemInfo struct 매핑 (Round 14 — 2026-05-10)
+
+`ItemTable::LoadItemTable` (4320B) @0xa38e0 의 EquipItem 처리 영역
+(0xa3cf0 ~ 0xa4060) 디스어셈블로 csv record layout 추출:
+
+| csv offset | size | 의미 | struct dst |
+|---:|---:|---|---|
+| 0..1 | u16 | record count (loop init) | — (count) |
+| 2..3 | u16 | (read but discarded — function arg 우선) | struct +0x14 ← function arg (category) |
+| 2 | (zero init) | — | struct +0x15 = 0 |
+| 4..5 | u16 | refine_value 또는 enchant_level | struct +0x16 |
+| 4 | (zero init 0x18..0x2c) | — | struct +0x18..+0x2c, +0x2c = 0 |
+| 6 | u8 | name_len (`nl`) | — |
+| 7..6+nl | bytes | name string (UTF-8/euc-kr) | struct +0x18 (memcpy `nl` bytes) |
+| 7+nl..10+nl | u32 | item_id 또는 large flag | struct +0x30 |
+| 11+nl | u8 | sub_record_len (`sblen`) | — |
+| 11+nl..11+nl+sblen | bytes | sub-record (256B padded) | struct +0x34..+0x134 (memcpy 256B) |
+| `sblen+11+nl` (= sb 시작) | u16 | u16 | struct +0x150 |
+| sb+2 | u16 | u16 | struct +0x152 |
+| sb+4 | u8 | flag | struct +0x154 |
+| sb+5 | u8 | **class_restriction** | struct +0x155 (✅ Round 13 확정) |
+| sb+6 | u16 | u16 | struct +0x156 |
+| sb+8 | u16 | u16 | struct +0x158 |
+| sb+0xa | u16 | u16 | struct +0x15a |
+| sb+0xc | u8 | flag | struct +0x15c |
+| sb+0xd | u8 | **level_limit** | struct +0x15d (✅ Round 13 확정) |
+| sb+0xe | u8 | flag | struct +0x15e |
+| sb+0xf | u8 | flag triplet[0] | struct +0x15f |
+| sb+0x10..0x12 | u8 ×3 | (3-byte loop) | struct +0x160 / +0x162..+0x164 |
+| sb+0x13... | (more reads) | + Formula::calc(0x7f3) 호출 | base stat 계산 결과 |
+
+**자동 추출 도구**: `tools/h5_extract_loaditem_layout.py` — register tracking
+한계로 일부만 추출 (수동 disasm 분석이 보완). 다음 라운드 — 자동 추출
+정확화 (sb/r9 register propagation 강화).
+
+**핵심 단서**:
+- csv extra (실제 file 의 record body) 는 u8/u16 mixed layout — items.json 의
+  stats_u16 는 단순 u16 array 로 dump 라 정확한 stat 의미 부여가 어려움
+  (u8 byte 들이 u16 의 일부로 잘못 합쳐질 수 있음).
+- LoadItemTable 안에서 `Formula::calc(formula_id=0x7f3=2035, ...)` 호출 — load
+  시점에 base stat 가 자동 계산되어 cache.
+
+---
+
 ## 카테고리 dispatch (GetItemTableInfo 분석 결과, 2026-05-09)
 
 `ItemTable::GetItemTableInfo(ItemInfo* dst, char category, char idx)` 가

@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 13 — EquipItemInfo struct 핵심 field 5개 (+0x14/+0x155/+0x15d/+0x168..) + V[168..182] ItemBase 영역 formula 사용 패턴 식별)
+업데이트: 2026-05-10 (Round 14 — LoadItemTable 디스어셈블로 csv → EquipItemInfo struct 매핑 layout 추출)
 
 ---
 
@@ -43,6 +43,18 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 14**: ItemTable::LoadItemTable (4320B) 의 EquipItem 처리 영역
+  (0xa3cf0~0xa4060) 디스어셈블 분석 → csv record body → in-memory EquipItemInfo
+  struct field 매핑 layout 추출:
+  - csv +2..3 (u16 read but discarded — struct +0x14 = function arg category)
+  - csv +4..5 (u16) → struct +0x16 (refine_value)
+  - csv +6 (u8 name_len `nl`) → name string memcpy → struct +0x18
+  - csv +7+nl..(+4 byte) (u32) → struct +0x30
+  - csv +11+nl (u8 sub_record_len `sblen`) → 256B sub-record memcpy → struct +0x34..+0x134
+  - 그 후 sb 시작 위치에서 u16/u8 sequence → struct +0x150..+0x162 영역
+  - LoadItemTable 안에서 Formula::calc(0x7f3=2035) 호출 — load 시점 base stat 계산
+  - `tools/h5_extract_loaditem_layout.py` 도구 작성 (register tracking 한계로
+    부분 추출 — 수동 disasm 분석으로 보완).
 - ✅ **Round 13**: EquipItemInfo struct 핵심 field + ItemBase formula 영역 식별.
   - EquipItemInfo +0x14 = item_category/slot_type (s8) — IsEquipPossible jumptable 의 조건
   - EquipItemInfo +0x155 = class_restriction (s8) — HERO+0x22c (class_id) 와 비교
@@ -111,14 +123,16 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. csv stat → EquipItemInfo struct offset 매핑 (자율 가능, 큰 임팩트)
+### 1. decode_h5_item.py 정확화 — csv layout 활용 (자율 가능, 큰 임팩트)
 
-Round 13 에서 EquipItemInfo struct 핵심 field (+0x14/+0x155/+0x15d/+0x168) 식별
-완료. 그러나 csv extra (33..80B) 는 in-memory struct (376B) 와 layout 다름.
-`ItemTable::LoadItemTable` (4320B) disasm 으로 csv→struct 매핑 추출하면
-items.json 의 stats_u16 가 정확한 라벨 (atk/def/level_req/class_req/...) 로 부여
-가능. RefineItem::ApplyItemRefine (956B) 디스어셈블로 강화 시 어느 field 가
-변경되는지도 확정 가능.
+Round 14 에서 LoadItemTable 의 csv→struct 매핑 추출 완료. 이제 decode_h5_item.py
+가 csv extra 를 단순 u16 array 로 dump 하는 대신, ITEM_STRUCT.md 의 csv layout
+(name_len/sub_record_len 가변 길이 + u8/u16 mixed) 을 정확히 parse 해서
+items.json 에 named field (`name`, `class_restriction`, `level_limit`,
+`socket[0..5]`, etc) 부여 가능.
+
+또한 RefineItem::ApplyItemRefine (956B) 디스어셈블로 강화 시 어느 struct field 가
+변경되는지 확정. ApplyOrbCombine (1208B) 도 socket slot 동작 확인.
 
 ### 2. V[151] vs V[152] 의 element 차이 식별 (자율 가능, 작은 임팩트)
 
@@ -181,6 +195,7 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | V[151,152] magic stat 정정 | ✅ Round 12: 둘 다 INT-magic (이전 V[152]=DEX 잘못) | `formulas_disasm.txt` 사용 패턴 |
 | EquipItemInfo struct 핵심 5 field | ✅ Round 13: +0x14/+0x155/+0x15d/+0x168..0x16d | `tools/h5_dump_caller.py _ZN13EquipItemInfo*` |
 | V[168..182] ItemBase formula 영역 | ✅ Round 13: V[168]=SP cost, V[170]=cooldown, V[174]=damage growth, V[181]=divisor | `formulas_disasm.txt` cross-check |
+| csv → EquipItemInfo struct layout 매핑 | ✅ Round 14: 가변길이 (name + sub_record) + u8/u16 mixed sequence | `tools/h5_extract_loaditem_layout.py`, ITEM_STRUCT.md "CSV → EquipItemInfo struct 매핑" 섹션 |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---
