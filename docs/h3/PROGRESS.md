@@ -9,14 +9,34 @@
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임**. 자산 변환 + h0 walk-cycle wire 완료. 자동 진행으로 풀 수 있는 항목 거의 소진 → **남은 진척은 모두 사용자 입력 블로커** (Ghidra GUI / 외부 도구 / 디자인 결정).
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 NPC behavior dispatcher 95% 해독** (2026-05-09 PM). 자산 변환 + h0 walk-cycle wire 완료. 4 dispatcher + 3 game system entry + caller chain 까지 자동 발견. 다음 진척은 **handler 영역 capstone 디스어셈블 (자동) + main loop 추적 (사용자 GUI)**.
+
+### 게임 update flow (2026-05-09 PM 발견)
+
+```
+???_indirect_main_loop  (PIC indirect, 미도달)
+  ├ FUN_0006619c  (3-way mode selector entry)
+  │  └ FUN_00062d1c (state[0x94] mode 0/1/2 분기)
+  │    ├ mode 0 → FUN_0005c038 → FUN_0005d214 (NPC dispatcher 1, jt 0xa9cc4, record 0x3c4×0x3c)
+  │    ├ mode 1 → FUN_0005e6ac → FUN_0005f948 (menu/dialog dispatcher 2, jt 0xa9d70, record 0x14)
+  │    └ mode 2 → FUN_00060ab4 (9KB, Ghidra 미해독)
+  ├ FUN_0008b2e8  (sister entry, NPC record 0x3c4)
+  │  └ inline @ 0x8c19c → FUN_0008d5e4 (jt 0xabaa8)
+  └ FUN_0008dcd8  (main entry, NPC record 0x3c4)
+     └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68)
+```
+
+각 dispatcher: **19 entries (opcode 0~0x12) → 7 distinct handlers** (0x00~0x0c 공통 + 0x0d~0x12 각 unique).
+NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` arg short.
 
 ### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-1. **이 섹션** + 아래 §"다음 세션 — 우선순위" 읽기
-2. `git log --oneline -5` — 최신 커밋 확인
+1. **이 섹션 + 위 game update flow** 읽기
+2. `git log --oneline -8` — 최신 커밋 확인 (2026-05-09 PM 의 §4.4 커밋 4건 보일 것)
 3. `git status --short` — 미커밋 잔여 확인
-4. (선택) 빌드 검증 — 아래 §"재현 명령"
+4. **[ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md)** 한 번 훑기 — §4.4 종합
+5. (선택) `python -c "import capstone; print(capstone.__version__)"` — capstone 5.0.7 환경 확인 (다음 세션 자동 분석에 필요)
+6. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 다음 세션 — 우선순위 (블로커별)
 
@@ -71,12 +91,78 @@ python -m unittest tools.recon.test_analyze_cif tools.recon.test_extract_strings
 
 # Boss/enemy cif 일괄 통계 (39 파일 → work/h3/boss_cif_summary.json)
 python tools/recon/dump_boss_cif.py
+
+# §4.4 dispatcher 자동 분석 도구 (2026-05-09 PM 추가)
+python tools/recon/find_dispatcher_v3.py            # dispatcher 후보 통계 (UNRECOVERED_JUMPTABLE / chain compare)
+python tools/recon/find_all_19op_dispatchers.py     # 4 dispatcher 자동 발견 + jump table 디코드
+python tools/recon/decode_scn_jumptable.py          # 단일 jump table 19 entries 디코드
+python tools/recon/find_bl_callers.py               # ARM Thumb-2 BL 디코드해서 caller 검색 (TARGETS 수정 후 사용)
+python tools/recon/disasm_dispatcher2_handlers.py   # capstone 으로 dispatcher 2 handler 디스어셈블
+python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
+python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
+python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
+python tools/recon/extract_candidate_funcs.py 0xADDR1 0xADDR2  # all_decompiled.c 에서 함수 본문 추출
 ```
 
 ### 환경
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-09 PM 후반-2 세션 작업 압축 (§4.4 자동 후속 — dispatcher 2 재해석)
+
+**테마**: 95% 해독 후 1A/1B/1C/1E 자동 분석으로 dispatcher 2 정체 재해석 + 3 entry indirect 확정.
+
+**A. dispatcher 2 capstone 디스어셈블 (1A)** — _scn parser 가설 부정
+- handler 7개 본문 디스어셈블 → 모두 sprite text drawing (`FUN_0003ecfc`) + sound trigger (`FUN_00099764`) 호출 패턴
+- 결론: dispatcher 2 (`FUN_0005f948`) 는 _scn parser 가 **아니고** menu/dialog UI state machine
+- 19-opcode 매칭은 컴파일러가 같은 dispatcher 패턴을 여러 sub-system 에 사용한 결과
+- 진짜 _scn byte stream parser 는 별도 위치 — 다음 세션 과제 (2C)
+
+**B. NPC slot record offset grep (1B)** — 좌표 위치 한계 확인
+- dispatcher 본문에는 +0x3b3/+0x3b6/+0x3b8 만 access — 좌표 없음
+- 좌표는 **handler 영역 (Ghidra 미인식) 또는 NPC init 함수에 있음** → 2A 의 capstone 디스어셈블로 발견 가능
+
+**C. mode 2 (`FUN_00060ab4`) 분석 (1C)** — 9KB 큰 함수
+- push prologue 확인 → 진짜 함수 (0x60ab4 ~ 0x62d1c, 9KB)
+- Ghidra 본문 디컴파일은 panic stub 만 — boundary 또는 분기 인식 실패
+- mode 2 = battle / cutscene / map transition 추정 — capstone 본문 디스어셈블 필요 (2B)
+
+**D. dispatcher 3/4 inline 위치 (1E)** — 두 host 함수 확정
+- dispatcher 3 inline @ `0x8c19c` (FUN_0008b2e8 안)
+- dispatcher 4 inline @ `0x8eb80` (FUN_0008dcd8 안)
+- 두 entry 모두 BL caller 0건 → PIC indirect call 만으로 진입
+
+**E. 자동 분석 도구 2개 신규**
+- `tools/recon/disasm_dispatcher2_handlers.py` — capstone (5.0.7) 으로 handler BL/LDR 추출
+- `tools/recon/find_npc_record_offsets.py` — record offset access 자동 추출
+
+**F. 핵심 교훈**:
+1. 19-opcode 패턴은 **NPC dispatcher 단독 표지가 아님**. 컴파일러가 여러 sub-system 에 같은 jump table 패턴 사용. record stride + handler 호출 패턴 둘 다 봐야 의미 식별.
+2. capstone 디스어셈블이 Ghidra 미인식 영역 분석에 필수 — Python 환경 (`import capstone`) 확인 후 자동화.
+3. 자동 분석으로 발견된 함수 chain (caller chain) 은 신뢰도 높음. find_function_for_position 같은 character-pos 기반 함수 식별은 부정확 (decompiled output 안의 indented call 도 매칭됨).
+
+---
+
+## 📜 2026-05-09 PM 후반 세션 작업 압축 (§4.4 95% 해독)
+
+**테마**: 부분 해독 (50%) 에서 caller-of-caller 자동 추적으로 **3-way mode selector + game update entry** 까지 도달 (95%).
+
+**A. 4 Dispatcher 자동 발견** (`find_all_19op_dispatchers.py`)
+- 같은 19-opcode + 7 distinct handler 패턴 자동 검색 → binary 안 6 출현 위치 → 4 distinct dispatcher
+- 4 dispatcher: jt @ 0xa9cc4 / 0xa9d70 / 0xabaa8 / 0xabc68
+- 각 dispatcher 의 jump table 19 entries 디코드 (raw binary 직접 읽기)
+
+**B. Caller chain 자동 추적** (`find_bl_callers.py` 반복)
+- `FUN_0005d214` ← `FUN_0005c038` ← `FUN_00062d1c` ← `FUN_0006619c` (game update entry)
+- `FUN_0005f948` ← `FUN_0005e6ac` ← `FUN_00062d1c` ← `FUN_0006619c`
+- 4 단계 Thumb-2 BL 디코드로 진짜 entry 까지 도달
+
+**C. 3-way mode selector 발견** (`FUN_00062d1c`)
+- `state[0x94] byte = mode (0/1/2)` 로 sub-dispatcher 선택
+- 게임이 frame 마다 entry 호출 → mode 분기 → dispatcher 실행
 
 ---
 
