@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Round 7 — V[111..116] / V[125,126] / V[151..155] 의미 추가 확정)
+업데이트: 2026-05-09 (Round 8 — V[127..148] buff/element bonus 의미 추가 + Round 7 offset 정정)
 
 ---
 
@@ -22,7 +22,8 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
-- ✅ **Round 7**: V[111]=atk_growth_coef, V[112..116]=secondary stat base, V[125,126]=buff descriptor (type/strength), V[153]=stat_con, V[154]=stat_str, V[155]=max_sp 확정
+- ✅ **Round 7**: V[111]=atk_growth_coef, V[112..116]=secondary stat base, V[153]=stat_con, V[154]=stat_str, V[155]=max_sp 확정
+- ✅ **Round 8**: V[127]=def_reduction%, V[128]=atk%bonus, V[129..133]=secondary stat bonus, V[134..148]=element/magic bonus 식별. Round 7 의 0x294/0x296 (buff descriptor) 가 Formula VM var 가 아닌 gameplay 전용 필드임을 정정 (V[125]=0x2a6, V[126]=0x2a8 별개)
 
 **이번 세션 (2026-05-09 Round 6) 완료 항목**:
 - **gv_sub writer 분석 도구** — `tools/h5_find_gv_writers.py` (3568 함수 스캔, 547 stores 추적).
@@ -75,11 +76,13 @@ python tools/verify_godot_project.py
 
 V[112..116] = 5 secondary stat base 까지만 확정. 각 stat 이 hit/avoid/crit/block/speed 중
 무엇인지 calc_pl 결과 stat 사용처 (계산된 값을 어디서 fetch 하는지) 추적 필요.
+calc_pl id=24..29 결과는 formula 외부 caller (battle damage 계산) 에서 read.
 
-### 2. V[127..147] 다중 buff stack 의미 (자율 가능, 작은 임팩트)
+### 2. V[125,126] (0x2a6, 0x2a8) buff stack slot 라벨 (자율 가능, 작은 임팩트)
 
-BATTLER::AddBuff / AddBuffArray (이미 symbol 있음) 디스어셈블로 buff slot 별 의미 식별.
-`HERO::ApplyBuildupEffect` 는 단일 buff descriptor 만 식별 — 다중 stack 영역 미해결.
+InitStatusComputation reset 영역 (0x2a4..0x2c0) 은 다중 buff stack 추정.
+BATTLER::AddBuff/AddBuffArray 가 실제 사용하는 영역 (BATTLER+0x118~0x12c) 과 별개.
+HERO::ApplyBuildupEffect 의 entry 별 store target 분석 (0x294 외 다른 entry) 필요.
 
 ### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
@@ -117,7 +120,8 @@ BATTLER::AddBuff / AddBuffArray (이미 symbol 있음) 디스어셈블로 buff s
 | gv_sub 핵심 의미 식별 | ✅ writer 분석으로 V[58]=level / 0x248=SP / 0x24a=CP 등 18 fields 매핑 | `gv_substruct_writers.tsv`, [`GV_SUBSTRUCT_FIELDS.md`](GV_SUBSTRUCT_FIELDS.md), Round 6 |
 | 시각 효과 hookup | ✅ screen_shake tween + map highlight + narration text lookup | `demo.gd`, `map_renderer.gd`, Round 6 |
 | V[111..116] 의미 | ✅ Round 7: V[111]=atk_growth coef, V[112..116]=class secondary stat base | LoadResClassInfo disasm + id=24..29 cross-check |
-| V[125,126] buff descriptor | ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength | HERO::ApplyBuildupEffect entry 34..36 |
+| 0x294/0x295/0x296 buff descriptor | ✅ Round 8: gameplay 전용 (Formula VM var 아님) | HERO::ApplyBuildupEffect + Round 7 정정 |
+| V[127..148] buff/element bonus | ✅ Round 8: V[127]=def_red%, V[128]=atk%bonus, V[129..133]=stat bonus, V[134..148]=element | calc_pl 공식 패턴 + AddBuffArray disasm |
 | V[151..155] formula 의존 stat | ✅ Round 7: V[153]=con, V[154]=str, V[155]=max_sp 확정 | id=0 / id=24 공식 + ApplyBuildupEffect entry 32 |
 
 ---
@@ -256,10 +260,11 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~gv+0x1474 sub-struct offset 추출~~ — ✅ 111 fields 정확 매핑 (2026-05-09)
 - [x] ~~gv_sub 핵심 필드명 정확화~~ — ✅ Round 6 writer 분석으로 18 fields 의미 확정 (V[58]=level, V[60..63]=base, V[69]=SP, V[70]=CP, V[118..121]=bonus)
 - [x] ~~V[111..116] (클래스 base 계수) 의미~~ — ✅ Round 7: V[111]=atk_growth, V[112..116]=secondary stat base
-- [x] ~~V[125,126] buff descriptor~~ — ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength
 - [x] ~~V[155]=max_sp~~ — ✅ Round 7: ApplyBuildupEffect SP clamp 상한
+- [x] ~~V[127..148] 다중 buff/element bonus~~ — ✅ Round 8: V[127]=def_red%, V[128]=atk%, V[129..133]=stat bonus, V[134..148]=element
+- [x] ~~Round 7 0x294/0x296 mapping~~ — ✅ Round 8 정정: gameplay 전용 (Formula VM var 아님)
 - [ ] V[112..116] 5 stat 라벨 (hit/avoid/crit/...) 식별
-- [ ] V[127..147] 다중 buff stack slot 별 의미 (AddBuff/AddBuffArray disasm)
+- [ ] V[125,126] (0x2a6, 0x2a8) 단일 buff slot 의미 식별
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

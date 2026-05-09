@@ -287,10 +287,24 @@ func _player_default(var_id: int, _offset: int) -> int:
 		119: return 0                         # 0x29a  bonus_dex
 		120: return 0                         # 0x29c  bonus_int
 		121: return 0                         # 0x29e  bonus_con
-		# V[125,126] = HERO::ApplyBuildupEffect 의 buff descriptor (Round 7).
-		# 0x294 = effect_type, 0x295 = icon (버프 아이콘 idx), 0x296 = strength.
-		125: return 0                         # 0x294  active buff effect_type
-		126: return 0                         # 0x296  active buff strength
+		# 0x294/0x295/0x296 active buff descriptor (HERO::ApplyBuildupEffect 가 store) 는
+		# Formula VM 의 var_dict 에 없음 — gameplay 코드(UI 아이콘 표시 등) 전용 필드.
+		# 따라서 V[125]/V[126] 매핑 대상이 아님 (V[125]=0x2a6 / V[126]=0x2a8 는 별개).
+		125: return 0                         # 0x2a6  buff stack slot (InitStatusComputation resets)
+		126: return 0                         # 0x2a8  buff stack slot
+		# V[127..148] = buff/equipment 가 추가하는 bonus stat (Round 8 — calc_pl 공식 패턴).
+		127: return 0                         # 0x2aa s8  defense_reduction_percent (id=84..85 0..99 bound)
+		128: return 0                         # 0x2ac  atk_percent_bonus (id=24 (100+V[128])/100)
+		129: return 0                         # 0x2ae  secondary stat #1 bonus (id=25 V[129]*10)
+		130: return 0                         # 0x2b0  secondary stat #2 bonus (id=26 V[130]*10)
+		131: return 0                         # 0x2b2  secondary stat #3 bonus (id=27 flat)
+		132: return 0                         # 0x2b4  secondary stat #4 bonus (id=28 flat)
+		133: return 0                         # 0x2b6  secondary stat #5 bonus (id=29 flat)
+		134, 135: return 0                    # 0x2b8, 0x2ba magic atk paired (element 1/2)
+		136, 137, 138, 139, 140, 141, 142, 143: return 0  # 0x2bc..0x2ca 4-pair element bonuses
+		144, 145: return 0                    # 0x2cc, 0x2ce main element bonuses (id=7,8)
+		146, 148: return 0                    # 0x2d0, 0x2d4 sub-stats for 255-bound formula (id=16)
+		147: return 0                         # 0x2d2  element bonus
 		# V[151..154] = formula 의존 stat (Round 7 — id=0 MaxHP / id=24 ATK 공식 cross-check).
 		151: return int(gs.stat_int)          # magic stat base (id=4 magic atk +V[151])
 		152: return int(gs.stat_dex)          # magic stat base (id=5 paired with V[151])

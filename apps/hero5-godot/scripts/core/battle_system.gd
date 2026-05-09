@@ -306,10 +306,9 @@ func _player_ctx() -> Dictionary:
 	ctx["638"] = 0                                        # 0x27e  V[114] secondary base #3
 	ctx["640"] = 0                                        # 0x280  V[115] secondary base #4
 	ctx["642"] = 0                                        # 0x282  V[116] secondary base #5
-	# V[125,126] (0x294, 0x296) = active buff descriptor (Round 7).
-	#   ApplyBuildupEffect entry 34..36 store: 0x294=type, 0x295=icon, 0x296=strength.
-	ctx["660"] = 0                                        # 0x294  buff effect_type (none)
-	ctx["662"] = 0                                        # 0x296  buff strength
+	# 주의: 0x294/0x295/0x296 (ApplyBuildupEffect 가 store 하는 active buff descriptor) 는
+	# Formula VM 의 var_dict 에 없는 HERO 구조체 필드 (UI 아이콘 표시용).
+	# V[125]/V[126] 는 0x2a6/0x2a8 (별개 슬롯) — Round 8 에서 정정.
 	# V[151..155] (0x2de..0x2e6) — formula 의존 stat (id=0 / id=24 cross-check).
 	ctx["734"] = GameState.stat_int                       # 0x2de  V[151] magic stat base
 	ctx["736"] = GameState.stat_dex                       # 0x2e0  V[152] magic stat (paired)

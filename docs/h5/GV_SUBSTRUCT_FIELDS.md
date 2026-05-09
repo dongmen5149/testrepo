@@ -59,17 +59,40 @@ jumptable. Effect type 별 store target 식별:
 | 0x27e | V[114] | secondary stat #3 base | id=27 V[114]+V[131] |
 | 0x280 | V[115] | secondary stat #4 base | id=28 V[115]+V[132] |
 | 0x282 | V[116] | secondary stat #5 base | id=29 V[116]+V[133] |
-| 0x294 | V[125] u8 | **active buff effect_type** | HERO::ApplyBuildupEffect entry 34..36 store 3/8/9 |
-| 0x295 | (s8) | **active buff icon idx** | 동일 entry 들에서 0x3b/0x71/0x72 store |
-| 0x296 | V[126] u8 | **active buff strength** | 동일 entry 들에서 caller arg store |
-| 0x298~0x2c0 | V[127..147] | buff/debuff 추가 슬롯 (다중 buff stack 추정) | Monster::Ai_Initialize 와 공유 → BATTLER 공통 buff array |
-| 0x2c2~0x2da | V[148..150] | Monster AI state (enemy 전용) | Monster::Ai_* 위주 writer |
-| 0x2de | V[151] | magic stat (player ctx 한정 — int) | id=4 magic atk 공식 +V[151] |
-| 0x2e0 | V[152] | magic stat 짝 (player ctx — dex) | id=5 magic atk 공식 +V[152] |
+| 0x294 | (gameplay only) | **active buff effect_type** (Formula VM var 아님) | HERO::ApplyBuildupEffect entry 34..36 store 3/8/9 |
+| 0x295 | (gameplay only) | **active buff icon idx** | 동일 entry 들에서 0x3b/0x71/0x72 store |
+| 0x296 | (gameplay only) | **active buff strength** | 동일 entry 들에서 caller arg store |
+| 0x2a6 | V[125] | buff stack slot (다중 stack) | InitStatusComputation reset, ApplyBuildupEffect modify |
+| 0x2a8 | V[126] | buff stack slot | 동일 |
+| 0x2aa | V[127] s8 | **defense_reduction_percent (0..99)** | calc_pl 공식: (100-(V[127]/2)*V[83]*15)/100 데미지 감쇠 |
+| 0x2ac | V[128] | **atk_percent_bonus** | id=24 ATK 공식 (100+V[128])/100 buff multiplier |
+| 0x2ae~0x2b6 | V[129..133] | secondary stat #1..#5 bonus | id=25..29: V[112+i] + V[129+i]*scale (V[112..116] 짝) |
+| 0x2b8, 0x2ba | V[134], V[135] | 마법 ATK 짝 (element 1, 2) | id=4,5: V[6/7]+(V[134]+V[135])/2+V[151/152] |
+| 0x2bc~0x2ca | V[136..143] | 8 element bonus (4 pair) | id=7,8: 4-element grouped sums |
+| 0x2cc, 0x2ce | V[144], V[145] | main element bonus | id=7,8: V[144/145]*(100+30*V[89/93])/100 |
+| 0x2d0, 0x2d2, 0x2d4 | V[146..148] | sub-stat (255-bound) | id=16 V[146]+V[148]+...+V[154]/5 |
+| 0x2de | V[151] | magic stat (player ctx — int) | id=4 magic atk +V[151] |
+| 0x2e0 | V[152] | magic stat 짝 (player ctx — dex) | id=5 magic atk +V[152] |
 | 0x2e2 | V[153] | **stat_con** | id=0 MaxHP 공식 10*V[153] |
 | 0x2e4 | V[154] | **stat_str** | id=24 ATK 공식 V[58]*2+V[154] |
 | 0x2e6 | V[155] | **max_sp** | ApplyBuildupEffect entry 32 SP clamp 상한 |
 | 0x2fc | V[249] | (formula_vm 내장 -50 패널티) | special penalty constant |
+
+### Round 8 추가: BATTLER buff array 영역 (참고용 — gv+0x1474 영역 밖)
+
+`BATTLER::AddBuffSkill` (0x4b198) 디스어셈블 — buff array 들이 BATTLER 인스턴스의
+다음 offset 들에 위치 (HERO 의 0x294~ 영역과 별개의 lower 영역):
+
+| BATTLER offset | 의미 |
+|---|---|
+| 0x118 + 3 = 0x11b | active buff state array (3 slot, 1B) — 4F sentinel |
+| 0x11c + 2 = 0x11e | val1 array (3*2B short) |
+| 0x124            | val2 array (3*2B short) |
+| 0x128 + 2 = 0x12a | val3 array (3*2B short) |
+| 0x1c8            | BuffMotion sprite ptr array |
+
+이 영역은 Formula VM 가 직접 read 하지 않음 (var_dict 에 없음). gameplay 코드
+(`AddBuff`/`BuffEndProc` 등) 가 in-place 관리. UI/effect 시각화에 사용.
 
 ## 미확정 (writer 분석으로도 의미 추출 불가)
 
