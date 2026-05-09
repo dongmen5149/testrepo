@@ -5,39 +5,42 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-09 PM 후반-3 — **§4.4 자동 분석 2A/2B/2C 일괄 수행**. dispatcher 1/3/4 의 21 handler 일괄 capstone 디스어셈블 (총 ~10KB, 0x66338-0x973f8) + mode 2 (`FUN_00060ab4`) 본문 분석 (1.5KB 코드 + 7KB 임베디드 데이터 테이블) + 게임 자산 path 템플릿 9개 string 위치 확정 (0xaac58 strings table). **PIC veneer 테이블 (0xa42a0~0xa42cc) 식별** — 모든 dispatcher BL 의 65/14 calls 가 사실 `bx r3/r4` register-indirect call. NPC 좌표 record-offset 자동 발견은 실패 (record_offset_hint 가 GOT-relative global 접근으로 해석됨). 상세는 본 문서 §"2026-05-09 PM 후반-3" 섹션.
+**최신 커밋 시점**: 2026-05-10 — **`state[0x94]` 재해석 + 3 entry caller 한계 확정**. 사용자 GUI 협업 세션으로 (1) 함수 포인터 hex 검색 6건 0건 → 동적 주입 확정, (2) GOT 베이스 `0xb2c40` 의 20+ XREF 분포 시각화, (3) 4 low-addr 함수 (`0xf9c/0xffc/0x10c0/0x10f4`) = file/resource API wrapper 확정, (4) ⭐ **`FUN_00070f34` (key handler) 발견 → `state[0x94]` 가 mode/battle 이 아닌 3-페이지 UI 탭 인덱스로 재해석**. 키 '1'/'3' 으로 0→1→2→0 순환. PROGRESS 의 "mode 0/1/2 = NPC/menu/battle" 가설 다수 정정. main loop 직접 추적은 ROI 낮아져 우선순위 강등. 상세는 [ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md).
 
-**이전 세션** (2026-05-09 PM 후반-2): 95% 해독 + 자동 후속 분석 (1A/1B/1C/1E). dispatcher 2 (`FUN_0005f948`) 의 7 handler 디스어셈블 → menu/dialog UI handler 로 재해석. 상세는 [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md).
+**이전 세션** (2026-05-09 PM 후반-3): 자동 분석 2A/2B/2C 일괄. 21 handler 디스어셈블 + PIC veneer 테이블 (`0xa42a0`) 식별 + mode 2 (1.5KB code + 7KB literal pool) 분석 + strings table @ `0xaac58` 위치 확정. 상세는 [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 NPC behavior dispatcher 95% 해독** (2026-05-09 PM). 자산 변환 + h0 walk-cycle wire 완료. 4 dispatcher + 3 game system entry + caller chain 까지 자동 발견. 다음 진척은 **handler 영역 capstone 디스어셈블 (자동) + main loop 추적 (사용자 GUI)**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 NPC behavior dispatcher 95% 해독** + **`state[0x94]` 정체 정정** (2026-05-10). 자산 변환 + h0 walk-cycle wire 완료. 4 dispatcher + 3 game system entry + caller chain 까지 자동 발견. **PROGRESS 다수 가설 정정** (mode 분기 ≠ NPC/battle/menu, 실제는 3-페이지 UI 탭). 다음 진척은 **(1) mode 2 = page 2 UI 데이터 해석, (2) 진짜 battle 트리거 별도 추적, (3) SMAF/번역 사용자 블로커**.
 
-### 게임 update flow (2026-05-09 PM 발견)
+### 게임 update flow (2026-05-10 정정)
 
 ```
-???_indirect_main_loop  (PIC indirect, 미도달)
-  ├ FUN_0006619c  (3-way mode selector entry)
-  │  └ FUN_00062d1c (state[0x94] mode 0/1/2 분기)
-  │    ├ mode 0 → FUN_0005c038 → FUN_0005d214 (NPC dispatcher 1, jt 0xa9cc4, record 0x3c4×0x3c)
-  │    ├ mode 1 → FUN_0005e6ac → FUN_0005f948 (menu/dialog dispatcher 2, jt 0xa9d70, record 0x14)
-  │    └ mode 2 → FUN_00060ab4 (9KB, Ghidra 미해독)
-  ├ FUN_0008b2e8  (sister entry, NPC record 0x3c4)
+???_indirect_main_loop  (PIC indirect, 추적 한계 — Ghidra Script 필요)
+  ├ FUN_0006619c  (paint/tick callback) — 매 프레임 호출
+  │  └ FUN_00062d1c (state[0x94] = "현재 페이지 인덱스" 분기)
+  │    ├ page 0 → FUN_0005c038 → FUN_0005d214 (jt 0xa9cc4, record 0x3c4×0x3c)
+  │    ├ page 1 → FUN_0005e6ac → FUN_0005f948 (jt 0xa9d70, record 0x14)
+  │    └ page 2 → FUN_00060ab4 (9KB, page 2 UI + 데이터 테이블)
+  ├ FUN_00070f34  (key handler) — 키 입력 시 호출. param_2=0x31('1')/0x33('3') 으로 page--/page++
+  ├ FUN_0008b2e8  (sister entry, record 0x3c4)
   │  └ inline @ 0x8c19c → FUN_0008d5e4 (jt 0xabaa8)
-  └ FUN_0008dcd8  (main entry, NPC record 0x3c4)
+  └ FUN_0008dcd8  (main entry, record 0x3c4)
      └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68)
 ```
 
 각 dispatcher: **19 entries (opcode 0~0x12) → 7 distinct handlers** (0x00~0x0c 공통 + 0x0d~0x12 각 unique).
 NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` arg short.
 
+> ⚠ **2026-05-10 정정**: 위 page 0/1/2 는 **별도 게임 시스템이 아니라 한 화면 안의 3 탭** (키 1/3 으로 순환). 따라서 page 2 = battle 가설은 기각. 진짜 battle 트리거는 별도 위치.
+
 ### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-1. **이 섹션 + 위 game update flow** 읽기
-2. `git log --oneline -8` — 최신 커밋 확인 (2026-05-09 PM 의 §4.4 커밋 4건 보일 것)
+1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
+2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md)** 한 번 훑기 — §4.4 종합
-5. (선택) `python -c "import capstone; print(capstone.__version__)"` — capstone 5.0.7 환경 확인 (다음 세션 자동 분석에 필요)
+4. **[ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md)** ⭐⭐⭐ — state[0x94] 재해석 + 기각된 가설 목록
+5. (참고) [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md) — 직전 세션 자동 분석 종합
 6. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 다음 세션 — 우선순위 (블로커별)
@@ -51,9 +54,11 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | ~~2A~~ | ~~NPC handler 영역 capstone 디스어셈블~~ | ✅ 2026-05-09 PM-3. 21 handler 일괄 디스어셈블 → `work/h3/dispatcher_handlers_summary.json`. **본문 분석 결론**: 모든 handler 의 BL 다수가 `0xa42a0` (= `bx r3`) veneer 로 향함 — register-indirect call. NPC 좌표 offset 자동 식별 실패 (record_offset_hint 들이 GOT-relative global) — 정확한 의미 식별은 결국 사용자 GUI 의 caller-chain 분석 필요 |
 | ~~2B~~ | ~~`FUN_00060ab4` (mode 2, 9KB) capstone 디스어셈블~~ | ✅ 2026-05-09 PM-3. 본문 = 1.5KB 코드 + 7KB 임베디드 데이터 (literal 풀). 16 직접 BL (0 veneer) → `0x4ad10`(4) `0x9f624`(3) `0xd53c`(2) `0x9fb78`(2). switch 패턴 **없음** — sequential setup + 내부 graphics 콜. 추정: **scene/render primitive** (렌더 + 데이터 테이블 baked) — battle 분기 가능성. 결과: `work/h3/mode2_disasm.json` |
 | ~~2C~~ | ~~진짜 _scn byte stream parser 발견~~ | ⚠ 2026-05-09 PM-3 자동 검색. **strings table @ 0xaac58** 확인 (`/event/e0000_scn`, `/map/map0_mp`, `Event_freeID`, `/map/sprite_0_cif` 등 9개 game asset path 템플릿). PIC GOT-relative load 만 사용 → 직접 xref 0건. movw imm12=0xc58 등의 16-bit offset 형태로 참조 흔적 — Ghidra GUI 의 cross-reference 추적 필요 |
-| ⭐ **2D** | **3 entry indirect caller (main loop) 추적** | `FUN_0006619c` / `FUN_0008b2e8` / `FUN_0008dcd8` 모두 PIC indirect call. RAM dynamic init / function pointer table 위치 — Ghidra Script 또는 사용자 GUI |
-| 2E | 게임 콘텐츠 wiring (_mp NPC 좌표 자동 검출) | ⚠ 2A 결과로는 자동 검출 불가. NPC slot 의 좌표 offset 은 dispatcher 본문 (record_offset_hint) 이 아닌 **외부 init/spawn 함수** 에 있음. 2D 후 사용자 GUI 추적 필요 |
-| 2 | SMAF→OGG 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 | §4.5 — BGM/SFX 활성. 게임 체감 큼 |
+| ~~2D~~ | ~~3 entry indirect caller (main loop) 추적~~ | ⚠ 2026-05-10 사용자 GUI 동행 분석. hex 검색 6건 0건 + Ghidra XREF 0건 + decompiled output grep 0건 → **정적 분석 ceiling 확정**. ROI 낮음 (state[0x94] 재해석으로 main loop 의 가치 감소). 시도 시 Ghidra Script 작성 (BLX register + MOVW/MOVT 패턴) 필요, 1~2시간 + 성공 보장 X |
+| ⭐ **2F** | **mode 2 (`FUN_00060ab4`) 의 7KB literal pool = page 2 UI 데이터 해석** | state[0x94] 재해석으로 mode 2 = battle 가설 기각. 7KB 데이터를 4-byte aligned word stream → coord/sprite-id 패턴 매칭 도구 작성. 자동 가능 |
+| ⭐ **2G** | **진짜 battle 트리거 별도 추적** | `state[0x94]` 가 battle 분기 아님 → 다른 state offset (예: `iVar1 + 0x460`) 또는 `FUN_00064048` (default key handler) 분석. 자동 grep 시도 가능 |
+| 2H | _mp NPC 좌표 외부 init/spawn 함수 추적 | 2D 의존 (main loop 발견 시 부속). 단독으로는 자동 검출 불가 |
+| 2 | SMAF→OGG 변환 (smaf-converter JAR + TiMidity++ + ffmpeg) | §4.5 — BGM/SFX 활성. 게임 체감 큼. **2026-05-10 도구 갱신**: `tools/converter/convert_h3_smaf.py` 실행으로 헤더 분석 + 변환 가이드 생성. JAR 다운받아 `bgm0_mf` 시범 변환 권장 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
 | 4 | 추가 게임 콘텐츠 (보스/맵/퀘스트) 디자인 결정 | 1주차 콘텐츠는 완성. 확장 여부 미정 |
 
@@ -67,8 +72,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 핵심 진입 문서
 
-- [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md) — **⭐⭐⭐ 종합 정리** (4 dispatcher + 3 entry + capstone handler 분석 + 다음 단계)
-- [ghidra-scn-dispatcher-2026-05-09b.md](ghidra-scn-dispatcher-2026-05-09b.md) — 95% 해독 도달 (caller chain + mode selector). 위 문서로 superseded
+- [ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md) — **⭐⭐⭐ 최신** (state[0x94] 재해석 + 3 entry caller 한계 확정 + 기각 가설 목록)
+- [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md) — 자동 분석 2A/2B/2C 종합 (이전 차례)
+- [ghidra-scn-dispatcher-2026-05-09b.md](ghidra-scn-dispatcher-2026-05-09b.md) — 95% 해독 도달 (caller chain + mode selector). superseded
 - [ghidra-scn-dispatcher-2026-05-09.md](ghidra-scn-dispatcher-2026-05-09.md) — §4.4 초기 부분 해독 (참고용)
 - [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 세션 (참고용)
 - [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 초기 walkthrough (참고용)
@@ -113,6 +119,55 @@ python tools/recon/extract_candidate_funcs.py 0xADDR1 0xADDR2  # all_decompiled.
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-10 세션 작업 압축 (state[0x94] 재해석 + 3 entry caller 한계 확정)
+
+**테마**: 사용자 GUI 동행으로 main loop 추적 시도 → 정적 분석 ceiling 도달 확인. 그러나 우회 단서로 `state[0x94]` 의 정체가 mode/battle 이 아닌 3-페이지 UI 탭 인덱스로 재해석됨 → PROGRESS 다수 가설 정정.
+
+**A. 사용자 GUI 동행 — 6단계**
+1. 함수 포인터 hex 검색 (`Search → Memory`): thumb-bit-set/clear 두 형태 × 3 entry = 6 검색 → **모두 0건** → 함수 포인터 = 런타임 동적 주입 확정
+2. 바이너리 시작 (`0x0`) 관찰: `Reset / UndefinedInstruction / SupervisorCall` 라벨은 표준 ARM 예외 벡터 자동 부여, 그러나 실제 바이트는 분기 명령 아님 — SKT GVM 펌웨어가 표준 벡터 미사용
+3. GOT 베이스 (`0xb2c40`) 확정: 20+ 함수 XREF (R/W). 4 low-addr 함수가 슬롯에 쓰기 → 초기화 함수 후보
+4. 4 low-addr 함수 (`0xf9c/0xffc/0x10c0/0x10f4`) 디컴파일 → **resource open/close/count/read** API wrapper 확정 (main loop 단서 아님)
+5. 3 entry XREF 직접 확인: 모두 0건 (재확인). `FUN_0008dcd8` 는 GUI 인식 / headless export 누락
+6. `state[0x94]` 셋 위치 grep → `FUN_00070f34` 발견
+
+**B. ⭐⭐ `FUN_00070f34` 발견 — 키 입력 핸들러**
+```c
+void FUN_00070f34(int param_1, int param_2) {  // param_1=state, param_2=key
+  iVar1 = param_1 + DAT_000711ec;               // FUN_0006619c 와 동일 패턴
+  if (state[0x94] == 1 && param_2 == 0x2a) ...   // page=1 + '*'
+  else if (param_2 == 0x31) state[0x94]--;       // '1' 키 → page--
+  else if (param_2 == 0x33) state[0x94]++;       // '3' 키 → page++
+  else if (param_2 == -0x10) ...
+  else FUN_00064048();                            // default key handler
+}
+```
+- 키 '1'/'3' 으로 `state[0x94]` 가 0 ↔ 1 ↔ 2 순환 (wrap)
+- → **`state[0x94]` = 3-페이지 UI 의 탭 인덱스** (mode/battle 아님)
+- `FUN_0006619c` 와 sibling = paint/key 짝 callback 가설
+
+**C. PROGRESS 가설 정정**
+| 기존 가설 | 2026-05-10 평가 |
+|---|---|
+| mode 0/1/2 = NPC/menu/battle 분기 | ❌ 기각. 실제는 한 화면 안의 3 탭 |
+| `FUN_00060ab4` (mode 2, 9KB) = battle/cutscene | ❌ 기각. **3번째 탭 페이지 UI** 일 가능성 — 7KB 임베디드 데이터 = UI 레이아웃 |
+| dispatcher 1 (NPC dispatcher) 19 opcode = NPC 행동 | 재검토 필요. page 0 의 19 UI 요소 가능성 |
+| dispatcher 2 = menu/dialog UI handler | ✅ 유지. 단 "menu 모드 진입" 이 아닌 "page 1 컨텐츠" |
+| 3 entry indirect caller 추적 가능 (Ghidra GUI) | ❌ 한계 확정. Ghidra Script 만 마지막 카드, ROI 낮음 |
+
+**D. 핵심 교훈**
+1. PIC 바이너리에서 indirect call caller 추적은 정적 분석 ceiling. Ghidra 자동 + GUI XREF + decompiled grep 모두 0건이면 마지막은 Script.
+2. **빠른 가설 정정 절차** 필요. mode 0/1/2 가설을 4 세션 끌고 왔으나 키 핸들러 1개 발견으로 즉시 기각. 가설은 항상 다른 코드 패스로 교차 검증.
+3. 사용자 GUI 협업의 가치: hex 검색 / 캡처 같은 단순 작업도 자동 분석이 못 본 분포 (예: 0xb2c40 의 20+ XREF) 시각화. 다만 ROI 낮은 단계는 일찍 인지하고 우회.
+4. `all_decompiled.c` (헤드리스 export) 의 한계: GUI 인식 함수도 export 누락 가능 (`FUN_0008dcd8`). GUI 기반 분석은 export grep 으로 검증 필요.
+
+**E. 다음 세션 권장**
+- ⭐ **2F**: mode 2 의 7KB literal pool 을 UI 레이아웃 데이터로 해석 시도 (자동)
+- ⭐ **2G**: 진짜 battle 트리거 — 다른 state offset (e.g. `+0x460`) 추적 또는 `FUN_00064048` 분석
+- 또는 **사용자 블로커** (SMAF/번역) 로 우회 — 게임 체감 영향 큼
 
 ---
 
@@ -1151,10 +1206,17 @@ testrepo/
 
 - **목표**: 33개 BGM/효과음을 Android `MediaPlayer`로 재생 가능하게
 - **블로커**: SMAF 디코더 도구 필요 (런타임 SMAF 라이브러리 없음)
-- **추천 도구**:
-  - `smaf2midi` (Linux/Windows)
-  - 또는 KSS/Yamaha SMAF SDK
-  - 최후의 수단: 수동 변환 (33개라 가능)
+- **헤더 검증**: 33/33 SMAF (MMMD magic) 확인 — `tools/converter/convert_h3_smaf.py` 실행 시 `work/h3/analysis/smaf_summary.txt` 생성 (BGM 19 + SFX 14, 총 186KB)
+- **추천 도구 (2026-05-10 조사 갱신)**:
+  - **smaf-converter** (Java JAR, https://github.com/antanas-vasiliauskas/smaf-converter) — 사전 빌드 JAR, JRE 만 있으면 즉시 사용. vavi-sound 기반 (au/Softbank YAMAHA 링톤 호환, SKT GVM 호환은 직접 테스트 필요)
+  - **TiMidity++** (Windows 바이너리, https://sourceforge.net/projects/timidity/) + SF2 soundfont — MID → WAV
+  - **FFmpeg** (winget install Gyan.FFmpeg) — WAV → OGG
+- **불가 확인 옵션**: `smaf2midi` (Wohlstand) → GitHub 404 (소멸), `vgmstream` → SMAF 미지원, Pure Python → FM 합성 시뮬레이션 필요 비현실적
+- **사용자 작업 시나리오**:
+  1. smaf-converter JAR 다운로드 → `bgm0_mf` 1개로 시범 변환 후 음질/호환성 확인
+  2. 일괄 변환 PowerShell 명령 (`tools/converter/convert_h3_smaf.py` 의 docstring 참조)
+  3. TiMidity++ + ffmpeg 로 WAV → OGG
+  4. Android `app/src/main/assets/sounds/` 에 배포
 
 ### 4.6 [MEDIUM] 대사 번역 (UI 어휘는 완료)
 
