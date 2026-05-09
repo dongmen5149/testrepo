@@ -33,11 +33,11 @@ def main() -> None:
     data = BIN.read_bytes()
 
     # Scan wider area
-    print("scanning for push prologues in 0x8a000~0x8f000:")
+    print("scanning for push prologues in 0x60000~0x62000:")
     print()
     print(f"{'addr':<10} {'word':>6}  meaning")
     print("-" * 50)
-    for off in range(0x8A000, min(0x8F000, len(data)), 2):
+    for off in range(0x60000, min(0x68000, len(data)), 2):
         word = struct.unpack("<H", data[off : off + 2])[0]
         p = is_push(word)
         if p:

@@ -20,8 +20,12 @@ REPO = Path(__file__).resolve().parents[2]
 BIN = REPO / "work" / "h3" / "extracted" / "client.bin64000"
 
 TARGETS = {
-    0x0006619C: "FUN_0006619c (caller-of-orchestrator)",
-    0x0006619D: "FUN_0006619c (Thumb)",
+    0x0008D5E4: "FUN_0008d5e4 (dispatcher 3 inline host, jt 0xabaa8)",
+    0x0008D5E5: "FUN_0008d5e4 (Thumb)",
+    0x0008FF18: "FUN_0008ff18 (dispatcher 4 inline host, jt 0xabc68)",
+    0x0008FF19: "FUN_0008ff18 (Thumb)",
+    0x00060AB4: "FUN_00060ab4 (mode 2 entry)",
+    0x00060AB5: "FUN_00060ab4 (Thumb)",
 }
 
 

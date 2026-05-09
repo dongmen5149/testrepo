@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-09 PM 후반 — **§4.4 95% 해독** ⭐⭐⭐. Caller chain 자동 추적으로 **3-way mode selector + game update entry** 까지 도달. 4 dispatcher 모두 jump table 디코드 완료 (각 19 entries → 7 distinct handlers). `FUN_0006619c` (game update entry) → `FUN_00062d1c` (mode 0/1/2 selector) → 3 sub-dispatcher chain. dispatcher 2 (`FUN_0005f948`, record stride 0x14) 가 진짜 **_scn byte stream parser 후보** — _scn opcode 통계 0~0x12 (19 distinct) 와 정확히 일치. 상세는 [ghidra-scn-dispatcher-2026-05-09b.md](ghidra-scn-dispatcher-2026-05-09b.md).
+**최신 커밋 시점**: 2026-05-09 PM 후반-2 — **§4.4 95% 해독 + 자동 후속 분석 (1A/1B/1C/1E)**. capstone 으로 dispatcher 2 (`FUN_0005f948`) 의 7 handler 디스어셈블 → **menu/dialog UI handler 로 재해석** (이전 _scn parser 가설 부정). dispatcher 3/4 inline 위치 confirmed (`FUN_0008b2e8` / `FUN_0008dcd8` 안). mode 2 (`FUN_00060ab4`) = 9KB 큰 함수, Ghidra 미해독. 3 game system entry 모두 PIC indirect call. 상세는 [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md).
 
 ### 한 줄 요약 (현재 상태)
 
@@ -26,11 +26,11 @@
 
 | 우선 | 작업 | 비고 |
 |---|---|---|
-| ⭐ **1A** | **dispatcher 2 (`FUN_0005f948`, record 0x14) handler 6개 디컴파일** | 95% 해독 후 마지막 단계. dispatcher 2 가 **_scn byte stream parser 후보** (record stride 0x14 + 0~0x12 19-opcode 가 _scn 통계와 일치). handler 영역 `0x68a28~0x69734` 의 6 unique handler (mode 1 의 0x0d~0x12) 디컴파일. Ghidra GUI `Override Switch Statement` 또는 capstone 직접 디스어셈블. 풀면 §4.4 100% + sound trigger / jump / set flag 명령어 매핑 완성. [상세](ghidra-scn-dispatcher-2026-05-09b.md) §"다음 단계 F" |
-| ⭐ **1B** | **§4.2 NPC 좌표 가설 자동 검증** | NPC slot record offset 패턴 (`*(short *)(...+ 0x?? )`) all_decompiled.c 에서 grep → 좌표 offset 식별. 자동 가능, 즉시 가치. [상세](ghidra-scn-dispatcher-2026-05-09b.md) §"다음 단계 E" |
-| 1C | `FUN_00060ab4` (mode 2) 분석 | 30분, 자동. 3-way selector 의 mode 2 sub-system. all_decompiled.c 에서 본문 + caller. 미해독 entity system 발견 가능 |
-| 1D | `FUN_0006619c` indirect caller (main loop) 추적 | BL 외부 호출 0건. RAM dynamic init / function pointer table 위치 찾기. Ghidra Script 또는 사용자 GUI. 풀면 진짜 game main loop 도달 |
-| 1E | `FUN_0008dcd8` / `FUN_0008b2e8` inline 위치 식별 | 두 dispatcher 가 inline 된 caller 함수. 같은 record 형태 (0x3c4 stride) 라 mode 0 NPC 의 다른 phase 일 가능성 |
+| ⭐ **2A** | **NPC handler 영역 capstone 디스어셈블** | dispatcher 1 (`0x663b8~0x673b8`) + dispatcher 3 (`0x933da~0x9447a`) + dispatcher 4 (`0x95bfe~0x96bf8`) 의 6 unique handler 본문. capstone 으로 자동 가능. NPC behavior (이동/AI/대화/공격 등) 의미 + **NPC 좌표 record offset 발견** 가능 |
+| ⭐ **2B** | **`FUN_00060ab4` (mode 2, 9KB) capstone 디스어셈블** | Ghidra 미해독 큰 함수. 진짜 본문 분석 → 미해독 game sub-system (battle / cutscene / map transition?) 식별. 자동 |
+| 2C | 진짜 _scn byte stream parser 발견 | dispatcher 2 가 _scn 아님이 확인됨. byte 단위 opcode (short 아님) 처리 함수 grep / capstone scan. 자동 시도 가능 |
+| 2D | 3 entry indirect caller (main loop) 추적 | `FUN_0006619c` / `FUN_0008b2e8` / `FUN_0008dcd8` 모두 PIC indirect call. RAM dynamic init / function pointer table 위치 — Ghidra Script 또는 사용자 GUI |
+| 2E | 게임 콘텐츠 wiring (_mp NPC 좌표 자동 검출) | 2A 에서 좌표 offset 발견 시 _mp extras 영역과 매칭 → §4.2 NPC 위치 134맵 자동 unblock |
 | 2 | SMAF→OGG 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 | §4.5 — BGM/SFX 활성. 게임 체감 큼 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
 | 4 | 추가 게임 콘텐츠 (보스/맵/퀘스트) 디자인 결정 | 1주차 콘텐츠는 완성. 확장 여부 미정 |
@@ -45,11 +45,12 @@
 
 ### 핵심 진입 문서
 
-- [ghidra-scn-dispatcher-2026-05-09b.md](ghidra-scn-dispatcher-2026-05-09b.md) — **⭐⭐⭐ 2026-05-09 PM 후반 §4.4 95% 해독** (3-way mode selector + 4 dispatcher + caller chain 완성)
-- [ghidra-scn-dispatcher-2026-05-09.md](ghidra-scn-dispatcher-2026-05-09.md) — 2026-05-09 PM §4.4 부분 해독 (위 문서로 superseded, 참고용)
-- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 Ghidra 세션 종합 결과 (16개 함수 분석, dispatcher 자동 식별 한계 — 이번 세션 해독으로 갱신됨)
-- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 dispatcher 초기 walkthrough (5 후보 검토 — 모두 sprite drawer, 참고용)
-- [ghidra-gui-guide.md](ghidra-gui-guide.md) — Ghidra 일반 가이드 (환경 + 4 진입점 단서표)
+- [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md) — **⭐⭐⭐ 종합 정리** (4 dispatcher + 3 entry + capstone handler 분석 + 다음 단계)
+- [ghidra-scn-dispatcher-2026-05-09b.md](ghidra-scn-dispatcher-2026-05-09b.md) — 95% 해독 도달 (caller chain + mode selector). 위 문서로 superseded
+- [ghidra-scn-dispatcher-2026-05-09.md](ghidra-scn-dispatcher-2026-05-09.md) — §4.4 초기 부분 해독 (참고용)
+- [ghidra-findings-2026-05-08.md](ghidra-findings-2026-05-08.md) — 2026-05-08 세션 (참고용)
+- [ghidra-scn-opcode-walkthrough.md](ghidra-scn-opcode-walkthrough.md) — §4.4 초기 walkthrough (참고용)
+- [ghidra-gui-guide.md](ghidra-gui-guide.md) — Ghidra 일반 가이드
 - [asset-formats.md](asset-formats.md) — 자산 포맷 사양
 
 ### 빌드/테스트 — 재현 명령
