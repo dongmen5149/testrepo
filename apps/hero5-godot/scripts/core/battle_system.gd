@@ -339,17 +339,15 @@ func _player_ctx() -> Dictionary:
 	ctx["638"] = int(class_rec.get("unk3", 0))            # 0x27e  V[114] base 회피
 	ctx["640"] = int(class_rec.get("unk4", 0))            # 0x280  V[115] base 방패방어
 	ctx["642"] = int(class_rec.get("unk5", 0))            # 0x282  V[116] base 크리티컬
-	# === Round 9: V[122..126] = 5 buff stat slot ===
-	# ApplyBuildupEffect jumptable entry type 30..36 가 0x2a0..0x2a8 에 V add s16:
-	#   type 30 → V[122] (0x2a0), type 31 → V[123] (0x2a2),
-	#   type 32 → V[124] (0x2a4), type 34 → V[125] (0x2a6),
-	#   type 36 → V[126] (0x2a8). InitStatusComputation 가 0 reset.
-	# Godot 측에는 buff state 가 아직 없어 0 default — 추후 buff system 추가 시 채움.
-	ctx["672"] = 0                                        # 0x2a0  V[122] buff slot 1
-	ctx["674"] = 0                                        # 0x2a2  V[123] buff slot 2
-	ctx["676"] = 0                                        # 0x2a4  V[124] buff slot 3
-	ctx["678"] = 0                                        # 0x2a6  V[125] buff slot 4
-	ctx["680"] = 0                                        # 0x2a8  V[126] buff slot 5
+	# === Round 9+12: V[122..126] = 5 buff stat slot (라벨 확정) ===
+	# ApplyBuildupEffect jumptable entry type 30/31/32/34/36 → 0x2a0..0x2a8 에 V add s16.
+	# Round 12: csv 매핑 + formula 패턴 (100±V[xxx])/100 으로 정확 라벨 식별.
+	# InitStatusComputation 가 0 reset. Godot 측에는 buff state 미구현 → 0 default.
+	ctx["672"] = 0                                        # 0x2a0  V[122] EXP %bonus (csv 0x1d)
+	ctx["674"] = 0                                        # 0x2a2  V[123] SP소모% 감소 (csv 0x1e)
+	ctx["676"] = 0                                        # 0x2a4  V[124] CP충전LV (csv 0x1f)
+	ctx["678"] = 0                                        # 0x2a6  V[125] 쿨타임 감소% (csv 0x21)
+	ctx["680"] = 0                                        # 0x2a8  V[126] 포션효과 % (csv 0x23)
 	# Round 8: V[127] (0x2aa) = def_reduction_percent (s8), V[128] (0x2ac) = atk%bonus.
 	ctx["682"] = 0                                        # 0x2aa  V[127] def_reduction%
 	ctx["684"] = 0                                        # 0x2ac  V[128] atk_percent_bonus
@@ -364,8 +362,9 @@ func _player_ctx() -> Dictionary:
 	# 주의: 0x294/0x295/0x296 (ApplyBuildupEffect 가 store 하는 active buff descriptor) 는
 	# Formula VM 의 var_dict 에 없는 HERO 구조체 필드 (UI 아이콘 표시용).
 	# V[151..155] (0x2de..0x2e6) — formula 의존 stat (id=0 / id=24 cross-check).
-	ctx["734"] = GameState.stat_int                       # 0x2de  V[151] magic stat base
-	ctx["736"] = GameState.stat_dex                       # 0x2e0  V[152] magic stat (paired)
+	# Round 12 정정: V[152]=DEX 잘못 → 둘 다 magic stat (INT). element 1/2 짝.
+	ctx["734"] = GameState.stat_int                       # 0x2de  V[151] magic stat 1 (id=4 element 1)
+	ctx["736"] = GameState.stat_int                       # 0x2e0  V[152] magic stat 2 (id=5 element 2)
 	ctx["738"] = GameState.stat_con                       # 0x2e2  V[153] con  (id=0 MaxHP 10*V[153])
 	ctx["740"] = GameState.stat_str                       # 0x2e4  V[154] str  (id=24 ATK V[58]*2+V[154])
 	ctx["742"] = GameState.max_sp                         # 0x2e6  V[155] max_sp 확정

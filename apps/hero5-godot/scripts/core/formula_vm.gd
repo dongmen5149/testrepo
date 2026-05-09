@@ -320,8 +320,9 @@ func _player_default(var_id: int, _offset: int) -> int:
 		146, 148: return 0                    # 0x2d0, 0x2d4 sub-stats for 255-bound formula (id=16)
 		147: return 0                         # 0x2d2  element bonus
 		# V[151..154] = formula 의존 stat (Round 7 — id=0 MaxHP / id=24 ATK 공식 cross-check).
-		151: return int(gs.stat_int)          # magic stat base (id=4 magic atk +V[151])
-		152: return int(gs.stat_dex)          # magic stat base (id=5 paired with V[151])
+		# Round 12 정정: V[152]=DEX 잘못 → 둘 다 magic stat (INT 기반). element 1/2 짝.
+		151: return int(gs.stat_int)          # magic stat 1 base (id=4 magic atk1 +V[151], element 1)
+		152: return int(gs.stat_int)          # magic stat 2 base (id=5 magic atk2 +V[152], element 2)
 		153: return int(gs.stat_con)          # con 보정 (id=0 max_hp 공식 10*V[153])
 		154: return int(gs.stat_str)          # str 보정 (id=24 atk 공식 V[58]*2+V[154])
 		155: return int(gs.max_sp)            # 0x2e6  max_sp 확정 (ApplyBuildupEffect SP clamp upper bound)

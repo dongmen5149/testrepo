@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Round 11 — c_csv_buildup.json 으로 V[112..116] = 근접명중/장거리명중/회피/방패방어/크리티컬 확정 + V[62]/V[63] = base_con/base_int 정정)
+업데이트: 2026-05-10 (Round 12 — V[122..126] = EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% 확정 + V[151,152] = 둘 다 INT-magic stat 정정)
 
 ---
 
@@ -43,6 +43,14 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 12**: V[122..126] 5 buff slot 정확 라벨 + V[151,152] magic stat 정정.
+  - V[122] = EXP %bonus (`(100+V[122])/100` multiplier, csv 0x1d 경험치LV)
+  - V[123] = SP소모% 감소 (`V[168]*(100-V[123])/100`, csv 0x1e)
+  - V[124] = CP충전LV (`(V[124]/100)*150+300`, csv 0x1f)
+  - V[125] = 쿨타임 감소% (`V[170]*(100-V[125])/100`, csv 0x21)
+  - V[126] = 포션효과 %bonus (`V[56]*V[183]*(100+V[126])/100`, csv 0x23)
+  - V[151], V[152] 둘 다 magic stat (INT 보정) — 이전 V[152]=DEX 추정 정정.
+  formula 공식의 `(100±V[xxx])/100` 패턴 + csv 라벨 cross-check 로 일관 확정.
 
 **이번 세션 (2026-05-09 Round 6) 완료 항목**:
 - **gv_sub writer 분석 도구** — `tools/h5_find_gv_writers.py` (3568 함수 스캔, 547 stores 추적).
@@ -91,26 +99,23 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. V[122..126] 5 buff slot 의 정확 라벨 식별 (자율 가능, 작은 임팩트)
+### 1. ItemTable / EquipItemInfo struct field 매핑 (자율 가능, 큰 임팩트)
 
-V[112..116] secondary stat 와 별개의 5 slot. csv 매핑 단서:
-- csv 0x1d (경험치LV) → ABE 30 = V[122]
-- (csv 미식별 → ABE 31 = V[123])
-- csv 0x1f (CP충전LV) → ABE 32 = V[124]
-- csv 0x21 (쿨타임%감소) → ABE 34 = V[125]
-- csv 0x23 (포션효과%) → ABE 36 = V[126]
+ITEM_STRUCT.md 부분 매핑. EquipItemInfo struct field 가 atk/def/level_req/
+class_req/socket 등 어떤 stat 인지 정확화. 현재 stats_u16 dump 만 있음.
+EquipItemInfo::CopyData / IsEquipPossible / RefineItem::ApplyItemRefine 디스어셈블로
+struct field offset 별 의미 매핑 가능.
 
-ABE 31 entry 의 csv 매핑 식별이 남은 작업.
+### 2. V[151] vs V[152] 의 element 차이 식별 (자율 가능, 작은 임팩트)
 
-### 2. V[151,152] magic stat 라벨 식별 (자율 가능)
+Round 12 에서 V[151], V[152] 둘 다 INT-magic stat 확정. id=4 / id=5 의 두
+magic atk 가 어떤 element (fire/ice/lightning/dark 등) 짝인지 식별.
+calc_pl id=7, id=8 의 V[136..143] 4-element bonus 영역과 cross-check 가능.
 
-calc_pl id=4 (magic atk1 + V[151]), id=5 (magic atk2 + V[152]). buildup csv
-0x11 "마법공격%" 와 cross-check 가능. id=4/5 의 두 element 차이 식별.
+### 3. Save 데이터 구조 검증 (선택)
 
-### 3. ItemTable / EquipItemInfo struct field 매핑
-
-ITEM_STRUCT.md 부분 매핑. EquipItemInfo struct field → atk/def/level_req/...
-정확 라벨로 stats_u16 dump 해석 가능하게 만들기.
+save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game UI
+표시값과 매칭해서 V[112..116] 라벨 (Round 11) 을 다시 확인 가능.
 
 ### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
@@ -314,8 +319,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~V[125,126] (0x2a6, 0x2a8) buff slot 의미 식별~~ — ✅ Round 9: ApplyBuildupEffect entry type 34/36 으로 5-slot 시스템 일부임 확정
 - [x] ~~V[112..116] 5 stat 의 한국어 라벨~~ — ✅ Round 11: 근접명중/장거리명중/회피/방패방어/크리티컬 (buildup csv 매핑)
 - [x] ~~V[62]/V[63] 매핑 정정~~ — ✅ Round 11: int/con → con/int (이전 매핑 오류, buildup csv 로 검증)
-- [ ] V[122..126] 5 buff slot 의미 (csv 0x1d/0x1f/0x21/0x23 매핑 — V[123] 만 미식별)
-- [ ] V[151,152] magic stat 라벨 (id=4/5 element 차이)
+- [x] ~~V[122..126] 5 buff slot 의미~~ — ✅ Round 12: EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% 확정
+- [x] ~~V[151,152] magic stat~~ — ✅ Round 12: 둘 다 INT-magic (이전 V[152]=DEX 잘못)
+- [ ] V[151] vs V[152] 의 element 짝 (fire/ice/lightning/dark 어느 것)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

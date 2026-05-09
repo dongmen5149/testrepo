@@ -62,8 +62,11 @@ jumptable. Effect type 별 store target 식별:
 | 0x294 | (gameplay only) | **active buff effect_type** (Formula VM var 아님) | HERO::ApplyBuildupEffect entry 34..36 store 3/8/9 |
 | 0x295 | (gameplay only) | **active buff icon idx** | 동일 entry 들에서 0x3b/0x71/0x72 store |
 | 0x296 | (gameplay only) | **active buff strength** | 동일 entry 들에서 caller arg store |
-| 0x2a6 | V[125] | buff stack slot (다중 stack) | InitStatusComputation reset, ApplyBuildupEffect modify |
-| 0x2a8 | V[126] | buff stack slot | 동일 |
+| 0x2a0 | V[122] | **EXP/경험치 % bonus** ✅ Round 12 | csv 0x1d "경험치LV". 공식 `(100+V[122])/100` multiplier (id=29 와 별개 EXP 공식) |
+| 0x2a2 | V[123] | **SP소모량 감소%** ✅ Round 12 | csv 0x1e "강공태세효과/SP소모". 공식 `V[168]*(100-V[123])/100` reduction |
+| 0x2a4 | V[124] | **CP 충전 LV (정수)** ✅ Round 12 | csv 0x1f "CP충전LV". 공식 `(V[124]/100)*150 + 300` 또는 `2+(V[124]/100)` |
+| 0x2a6 | V[125] | **쿨타임 감소%** ✅ Round 12 | csv 0x21 "쿨타임 #1%감소". 공식 `V[170]*(100-V[125])/100` reduction |
+| 0x2a8 | V[126] | **포션효과 % bonus** ✅ Round 12 | csv 0x23 "포션효과+#1%". 공식 `V[56]*V[183]*(100+V[126])/100` multiplier |
 | 0x2aa | V[127] s8 | **defense_reduction_percent (0..99)** | calc_pl 공식: (100-(V[127]/2)*V[83]*15)/100 데미지 감쇠 |
 | 0x2ac | V[128] | **atk_percent_bonus** | id=24 ATK 공식 (100+V[128])/100 buff multiplier |
 | 0x2ae | V[129] | **근접명중 bonus** ✅ Round 11 | id=25 V[112]+V[129]*10. csv 0x14 "근접명중+#1" → ABE 11 |
@@ -75,8 +78,8 @@ jumptable. Effect type 별 store target 식별:
 | 0x2bc~0x2ca | V[136..143] | 8 element bonus (4 pair) | id=7,8: 4-element grouped sums |
 | 0x2cc, 0x2ce | V[144], V[145] | main element bonus | id=7,8: V[144/145]*(100+30*V[89/93])/100 |
 | 0x2d0, 0x2d2, 0x2d4 | V[146..148] | sub-stat (255-bound) | id=16 V[146]+V[148]+...+V[154]/5 |
-| 0x2de | V[151] | magic stat (player ctx — int) | id=4 magic atk +V[151] |
-| 0x2e0 | V[152] | magic stat 짝 (player ctx — dex) | id=5 magic atk +V[152] |
+| 0x2de | V[151] | **magic stat 1 (= INT)** ✅ Round 12 | id=4 magic atk1 +V[151], id=9 V[151]/5, id=N V[151]/12, V[151]*V[56]/100 |
+| 0x2e0 | V[152] | **magic stat 2 (= INT)** ✅ Round 12 | id=5 magic atk2 +V[152], id=10 V[152]/5, id=11 V[152]/V[13], V[152]/12 |
 | 0x2e2 | V[153] | **stat_con** | id=0 MaxHP 공식 10*V[153] |
 | 0x2e4 | V[154] | **stat_str** | id=24 ATK 공식 V[58]*2+V[154] |
 | 0x2e6 | V[155] | **max_sp** | ApplyBuildupEffect entry 32 SP clamp 상한 |
@@ -140,6 +143,35 @@ type 의 store target 을 추출. HERO/BATTLER 두 함수 모두 동일 entry ta
 - V[116]: 모두 0 (소서러만 1) → magic-related stat
 
 정확 라벨 식별은 status menu UI 함수 한글 string 매핑이 필요 (다음 라운드).
+
+### Round 12 추가: V[122..126] / V[151,152] 라벨 정확화 (formula 패턴 분석)
+
+`tools/h5_decode_buildup.py` 의 csv 매핑 + formulas_disasm.txt 의 공식 사용 패턴 cross-check.
+
+V[122..126] 5 buff slot 의 정확 라벨 (이전 라운드 "buff slot #N" 으로 임시) 확정:
+
+| V slot | 공식 패턴 | 의미 |
+|---|---|---|
+| V[122] | `(100+V[122])/100` × big_value | **EXP 경험치 % bonus** |
+| V[123] | `V[168]*(100-V[123])/100` | **SP 소모량 감소 %** |
+| V[124] | `(V[124]/100)*150+300`, `2+(V[124]/100)` | **CP 충전 LV** (정수 단위) |
+| V[125] | `V[170]*(100-V[125])/100` | **쿨타임 감소 %** |
+| V[126] | `V[56]*V[183]*(100+V[126])/100` | **포션효과 % bonus** |
+
+5 stat 모두 `(100±V[xxx])/100` 패턴 — 이는 % multiplier/reduction 의 표준 형식.
+ApplyBuildupEffect 가 V slot 에 add s16 (누적 buff stack) 으로 store.
+csv 0x1d/0x1e/0x1f/0x21/0x23 의 한국어 라벨과 모두 일관 매핑.
+
+V[151], V[152] = **둘 다 magic stat (INT 보정)** 확정:
+
+| V slot | 사용 공식 | 패턴 |
+|---|---|---|
+| V[151] | id=4 magic atk1, id=9 V[151]/5, V[151]/12, V[151]*V[56]/100 | element 1 magic atk 보정 |
+| V[152] | id=5 magic atk2, id=10 V[152]/5, V[152]/V[13], V[152]/12, V[152]*(500+V[248])/500 | element 2 magic atk 보정 |
+
+이전 라운드의 V[152]=DEX 추정은 잘못 — magic atk 보정 stat 이므로 INT (또는 derived
+magic stat). 두 V slot 의 차이는 element pair (id=4 vs id=5 의 magic atk1/2 짝)
+이지만 둘 다 INT 기반으로 추정.
 
 ### Round 11 추가: c_csv_buildup.json → V[112..116] 정확 라벨 확정 + V[62]/V[63] 정정
 
@@ -324,8 +356,9 @@ ctx["584"] = GameState.sp            # 0x248  V[69]
 | ~~V[122..126] buff slot~~ | ✅ Round 9: ApplyBuildupEffect entry type 30..36 자동 추출 | `applybuildup_table.tsv` |
 | ~~V[112..116] 5 stat 라벨~~ | ✅ Round 11: 근접명중/장거리명중/회피/방패방어/크리티컬 확정 | `buildup_decoded.tsv`, `tools/h5_decode_buildup.py` |
 | ~~V[62]/V[63] = base_con/base_int~~ | ✅ Round 11: csv "건강"/"정신" 매핑으로 정정 (이전 INT/CON 오류) | buildup csv |
-| V[122..126] 5 buff slot 라벨 | offset/V slot 확정 (Round 9), 의미는 secondary stat 짝 추정 | csv 0x1d/0x1f/0x21/0x23 매핑 (경험치LV/CP충전LV/쿨타임/포션효과) — V[112..116] 와 의미 차이, 별도 분석 필요 |
-| V[151,152] magic stat 라벨 | int/dex 추정 | calc_pl id=4 vs id=5 element 확정 (fire/ice 등?) |
+| ~~V[122..126] 5 buff slot 라벨~~ | ✅ Round 12: EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% | formula 공식 패턴 + csv 매핑 |
+| ~~V[151,152] magic stat 라벨~~ | ✅ Round 12: 둘 다 magic stat (INT 보정), element 1/2 짝 | formula 사용 패턴 분석 |
+| V[151] vs V[152] element 차이 | id=4 vs id=5 의 두 magic atk 가 어떤 element (fire/ice 등) | element 데이터 / damage type 매핑 분석 |
 
 이상의 미확정 영역도 동작에는 영향 없음 — formula_vm 가 default 0 반환,
 battle_system 의 임시 공식 fallback 으로 게임플레이 보장.

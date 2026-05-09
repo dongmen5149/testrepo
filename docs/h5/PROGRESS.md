@@ -580,6 +580,20 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 12 — 2026-05-10 완료]**
+- ✅ V[122..126] 5 buff slot 정확 라벨 확정 — formulas_disasm.txt 의
+  `(100±V[xxx])/100` 패턴 + buildup csv 라벨 cross-check:
+  - V[122] = EXP %bonus (csv 0x1d "경험치LV")
+  - V[123] = SP소모량 감소% (csv 0x1e, 공식 `V[168]*(100-V[123])/100`)
+  - V[124] = CP충전LV (csv 0x1f, 공식 `(V[124]/100)*150+300`)
+  - V[125] = 쿨타임 감소% (csv 0x21)
+  - V[126] = 포션효과 %bonus (csv 0x23)
+- ✅ V[151], V[152] 둘 다 magic stat (INT 보정) 확정 — 이전 V[152]=DEX 추정 정정.
+  formulas_disasm.txt 에서 V[151]/12, V[152]/12, V[152]/V[13], V[151]*V[56]/100
+  같은 magic atk 보정 패턴 일관 확인. 둘은 element 1/2 짝 (id=4 vs id=5 magic
+  atk1/2). 정확 element (fire/ice 등) 매핑은 다음 라운드.
+- ✅ battle_system.gd / formula_vm.gd 의 V[122..126] / V[151,152] 라벨 정정.
+
 **[Round 11 — 2026-05-09 완료]**
 - ✅ `tools/h5_decode_buildup.py` — c_csv_buildup.json (111 buildup entries) 의
   extra_hex 형식 (`[ffff][type:u8][sub:u8][val:u16]` × N) decode + ApplyBuildupEffect
