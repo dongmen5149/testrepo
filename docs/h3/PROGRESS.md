@@ -5,13 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-3 — **2I (402 stub ranking) + 2J (큐 caller 매핑) + top 15 분석 일괄**. ⭐ **FUN_00057394** (3.5KB) = 큐 lifecycle owner = render command buffer / display list builder 후보 (graphics_primitive 20x + byte_append 19x + flush 7x + memset 10x). ⭐⭐ **FUN_00006334** (10KB) = MASSIVE state machine (cmp 99/17arms, +0x18 read 75x → 배열 iterating) — main game loop dispatcher 후보. ⭐ **FUN_0003d5d0** (4.3KB, 37 callers) = sound subsystem dispatcher (sound_trigger 21x, 22 cmp arms). 큐 API caller 138 sites → 4 함수 (FUN_00057394 / FUN_00056bf8 / FUN_00064048 / FUN_000630e8) 가 호출의 70% 차지. 신규 도구 3개 (`rank_pic_stubs.py`, `find_queue_callers.py`, `analyze_top_stubs.py`). 상세는 [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-4 — **2K + 2L + 2M 일괄 본문 디스어셈블**. ⭐ **FUN_00057394** = **typed record stream writer** 확정 (byte_append 패턴: type-tag 0x05 + sub-opcode + 가변 args + flush_swap; 7 records emit, 5 distinct subops). ⭐⭐ **FUN_00006334** = 광범위 dispatcher (96 cmp arms, 15+ distinct nonzero, GOT slot LDR 135회) — main loop 가설 약화, **event/script interpreter 또는 save record processor 후보**. ⭐ **FUN_0003d5d0** = sound subsystem dispatcher 확정 (22 arms, sound_trigger 21x + helper_9fd64 17x **페어 패턴** = 한 sound 명령 = 두 함수 호출). 신규 도구 1개 (`disasm_subsystem_func.py` — cmp arm + BL r0 backtrace + PC-rel literal 카테고리 통합). 상세는 [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md).
 
-**이전 세션** (2026-05-10 PM-2): mode 2 정정 (8.6KB 100% 코드) + FUN_00064048 = 큐 사용자 + state[0x460] = menu highlight + 402 PIC stub 패턴 발견. 상세는 [ghidra-mode2-default-handler-2026-05-10.md](ghidra-mode2-default-handler-2026-05-10.md).
+**이전 세션** (2026-05-10 PM-3): 402 stub ranking + 큐 caller 매핑 + top 15 카테고리 추정. 상세는 [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 NPC behavior dispatcher 95% 해독** + **402 stub 우선순위 분류 + 큐 lifecycle owner 식별 + top 15 카테고리 추정** (2026-05-10 PM-3). 핵심 subsystem (sound dispatcher / 큐 buffer / main loop 후보) 위치 확정. 다음 진척은 **(1) FUN_00057394/FUN_00006334/FUN_0003d5d0 본문 디스어셈블, (2) FUN_000818f0 inner loop, (3) SMAF/번역 사용자 블로커**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **402 stub ranking + 핵심 subsystem 3개 본문 분석 완료** (2026-05-10 PM-4). 큐 record 포맷 가설 (`type_tag + sub_opcode + args + flush`) 발견 — 향후 다른 큐 writer/reader 의 type tag 매핑으로 protocol 전체 풀이 가능. 다음 진척은 **(1) FUN_00056bf8 큐 codec 본문 분석, (2) FUN_00008aca (main_dispatcher inner loop body), (3) r0 backtrace 강화로 sound ID 매핑, (4) SMAF/번역 사용자 블로커**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -39,9 +39,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md)** ⭐⭐⭐ — **최신 PM-3** (402 stub ranking + 큐 caller 매핑 + top 15 카테고리)
-5. (참고) [ghidra-mode2-default-handler-2026-05-10.md](ghidra-mode2-default-handler-2026-05-10.md) — PM-2 (mode 2 정정 + 402 stub 패턴 첫 발견)
-6. (참고) [ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md) — AM 의 state[0x94] 재해석
+4. **[ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md)** ⭐⭐⭐ — **최신 PM-4** (FUN_00057394 typed record writer + FUN_00006334 wide dispatcher + FUN_0003d5d0 sound 페어 패턴)
+5. (참고) [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — PM-3 (402 stub ranking + 큐 caller 매핑)
+6. (참고) [ghidra-mode2-default-handler-2026-05-10.md](ghidra-mode2-default-handler-2026-05-10.md) — PM-2 (mode 2 정정 + 402 stub 패턴 첫 발견)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 다음 세션 — 우선순위 (블로커별)
@@ -60,9 +60,12 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | ~~2G~~ | ~~진짜 battle 트리거 별도 추적~~ | ✅ 2026-05-10 PM-2. **state[0x460] = menu highlight flag** 확인 (battle 아님). FUN_00064048 분석 → cmp 분포 부재 + ring buffer 직렬화 (FUN_0007e150/0x7e184/0x7e890 = GVM 이벤트 큐 API). state machine 아님. 결과: `work/h3/default_key_handler.json`, 도구 `disasm_default_key_handler.py` |
 | ~~2I~~ | ~~402 stub 함수 우선순위 분류 + 분석~~ | ✅ 2026-05-10 PM-3. `tools/recon/rank_pic_stubs.py` + `analyze_top_stubs.py` 로 top 15 카테고리 추정. ⭐ **FUN_00006334** (10KB, MASSIVE state machine) = main loop 후보. **FUN_000818f0** (5.4KB, 287 BLs) = per-entity update loop. **FUN_00026a80** (8.4KB, 51 distinct BL) = subsystem router. **FUN_0003d5d0** (4.3KB, 37 callers, 22 cmp arms) = **sound subsystem dispatcher**. 결과: `work/h3/pic_stubs_ranked.json`, `work/h3/top_stubs_analysis.json` |
 | ~~2J~~ | ~~FUN_0007e150 큐 producer/consumer 매핑~~ | ✅ 2026-05-10 PM-3. `tools/recon/find_queue_callers.py` 로 138 BL → 31 caller 매핑. ⭐⭐ **FUN_00057394** (3.5KB) = **큐 lifecycle owner = render command buffer / display list builder** 후보 (graphics_primitive 20x + byte_append 19x + flush 7x). **FUN_00056bf8** = save/load codec 후보. 4 함수가 큐 호출의 70% 차지. 결과: `work/h3/queue_callers.json` |
-| ⭐ **2K** | **FUN_00057394 본문 디스어셈블** | 큐 lifecycle owner. 본문 분석으로 진짜 display list 인지 확정 + 큐 byte 포맷 식별. 자동 가능 |
-| ⭐ **2L** | **FUN_00006334 본문 디스어셈블** | MASSIVE 10KB state machine (cmp 17 arms). main loop dispatcher 가설 검증 + entry table 추출. 자동 가능 |
-| 2M | FUN_0003d5d0 dispatcher 22 arm 디코드 | Sound subsystem 22 명령 식별 (BGM_play, SFX_trigger, fade 등). 자동 가능 |
+| ~~2K~~ | ~~FUN_00057394 본문 디스어셈블~~ | ✅ 2026-05-10 PM-4. **typed record writer 확정** — byte_append(0x05) + byte_append(subop) + args + flush_swap 패턴. 7 records emit, 5 distinct subops (0x14/0x3/0x3d/0x3f/0x40). type-5 record stream codec |
+| ~~2L~~ | ~~FUN_00006334 본문 디스어셈블~~ | ✅ 2026-05-10 PM-4. 96 cmp arms (15+ distinct nonzero values 1-22), 162 PC-rel LDR (135 GOT slot), interesting BL 0건. main loop 가설 **부분 약화** — event/script interpreter 또는 save record processor 후보 |
+| ~~2M~~ | ~~FUN_0003d5d0 dispatcher 22 arm 디코드~~ | ✅ 2026-05-10 PM-4. **22 arms + sound 페어 패턴 확정** (sound_trigger 21x + helper_9fd64 17x = 한 sound 명령 = 두 함수 호출). sound id immediate 모두 indirect (21/21 unknown) — 더 깊은 r0 backtrace 필요 |
+| ⭐ **2N** | **FUN_00056bf8 (queue codec) 본문 분석** | type tag 발견 + reader cmp arm 분석으로 큐 protocol 매핑. disasm_subsystem_func.py 재사용. 자동 가능 |
+| ⭐ **2O** | **FUN_00008aca 본문 분석** | FUN_00006334 가 70x 호출하는 inner helper. main_dispatcher inner loop body 정체 식별. 자동 가능 |
+| 2P | r0 backtrace 강화 (10+ instr propagation) | sound ID immediate 추출 강화. 21/21 unknown 의 절반 이상 식별 가능. 도구 개선 |
 | 2H | _mp NPC 좌표 외부 init/spawn 함수 추적 | 2D 의존 (main loop 발견 시 부속). 단독으로는 자동 검출 불가 |
 | 2 | SMAF→OGG 변환 (smaf-converter JAR + TiMidity++ + ffmpeg) | §4.5 — BGM/SFX 활성. 게임 체감 큼. **2026-05-10 도구 갱신**: `tools/converter/convert_h3_smaf.py` 실행으로 헤더 분석 + 변환 가이드 생성. JAR 다운받아 `bgm0_mf` 시범 변환 권장 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
@@ -78,7 +81,8 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 핵심 진입 문서
 
-- [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — **⭐⭐⭐ 최신 PM-3** (402 stub ranking + 큐 caller 매핑 + top 15 카테고리)
+- [ghidra-subsystem-funcs-2026-05-10.md](ghidra-subsystem-funcs-2026-05-10.md) — **⭐⭐⭐ 최신 PM-4** (FUN_00057394/FUN_00006334/FUN_0003d5d0 본문 분석 + 큐 record 포맷)
+- [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — PM-3 (402 stub ranking + 큐 caller 매핑 + top 15 카테고리)
 - [ghidra-mode2-default-handler-2026-05-10.md](ghidra-mode2-default-handler-2026-05-10.md) — PM-2 (mode 2 정정 + default key handler + 402 stub 패턴 첫 발견)
 - [ghidra-scn-dispatcher-2026-05-10.md](ghidra-scn-dispatcher-2026-05-10.md) — AM 차례 (state[0x94] 재해석 + 3 entry caller 한계 확정)
 - [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md) — 자동 분석 2A/2B/2C 종합
@@ -122,6 +126,9 @@ python tools/recon/disasm_default_key_handler.py     # ⭐ FUN_00064048 default 
 python tools/recon/rank_pic_stubs.py                 # ⭐ 402 PIC stub 우선순위 ranking (2026-05-10 PM-3)
 python tools/recon/find_queue_callers.py             # ⭐ GVM 큐 API caller 매핑 (2026-05-10 PM-3)
 python tools/recon/analyze_top_stubs.py              # ⭐ top 15 stub 일괄 분석 + 카테고리 추정 (2026-05-10 PM-3)
+python tools/recon/disasm_subsystem_func.py 0x57394 0x58172 --label render_buffer       # ⭐ 2K (PM-4)
+python tools/recon/disasm_subsystem_func.py 0x6334 0x8aca --label main_dispatcher       # ⭐ 2L (PM-4)
+python tools/recon/disasm_subsystem_func.py 0x3d5d0 0x3e690 --label sound_dispatcher    # ⭐ 2M (PM-4)
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
@@ -132,6 +139,61 @@ python tools/recon/extract_candidate_funcs.py 0xADDR1 0xADDR2  # all_decompiled.
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-10 PM-4 세션 작업 압축 (2K + 2L + 2M 본문 디스어셈블)
+
+**테마**: PM-3 의 "top 15 카테고리 추정" 후속. 핵심 3 함수 (FUN_00057394 / FUN_00006334 / FUN_0003d5d0) 의 본문 capstone 디스어셈블로 정체 검증.
+
+**A. 통합 도구 신규** ([disasm_subsystem_func.py](../../tools/recon/disasm_subsystem_func.py))
+- argparse 기반 CLI (addr / end / label)
+- cmp+conditional branch 자동 페어링 → arm 추출
+- BL r0 backtrace (직전 ~3 instr 검색, mov/movs/adds #imm + ldr [pc,#imm] 인식)
+- TARGETS_OF_INTEREST 매핑 (큐 API 10 + UI helper 7 + sound trigger) → 인자 분포 자동 통계
+- PC-rel LDR 카테고리화 (negative_signed/got_slot/medium_int 등)
+
+**B. 2K — FUN_00057394 = typed record writer 확정** ⭐
+- byte_append immediate 분포: **0x05: 7x (record begin marker)**, 0x3d: 3x, 0x14/0x3/0x3f/0x40 각 1x
+- flush_swap 7회 = byte_append #0x05 7회 → **각 record = 한 commit 단위**
+- 7 records 패턴: `byte_append(0x05) + byte_append(<subop>) + (memcpy_read | u32_append | nothing) + flush_swap`
+- 12 cmp arms 모두 null check 위주 → state machine 아님, **sequential serializer**
+- → display list 가 아닌 **typed record stream codec** 가설 (0x05 = type tag, sub-opcode 5종)
+
+**C. 2L — FUN_00006334 = 광범위 dispatcher (main loop 가설 약화)**
+- 96 cmp arms (cmp #0: 53회 null check + 15 distinct nonzero values 1-22)
+- 162 PC-rel LDR 중 135 = GOT slot offsets (글로벌 데이터 heavy 접근)
+- **interesting BL 0건** — render/input/sound helper 호출 부재 → main loop 아니라 interpreter/serializer 후보
+- 추가 단서: 187 internal BL → top FUN_00008aca 70회 (inner loop body 후보), FUN_00080664 22회
+
+**D. 2M — FUN_0003d5d0 = sound subsystem dispatcher 확정** ⭐
+- 22 cmp arms (cmp #0xc3, 0x0f, 0x1e, 0x04, 0x05, 0x15 등 다양)
+- **(sound_trigger + helper_9fd64) 페어 패턴**: 21 sound_trigger + 17 helper_9fd64 calls — offset 차이 ~8 bytes 로 페어 호출
+- → 한 sound 명령 = (sound_trigger setup + helper_9fd64 worker) 두 함수 호출
+- sound ID immediate 21/21 모두 indirect (register/memory load) — capstone 1-3 instr backtrace 부족, 더 깊은 propagation 필요
+- 127 PC-rel LDR (medium_int 69 + small_int 31) → **100+ 정수 상수 임베드** = sound parameters
+
+**E. 큐 record 포맷 가설 (2K 발견)**
+```
+record:
+  byte type_tag      ; 0x05 = type-A (FUN_00057394 emit)
+  byte sub_opcode    ; type 별 의미 다름 (5종 for type-5)
+  variable args      ; memcpy_read 또는 u32_append 또는 없음
+  flush_swap()       ; commit
+```
+→ 다른 큐 writer (FUN_00056bf8 / FUN_00064048 / FUN_000630e8) 의 type tag 매핑으로 protocol 풀이 가능.
+
+**F. 핵심 교훈**
+1. 통합 도구 (`disasm_subsystem_func.py`) 한 개로 3 함수 분석 — 함수별 specific 도구보다 효율.
+2. **cmp arm 카운트 + 분포** = 함수 카테고리 1차 지표. 12 arms (null 위주) = serializer / 22 arms (다양) = subsystem dispatcher / 96 arms = wide dispatcher.
+3. **BL r0 1-3 instr backtrace 한계**: mov/movs #imm 만 잡힘. register-loaded args 는 propagation 필요. sound ID 21/21 unknown 이 그 예.
+4. **typed record stream 가설 = 큐 protocol 의 열쇠**. byte_append 의 첫 인자가 일관된 type tag 패턴이면 코덱 식별 용이.
+5. **"main loop" 검증은 helper 호출 패턴으로**. 외형 (96 arms, 10KB) 아닌 render/input/sound 호출 여부로 판단.
+
+**G. 다음 세션 권장**
+- ⭐ **2N**: FUN_00056bf8 본문 분석 → 다른 큐 writer/reader type tag 발견
+- ⭐ **2O**: FUN_00008aca 분석 → main_dispatcher inner loop body 정체
+- 2P: r0 backtrace 10+ instr propagation 강화 → sound ID 매핑
 
 ---
 
