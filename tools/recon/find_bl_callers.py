@@ -20,14 +20,8 @@ REPO = Path(__file__).resolve().parents[2]
 BIN = REPO / "work" / "h3" / "extracted" / "client.bin64000"
 
 TARGETS = {
-    0x0008DCD8: "dispatcher_main (FUN_0008dcd8)",
-    0x0008DCD9: "dispatcher_main (Thumb LSB)",
-    0x0008B2E8: "dispatcher_sister (FUN_0008b2e8)",
-    0x0008B2E9: "dispatcher_sister (Thumb LSB)",
-    0x0008E112: "scn_dispatch_evt mid-block",
-    0x0008E113: "scn_dispatch_evt mid-block (Thumb)",
-    0x0008E89E: "dispatcher tail",
-    0x0008E89F: "dispatcher tail (Thumb)",
+    0x0006619C: "FUN_0006619c (caller-of-orchestrator)",
+    0x0006619D: "FUN_0006619c (Thumb)",
 }
 
 
