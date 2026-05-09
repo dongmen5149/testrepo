@@ -44,6 +44,40 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 6. (참고) [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
+### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
+
+다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
+
+**1) 컨텍스트 복구** (1분):
+- `git log --oneline -8` 로 최근 작업 파악 (Round 17 = `a3e35715` 까지 완료)
+- 위 PM-7 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+
+**2) 권장 다음 작업 (Round 18 후보, 우선순위 순)**:
+
+| # | 작업 | 명령 | 기대 산출물 |
+|---|---|---|---|
+| ⭐⭐ 2W | FUN_000439a0 본문 (popular sub-handler, 188B, 37 callers) | `python tools/recon/disasm_subsystem_func.py 0x439a0 0x44280 --label popular_helper_439a0` | `work/h3/popular_helper_439a0_disasm.json` — type-6 처리 핵심 식별 |
+| ⭐⭐ 2X | FUN_00047a14 본문 (또 다른 sub-handler) | next entry 확인 후 `disasm_subsystem_func.py 0x47a14 <end>` | `work/h3/sub_handler_47a14_disasm.json` |
+| ⭐ 2Y | 추가 GOT slot writer 추적 | `python tools/recon/find_global_slot_writers.py --slot-offset 0x9c70` (그리고 0x9c71, 0x9c84, 0xac78 각각) | 4개 슬롯의 writer 분포 → GVM 외부 주입 vs 게임 내부 셋팅 구분 |
+| 2Z | task_struct 필드 매핑 | 0x4ad34 클러스터 함수 본문 일괄 분석 | task_struct (offset → 의미) 매핑 |
+
+**3) Round 18 작업 후 마무리**:
+- 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
+- PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 18 항목 추가
+- Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
+
+**4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
+- SMAF→OGG 변환 (`tools/converter/convert_h3_smaf.py`) — BGM/SFX 활성, 게임 체감 큼
+- 대사 LLM 번역 (`ANTHROPIC_API_KEY` 셋업 후 `translate_dialogues.py` 실행, ~$0.66)
+
+**5) 환경 셋업 (PowerShell, 필요 시만)**:
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+```
+(Python 분석은 JAVA_HOME 불필요. Android 빌드/테스트 시에만.)
+
 ### 다음 세션 — 우선순위 (블로커별)
 
 > ⭐ = 권장 다음 작업
