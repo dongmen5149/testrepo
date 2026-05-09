@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-08 (P1+P2+P3+P4 완료, 자산 환경 처음부터 복원, .so Ghidra-free 분석)
+업데이트: 2026-05-09 (Polish 라운드 + Formula VM 변수 사전 254개 + ItemTable 19-카테고리 dispatch + interpreter.gd signal 기반 Map/Camera 연결 + GOT gv[0x1474] 식별 + DES 비표준 변종 차단)
 
 ---
 
@@ -15,16 +15,23 @@
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-이번 세션 완료 항목:
-- **P1 OPCODE_TABLE 77/77** — capstone+lief 로 `EventProc::onFunction` jumptable 추적,
-  외부 `opcode_table.json` 자동 생성·로드. PROGRESS hint 의 추측 매핑(Quest, ChangeBgm)
-  을 .so disasm 으로 검증·정정.
-- **P2 enemy_g 121B layout** — `Map::MapEnemyG_set` + `ByteToInt16` disasm 으로
-  HP/MP/ATK/DEF/EXP/Gold offset 모두 검증. 75/166 valid HP (PROGRESS와 일치).
-- **P3 Stats UI ATK/DEF** 합산 + 무기/방어구/포션 hover 비교 툴팁.
-- **P4 Battle 결과 popup** + Title↔ClassSelect↔Demo 0.3s fade 전환.
-- **자산 환경 처음부터 복원** — APK → VFS 2189 → 99.7% 이름 → sprite 421 / pal 588
-  / sound 42 / scn body 258 / 한글 18,837 → import_to_godot 통합 실행.
+이번 세션 (2026-05-09) 완료 항목:
+- **통합 파이프라인** — `tools/h5_extract_pipeline.py` 신규. 새 클론에서 1
+  커맨드(=9 단계 6.1s)로 APK unzip → VFS → names → sprite → text → converter →
+  .so disasm → import_to_godot → verify 전체. incremental sentinel + `--force`/`--only`/`--skip`.
+- **scn body 정적 trace** — `tools/h5_scn_body_stats.py` 가 258 body 를 interpreter.gd
+  와 동일 규칙으로 정적 dispatch. opcode 빈도 TSV + 미정의/잘림 보고. 254/258 end-marker,
+  31 미정의 (24 distinct, 모두 1-4 회) — dispatch 정확도 정량 확인.
+- **BATTLER damage disasm** — `tools/h5_extract_battle_funcs.py` 가 11개 핵심 함수
+  ARM disasm + callee 추출 (max 39 callee = `HERO::NewHitEffect`). **`Event_PlayerDamage`
+  완전 추출** = % of max_hp 데미지, 100% 만 즉사 허용. BATTLER 멤버 offset 확정:
+  +0xf0 cur_hp / +0x180 max_hp / +0x210 spirit_buffer. → `docs/h5/BATTLE_FORMULA.md`.
+- **SMAF audit** — `tools/h5_smaf_audit.py` 로 42 SMAF ↔ 42 OGG 가 **완전 1:1 매칭**
+  증명. SMAF→OGG 변환 작업 영구 클로즈 (OGG 만으로 모든 BGM/SFX 충당).
+- **P5 폰트 매핑 정정** — table.dat 가 EUC-KR 이 아니라 **Unicode BMP** (0x8861-0xD3B7,
+  Hanja 773 + Hangul 1246 + 기타 331). `convert_h5_fnt2png.py` 정정 +
+  `docs/h5/P5_FONT_MAPPING.md` 작성. 581-glyph 매핑은 `_midas_funcFntInvalidate`
+  내부 — 시스템 폰트 우회로 게임 무관.
 
 ---
 
@@ -33,9 +40,12 @@
 **가장 흔한 케이스 — assets/ 비어있는 새 클론**:
 ```bash
 # APK 가 있는지 확인 후 (Hero5/영웅서기5(최신폰전용).apk)
-# 한 번에 모든 자산 처리:
-python tools/h5_extract_pipeline.py     # ← 다음 세션에 이걸 먼저 만들 것 (TODO)
-# 또는 단계별:
+# 한 번에 모든 자산 처리 (~6s, incremental — 이미 있는 단계는 스킵):
+python tools/h5_extract_pipeline.py
+#   --force        : sentinel 무시하고 전체 재실행
+#   --only NAME ...: 특정 단계만 (apk/vfs/names/sprite/text/converters/disasm/godot/verify)
+#   --skip NAME ...: 특정 단계 제외
+# 단계별 수동:
 python tools/h5_vfs_unpack.py            # 1. VFS unpack (2189 entries)
 python tools/h5_recover_names.py         # 2. 이름 복원 (99.7%)
 python tools/h5_batch_sprite.py          # 3. sprite 421 + palette 588
@@ -54,27 +64,73 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 우선순위 작업 (즉시 진행 가능)
+## 다음 우선순위 작업
 
-### P5: 한글 자모 인코딩 정밀 — capstone+lief 로 가능
-- 목표: `kor.fnt` 의 581 glyph 와 `table.dat` 의 2350 EUC-KR codepoint 매핑.
-- 방법: `tools/h5_extract_opcode_disasm.py` 와 동일한 패턴으로 `Graphic::DrawText`
-  / `Strings::draw` / `Font::lookup` 함수 자동 분석.
-- **현 상태 영향 없음** — 시스템 폰트(Noto Sans CJK KR)로 우회 중. polish 작업.
-- 우선순위: 낮음 (게임 기능 영향 X).
+### P5: 한글 자모 인코딩 정밀 — ✅ 부분 완료 (2026-05-09)
+정정 사항: table.dat 는 EUC-KR 이 아니라 **Unicode BMP**. 자세히 `docs/h5/P5_FONT_MAPPING.md`.
+- ✅ table.dat → Unicode codepoint list (Hanja 773 + Hangul 1246 + 기타 331).
+- ✅ 폰트 그리기 호출 경로 추적 (`MX_fntDrawString` → `_midas_funcFntInvalidate`).
+- ⏳ 581-glyph 매핑 자체는 `_midas_funcFntInvalidate` 디스어셈블 시 추출 가능.
+- 게임 영향 0 — Noto Sans CJK KR 시스템 폰트로 충분.
 
-### P6: Android APK 실 빌드 검증 — 외부 환경 필요
+### P6: Android APK 실 빌드 검증 — 사용자 직접 진행 필요
 - Godot Editor 4.2+ + Install Android Build Template + Export Templates (~1GB) +
   JDK 17 + Android SDK + NDK 필수.
 - `apps/hero5-godot/export_presets.cfg.template` 참조 (arm64-v8a, min SDK 23, target 34).
 - 이 머신에서 자동화 불가 — 사용자가 GUI 로 진행 필요.
 
-### 다른 가치 있는 polish (자율 진행 가능)
-- **scene body 실행 trace** — 258 .scn body 자동 실행 시 어떤 opcode 가 빈번한지
-  통계 dump (interpreter.gd 에 stats 모드 추가).
-- **damage formula 정확도** — `BATTLER` 클래스의 데미지 계산 함수 disasm 으로
-  정확한 공식 추출.
-- **SMAF → OGG 변환** — vgmstream 또는 자체 SMAF 디코더 (.mmf 42개).
+### Polish + 심층 분석 — ✅ 모두 완료 (2026-05-09)
+- ✅ **scene body 실행 trace** — `tools/h5_scn_body_stats.py` (258/258 dispatch 99%+ 정확).
+- ✅ **damage formula 분석 (심층)** — Event_PlayerDamage 100% 추출 + BATTLER offset 확정.
+  `HERO::NewHitEffect`/`HeroSkillAtkHardCode` 는 시각 이펙트와 KnockBack/Snatch 로직만.
+  실제 데미지는 **`TargetEffect::ProcDemageCalc` → `Formula::calc()` (스택 기반 VM)**.
+- ✅ **Formula VM 식별** — 공식이 외부 데이터 (`calc_pl/en/sk.dat`, DES 암호화) 에 인코딩.
+  6 opcode (XOR/MOD/DIV/MUL/SUB/ADD) 의 스택 머신. 자세히 `BATTLE_FORMULA.md` §6.
+- ✅ **DES 키 발견** — `'0EP@KO91'` (`onStartApp` 의 `MX_desInit` 인자 추적).
+- ✅ **SMAF → OGG 변환** — 변환 불필요 (1:1 매칭).
+- ✅ **Event_* opcode 102개 1:1 매핑** — `docs/h5/EVENT_OPCODE_REFERENCE.md`.
+  4B stub 13개 식별 (DRM 잔재). interpreter.gd 핸들러 disasm-confirmed semantics 로 보강.
+- ✅ **EquipItemInfo struct 부분 layout** — `docs/h5/ITEM_STRUCT.md` (CopyData offset 분석).
+
+### 추가 심층 분석 — ✅ 완료 (2026-05-09 후속)
+- ✅ **Formula VM 변수 사전 254개** — `tools/h5_extract_formula_vars.py` +
+  `docs/h5/FORMULA_VAR_DICT.md`. var_id → struct (skill/defender/item/global) +
+  offset 매핑. var_id 1-60 = skill struct, 192-251 = defender (skill 과 동일 layout),
+  168-182 = item, 58-160 = 전역 state.
+- ✅ **ItemTable 19-카테고리 dispatch** — `GetItemTableInfo` 분석으로 record_size
+  별 sub-table dispatch 확정. EquipItem (376B, cat 1-11) / Battle/Cash/Orb/SkillBook
+  (312B) / MixItem (308B) / MixBookItem (324B). `docs/h5/ITEM_STRUCT.md` 갱신.
+- ✅ **interpreter.gd 실제 핸들러 보강** — Event_PlayerDamage/RestoreHp/RestoreSp/
+  Direction/Teleport/QuestStatus/QuestSwitch 가 GameState.hp/sp/player_x/y/dir
+  와 Quest.start/complete/_state 직접 호출하도록 연결. 이제 .scn body 가
+  실제 게임 상태를 변경.
+- ⚠ **DES 복호화 차단** — 비표준 DES 변종 (KEY4REAL 768B = 16 round × 48 byte
+  bit-array). 표준 pycryptodome 으로 안 풀림. `startDes` (0x3923c) 자체 재구현
+  필요. `BATTLE_FORMULA.md` §6 참조.
+
+### 추가 진전 (2026-05-09 Round 3)
+- ✅ **GOT 매핑** — Formula::getValFunc 의 var_id 58-160 (전역 state) 113개가
+  모두 동일 GOT entry 0x00164368 → `gv` (0x0016fcf0, 7656B 글로벌 struct) 의
+  +0x1474 포인터 참조. 즉 `gv[0x1474]` = player/hero 데이터 sub-struct.
+  변수 사전 cases 에서 읽는 offset 0x22d-0x27d 가 그 sub-struct 의 stat 필드.
+- ✅ **decode_h5_item.py 카테고리 메타** — SLOT_META (slot_0..18 → category/kind/
+  runtime_struct/runtime_size). 각 item 에 `price` 필드 추가. items.json 에 `_meta.
+  category_dispatch` 노출. GameData.item_slot_meta() / item_stat() 갱신.
+- ✅ **interpreter.gd signal 기반 Map/Camera 연결** — H5Interpreter 에 13개 signal
+  추가 (map_tile_change, map_attribute_change, screen_shake, narration,
+  system_message, scene_change_bgm, player_imo/effect/action, end_of_body 등).
+  Demo 가 connect 해서 toast 로 trace + Audio.play_bgm 자동 호출.
+- ⚠ **DES 차단 재확인** — `DESdecrypt` 가 `new_decrypt` 를 3번 호출 (3-round 구조)
+  하지만 표준 DES/3DES/EDE/DDD 어떤 변종으로도 MD5 검증 통과하지 않음. S-box
+  또는 PC1/PC2 가 비표준일 가능성 높음. 자체 DES 재구현 필요.
+
+### 남은 자율 가능 작업
+- **DES 자체 재구현** — `desRound` (588B) / `new_decrypt` (168B) / S-box 테이블
+  추출 → calc_*.dat 평문 → Formula VM 디스어셈블러 → 모든 공식 dump.
+- **gv struct 정확한 필드명** — gv+0x1474 sub-struct 에 writes 하는 함수 추적.
+- **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
+- **MapRenderer.set_tile / Camera2D.shake 트윈** — interpreter signal 을 받아
+  실제 visual 적용 (현재는 toast 로 trace 만).
 
 ---
 
@@ -97,15 +153,26 @@ Demo:
 
 ---
 
-## 이번 세션 새 도구 (Ghidra-free .so 분석)
+## 새 도구 (Ghidra-free .so 분석 + 통합 파이프라인)
 
-| 도구 | 역할 |
-|---|---|
-| `tools/h5_extract_opcode_disasm.py` | EventProc::onFunction jumptable → opcode_table.json 77 entries |
-| `tools/h5_event_arg_sizes.py` | Itanium ABI mangle parser → 105 Event_* arg_size |
-| `tools/h5_extract_enemy_layout.py` | Map::MapEnemyG_set → 121B record layout 검증 |
-| `tools/h5_inspect_enemy_record.py` | 디버그용 raw record dump |
-| `tools/h5_batch_sprite.py` | sprite/palette single-argv converter wrapper |
+| 도구 | 역할 | 추가 |
+|---|---|---|
+| `tools/h5_extract_pipeline.py` | 9-step 통합 파이프라인 (incremental + --force/--only) | 2026-05-09 |
+| `tools/h5_scn_body_stats.py` | 258 scn body 정적 trace + opcode 빈도 TSV | 2026-05-09 |
+| `tools/h5_extract_battle_funcs.py` | 11 BATTLER/HERO/Monster 함수 ARM disasm + callee | 2026-05-09 |
+| `tools/h5_smaf_audit.py` | 42 SMAF ↔ 42 OGG 1:1 매칭 검증 + 청크 dump | 2026-05-09 |
+| `tools/h5_disasm_newhiteffect.py` | NewHitEffect / HeroSkillAtkHardCode disasm | 2026-05-09 |
+| `tools/h5_find_damage_callers.py` | IncreaseHP/AddEffectDamage caller 추적 | 2026-05-09 |
+| `tools/h5_disasm_formula.py` | Formula VM 4 함수 (dataLoad/calc/calcByFormula/getNumberInStack) | 2026-05-09 |
+| `tools/h5_disasm_skill_hardcode.py` | HeroSkillAtkHardCode 단독 disasm | 2026-05-09 |
+| `tools/h5_extract_event_funcs.py` | EventProc::Event_* 102개 일괄 disasm | 2026-05-09 |
+| `tools/h5_disasm_item_funcs.py` | EquipItemInfo CopyData 등 7개 함수 → struct offset 추출 | 2026-05-09 |
+| `tools/h5_extract_formula_vars.py` | Formula::getValFunc 254-entry switch → var_id 사전 | 2026-05-09 |
+| `tools/h5_extract_opcode_disasm.py` | EventProc::onFunction jumptable → opcode_table.json 77 entries | 2026-05-08 |
+| `tools/h5_event_arg_sizes.py` | Itanium ABI mangle parser → 105 Event_* arg_size | 2026-05-08 |
+| `tools/h5_extract_enemy_layout.py` | Map::MapEnemyG_set → 121B record layout 검증 | 2026-05-08 |
+| `tools/h5_inspect_enemy_record.py` | 디버그용 raw record dump | 2026-05-08 |
+| `tools/h5_batch_sprite.py` | sprite/palette single-argv converter wrapper | 2026-05-08 |
 
 의존: `pip install lief capstone`. import_to_godot.py 가 둘 다 있으면 opcode_table.json
 자동 생성 (없으면 graceful skip — BASE_TABLE 38 fallback).
@@ -204,5 +271,10 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 
 - [`PROGRESS.md`](PROGRESS.md) — 전체 진행 상세 (Phase 2 분석 단계별 + Phase 3 시스템별)
 - [`PHASE3_ENGINE.md`](PHASE3_ENGINE.md) — Godot 4 엔진 결정 근거
+- [`BATTLE_FORMULA.md`](BATTLE_FORMULA.md) — BATTLER damage 함수 disasm + Event_PlayerDamage 공식 + Formula VM/DES 키
+- [`FORMULA_VAR_DICT.md`](FORMULA_VAR_DICT.md) — Formula VM 변수 사전 (254 var_id → struct/offset)
+- [`EVENT_OPCODE_REFERENCE.md`](EVENT_OPCODE_REFERENCE.md) — 102개 Event_* opcode 의미 매핑 reference
+- [`ITEM_STRUCT.md`](ITEM_STRUCT.md) — EquipItemInfo struct 부분 layout + 19-카테고리 dispatch
+- [`P5_FONT_MAPPING.md`](P5_FONT_MAPPING.md) — table.dat=Unicode (EUC-KR 아님) 정정 + 매핑 위치
 - [`apps/hero5-godot/README.md`](../../apps/hero5-godot/README.md) — Godot 프로젝트 사용법
 - [`apps/hero5-godot/export_presets.cfg.template`](../../apps/hero5-godot/export_presets.cfg.template) — Android export 템플릿

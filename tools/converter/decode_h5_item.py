@@ -13,6 +13,16 @@ item_NN.dat 디코더.
 검증 (item_00.dat 첫 record):
   count=86, size=0x2a (42), prefix=0xc7 (199), strlen=6, "롱소드", extra=33B
 
+slot_N → ItemTable category (분석 결과, ITEM_STRUCT.md 참조):
+  slot_0..slot_10 = EquipItemInfo (weapon/armor/etc, 376B runtime record)
+  slot_11        = (unused / reserved)
+  slot_12        = BattleUseItemInfo (potion/scroll, 312B)
+  slot_13        = OrbItemInfo (gem/orb, 312B)
+  slot_14, 15    = MixItemInfo (alchemy material, 308B)
+  slot_16        = MixBookItemInfo (recipe book, 324B)
+  slot_17, 18    = SkillBookItemInfo (skill book, 312B)
+  slot_19        = CashItemInfo (premium item, 312B)
+
 산출:
   apps/hero5-godot/assets/gamedata/items.json
 """
@@ -26,6 +36,29 @@ OUT = ROOT / 'apps' / 'hero5-godot' / 'assets' / 'gamedata' / 'items.json'
 
 
 CATALOG = ROOT / 'work' / 'h5' / 'vfs_catalog.tsv'
+
+# slot_N → 카테고리 메타데이터 (ItemTable::GetItemTableInfo dispatch 참조)
+SLOT_META = {
+    0:  {"category": "equip", "kind": "weapon",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    1:  {"category": "equip", "kind": "weapon_2",     "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    2:  {"category": "equip", "kind": "weapon_3",     "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    3:  {"category": "equip", "kind": "weapon_4",     "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    4:  {"category": "equip", "kind": "armor",        "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    5:  {"category": "equip", "kind": "helmet",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    6:  {"category": "equip", "kind": "boots",        "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    7:  {"category": "equip", "kind": "accessory",    "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    8:  {"category": "equip", "kind": "accessory_2",  "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    9:  {"category": "equip", "kind": "shield",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    10: {"category": "equip", "kind": "spirit",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
+    11: {"category": "battle_use", "kind": "potion",  "runtime_struct": "BattleUseItemInfo",  "runtime_size": 312},
+    12: {"category": "battle_use", "kind": "scroll",  "runtime_struct": "BattleUseItemInfo",  "runtime_size": 312},
+    13: {"category": "orb",       "kind": "orb",      "runtime_struct": "OrbItemInfo",        "runtime_size": 312},
+    14: {"category": "mix",       "kind": "material", "runtime_struct": "MixItemInfo",        "runtime_size": 308},
+    15: {"category": "mix",       "kind": "material_2", "runtime_struct": "MixItemInfo",      "runtime_size": 308},
+    16: {"category": "mix_book",  "kind": "recipe",   "runtime_struct": "MixBookItemInfo",    "runtime_size": 324},
+    17: {"category": "skill_book", "kind": "skill_book", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+    18: {"category": "skill_book", "kind": "skill_book_2", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+}
 
 
 def djb2(s: bytes) -> int:
@@ -81,6 +114,8 @@ def parse_items(d: bytes) -> list[dict]:
             'idx': i,
             'name': name,
             'prefix': prefix,    # icon_id 또는 category
+            # 모든 stats csv 는 항상 첫 u16 = 가격(gold) 으로 시작.
+            'price': u16[0] if u16 else 0,
             'stats_u16': u16,
             'extra_hex': extra.hex(),
         })
@@ -89,18 +124,21 @@ def parse_items(d: bytes) -> list[dict]:
 
 def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    all_items: dict[str, list] = {}
+    # 호환성: 기존 GameData loader 가 data["slot_N"] 직접 접근. 평면 구조 유지하고
+    # 메타데이터는 별도 key 로.
+    all_items: dict = {"_meta": {"category_dispatch": SLOT_META}}
     total = 0
     for slot in range(19):  # item_00..item_18
         p = find(f'c/csv/item_{slot:02d}.dat')
         if not p: continue
         items = parse_items(p.read_bytes())
         all_items[f'slot_{slot}'] = items
+        meta = SLOT_META.get(slot, {})
         named = sum(1 for x in items if x.get('name', '').strip() and x['name'] != '?')
         total += named
-        print(f'item_{slot:02d}: {len(items)} records, {named} named')
+        print(f'item_{slot:02d} ({meta.get("kind", "?"):<14}): {len(items)} records, {named} named')
         for x in items[:5]:
-            print(f'  prefix=0x{x.get("prefix",0):04x}  {x.get("name","?")!r}  stats={x.get("stats_u16",[])[:6]}')
+            print(f'  prefix=0x{x.get("prefix",0):04x}  price={x.get("price", 0):>4}  {x.get("name","?")!r}  stats={x.get("stats_u16",[])[:6]}')
 
     OUT.write_text(json.dumps(all_items, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f'\nwrote {OUT} (total {total} named items)')

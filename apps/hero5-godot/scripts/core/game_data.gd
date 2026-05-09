@@ -146,10 +146,21 @@ func _load_items() -> Dictionary:
 	return _items_cache
 
 
+## items.json 의 slot_N 카테고리 메타 (decode_h5_item.py SLOT_META 와 일치).
+## _meta.category_dispatch[slot_str] = {category, kind, runtime_struct, runtime_size}.
+func item_slot_meta(slot: int) -> Dictionary:
+	var data = _load_items()
+	var meta_root = data.get("_meta", {})
+	var dispatch = meta_root.get("category_dispatch", {})
+	return dispatch.get(str(slot), {})
+
+
 ## 아이템 stats 해석 (slot 별 의미 다름).
-##   slot 0..N (무기): stats[0]=price, stats[7]=attack_power
-##   slot 15 (포션):    stats[0]=price, stats[2..5]=icon/effect refs (추정)
-##   slot 16-17 (스킬북): stats[0]=price, 다른 stats=skill_id 참조
+##   slot 0..10 (무기/방어구/액세서리): stats[0]=price, stats[7]=attack_power
+##   slot 11 (battle_use 포션):           stats[0]=price, stats[2..5]=effect refs
+##   slot 13 (orb):                       stats[0]=price
+##   slot 16-17 (skill_book):             stats[0]=price, 다른 stats=skill_id 참조
+## 카테고리 메타: ITEM_STRUCT.md 의 ItemTable::GetItemTableInfo dispatch 표 참조.
 func item_stat(slot: int, idx: int) -> Dictionary:
 	var data = _load_items()
 	var arr = data.get("slot_%d" % slot, [])
@@ -157,15 +168,18 @@ func item_stat(slot: int, idx: int) -> Dictionary:
 		return {}
 	var it = arr[idx]
 	var stats: Array = it.get("stats_u16", [])
-	var price = stats[0] if stats.size() > 0 else 0
+	# 신규 디코더: it.price 직접 추출 (없으면 stats[0]).
+	var price = it.get("price", stats[0] if stats.size() > 0 else 0)
+	var meta = item_slot_meta(slot)
 	var info := {
 		"name": it.get("name", ""),
 		"prefix": it.get("prefix", 0),
 		"price": price,
+		"category": meta.get("category", "?"),
+		"kind": meta.get("kind", "?"),
 	}
-	# 슬롯별 추가 의미
-	if slot >= 0 and slot <= 9:
-		# weapon/armor
+	# 카테고리별 추가 의미
+	if meta.get("category") == "equip":
 		info["attack"] = stats[7] if stats.size() > 7 else 0
 		info["sub_id"] = stats[6] if stats.size() > 6 else 0
 	return info

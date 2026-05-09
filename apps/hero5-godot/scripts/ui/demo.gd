@@ -112,6 +112,12 @@ func _ready() -> void:
 	_interp.set_handler(0x2a, _on_quest_switch)
 	_interp.set_handler(0x2b, _on_quest_status)
 	_interp.set_handler(0x2c, _on_quest_switch)
+	# Map / Camera / Audio signal 구독 (interpreter 가 emit, 시스템이 수신).
+	_interp.map_tile_change.connect(_on_map_tile_change)
+	_interp.map_attribute_change.connect(_on_map_attribute_change)
+	_interp.screen_shake.connect(_on_screen_shake)
+	_interp.system_message.connect(_on_system_message)
+	_interp.scene_change_bgm.connect(_on_scene_change_bgm)
 	# Note: Event_Scene_ChangeBgm 은 EventProc::onFunction dispatch table 에 없음.
 	# BGM 변경은 demo._apply_scene 에서 mapID 기반 Audio.play_bgm 직접 호출로 처리.
 	# 시작 BGM
@@ -410,3 +416,23 @@ func _run_intro(scene_meta: Dictionary) -> void:
 	if f == null: return
 	var bytes := f.get_buffer(f.get_length())
 	_interp.step(bytes, 64)
+
+
+## .scn body 의 Map / Camera / Audio signal 핸들러 ─ 받기만 하고 print 로 trace
+## (실제 visual 적용은 후속 작업으로: MapRenderer.set_tile, Camera2D.shake 트윈 등)
+
+func _on_map_tile_change(x: int, y: int, layer: int, tile_id: int) -> void:
+	preload("res://scripts/ui/toast.gd").show_msg(self,"타일 변경: (%d, %d) layer=%d tile=%d" % [x, y, layer, tile_id])
+
+func _on_map_attribute_change(x: int, y: int, attr: int) -> void:
+	preload("res://scripts/ui/toast.gd").show_msg(self,"충돌 변경: (%d, %d) attr=%d" % [x, y, attr])
+
+func _on_screen_shake(a: int, b: int, c: int) -> void:
+	preload("res://scripts/ui/toast.gd").show_msg(self,"화면 흔들림 (%d, %d, %d)" % [a, b, c])
+
+func _on_system_message(str_id: int) -> void:
+	preload("res://scripts/ui/toast.gd").show_msg(self,"시스템 메시지 #%d" % str_id)
+
+func _on_scene_change_bgm(bgm_id: int) -> void:
+	Audio.play_bgm(bgm_id)
+	preload("res://scripts/ui/toast.gd").show_msg(self,"BGM 변경 #%d" % bgm_id)

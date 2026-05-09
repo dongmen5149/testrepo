@@ -577,22 +577,28 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
-**[P5] 자모 인코딩 정밀** — 자율 진행 가능 (capstone+lief 로 P1/P2 같은 패턴)
-- 목표: `kor.fnt` 의 581 glyph ↔ `table.dat` 의 2350 EUC-KR codepoint 매핑.
-- 방법: `tools/h5_extract_opcode_disasm.py` 와 동일한 패턴으로 `Graphic::DrawText`
-  / `Strings::draw` 본문 자동 분석.
-- **현 상태 영향 없음** — 시스템 폰트(Noto Sans CJK KR) 우회 중. polish 작업.
+**[Polish 라운드 — 2026-05-09 완료]**
+- ✅ 통합 파이프라인 `tools/h5_extract_pipeline.py` (9 단계, incremental, ~6s).
+- ✅ Scene body opcode 정적 trace `tools/h5_scn_body_stats.py` (258/258, 99%+ dispatch).
+- ✅ BATTLER damage disasm `tools/h5_extract_battle_funcs.py` + `docs/h5/BATTLE_FORMULA.md`.
+  Event_PlayerDamage 공식 100% 추출, BATTLER offset (0xf0/0x180/0x210) 확정.
+- ✅ SMAF↔OGG audit `tools/h5_smaf_audit.py` — 42:42 1:1 → 변환 작업 영구 클로즈.
+- ✅ P5 부분 — table.dat = **Unicode BMP** (EUC-KR 아님) 정정. `docs/h5/P5_FONT_MAPPING.md`.
 
-**[P6] Android APK 실 빌드 검증** — 외부 환경 필요
+**[P5 잔여] kor.fnt 581 ↔ Unicode 매핑** — 자율 가능, 게임 영향 X
+- 다음 단계: `_midas_funcFntInvalidate` (size 미상) 디스어셈블 → codepoint→glyph_index 함수.
+- 현재 시스템 폰트(Noto Sans CJK KR)로 충분 — polish 만.
+
+**[P6] Android APK 실 빌드 검증** — 사용자 직접 진행 필요
 - Godot Editor 4.2+ + Install Android Build Template + Export Templates (~1GB)
   + JDK 17 + Android SDK + NDK.
 - `apps/hero5-godot/export_presets.cfg.template` 참조.
 - 이 머신에서 자동화 불가 — 사용자 GUI 진행 필요.
 
-**추가 polish (자율 진행 가능)**
-- scene body 자동 실행 trace — interpreter stats 모드로 빈도 분석.
-- damage formula 정확도 — `BATTLER` 의 ApplyAddEffect/IncreaseHP 등 disasm.
-- SMAF → OGG 변환 — 자체 SMAF 디코더 또는 vgmstream.
+**[후속 자율 가능]**
+- `HERO::NewHitEffect` (1712B, 39 callee) → 정공식 (atk × pct − def × ?) + 스킬 multiplier 추출.
+- `HeroSkillAtkHardCode` (888B, 37 callee) → 스킬별 분기 (대시/베기/원거리).
+- 100B 급 작은 Event_* 함수들 (Event_PlayerDamage 패턴) 같은 방식으로 100% 추출.
 
 ### 6.3 환경 / 도구 빠른 참조
 
