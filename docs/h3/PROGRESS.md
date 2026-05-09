@@ -5,7 +5,9 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-09 PM 후반-2 — **§4.4 95% 해독 + 자동 후속 분석 (1A/1B/1C/1E)**. capstone 으로 dispatcher 2 (`FUN_0005f948`) 의 7 handler 디스어셈블 → **menu/dialog UI handler 로 재해석** (이전 _scn parser 가설 부정). dispatcher 3/4 inline 위치 confirmed (`FUN_0008b2e8` / `FUN_0008dcd8` 안). mode 2 (`FUN_00060ab4`) = 9KB 큰 함수, Ghidra 미해독. 3 game system entry 모두 PIC indirect call. 상세는 [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md).
+**최신 커밋 시점**: 2026-05-09 PM 후반-3 — **§4.4 자동 분석 2A/2B/2C 일괄 수행**. dispatcher 1/3/4 의 21 handler 일괄 capstone 디스어셈블 (총 ~10KB, 0x66338-0x973f8) + mode 2 (`FUN_00060ab4`) 본문 분석 (1.5KB 코드 + 7KB 임베디드 데이터 테이블) + 게임 자산 path 템플릿 9개 string 위치 확정 (0xaac58 strings table). **PIC veneer 테이블 (0xa42a0~0xa42cc) 식별** — 모든 dispatcher BL 의 65/14 calls 가 사실 `bx r3/r4` register-indirect call. NPC 좌표 record-offset 자동 발견은 실패 (record_offset_hint 가 GOT-relative global 접근으로 해석됨). 상세는 본 문서 §"2026-05-09 PM 후반-3" 섹션.
+
+**이전 세션** (2026-05-09 PM 후반-2): 95% 해독 + 자동 후속 분석 (1A/1B/1C/1E). dispatcher 2 (`FUN_0005f948`) 의 7 handler 디스어셈블 → menu/dialog UI handler 로 재해석. 상세는 [ghidra-scn-dispatcher-2026-05-09c.md](ghidra-scn-dispatcher-2026-05-09c.md).
 
 ### 한 줄 요약 (현재 상태)
 
@@ -46,11 +48,11 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 | 우선 | 작업 | 비고 |
 |---|---|---|
-| ⭐ **2A** | **NPC handler 영역 capstone 디스어셈블** | dispatcher 1 (`0x663b8~0x673b8`) + dispatcher 3 (`0x933da~0x9447a`) + dispatcher 4 (`0x95bfe~0x96bf8`) 의 6 unique handler 본문. capstone 으로 자동 가능. NPC behavior (이동/AI/대화/공격 등) 의미 + **NPC 좌표 record offset 발견** 가능 |
-| ⭐ **2B** | **`FUN_00060ab4` (mode 2, 9KB) capstone 디스어셈블** | Ghidra 미해독 큰 함수. 진짜 본문 분석 → 미해독 game sub-system (battle / cutscene / map transition?) 식별. 자동 |
-| 2C | 진짜 _scn byte stream parser 발견 | dispatcher 2 가 _scn 아님이 확인됨. byte 단위 opcode (short 아님) 처리 함수 grep / capstone scan. 자동 시도 가능 |
-| 2D | 3 entry indirect caller (main loop) 추적 | `FUN_0006619c` / `FUN_0008b2e8` / `FUN_0008dcd8` 모두 PIC indirect call. RAM dynamic init / function pointer table 위치 — Ghidra Script 또는 사용자 GUI |
-| 2E | 게임 콘텐츠 wiring (_mp NPC 좌표 자동 검출) | 2A 에서 좌표 offset 발견 시 _mp extras 영역과 매칭 → §4.2 NPC 위치 134맵 자동 unblock |
+| ~~2A~~ | ~~NPC handler 영역 capstone 디스어셈블~~ | ✅ 2026-05-09 PM-3. 21 handler 일괄 디스어셈블 → `work/h3/dispatcher_handlers_summary.json`. **본문 분석 결론**: 모든 handler 의 BL 다수가 `0xa42a0` (= `bx r3`) veneer 로 향함 — register-indirect call. NPC 좌표 offset 자동 식별 실패 (record_offset_hint 들이 GOT-relative global) — 정확한 의미 식별은 결국 사용자 GUI 의 caller-chain 분석 필요 |
+| ~~2B~~ | ~~`FUN_00060ab4` (mode 2, 9KB) capstone 디스어셈블~~ | ✅ 2026-05-09 PM-3. 본문 = 1.5KB 코드 + 7KB 임베디드 데이터 (literal 풀). 16 직접 BL (0 veneer) → `0x4ad10`(4) `0x9f624`(3) `0xd53c`(2) `0x9fb78`(2). switch 패턴 **없음** — sequential setup + 내부 graphics 콜. 추정: **scene/render primitive** (렌더 + 데이터 테이블 baked) — battle 분기 가능성. 결과: `work/h3/mode2_disasm.json` |
+| ~~2C~~ | ~~진짜 _scn byte stream parser 발견~~ | ⚠ 2026-05-09 PM-3 자동 검색. **strings table @ 0xaac58** 확인 (`/event/e0000_scn`, `/map/map0_mp`, `Event_freeID`, `/map/sprite_0_cif` 등 9개 game asset path 템플릿). PIC GOT-relative load 만 사용 → 직접 xref 0건. movw imm12=0xc58 등의 16-bit offset 형태로 참조 흔적 — Ghidra GUI 의 cross-reference 추적 필요 |
+| ⭐ **2D** | **3 entry indirect caller (main loop) 추적** | `FUN_0006619c` / `FUN_0008b2e8` / `FUN_0008dcd8` 모두 PIC indirect call. RAM dynamic init / function pointer table 위치 — Ghidra Script 또는 사용자 GUI |
+| 2E | 게임 콘텐츠 wiring (_mp NPC 좌표 자동 검출) | ⚠ 2A 결과로는 자동 검출 불가. NPC slot 의 좌표 offset 은 dispatcher 본문 (record_offset_hint) 이 아닌 **외부 init/spawn 함수** 에 있음. 2D 후 사용자 GUI 추적 필요 |
 | 2 | SMAF→OGG 외부 도구 (`smaf2midi` 등) 또는 33개 수동 변환 | §4.5 — BGM/SFX 활성. 게임 체감 큼 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
 | 4 | 추가 게임 콘텐츠 (보스/맵/퀘스트) 디자인 결정 | 1주차 콘텐츠는 완성. 확장 여부 미정 |
@@ -98,6 +100,9 @@ python tools/recon/find_all_19op_dispatchers.py     # 4 dispatcher 자동 발견
 python tools/recon/decode_scn_jumptable.py          # 단일 jump table 19 entries 디코드
 python tools/recon/find_bl_callers.py               # ARM Thumb-2 BL 디코드해서 caller 검색 (TARGETS 수정 후 사용)
 python tools/recon/disasm_dispatcher2_handlers.py   # capstone 으로 dispatcher 2 handler 디스어셈블
+python tools/recon/disasm_all_dispatcher_handlers.py # dispatcher 1/3/4 의 21 handler 일괄 디스어셈블 (PM-3)
+python tools/recon/disasm_helper_funcs.py            # top BL target prologue 분석 (veneer vs real, PM-3)
+python tools/recon/disasm_mode2_fn.py                # mode 2 FUN_00060ab4 (9KB) 본문 분석 (PM-3)
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
@@ -108,6 +113,76 @@ python tools/recon/extract_candidate_funcs.py 0xADDR1 0xADDR2  # all_decompiled.
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-09 PM 후반-3 세션 작업 압축 (§4.4 자동 후속 — 2A/2B/2C 일괄)
+
+**테마**: 이전 세션의 자동 가능 항목 (2A/2B/2C) 전체 capstone 일괄 분석 — 사용자 입력 없이 진척 가능한 부분 소진.
+
+**A. dispatcher 1/3/4 의 21 handler 일괄 디스어셈블** (2A) — `tools/recon/disasm_all_dispatcher_handlers.py` 신규
+- 4 jump table 자동 디코드 (jt @ 0xa9cc4 / 0xa9d70 / 0xabaa8 / 0xabc68) → 19 entries × 4 dispatcher
+- dispatcher 1 (NPC 1, FUN_0005d214): handlers 0x66338(0x00~0x0c, 0x800B) / 0x6788e / 0x67a68 / 0x67b58 / 0x67dc8 / 0x67ee8 / 0x67ff0
+- dispatcher 3 (FUN_0008b2e8 inline 0x8c19c): handlers 0x933da / 0x935b8 / 0x93934 / 0x93b28 / 0x93d48 / 0x94044 / 0x9428e / 0x9447a
+- dispatcher 4 (FUN_0008dcd8 inline 0x8eb80): handlers 0x95bfe / 0x960e8 / 0x962f4 / 0x9651c / 0x9685c / 0x96aa6 / 0x96bf8
+- 결과 → `work/h3/dispatcher_handlers_summary.json`. handler 별 BL/PC-rel LDR/record-offset hint 집계 + cross-handler frequency
+
+**B. PIC veneer table 식별** ⭐ — 핵심 발견
+- 0xa42a0 ~ 0xa42cc 영역: `bx r3 / mov r8,r8 (NOP) / bx r4 / NOP / ... / bx lr / NOP` 패턴 12 entries
+- 모든 dispatcher BL 의 65/14 calls (의 다수) 가 이 veneer 로 향함 — 즉 **register-indirect call 의 trampoline**
+- 의미: 핵심 helper 함수가 동적으로 정해지는 함수 포인터 → 자동 caller-chain 추적 본질적 한계 (PROGRESS 의 "PIC indirect dominant" 와 일치)
+- helper prologue 분석 (`tools/recon/disasm_helper_funcs.py`): 0x10f84 / 0x10f4 / 0xf9c / 0xffc 등은 진짜 함수 — 작은 state-machine 또는 KVM API wrapper
+
+**C. mode 2 (`FUN_00060ab4`) 본문 분석** (2B) — `tools/recon/disasm_mode2_fn.py` 신규
+- 9KB (0x60ab4 ~ 0x62d1c) 중 **실제 코드 ~1.5KB (768 instr) + 임베디드 literal 풀 ~7KB**
+- 16 직접 BL (veneer 0건) — `0x4ad10`(4) `0x9f624`(3) `0xd53c`(2) `0x9fb78`(2) `0xec80`(1)
+- `cmp Rn, #imm` (switch) 패턴 **없음** — sequential setup 코드
+- 추정: **scene/render primitive** with baked data tables — `0x9f624` 가 graphics primitive dispatcher (앞 세션의 9KB 함수 분석에서 확인된 switch-laden 함수)
+- battle / cutscene / map transition 중 어느 것인지는 사용자 GUI 의 caller 식별 필요
+
+**D. _scn parser strings table 위치 확정** (2C) — 부분 진척
+- 문자열 위치: 0xaac58 ~ 0xaad00 영역
+  ```
+  0xaac58: "/event/e0000_scn"
+  0xaac6c: "/map/map0_mp"
+  0xaac7c: "Event_freeID~~~~~~~~~~~1"
+  0xaac98: "/map/sprite_0_cif"
+  0xaacac: "/map/sprObj0_bm"
+  0xaacbc: "/map/obj_0_bm"
+  0xaaccc: "/npc/face_bm"
+  0xaacdc: "/npc/imo_bm"
+  0xaace8: "/map/theme_0_bm"
+  ```
+- 이 9 string 은 게임 자산 로딩 path 템플릿 (sprintf 로 숫자 substitute 후 fopen)
+- **직접 xref 0건** — 절대 주소 / GOT-relative signed offset 모두 검색했으나 매칭 없음
+- 16-bit offset 0xc58 (= 0xaac58 - 0xaa000) 은 binary 안 3 위치에 등장 — 그러나 그 중 2개는 함수 내부 literal pool (오인 가능성), 1개는 jump table 데이터
+- 결론: 진짜 _scn parser entry 는 사용자 GUI 의 cross-reference (Ghidra `Window > References to`) 추적 필요. 자동 한계
+
+**E. 자동 진행 한계 정의**
+- 2A 의 record_offset_hint (0x100~0x400 immediate offset) 들은 NPC slot record offset 이 아니라 **dispatcher 의 GOT-relative global state 접근** (r7 = sl 역할). NPC 좌표 offset 자동 식별 본질적 불가능 — caller 트래커가 필요
+- 모든 dispatcher BL 의 50%+ 가 veneer indirect call 이라서 **callee 식별이 동적 포인터 해석 필요**
+
+**F. 신규 도구 3개**
+- `tools/recon/disasm_all_dispatcher_handlers.py` — 4 dispatcher × 21 handler 일괄 capstone + cross-handler 통계
+- `tools/recon/disasm_helper_funcs.py` — top BL target prologue 분석 (veneer vs real helper 구분)
+- `tools/recon/disasm_mode2_fn.py` — mode 2 entry FUN_00060ab4 본문 + literal pool magic 검색
+
+**G. 산출물 (work/h3/, gitignore — 재현 명령으로 생성)**
+- `dispatcher_handlers_summary.json`
+- `helper_func_prologues.json`
+- `mode2_disasm.json`
+- (기존) `scn_dispatcher_jumptable.json` — dispatcher 4 (jt 0xabc68) 19 entries
+
+**H. 핵심 교훈**
+1. **PIC veneer 가 BL 통계의 dominant noise** — `0xa42a0` 65 calls 는 실제로 65개의 다른 함수 indirect call. BL frequency 만으로 helper 식별 불가.
+2. **자동 분석의 ceiling 도달**: handler 본문 디스어셈블 → record-offset 자동 추출은 **GOT-relative global vs slot record offset 구분 어려움**. 사용자 GUI 의 register tainting / caller chain 분석이 본질적으로 필요.
+3. **mode 2 의 7KB literal 풀**: 큰 함수일수록 임베디드 데이터 비중 큼. 9KB 중 실제 코드는 1.5KB → "큰 함수 = 복잡한 로직" 가설 부정.
+4. **strings table 의 PIC 참조 패턴**: 16-bit offset (movw imm12) + 베이스 register 합산 → linear scan 만으로는 xref 추적 부정확.
+
+**I. 다음 세션 권장 작업**
+- ⭐ **2D**: 3 entry (`FUN_0006619c` / `FUN_0008b2e8` / `FUN_0008dcd8`) 의 indirect caller 추적 — Ghidra GUI 의 `Window > Defined Strings` 에서 0xaac58 strings 의 xref 따라가서 main loop 발견
+- 또는 **mode 2 분기 의미 식별**: `FUN_00062d1c` (mode selector) 의 caller 추적으로 `state[0x94]=2` 가 언제 셋되는지 → battle 진입점 식별
+- **SMAF→OGG 외부 변환** 또는 **번역 LLM 호출** — 게임 체감 영향 큰 사용자 블로커들
 
 ---
 
