@@ -22,14 +22,14 @@
 | 0x230 | (s8) | s8 | player_class | StateInGameMenu::ChangeHeroClass writer + LoadHeroData |
 | 0x236 | V[60] | s16 | base_str | calc_pl id=20: `clamp(V[60]+V[118], 0, 999)` (final str = base + bonus) |
 | 0x238 | V[61] | s16 | base_dex | calc_pl id=21: `V[61]+V[119]` |
-| 0x23a | V[62] | s16 | base_int | calc_pl id=22: `V[62]+V[120]` |
-| 0x23c | V[63] | s16 | base_con | calc_pl id=23: `V[63]+V[121]` |
+| 0x23a | V[62] | s16 | **base_con** ✅ Round 11 정정 | calc_pl id=22: `V[62]+V[120]`. buildup csv "건강+#1" (csv 0x03 → ABE 4 → V[120]) 로 검증 |
+| 0x23c | V[63] | s16 | **base_int** ✅ Round 11 정정 | calc_pl id=23: `V[63]+V[121]`. buildup csv "정신+#1" (csv 0x04 → ABE 5 → V[121]) 로 검증 |
 | 0x248 | V[69] | s16 | SP (cur) | HERO::IncreaseSP writer |
 | 0x24a | V[70] | s16 | CP (cur) | HERO::IncreaseCP writer |
-| 0x298 | V[118] | s16 | bonus_str | calc_pl id=20 (V[60]+V[118]) |
-| 0x29a | V[119] | s16 | bonus_dex | calc_pl id=21 |
-| 0x29c | V[120] | s16 | bonus_int | calc_pl id=22 |
-| 0x29e | V[121] | s16 | bonus_con | calc_pl id=23 |
+| 0x298 | V[118] | s16 | bonus_str | calc_pl id=20 (V[60]+V[118]). buildup "근력+#1" → ABE type 2 |
+| 0x29a | V[119] | s16 | bonus_dex | calc_pl id=21. buildup "민첩+#1" → ABE type 3 |
+| 0x29c | V[120] | s16 | **bonus_con** ✅ Round 11 정정 | calc_pl id=22. buildup "건강+#1" → ABE type 4 |
+| 0x29e | V[121] | s16 | **bonus_int** ✅ Round 11 정정 | calc_pl id=23. buildup "정신+#1" → ABE type 5 |
 
 ## 강한 추정 (writer 패턴만으로 확정 — 의미는 합리적 추론)
 
@@ -54,11 +54,11 @@ jumptable. Effect type 별 store target 식별:
 | offset | var_id | meaning | 근거 |
 |---|---|---|---|
 | 0x278 | V[111] | atk_growth_per_(level*2+str) coefficient | id=24 ATK 공식 multiplier 위치 |
-| 0x27a | V[112] | secondary stat #1 base | LoadResClassInfo seq + id=25 V[112]+V[129]*10 |
-| 0x27c | V[113] | secondary stat #2 base | id=26 V[113]+V[130]*10 |
-| 0x27e | V[114] | secondary stat #3 base | id=27 V[114]+V[131] |
-| 0x280 | V[115] | secondary stat #4 base | id=28 V[115]+V[132] |
-| 0x282 | V[116] | secondary stat #5 base | id=29 V[116]+V[133] |
+| 0x27a | V[112] | **근접명중 (melee_hit) base** ✅ Round 11 | csv 0x14→ABE 11→V[129]. id=25 V[112]+V[129]*10 (% rate). 워리어 24 / 건슬링어 6 = 근접 클래스 우세 |
+| 0x27c | V[113] | **장거리명중 (ranged_hit) base** ✅ Round 11 | csv 0x15→ABE 12→V[130]. id=26 V[113]+V[130]*10. 건슬링어 24 / 워리어 18 = 원거리 클래스 우세 |
+| 0x27e | V[114] | **회피 (avoid) base** ✅ Round 11 | csv 0x16→ABE 13→V[131]. id=27 V[114]+V[131] flat. 워리어 24 / 로그 18 = 회피 우세 |
+| 0x280 | V[115] | **방패방어 (block) base** ✅ Round 11 | csv 0x18→ABE 14→V[132]. id=28 V[115]+V[132] flat. 워리어 5 / 나이트 4 = 방패 클래스 우세 (작은 unit %) |
+| 0x282 | V[116] | **크리티컬 (crit) base** ✅ Round 11 | csv 0x19→ABE 15→V[133]. id=29 V[116]+V[133] flat. 모두 0 / 소서러 1 = 아이템/buff 로 획득하는 stat |
 | 0x294 | (gameplay only) | **active buff effect_type** (Formula VM var 아님) | HERO::ApplyBuildupEffect entry 34..36 store 3/8/9 |
 | 0x295 | (gameplay only) | **active buff icon idx** | 동일 entry 들에서 0x3b/0x71/0x72 store |
 | 0x296 | (gameplay only) | **active buff strength** | 동일 entry 들에서 caller arg store |
@@ -66,7 +66,11 @@ jumptable. Effect type 별 store target 식별:
 | 0x2a8 | V[126] | buff stack slot | 동일 |
 | 0x2aa | V[127] s8 | **defense_reduction_percent (0..99)** | calc_pl 공식: (100-(V[127]/2)*V[83]*15)/100 데미지 감쇠 |
 | 0x2ac | V[128] | **atk_percent_bonus** | id=24 ATK 공식 (100+V[128])/100 buff multiplier |
-| 0x2ae~0x2b6 | V[129..133] | secondary stat #1..#5 bonus | id=25..29: V[112+i] + V[129+i]*scale (V[112..116] 짝) |
+| 0x2ae | V[129] | **근접명중 bonus** ✅ Round 11 | id=25 V[112]+V[129]*10. csv 0x14 "근접명중+#1" → ABE 11 |
+| 0x2b0 | V[130] | **장거리명중 bonus** ✅ Round 11 | id=26 V[113]+V[130]*10. csv 0x15 "장거리명중+#1" → ABE 12 |
+| 0x2b2 | V[131] | **회피 bonus** ✅ Round 11 | id=27 V[114]+V[131]. csv 0x16 "회피+#1" → ABE 13 |
+| 0x2b4 | V[132] | **방패방어 bonus** ✅ Round 11 | id=28 V[115]+V[132]. csv 0x18 "방패방어+#1" → ABE 14 |
+| 0x2b6 | V[133] | **크리티컬 bonus** ✅ Round 11 | id=29 V[116]+V[133]. csv 0x19 "크리티컬+#1" → ABE 15 |
 | 0x2b8, 0x2ba | V[134], V[135] | 마법 ATK 짝 (element 1, 2) | id=4,5: V[6/7]+(V[134]+V[135])/2+V[151/152] |
 | 0x2bc~0x2ca | V[136..143] | 8 element bonus (4 pair) | id=7,8: 4-element grouped sums |
 | 0x2cc, 0x2ce | V[144], V[145] | main element bonus | id=7,8: V[144/145]*(100+30*V[89/93])/100 |
@@ -136,6 +140,51 @@ type 의 store target 을 추출. HERO/BATTLER 두 함수 모두 동일 entry ta
 - V[116]: 모두 0 (소서러만 1) → magic-related stat
 
 정확 라벨 식별은 status menu UI 함수 한글 string 매핑이 필요 (다음 라운드).
+
+### Round 11 추가: c_csv_buildup.json → V[112..116] 정확 라벨 확정 + V[62]/V[63] 정정
+
+`tools/h5_decode_buildup.py` 가 buildup csv 의 모든 entry decode + ABE 매핑 자동 추출.
+extra_hex 형식: `[ffff sentinel] [type:u8] [sub:u8] [val:u16]` × N entries.
+
+**csv type N → ApplyBuildupEffect type N+1 매핑** (csv 0x01..0x04, 0x14..0x19 영역):
+
+| csv type | kr label | ABE type | V slot | cache offset | 의미 |
+|---:|---|---:|---|---:|---|
+| 0x01 | 근력+#N | 2 | V[118] | 0x298 | bonus_str |
+| 0x02 | 민첩+#N | 3 | V[119] | 0x29a | bonus_dex |
+| 0x03 | **건강**+#N | 4 | V[120] | 0x29c | **bonus_con** ✅ |
+| 0x04 | **정신**+#N | 5 | V[121] | 0x29e | **bonus_int** ✅ |
+| 0x14 | 근접명중+#N | 11 | V[129] | 0x2ae | secondary bonus #1 |
+| 0x15 | 장거리명중+#N | 12 | V[130] | 0x2b0 | secondary bonus #2 |
+| 0x16 | 회피+#N | 13 | V[131] | 0x2b2 | secondary bonus #3 |
+| 0x18 | 방패방어+#N | 14 | V[132] | 0x2b4 | secondary bonus #4 |
+| 0x19 | 크리티컬+#N | 15 | V[133] | 0x2b6 | secondary bonus #5 |
+
+이 매핑으로 V[112..116] 5 secondary stat 라벨 확정:
+- V[112] = 근접명중 base (워리어 24, 건슬링어 6)
+- V[113] = 장거리명중 base (건슬링어 24, 워리어 18)
+- V[114] = 회피 base (워리어 24, 로그 18)
+- V[115] = 방패방어 base (워리어 5, 나이트 4 — 작은 unit %)
+- V[116] = 크리티컬 base (모두 0 / 소서러 1 — 아이템 획득 stat)
+
+**V[62]/V[63] 정정 (이전 라운드 매핑 오류)**:
+한국어 "건강" = CON, "정신" = INT. csv 매핑으로 V[120] = bonus_con, V[121] = bonus_int.
+calc_pl id=22 `V[62]+V[120]` 의 V[62] 는 base_con (이전 base_int 오류).
+calc_pl id=23 `V[63]+V[121]` 의 V[63] 는 base_int (이전 base_con 오류).
+
+c_csv_class.json 의 워리어 STR/DEX/INT/CON = 12/8/10/6 라벨링도 디코더 잘못 —
+실제 데이터 byte sequence 는 STR/DEX/CON/INT (워리어 12 STR / 8 DEX / 10 CON / 6 INT).
+
+5 클래스 base 패턴이 이 정정으로 더 자연스러움:
+- 워리어: STR 12, DEX 8, **CON 10**, INT 6  (탱커, CON 두 번째 강함)
+- 로그:   STR 6, DEX 10, **CON 8**, INT 12  (도적, INT 도 높음)
+- 건슬링어: STR 8, DEX 12, **CON 6**, INT 10
+- 나이트: STR 10, DEX 6, **CON 12**, INT 8  (방패 탱커, CON 가장 강함)
+- 소서러: STR 6, DEX 8, **CON 8**, INT 14  (마법사, INT 압도)
+
+**csv 0x05..0x13 (HP/SP 관련) 영역**:
+ABE 의 default fallthrough 또는 별도 dispatch (HP/SP 회복 함수 등) — secondary stat
+영역은 csv 0x14..0x19 의 5 entries 만.
 
 ### Round 10 추가: 한글 stat label string 위치 + status menu 표시 순서
 
@@ -273,8 +322,9 @@ ctx["584"] = GameState.sp            # 0x248  V[69]
 | ~~V[125,126] buff slot~~ | ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength | HERO::ApplyBuildupEffect entry 34..36 |
 | ~~V[155] = max_sp~~ | ✅ Round 7: ApplyBuildupEffect SP clamp 상한 | 확정 |
 | ~~V[122..126] buff slot~~ | ✅ Round 9: ApplyBuildupEffect entry type 30..36 자동 추출 | `applybuildup_table.tsv` |
-| V[112..116] 5 stat 라벨 | base 값 5 클래스 패턴 추출 (Round 9) | 정확 라벨은 status menu UI string 매핑 필요 |
-| V[122..126] 5 buff slot 라벨 | offset/V slot 확정 (Round 9), 의미는 secondary stat 짝 추정 | V[112..116] 라벨 식별 후 자동 매핑 |
+| ~~V[112..116] 5 stat 라벨~~ | ✅ Round 11: 근접명중/장거리명중/회피/방패방어/크리티컬 확정 | `buildup_decoded.tsv`, `tools/h5_decode_buildup.py` |
+| ~~V[62]/V[63] = base_con/base_int~~ | ✅ Round 11: csv "건강"/"정신" 매핑으로 정정 (이전 INT/CON 오류) | buildup csv |
+| V[122..126] 5 buff slot 라벨 | offset/V slot 확정 (Round 9), 의미는 secondary stat 짝 추정 | csv 0x1d/0x1f/0x21/0x23 매핑 (경험치LV/CP충전LV/쿨타임/포션효과) — V[112..116] 와 의미 차이, 별도 분석 필요 |
 | V[151,152] magic stat 라벨 | int/dex 추정 | calc_pl id=4 vs id=5 element 확정 (fire/ice 등?) |
 
 이상의 미확정 영역도 동작에는 영향 없음 — formula_vm 가 default 0 반환,

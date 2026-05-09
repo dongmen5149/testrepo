@@ -317,15 +317,15 @@ func _player_ctx() -> Dictionary:
 	ctx["557"] = GameState.level         # 0x22d  V[58]  level (확정 — id=18 max_exp 공식)
 	ctx["566"] = GameState.stat_str      # 0x236  V[60]  base_str
 	ctx["568"] = GameState.stat_dex      # 0x238  V[61]  base_dex
-	ctx["570"] = GameState.stat_int      # 0x23a  V[62]  base_int
-	ctx["572"] = GameState.stat_con      # 0x23c  V[63]  base_con
+	ctx["570"] = GameState.stat_con      # 0x23a  V[62]  base_con (Round 11 정정 — 이전 int)
+	ctx["572"] = GameState.stat_int      # 0x23c  V[63]  base_int (Round 11 정정 — 이전 con)
 	ctx["584"] = GameState.sp            # 0x248  V[69]  SP (cur)
 	ctx["586"] = 0                       # 0x24a  V[70]  CP (cur)  — GameState에 없음, 0
 	# bonus stats (장비/buff): GameState 에 분리 저장 없음 → total - base 로 계산하거나 0
 	ctx["664"] = max(0, atk - GameState.stat_str)    # 0x298  V[118] bonus_str (대용)
 	ctx["666"] = max(0, def_v - GameState.stat_dex)  # 0x29a  V[119] bonus_dex (대용)
-	ctx["668"] = 0                                    # 0x29c  V[120] bonus_int
-	ctx["670"] = 0                                    # 0x29e  V[121] bonus_con
+	ctx["668"] = 0                                    # 0x29c  V[120] bonus_con (Round 11 정정 — buildup "건강+#1")
+	ctx["670"] = 0                                    # 0x29e  V[121] bonus_int (Round 11 정정 — buildup "정신+#1")
 	# === Round 7+9: LoadResClassInfo + ApplyBuildupEffect disasm 으로 정확화 ===
 	# V[111] (0x278) = atk_growth_per_(level*2+str) coefficient
 	#   id=24 공식: V[5] + V[111] * ((V[58]*2) + V[154]) → V[111] 가 multiplier.
@@ -334,11 +334,11 @@ func _player_ctx() -> Dictionary:
 	var class_id: int = GameState.class_id if "class_id" in GameState else 0
 	var class_rec: Dictionary = _class_secondary_base(class_id)
 	ctx["632"] = int(class_rec.get("unk0", 1000))         # 0x278  V[111] atk growth coef
-	ctx["634"] = int(class_rec.get("unk1", 0))            # 0x27a  V[112] secondary base #1
-	ctx["636"] = int(class_rec.get("unk2", 0))            # 0x27c  V[113] secondary base #2
-	ctx["638"] = int(class_rec.get("unk3", 0))            # 0x27e  V[114] secondary base #3
-	ctx["640"] = int(class_rec.get("unk4", 0))            # 0x280  V[115] secondary base #4
-	ctx["642"] = int(class_rec.get("unk5", 0))            # 0x282  V[116] secondary base #5
+	ctx["634"] = int(class_rec.get("unk1", 0))            # 0x27a  V[112] base 근접명중 (Round 11)
+	ctx["636"] = int(class_rec.get("unk2", 0))            # 0x27c  V[113] base 장거리명중
+	ctx["638"] = int(class_rec.get("unk3", 0))            # 0x27e  V[114] base 회피
+	ctx["640"] = int(class_rec.get("unk4", 0))            # 0x280  V[115] base 방패방어
+	ctx["642"] = int(class_rec.get("unk5", 0))            # 0x282  V[116] base 크리티컬
 	# === Round 9: V[122..126] = 5 buff stat slot ===
 	# ApplyBuildupEffect jumptable entry type 30..36 가 0x2a0..0x2a8 에 V add s16:
 	#   type 30 → V[122] (0x2a0), type 31 → V[123] (0x2a2),
@@ -354,12 +354,13 @@ func _player_ctx() -> Dictionary:
 	ctx["682"] = 0                                        # 0x2aa  V[127] def_reduction%
 	ctx["684"] = 0                                        # 0x2ac  V[128] atk_percent_bonus
 	# V[129..133] = 5 secondary stat bonus (calc_pl id=25..29 의 두 번째 항).
+	# Round 11: csv 0x14..0x19 매핑으로 라벨 확정 (근접명중/장거리명중/회피/방패방어/크리티컬 bonus).
 	# 장비/buff 의 secondary stat 보너스 — 현재 0 (장비 분석 미완).
-	ctx["686"] = 0                                        # 0x2ae  V[129] secondary bonus #1
-	ctx["688"] = 0                                        # 0x2b0  V[130] secondary bonus #2
-	ctx["690"] = 0                                        # 0x2b2  V[131] secondary bonus #3
-	ctx["692"] = 0                                        # 0x2b4  V[132] secondary bonus #4
-	ctx["694"] = 0                                        # 0x2b6  V[133] secondary bonus #5
+	ctx["686"] = 0                                        # 0x2ae  V[129] 근접명중 bonus
+	ctx["688"] = 0                                        # 0x2b0  V[130] 장거리명중 bonus
+	ctx["690"] = 0                                        # 0x2b2  V[131] 회피 bonus
+	ctx["692"] = 0                                        # 0x2b4  V[132] 방패방어 bonus
+	ctx["694"] = 0                                        # 0x2b6  V[133] 크리티컬 bonus
 	# 주의: 0x294/0x295/0x296 (ApplyBuildupEffect 가 store 하는 active buff descriptor) 는
 	# Formula VM 의 var_dict 에 없는 HERO 구조체 필드 (UI 아이콘 표시용).
 	# V[151..155] (0x2de..0x2e6) — formula 의존 stat (id=0 / id=24 cross-check).

@@ -580,6 +580,29 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 11 — 2026-05-09 완료]**
+- ✅ `tools/h5_decode_buildup.py` — c_csv_buildup.json (111 buildup entries) 의
+  extra_hex 형식 (`[ffff][type:u8][sub:u8][val:u16]` × N) decode + ApplyBuildupEffect
+  entry type 자동 매핑.
+- ✅ **V[112..116] 5 secondary stat 라벨 확정**:
+  - V[112] = 근접명중 (csv 0x14 → ABE 11 → V[129] bonus, id=25 *10 multiplier)
+  - V[113] = 장거리명중 (csv 0x15 → ABE 12 → V[130], id=26 *10)
+  - V[114] = 회피 (csv 0x16 → ABE 13 → V[131], id=27 flat)
+  - V[115] = 방패방어 (csv 0x18 → ABE 14 → V[132], id=28 flat)
+  - V[116] = 크리티컬 (csv 0x19 → ABE 15 → V[133], id=29 flat)
+  - 5 클래스 base 패턴이 합리적 (워리어 근접명중 24, 건슬링어 장거리명중 24,
+    워리어 방패방어 5, 모두 크리티컬 0).
+- ✅ **V[62]/V[63] = base_con/base_int 정정** — 이전 라운드 매핑 오류 발견.
+  buildup csv "건강+#1" (csv 0x03 → ABE 4 → V[120]) = bonus_con 검증.
+  "정신+#1" (csv 0x04 → ABE 5 → V[121]) = bonus_int.
+  → V[62] = base_con / V[63] = base_int (이전 int/con 으로 잘못 매핑됨).
+- ✅ class_stats.json byte sequence 가 STR/DEX/**CON/INT** 순서임 확인 →
+  `tools/converter/decode_h5_class.py` 정정 + class_stats.json 재생성 +
+  class_select.gd 표시 순서 정정 + battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ 정정된 5 클래스 stat: 워리어 STR12/DEX8/CON10/INT6 (탱커),
+  로그 6/10/8/12, 건슬링어 8/12/6/10, 나이트 10/6/12/8 (방패 탱커),
+  소서러 6/8/8/14 (마법사 — INT 압도) — 모두 클래스 컨셉과 일치.
+
 **[Round 10 — 2026-05-09 완료]**
 - ✅ `tools/h5_find_kr_stat_strings.py` — .so .rodata 에서 한글 stat label 0건 확인.
   → 한글 라벨이 .so 가 아닌 VFS text/*.json 에 분산 (Hero5 의 string indexing

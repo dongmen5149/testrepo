@@ -286,8 +286,8 @@ func _player_default(var_id: int, _offset: int) -> int:
 		58: return int(gs.level)              # 0x22d  V[58]  level (확정)
 		60: return int(gs.stat_str)           # 0x236  base_str
 		61: return int(gs.stat_dex)           # 0x238  base_dex
-		62: return int(gs.stat_int)           # 0x23a  base_int
-		63: return int(gs.stat_con)           # 0x23c  base_con
+		62: return int(gs.stat_con)           # 0x23a  base_con (Round 11 정정 — buildup "건강+#1")
+		63: return int(gs.stat_int)           # 0x23c  base_int (Round 11 정정 — buildup "정신+#1")
 		69: return int(gs.sp)                 # 0x248  SP (cur)
 		# V[111..116] = LoadResClassInfo 가 6 sequential s16 store — 클래스 base 계수 (Round 7).
 		# Round 9: class_stats.json 의 unk0..unk5 에서 직접 lookup (정확 매핑).
@@ -298,8 +298,8 @@ func _player_default(var_id: int, _offset: int) -> int:
 			return int(rec.get(key, 0))
 		118: return 0                         # 0x298  bonus_str (장비/버프, 미보유)
 		119: return 0                         # 0x29a  bonus_dex
-		120: return 0                         # 0x29c  bonus_int
-		121: return 0                         # 0x29e  bonus_con
+		120: return 0                         # 0x29c  bonus_con (Round 11 정정 — buildup "건강")
+		121: return 0                         # 0x29e  bonus_int (Round 11 정정 — buildup "정신")
 		# 0x294/0x295/0x296 active buff descriptor (HERO::ApplyBuildupEffect 가 store) 는
 		# Formula VM 의 var_dict 에 없음 — gameplay 코드(UI 아이콘 표시 등) 전용 필드.
 		# 따라서 V[125]/V[126] 매핑 대상이 아님 (V[125]=0x2a6 / V[126]=0x2a8 는 별개).
@@ -308,11 +308,12 @@ func _player_default(var_id: int, _offset: int) -> int:
 		# V[127..148] = buff/equipment 가 추가하는 bonus stat (Round 8 — calc_pl 공식 패턴).
 		127: return 0                         # 0x2aa s8  defense_reduction_percent (id=84..85 0..99 bound)
 		128: return 0                         # 0x2ac  atk_percent_bonus (id=24 (100+V[128])/100)
-		129: return 0                         # 0x2ae  secondary stat #1 bonus (id=25 V[129]*10)
-		130: return 0                         # 0x2b0  secondary stat #2 bonus (id=26 V[130]*10)
-		131: return 0                         # 0x2b2  secondary stat #3 bonus (id=27 flat)
-		132: return 0                         # 0x2b4  secondary stat #4 bonus (id=28 flat)
-		133: return 0                         # 0x2b6  secondary stat #5 bonus (id=29 flat)
+		# Round 11: csv 0x14..0x19 매핑으로 5 secondary stat bonus 라벨 확정.
+		129: return 0                         # 0x2ae  근접명중 bonus (id=25 V[112]+V[129]*10)
+		130: return 0                         # 0x2b0  장거리명중 bonus (id=26 V[113]+V[130]*10)
+		131: return 0                         # 0x2b2  회피 bonus (id=27 V[114]+V[131])
+		132: return 0                         # 0x2b4  방패방어 bonus (id=28 V[115]+V[132])
+		133: return 0                         # 0x2b6  크리티컬 bonus (id=29 V[116]+V[133])
 		134, 135: return 0                    # 0x2b8, 0x2ba magic atk paired (element 1/2)
 		136, 137, 138, 139, 140, 141, 142, 143: return 0  # 0x2bc..0x2ca 4-pair element bonuses
 		144, 145: return 0                    # 0x2cc, 0x2ce main element bonuses (id=7,8)

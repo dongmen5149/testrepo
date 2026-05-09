@@ -46,9 +46,10 @@ func _on_select(idx: int) -> void:
 		stat_label.text = ""
 		return
 	var cls = _classes[idx]
-	stat_label.text = "STR %d  DEX %d  INT %d  CON %d" % [
+	# Round 11 정정: 데이터 byte order 가 STR/DEX/CON/INT 이므로 표시도 동일.
+	stat_label.text = "STR %d  DEX %d  CON %d  INT %d" % [
 		cls.get("STR", 0), cls.get("DEX", 0),
-		cls.get("INT", 0), cls.get("CON", 0)]
+		cls.get("CON", 0), cls.get("INT", 0)]
 
 
 func _on_start() -> void:
