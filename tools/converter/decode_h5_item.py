@@ -110,11 +110,17 @@ def parse_items(d: bytes) -> list[dict]:
         # extra 는 stat fields (u16 LE 배열)
         n_u16 = len(extra) // 2
         u16 = list(struct.unpack(f'<{n_u16}H', extra[:n_u16*2])) if n_u16 else []
+        # 주의 (Round 13): csv extra 는 압축된 stat data (33..80 byte) — in-memory
+        # EquipItemInfo struct (376B) 와 layout 다름. ItemTable::GetItemTableInfo 가
+        # csv stat 들을 EquipItemInfo offset 에 store 하는 매핑은 다음 라운드 RE 필요.
+        # 현재 stats_u16 순서:
+        #   stats_u16[0] = 가격 (gold)
+        #   stats_u16[1] = pad/flags
+        #   stats_u16[2..] = stat 들 (정확한 의미 = csv→struct 매핑 후 결정)
         out.append({
             'idx': i,
             'name': name,
             'prefix': prefix,    # icon_id 또는 category
-            # 모든 stats csv 는 항상 첫 u16 = 가격(gold) 으로 시작.
             'price': u16[0] if u16 else 0,
             'stats_u16': u16,
             'extra_hex': extra.hex(),

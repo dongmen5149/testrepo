@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 12 — V[122..126] = EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% 확정 + V[151,152] = 둘 다 INT-magic stat 정정)
+업데이트: 2026-05-10 (Round 13 — EquipItemInfo struct 핵심 field 5개 (+0x14/+0x155/+0x15d/+0x168..) + V[168..182] ItemBase 영역 formula 사용 패턴 식별)
 
 ---
 
@@ -43,6 +43,18 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 13**: EquipItemInfo struct 핵심 field + ItemBase formula 영역 식별.
+  - EquipItemInfo +0x14 = item_category/slot_type (s8) — IsEquipPossible jumptable 의 조건
+  - EquipItemInfo +0x155 = class_restriction (s8) — HERO+0x22c (class_id) 와 비교
+  - EquipItemInfo +0x15d = level_limit (s8) — GetLevelLimit 가 fetch
+  - EquipItemInfo +0x168..+0x16d = 6 socket slot (orb/refine ID, 0xff=빈슬롯)
+  - V[168..182] = ItemBase (Formula::calc 5번째 인수) 의 struct field:
+    - V[168] (item +0xe) = base SP cost (`V[168]*(100-V[123])/100`)
+    - V[170] (item +0x16) = base cooldown (`V[170]*(100-V[125])/100`)
+    - V[174] (item +0x44) = damage growth multiplier (`V[56]+V[57]*V[174]`)
+    - V[181] (item +0x4e) = speed/weight divisor
+  - csv extra (33..80B) ≠ in-memory EquipItemInfo (376B) — `LoadItemTable` 가 csv→struct
+    매핑 처리. csv stat order ↔ struct offset 매핑은 다음 라운드 RE 필요.
 - ✅ **Round 12**: V[122..126] 5 buff slot 정확 라벨 + V[151,152] magic stat 정정.
   - V[122] = EXP %bonus (`(100+V[122])/100` multiplier, csv 0x1d 경험치LV)
   - V[123] = SP소모% 감소 (`V[168]*(100-V[123])/100`, csv 0x1e)
@@ -99,12 +111,14 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. ItemTable / EquipItemInfo struct field 매핑 (자율 가능, 큰 임팩트)
+### 1. csv stat → EquipItemInfo struct offset 매핑 (자율 가능, 큰 임팩트)
 
-ITEM_STRUCT.md 부분 매핑. EquipItemInfo struct field 가 atk/def/level_req/
-class_req/socket 등 어떤 stat 인지 정확화. 현재 stats_u16 dump 만 있음.
-EquipItemInfo::CopyData / IsEquipPossible / RefineItem::ApplyItemRefine 디스어셈블로
-struct field offset 별 의미 매핑 가능.
+Round 13 에서 EquipItemInfo struct 핵심 field (+0x14/+0x155/+0x15d/+0x168) 식별
+완료. 그러나 csv extra (33..80B) 는 in-memory struct (376B) 와 layout 다름.
+`ItemTable::LoadItemTable` (4320B) disasm 으로 csv→struct 매핑 추출하면
+items.json 의 stats_u16 가 정확한 라벨 (atk/def/level_req/class_req/...) 로 부여
+가능. RefineItem::ApplyItemRefine (956B) 디스어셈블로 강화 시 어느 field 가
+변경되는지도 확정 가능.
 
 ### 2. V[151] vs V[152] 의 element 차이 식별 (자율 가능, 작은 임팩트)
 
@@ -163,6 +177,10 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | CalcStatusComputation 의 calc_sk 매핑 | ✅ Round 10: calc_sk[3]=V[41], calc_sk[4]=V[156] (EquipItem stat) | `calc_status_cache_map.tsv`, `tools/h5_calc_status_table.py` |
 | V[112..116] 5 secondary stat 라벨 | ✅ Round 11: 근접명중/장거리명중/회피/방패방어/크리티컬 확정 | `tools/h5_decode_buildup.py`, `buildup_decoded.tsv` |
 | V[62]/V[63] = base_con/base_int 정정 | ✅ Round 11: buildup csv "건강"/"정신" 매핑 검증 | 동일 |
+| V[122..126] 5 buff slot 라벨 | ✅ Round 12: EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% | formula `(100±V[xxx])/100` 패턴 |
+| V[151,152] magic stat 정정 | ✅ Round 12: 둘 다 INT-magic (이전 V[152]=DEX 잘못) | `formulas_disasm.txt` 사용 패턴 |
+| EquipItemInfo struct 핵심 5 field | ✅ Round 13: +0x14/+0x155/+0x15d/+0x168..0x16d | `tools/h5_dump_caller.py _ZN13EquipItemInfo*` |
+| V[168..182] ItemBase formula 영역 | ✅ Round 13: V[168]=SP cost, V[170]=cooldown, V[174]=damage growth, V[181]=divisor | `formulas_disasm.txt` cross-check |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

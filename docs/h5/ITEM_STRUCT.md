@@ -7,21 +7,84 @@
 
 ---
 
-## EquipItemInfo (총 크기 ≥ 0x168 = 360B)
+## EquipItemInfo (총 크기 ≥ 0x178 = 376B, ItemTable record size 0x178)
 
-| offset | 크기 | 추정 의미 |
-|---:|---:|---|
-| `+0x02` | u8/u16 | 아이템 타입/카테고리 |
-| `+0x04` | u32 | itemID 또는 32-bit field |
-| `+0x08` | u32 | ? (probably stat) |
-| `+0x0c` | u32 | ? |
-| `+0x14..0x15` | u8×2 | flag pair |
-| `+0x16` | u16 | ? |
-| `+0x30` | u32 | pointer or large value |
-| `+0x154..0x168` | bytes | **socket/option 블록** (인접 byte 다수 = 소켓 슬롯) |
+`tools/h5_dump_caller.py _ZN13EquipItemInfo*` 로 disasm. CopyData / IsEquipPossible /
+GetLevelLimit 분석 결과 (Round 13 — 2026-05-10):
 
-`+0x154` 부터 0x168 까지 인접 1B 8개 = 소켓 정보 (orb/refine/option)
-저장 영역 추정. 0x30 ~ 0x154 사이의 ~0x124 (292B) 는 추가 분석 필요.
+| offset | 크기 | 의미 | 근거 |
+|---:|---:|---|---|
+| `+0x02` | u8/u16 | 아이템 타입/카테고리 | (이전 라운드) |
+| `+0x04` | u32 | itemID 또는 32-bit field | (이전 라운드) |
+| `+0x08` | u32 | ? (probably stat) | |
+| `+0x0c` | u32 | ? | |
+| `+0x14` | s8 | **item_category / slot_type** ✅ Round 13 | IsEquipPossible 의 jumptable: 5=무기/0xa=특수, 4=방어구, 6/7/8/9=악세 |
+| `+0x15` | u8 | flag (refine count?) | CopyData copies separately |
+| `+0x16` | u16 | refine_value 또는 enchant_level | CopyData ldrh/strh |
+| `+0x18..0x28` | 16B | **stat block 1** (4×4B reg via ldm/stm) | inheritance copy block |
+| `+0x28..0x30` | 8B | stat block 2 | |
+| `+0x30` | u32 | pointer or large value | |
+| `+0x34..0x134` | 256B | **sub-records / large data block** | memcpy via bl 0x3130c |
+| `+0x138..0x140` | 8B | stat ldrd pair | |
+| `+0x140..0x148` | 8B | stat ldrd pair | |
+| `+0x148..0x150` | 8B | stat ldrd pair | |
+| `+0x150` | u16 | ? | |
+| `+0x152` | u16 | ? | |
+| `+0x154` | u8 | flag | |
+| `+0x155` | s8 | **class_restriction** ✅ Round 13 | IsEquipPossible: `ldrb r0, [r0, #0x155]` 와 HERO+0x22c (class_id) 비교 |
+| `+0x156..0x15a` | u16 ×3 | stats | |
+| `+0x15c` | u8 | flag | |
+| `+0x15d` | s8 | **level_limit** ✅ Round 13 | GetLevelLimit: `ldrb r4, [r0, #0x15d]` - GetRelieveLevelLimit() |
+| `+0x15e` | s8 | flag | |
+| `+0x15f` | s8 | extra | |
+| `+0x160` | s8 | flag | |
+| `+0x161` | s8 | flag | |
+| `+0x162` | u16 | ? | |
+| `+0x165` | u8 | flag | |
+| `+0x166` | u8 | flag | |
+| `+0x168` | u8 | **socket slot 0** (filled flag) ✅ Round 13 | EquipItem init: `dst[0x168]=0; memset(dst+0x169, 0xff, 5)` |
+| `+0x169..+0x16d` | u8 ×5 | **socket slots 1..5** (orb/refine ID) | 0xff=빈슬롯, otherwise orb_idx |
+| `+0x16e` | u16 | refine bonus | CopyData `mov r3, #0x16c; add r3, r3, #2; ldrh` |
+| `+0x170` | u16 | refine bonus | |
+
+**핵심 RE 단서**:
+- HERO 의 `+0x22c` byte = 현재 class_id (1..5).
+- IsEquipPossible 가 `r1` 인수로 받는 slot type (0..7) 별 jumptable:
+  - slot 1 (armor): item.0x14 ≤ 4 → item.0x155 == HERO.0x22c
+  - slot 2 (weapon special): item.0x14 == 5
+  - slot 3 (헬멧): item.0x14 == 6
+  - slot 4 (장갑): item.0x14 == 7
+  - slot 5 (신발): item.0x14 == 8
+  - slot 6 (액세서리): item.0x14 == 9 + item.0x14 ≤ 4 검증
+  - slot 0/7: 일반/특수 (item.0x14 == 5/0xa)
+
+## ItemBase (Formula::calc 의 5번째 인수, V[168..182] 의 base struct — 별도 클래스)
+
+`tools/h5_extract_formula_vars.py` 산출 `formula_var_dict.tsv` 의 'item' 라벨 영역:
+
+| offset | 크기 | var_id | 사용 패턴 |
+|---:|---:|---:|---|
+| `+0x0e` | s16 | V[168] | `V[168]*(100-V[123])/100` → **base SP cost** ✅ Round 13 |
+| `+0x12` | s16 | V[169] | (formula 직접 사용 미발견) |
+| `+0x16` | s16 | V[170] | `V[170]*(100-V[125])/100` → **base cooldown** ✅ Round 13 |
+| `+0x1a` | s16 | V[171] | (formula 직접 사용 미발견) |
+| `+0x20` | s16 | V[172] | (formula 직접 사용 미발견) |
+| `+0x24` | s16 | V[173] | bounds [0, 3] — `V[173]+V[175..177]` 합산 (4단계 stat) |
+| `+0x44` | s8 | V[174] | `V[56]+(V[57]*V[174])` 데미지 multiplier — **무기 강화 단계 / atk power tier** ✅ Round 13 |
+| `+0x45` | s8 | V[175] | `(50+V[47])-V[240]+5*V[175]` — accuracy 보정 |
+| `+0x46` | s8 | V[176] | `V[247]*(V[57]*V[176])/100` — 추가 damage 보정 |
+| `+0x47` | s8 | V[177] | `5*V[177]` — minor stat 보정 |
+| `+0x48` | s16 | V[178] | `(V[178]-300)/700` — large value 보정 (skill rank?) |
+| `+0x4a` | s16 | V[179] | (직접 사용 미발견) |
+| `+0x4c` | s16 | V[180] | (직접 사용 미발견) |
+| `+0x4e` | s8 | V[181] | `V[42]*.../V[181]` divisor — **속도/weight unit** ✅ Round 13 |
+| `+0x50` | s16 | V[182] | (직접 사용 미발견) |
+
+ItemBase 는 EquipItemInfo / OrbItemInfo / SkillBookItemInfo 등의 base class 일 가능성.
+이 struct field 는 **무기/스킬 base stat** 영역 — Formula::calc 가 직접 fetch.
+
+`+0x168..0x16d` 는 EquipItemInfo 의 socket 영역 ↔ `+0x44..0x4e` 는 ItemBase 의 stat
+영역 — 별도 struct 임을 주의.
 
 ---
 

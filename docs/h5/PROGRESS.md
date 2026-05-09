@@ -580,6 +580,24 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 13 — 2026-05-10 완료]**
+- ✅ EquipItemInfo struct 핵심 field 5개 식별 — `tools/h5_dump_caller.py` 로
+  CopyData / IsEquipPossible / GetLevelLimit 디스어셈블:
+  - +0x14 = item_category/slot_type (s8) — IsEquipPossible jumptable 의 조건
+  - +0x155 = class_restriction (s8) — HERO+0x22c (class_id) 와 비교
+  - +0x15d = level_limit (s8) — GetLevelLimit 가 fetch
+  - +0x168..+0x16d = 6 socket slot (orb/refine ID, 0xff = 빈슬롯)
+- ✅ V[168..182] = ItemBase struct (Formula::calc 5번째 인수) field 영역.
+  formulas_disasm.txt 와 cross-check 로 사용 패턴 식별:
+  - V[168] (item +0xe) = base SP cost (`V[168]*(100-V[123])/100`)
+  - V[170] (item +0x16) = base cooldown (`V[170]*(100-V[125])/100`)
+  - V[174] (item +0x44) = damage growth multiplier (`V[56]+V[57]*V[174]`)
+  - V[181] (item +0x4e) = speed/weight divisor
+- ✅ csv extra (33..80B) ≠ in-memory EquipItemInfo struct (376B) 확인.
+  csv stat → struct offset 매핑은 `ItemTable::LoadItemTable` (4320B) 디스어셈블
+  필요 — 다음 라운드. decode_h5_item.py 에 layout 차이 코멘트 추가.
+- ✅ ITEM_STRUCT.md 의 EquipItemInfo 섹션 + ItemBase 섹션 완전 재작성.
+
 **[Round 12 — 2026-05-10 완료]**
 - ✅ V[122..126] 5 buff slot 정확 라벨 확정 — formulas_disasm.txt 의
   `(100±V[xxx])/100` 패턴 + buildup csv 라벨 cross-check:
