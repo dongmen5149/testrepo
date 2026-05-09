@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-08 후반 — P0 디바이스 검증 완료 + Ghidra 세션 (§4.3 boss decoder 발견, §4.4 자동 식별 한계 확정) + h4-h11 broken bake 정리 + 단위 테스트 35건 추가 + broken 자산 264 파일 cleanup.
+**최신 커밋 시점**: 2026-05-09 — boss/enemy cif 디코더 라이브러리화 (FUN_00098ef8 알고리즘) + 39 cif 일괄 통계 도구 + 단위 테스트 13건 추가 (총 Python 59건). h4-h11 broken bake 정리 + Ghidra §4.3 boss decoder 발견 (2026-05-08).
 
 ### 한 줄 요약 (현재 상태)
 
@@ -37,7 +37,7 @@
 |---|---|---|---|
 | 5 | 일본어 부분 i18n (UI 핵심 50~100 string) | 2시간 | 자동 영문 추가 가능, 일본어/한국어 매핑은 사용자 검수 전제 |
 | 6 | h4-h11 walk-cycle 인코딩 추가 분석 | 4시간+ | cif 헤더 / 외부 인덱스 필요. Ghidra 진척 의존. 게임 영향 없음 (h0 만 wire) |
-| 7 | enemy/boss cif 디코더 (`FUN_00098ef8` 알고리즘 적용) | 2시간 | 전투 sprite 베이킹 시점에 적합 — 그 외엔 가치 X |
+| ~~7~~ | ~~enemy/boss cif 디코더 (`FUN_00098ef8` 알고리즘 적용)~~ | ✅ 2026-05-09 | `tools/recon/analyze_cif.py` 에 `decode_cell_byte / parse_boss_header / parse_boss_cells / split_frames_by_sentinel / boss_cif_summary` 추가. 39 cif 일괄 통계 (`tools/recon/dump_boss_cif.py`). 단위 테스트 13건. **다음 단계 (cell ref → BM 매핑)** 는 §4.3 후속 작업 — 전투 베이킹 진입 시 |
 
 ### 핵심 진입 문서
 
@@ -59,14 +59,48 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 # Android 빌드 + 테스트 (32/32 Kotlin 테스트)
 & "C:\gameRemake\testrepo\android\gradlew.bat" -p "C:\gameRemake\testrepo\android" :app:assembleDebug :app:testDebugUnitTest
 
-# Python 회귀 테스트 (44 test: cif 9 + mp 18 + scn 17)
+# Python 회귀 테스트 (59 test: cif 22 + mp 18 + scn 17 + walk-cycle 3 skip-able)
 python -m unittest tools.recon.test_analyze_cif tools.converter.test_convert_mp tools.converter.test_convert_scn
+
+# Boss/enemy cif 일괄 통계 (39 파일 → work/h3/boss_cif_summary.json)
+python tools/recon/dump_boss_cif.py
 ```
 
 ### 환경
 
 - JDK 21 (Eclipse Adoptium 21.0.11) / Ghidra 12.0.4 / Gradle 8.9 / AGP 8.7.2 / Kotlin 2.0.20 / compileSdk 35
 - 테스트 PC = `C:\gameRemake\testrepo` / Ghidra = `C:\Users\viewe\Downloads\ghidra_12.0.4_PUBLIC_20260303\ghidra_12.0.4_PUBLIC\`
+
+---
+
+## 📜 2026-05-09 세션 작업 압축
+
+**테마**: 사용자 블로커 (Ghidra/SMAF/번역/디자인) 제외하고 자동 진행 가능 항목 소진. 우선순위 #7 (enemy/boss cif 디코더) 코드화 완료.
+
+**A. boss/enemy cif 디코더 라이브러리화** ✅
+- `tools/recon/analyze_cif.py` 에 FUN_00098ef8 알고리즘을 5개 함수로 코드화:
+  - `decode_cell_byte(cb)` — bit 7=special / bits 5..6=orient / bits 0..4=ref 분해, 0x7f sentinel 인식
+  - `parse_boss_header(data)` — slot_count, category, indices, body_offset 추출
+  - `parse_boss_cells(body, max_cells=-1)` — 4-byte stride 셀 스트림 디코딩
+  - `split_frames_by_sentinel(cells)` — sentinel cell 을 frame 경계로 분할
+  - `boss_cif_summary(data)` — 단일 cif 통계 리턴
+- `tools/recon/dump_boss_cif.py` (신규) — 39 boss/enemy cif 일괄 분석 → `work/h3/boss_cif_summary.json`
+- 통계 결과: 4개 파일에 sentinel 존재 (boss0=46, boss1=2, boss3=86, boss4=147 — 4-byte aligned scan 기준). 나머지 35개는 sentinel 0건 → 단일 frame.
+- 단위 테스트 13건 추가 ([test_analyze_cif.py](../../tools/recon/test_analyze_cif.py)): cell byte decode 5건, header parse 2건, cells parse 3건, frame split 3건, real-file 2건.
+
+**B. 잔여 우선순위 검토**
+- **#5 일본어 i18n** — "일본어/한국어 매핑은 사용자 검수 전제" 명시 → LLM API 키도 사용자 블로커. 자동 처리하면 검토 부담만 늘어남 → 스킵.
+- **#6 h4-h11 walk-cycle 추가 분석** — Ghidra 진척 의존 + 게임 영향 없음 (h0 만 wire). 4시간+ ROI 낮음 → 스킵.
+- **결론**: 자동 진행 가능 항목 모두 소진. 다음 진척 은 모두 사용자 입력 (Ghidra §4.4 caller chain / SMAF 도구 / 번역 API / 디자인 결정).
+
+**C. 검증**
+- Python 59 test 통과 (cif 22 + mp 18 + scn 17 + walk-cycle 3 PIL-dep skip — skip 처리 graceful 화).
+- Android 빌드 검증 — 본 세션 환경(Linux 샌드박스)은 Android SDK + 네트워크 부재로 미실행. 사용자 PC 에서 `:app:assembleDebug` + `:app:testDebugUnitTest` 32 통과 확인 필요. 변경분이 Android 코드에 영향을 주지 않으므로 회귀 위험 0.
+
+**핵심 교훈**:
+1. boss/enemy cif 의 4-byte 셀 stride 는 hero h0 (`[x, y, ref, flag]`) 와 다른 의미: byte 0 = cell_byte (orient/ref/special) → 같은 cif 포맷이지만 hero 와 boss 가 별개 디코더 사용. 향후 통합 시 이 구분 유지 필요.
+2. sentinel 분포가 보스/엔미별로 매우 다양 (0~662). 단일 frame splitter 로 모든 cif 처리 가능하지만, frame 경계 의미는 파일별 검증 필요.
+3. cell ref → BM 파일 매핑은 미해결. cif 헤더 indices 와 5-bit ref 의 관계 분석이 다음 단계 (전투 sprite 베이킹 시점).
 
 ---
 
