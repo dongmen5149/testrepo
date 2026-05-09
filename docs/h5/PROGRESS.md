@@ -580,6 +580,24 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 9 — 2026-05-09 완료]**
+- ✅ `tools/h5_apply_buildup_disasm.py` — HERO/BATTLER ApplyBuildupEffect
+  jumptable 자동 추출 (56 entry × 2). 산출 `applybuildup_table.tsv`.
+- ✅ V[122..126] (0x2a0..0x2a8) = 5 buff stat slot 확정. Entry type 30/31/32/34/36.
+- ✅ V[125]/V[126] (0x2a6/0x2a8) buff slot 라벨 확정 (이전 미확정).
+- ✅ `tools/h5_extract_class_stats.py` — c_csv_class.json 의 5 클래스 secondary
+  stat base 추출 (워리어 24/18/24/5/0, 로그 12/12/18/3/0, 건슬링어 6/24/6/2/0,
+  나이트 18/6/12/4/0, 소서러 1/1/1/1/1).
+- ✅ `tools/h5_find_battle_check_funcs.py` — 전투 핵심 함수의 immediate calc 호출
+  추적. ProcDemageCalc → calc_pl id=1,2,3, CalcStatusComputation → calc_sk
+  id=2035,2036 (EquipItem stat bonus 합산).
+- ✅ HERO::InitStatusComputation (0x95e44) 가 V[118..133] (0x298..0x2b6) 영역
+  전부 0 reset 확인 — buff/temp bonus 영역.
+- ✅ battle_system.gd::_player_ctx, formula_vm.gd::_player_default 에 V[111..116]
+  클래스별 정확 lookup (class_stats.json) + V[122..133] buff/bonus slot 매핑 적용.
+- ⏸ V[112..116] 5 stat 의 한국어 라벨 (적중/회피/크리티컬/블록/속도 중 어느 것)
+  식별은 status menu UI 함수 한글 string 매핑 RE 가 필요 — 다음 라운드.
+
 **[Polish 라운드 — 2026-05-09 완료]**
 - ✅ 통합 파이프라인 `tools/h5_extract_pipeline.py` (9 단계, incremental, ~6s).
 - ✅ Scene body opcode 정적 trace `tools/h5_scn_body_stats.py` (258/258, 99%+ dispatch).

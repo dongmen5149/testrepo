@@ -258,6 +258,22 @@ func _read_player(player: Dictionary, var_id: int, offset: int, type_str: String
 	return 0
 
 
+## class_stats.json cache (5 클래스 base — Round 9).
+static var _cs_cache: Array = []
+
+func _class_secondary(class_id: int) -> Dictionary:
+	if _cs_cache.is_empty():
+		var p := "res://assets/gamedata/class_stats.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			var data = JSON.parse_string(f.get_as_text())
+			if typeof(data) == TYPE_ARRAY:
+				_cs_cache = data
+	if _cs_cache.is_empty(): return {}
+	var idx: int = clamp(class_id, 0, _cs_cache.size() - 1)
+	return _cs_cache[idx]
+
+
 ## GameState 와 직접 연동된 기본 매핑 — autoload GameState 사용.
 ##
 ## var_id ↔ field 매핑은 .so writer 분석 (h5_find_gv_writers.py) +
@@ -274,15 +290,12 @@ func _player_default(var_id: int, _offset: int) -> int:
 		63: return int(gs.stat_con)           # 0x23c  base_con
 		69: return int(gs.sp)                 # 0x248  SP (cur)
 		# V[111..116] = LoadResClassInfo 가 6 sequential s16 store — 클래스 base 계수 (Round 7).
-		# id=24 ATK 공식: V[5] + V[111] * ((V[58]*2) + V[154])
-		# → V[111] = atk_growth_per_(level*2+str) coefficient.
-		# id=25..29 의 V[112..116] = 5 secondary stats base (각각 V[129..133] 와 짝).
-		111: return max(1, int(gs.total_attack() if gs.has_method("total_attack") else 10) / max(1, int(gs.level) * 2 + int(gs.stat_str)))
-		112: return 0                         # 0x27a  secondary stat #1 base
-		113: return 0                         # 0x27c  secondary stat #2 base
-		114: return 0                         # 0x27e  secondary stat #3 base
-		115: return 0                         # 0x280  secondary stat #4 base
-		116: return 0                         # 0x282  secondary stat #5 base
+		# Round 9: class_stats.json 의 unk0..unk5 에서 직접 lookup (정확 매핑).
+		111, 112, 113, 114, 115, 116:
+			var cid: int = int(gs.class_id) if "class_id" in gs else 0
+			var rec := _class_secondary(cid)
+			var key := "unk%d" % (var_id - 111)
+			return int(rec.get(key, 0))
 		118: return 0                         # 0x298  bonus_str (장비/버프, 미보유)
 		119: return 0                         # 0x29a  bonus_dex
 		120: return 0                         # 0x29c  bonus_int

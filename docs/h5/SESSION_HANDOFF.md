@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Round 8 — V[127..148] buff/element bonus 의미 추가 + Round 7 offset 정정)
+업데이트: 2026-05-09 (Round 9 — ApplyBuildupEffect entry table 자동화 + V[122..126] buff slot 확정 + V[112..116] 클래스 base 추출)
 
 ---
 
@@ -24,6 +24,11 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
 - ✅ **Round 7**: V[111]=atk_growth_coef, V[112..116]=secondary stat base, V[153]=stat_con, V[154]=stat_str, V[155]=max_sp 확정
 - ✅ **Round 8**: V[127]=def_reduction%, V[128]=atk%bonus, V[129..133]=secondary stat bonus, V[134..148]=element/magic bonus 식별. Round 7 의 0x294/0x296 (buff descriptor) 가 Formula VM var 가 아닌 gameplay 전용 필드임을 정정 (V[125]=0x2a6, V[126]=0x2a8 별개)
+- ✅ **Round 9**: ApplyBuildupEffect jumptable 자동 추출 도구 (`tools/h5_apply_buildup_disasm.py`).
+  V[122..126] = 5 buff stat slot 확정 (entry type 30/31/32/34/36).
+  V[125]/V[126] (0x2a6/0x2a8) 의 store target 확정.
+  c_csv_class.json 의 5 클래스 V[112..116] base 패턴 추출 (워리어/로그/건슬링어/나이트/소서러).
+  battle_system.gd + formula_vm.gd 에 클래스별 정확 lookup 적용.
 
 **이번 세션 (2026-05-09 Round 6) 완료 항목**:
 - **gv_sub writer 분석 도구** — `tools/h5_find_gv_writers.py` (3568 함수 스캔, 547 stores 추적).
@@ -72,17 +77,20 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. V[112..116] 5 stat 라벨 식별 (자율 가능, 작은 임팩트)
+### 1. V[112..116] 5 stat 의 한국어 라벨 식별 (자율 가능, 작은 임팩트)
 
-V[112..116] = 5 secondary stat base 까지만 확정. 각 stat 이 hit/avoid/crit/block/speed 중
-무엇인지 calc_pl 결과 stat 사용처 (계산된 값을 어디서 fetch 하는지) 추적 필요.
-calc_pl id=24..29 결과는 formula 외부 caller (battle damage 계산) 에서 read.
+Round 9 에서 V[112..116] base 값을 5 클래스에서 추출 (워리어 24/18/24/5/0 등).
+각 stat 이 적중/회피/크리티컬/블록/속도 중 무엇인지 정확 라벨 식별 미완.
+다음 단계 — status menu UI 함수 (drawStatus / DrawStatusFrame) 또는
+한글 stat 라벨 string ("적중률을", "회피능력이", "크리티컬을", "블록으로", "속도가")
+의 reference 위치 추적해서 calc_pl id 와 1:1 매핑.
+검색 방법: `tools/h5_find_func.py` 로 DrawStatus / GetStatus 등 심볼 → disasm 후
+한글 string lookup pattern 분석.
 
-### 2. V[125,126] (0x2a6, 0x2a8) buff stack slot 라벨 (자율 가능, 작은 임팩트)
+### 2. V[122..126] buff slot 의미 식별 (자율 가능, V[112..116] 라벨 의존)
 
-InitStatusComputation reset 영역 (0x2a4..0x2c0) 은 다중 buff stack 추정.
-BATTLER::AddBuff/AddBuffArray 가 실제 사용하는 영역 (BATTLER+0x118~0x12c) 과 별개.
-HERO::ApplyBuildupEffect 의 entry 별 store target 분석 (0x294 외 다른 entry) 필요.
+V[122..126] = 5 buff stat slot 확정 (Round 9). secondary stat (V[112..116]) 짝일
+가능성 높음 (slot 수 일치). V[112..116] 라벨이 식별되면 V[122..126] 도 자동 매핑.
 
 ### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
@@ -123,6 +131,8 @@ HERO::ApplyBuildupEffect 의 entry 별 store target 분석 (0x294 외 다른 ent
 | 0x294/0x295/0x296 buff descriptor | ✅ Round 8: gameplay 전용 (Formula VM var 아님) | HERO::ApplyBuildupEffect + Round 7 정정 |
 | V[127..148] buff/element bonus | ✅ Round 8: V[127]=def_red%, V[128]=atk%bonus, V[129..133]=stat bonus, V[134..148]=element | calc_pl 공식 패턴 + AddBuffArray disasm |
 | V[151..155] formula 의존 stat | ✅ Round 7: V[153]=con, V[154]=str, V[155]=max_sp 확정 | id=0 / id=24 공식 + ApplyBuildupEffect entry 32 |
+| V[122..126] 5 buff stat slot | ✅ Round 9: ApplyBuildupEffect entry type 30/31/32/34/36 자동 추출 | `applybuildup_table.tsv`, `tools/h5_apply_buildup_disasm.py` |
+| V[112..116] 클래스 base 패턴 | ✅ Round 9: 5 클래스 secondary stat base 추출 | `class_stats_table.txt`, `tools/h5_extract_class_stats.py` |
 
 ---
 
@@ -149,6 +159,13 @@ Demo:
 
 | 도구 | 역할 | 추가 |
 |---|---|---|
+| `tools/h5_apply_buildup_disasm.py` | HERO/BATTLER ApplyBuildupEffect jumptable 자동 추출 (Round 9) | 2026-05-09 |
+| `tools/h5_extract_class_stats.py` | c_csv_class.json → 5 클래스 V[111..116] base 패턴 (Round 9) | 2026-05-09 |
+| `tools/h5_find_battle_check_funcs.py` | 전투 함수 immediate calc id 호출자 추적 (Round 9) | 2026-05-09 |
+| `tools/h5_find_formula_callers.py` | Formula::calc 전체 caller 분석 (r0/r1 reg propagation) (Round 9) | 2026-05-09 |
+| `tools/h5_list_stat_methods.py` | HERO/CHAR/BATTLER stat 메서드 이름 분류 (Round 9) | 2026-05-09 |
+| `tools/h5_dump_caller.py` | 단일 함수 disasm wrapper (Round 9) | 2026-05-09 |
+| `tools/h5_find_func.py` | 심볼 substring 탐색 helper (Round 9) | 2026-05-09 |
 | `tools/h5_find_gv_writers.py` | gv+0x1474 sub-struct offset 별 writer 함수 추적 (Round 6) | 2026-05-09 |
 | `tools/h5_des.py` | 표준 DES + S1[3][10]=2 변종 (mx_des_encrypt/decrypt) | 2026-05-09 |
 | `tools/h5_disasm_des.py` | DES 함수 disasm + 테이블 후보 dump | 2026-05-09 |
@@ -263,8 +280,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~V[155]=max_sp~~ — ✅ Round 7: ApplyBuildupEffect SP clamp 상한
 - [x] ~~V[127..148] 다중 buff/element bonus~~ — ✅ Round 8: V[127]=def_red%, V[128]=atk%, V[129..133]=stat bonus, V[134..148]=element
 - [x] ~~Round 7 0x294/0x296 mapping~~ — ✅ Round 8 정정: gameplay 전용 (Formula VM var 아님)
-- [ ] V[112..116] 5 stat 라벨 (hit/avoid/crit/...) 식별
-- [ ] V[125,126] (0x2a6, 0x2a8) 단일 buff slot 의미 식별
+- [x] ~~V[125,126] (0x2a6, 0x2a8) buff slot 의미 식별~~ — ✅ Round 9: ApplyBuildupEffect entry type 34/36 으로 5-slot 시스템 일부임 확정
+- [ ] V[112..116] 5 stat 의 한국어 라벨 (적중/회피/크리티컬/블록/속도 중 어느 것)
+- [ ] V[122..126] 5 buff slot 의미 (V[112..116] 라벨 의존)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

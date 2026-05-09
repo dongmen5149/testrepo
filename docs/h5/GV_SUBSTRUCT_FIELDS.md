@@ -78,6 +78,78 @@ jumptable. Effect type 별 store target 식별:
 | 0x2e6 | V[155] | **max_sp** | ApplyBuildupEffect entry 32 SP clamp 상한 |
 | 0x2fc | V[249] | (formula_vm 내장 -50 패널티) | special penalty constant |
 
+### Round 9 추가: ApplyBuildupEffect 자동 entry table + V[122..126] buff slot 확정
+
+`tools/h5_apply_buildup_disasm.py` 가 jumptable 패턴을 자동 인식하여 56개 entry
+type 의 store target 을 추출. HERO/BATTLER 두 함수 모두 동일 entry table.
+
+| entry type | offset | var_id | 의미 |
+|---:|---:|---:|---|
+| 2 | 0x298 | V[118] | bonus_str  (s16 add) |
+| 3 | 0x29a | V[119] | bonus_dex |
+| 4 | 0x29c | V[120] | bonus_int |
+| 5 | 0x29e | V[121] | bonus_con |
+| 10 | 0x2ac | V[128] | atk_percent_bonus |
+| 11..15 | 0x2ae..0x2b6 | V[129..133] | secondary stat #1..#5 bonus |
+| 30 | 0x2a0 | V[122] | **buff stat slot #1** |
+| 31 | 0x2a2 | V[123] | **buff stat slot #2** |
+| 32 | 0x2a4 | V[124] | **buff stat slot #3** |
+| 34 | 0x2a6 | V[125] | **buff stat slot #4** ✅ Round 9 확정 |
+| 36 | 0x2a8 | V[126] | **buff stat slot #5** ✅ Round 9 확정 |
+| 38 | 0x2aa | V[127] | def_reduction% (s8 strb) |
+| 39 | 0x295 | — | active buff icon idx (descriptor strb) |
+| 42..45 | (bl) | — | EquipItem-specific bonus (`bl GetEquipItem`) |
+| 46 | 0x248 | V[69] | SP heal (clamp [0,V[155]]) |
+| 47 | 0x1b61 | — | HiperCount |
+| 48..50 | 0x294/0x295/0x296 | — | active buff descriptor (effect_type/icon/strength) |
+| 51 | 0x1ac | — | special flag (s8 strb) |
+| 52 | (bl) | — | Spirit (`bl GetSpiritInfoPtr` → +0xe write) |
+| 54 | 0x24a | V[70] | CP set to 3000 (full) |
+
+**확정**:
+- V[125] (0x2a6), V[126] (0x2a8) 는 buff system 의 추가 stat slot.
+- V[122..126] = 5 buff slot — secondary stat (V[112..116]) 짝일 가능성
+  높음 (slot 수 일치), 단 정확한 stat 라벨 식별은 미완 (V[112..116] 라벨
+  의존).
+- `HERO::InitStatusComputation` 가 0x298..0x2b6 영역 (V[118..133]) 전부 0 reset
+  → 이는 매 stat recalc 마다 buff/temp bonus 가 리셋되고 active buff 들이
+  ApplyBuildupEffect 로 다시 합산된다는 의미.
+
+### Round 9 추가: V[112..116] 클래스별 base 값
+
+`tools/h5_extract_class_stats.py` 로 5 클래스의 LoadResClassInfo 시퀀스 추출
+(idx 14 = V[111] atk_growth, idx 15..19 = V[112..116] secondary base):
+
+| 클래스    | V[112] | V[113] | V[114] | V[115] | V[116] |
+|---|---:|---:|---:|---:|---:|
+| 워리어    | 24 | 18 | 24 |  5 | 0 |
+| 로그      | 12 | 12 | 18 |  3 | 0 |
+| 건슬링어  |  6 | 24 |  6 |  2 | 0 |
+| 나이트    | 18 |  6 | 12 |  4 | 0 |
+| 소서러    |  1 |  1 |  1 |  1 | 1 |
+
+**패턴 분석** (정확 라벨 미확정 — 추정):
+- V[112]: 워리어 우세 → melee accuracy / block
+- V[113]: 건슬링어 우세 → long-range hit / speed
+- V[114]: 워리어/로그 우세 → avoid / crit
+- V[115]: 워리어 우세 + 작은 unit (5/3/2/4/1) → block rate (% 단위)
+- V[116]: 모두 0 (소서러만 1) → magic-related stat
+
+정확 라벨 식별은 status menu UI 함수 한글 string 매핑이 필요 (다음 라운드).
+
+### Round 9 추가: HERO::CalcStatusComputation = calc_sk 호출 확인
+
+이 함수는 `Formula::calc(formula_id=0x7f0+N, ..)` 즉 calc_sk 호출자 — EquipItem
+slot 별로 stat bonus 를 합산해서 V[134..148] (element bonus 영역) 에 cache.
+calc_pl id=25..29 직접 immediate 호출자가 .so 전체에 없음을 확인 →
+calc_pl id=25..29 결과는 다른 코드 (TargetEffect::ProcDemageCalc 등) 가
+**dynamic formula_id** (`ldrsb r1, [r6, #N]` HeroSkillInfo 의 byte field) 로 호출.
+
+`tools/h5_find_battle_check_funcs.py` 로 전투 핵심 함수의 immediate calc 호출만
+추적했을 때 발견된 매핑:
+- TargetEffect::ProcDemageCalc → calc_pl id=1, 2, 3 (damage 계산 시 attacker / defender stat fetch)
+- HERO::CalcStatusComputation → calc_sk id=2035, 2036 (EquipItem stat bonus)
+
 ### Round 8 추가: BATTLER buff array 영역 (참고용 — gv+0x1474 영역 밖)
 
 `BATTLER::AddBuffSkill` (0x4b198) 디스어셈블 — buff array 들이 BATTLER 인스턴스의
@@ -132,8 +204,9 @@ ctx["584"] = GameState.sp            # 0x248  V[69]
 | ~~V[111..116] 의미~~ | ✅ Round 7: V[111]=atk_growth coef, V[112..116]=secondary stats base | LoadResClassInfo + id=24..29 공식 cross-check 완료 |
 | ~~V[125,126] buff slot~~ | ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength | HERO::ApplyBuildupEffect entry 34..36 |
 | ~~V[155] = max_sp~~ | ✅ Round 7: ApplyBuildupEffect SP clamp 상한 | 확정 |
-| V[112..116] 5 stat 라벨 | "secondary base" 까지만 | calc_pl id=25..29 결과 stat 의미 식별 (hit/avoid/crit/?) |
-| V[127..147] buff slot 다중 stack | "extra buff slots" 까지만 | BATTLER::AddBuff / AddBuffArray disasm |
+| ~~V[122..126] buff slot~~ | ✅ Round 9: ApplyBuildupEffect entry type 30..36 자동 추출 | `applybuildup_table.tsv` |
+| V[112..116] 5 stat 라벨 | base 값 5 클래스 패턴 추출 (Round 9) | 정확 라벨은 status menu UI string 매핑 필요 |
+| V[122..126] 5 buff slot 라벨 | offset/V slot 확정 (Round 9), 의미는 secondary stat 짝 추정 | V[112..116] 라벨 식별 후 자동 매핑 |
 | V[151,152] magic stat 라벨 | int/dex 추정 | calc_pl id=4 vs id=5 element 확정 (fire/ice 등?) |
 
 이상의 미확정 영역도 동작에는 영향 없음 — formula_vm 가 default 0 반환,
