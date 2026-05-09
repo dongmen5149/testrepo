@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Round 6 — gv_sub 필드 정확화 + 시각 효과 visual hookup)
+업데이트: 2026-05-09 (Round 7 — V[111..116] / V[125,126] / V[151..155] 의미 추가 확정)
 
 ---
 
@@ -22,6 +22,7 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
+- ✅ **Round 7**: V[111]=atk_growth_coef, V[112..116]=secondary stat base, V[125,126]=buff descriptor (type/strength), V[153]=stat_con, V[154]=stat_str, V[155]=max_sp 확정
 
 **이번 세션 (2026-05-09 Round 6) 완료 항목**:
 - **gv_sub writer 분석 도구** — `tools/h5_find_gv_writers.py` (3568 함수 스캔, 547 stores 추적).
@@ -70,29 +71,15 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. V[111..116] 클래스 base 계수 의미 확정 (자율 가능, 중간 임팩트)
+### 1. V[112..116] 5 stat 라벨 식별 (자율 가능, 작은 임팩트)
 
-**현재 상태**: V[111..116] (offset 0x278..0x282) 은 LoadResClassInfo 가 store —
-"클래스 base 계수" 까지만 확정. atk/def/hp/mp/exp/? 중 어느 인덱스인지 미확정.
+V[112..116] = 5 secondary stat base 까지만 확정. 각 stat 이 hit/avoid/crit/block/speed 중
+무엇인지 calc_pl 결과 stat 사용처 (계산된 값을 어디서 fetch 하는지) 추적 필요.
 
-**시작 명령**:
-```bash
-# HERO::LoadResClassInfo (어디 정의됐는지 검색 후) 의 store 순서를 분석.
-# c/csv/class_NN.dat 파일과 cross-check 하면 인덱스 확정 가능.
-python -c "
-import lief
-so = lief.parse('work/h5/extracted/lib/armeabi/libHeroesLore5.so')
-for s in so.symbols:
-    if 'LoadResClassInfo' in (s.name or ''):
-        print(f'{s.value:#x}  {s.size}  {s.name}')
-"
-# 그리고 capstone 으로 disasm.
-```
+### 2. V[127..147] 다중 buff stack 의미 (자율 가능, 작은 임팩트)
 
-### 2. V[125..147] buff 슬롯 의미 확정 (자율 가능, 작은 임팩트)
-
-`HERO::ApplyBuildupEffect` 가 store — effect type (poison/fire/freeze/...) 별 slot 의미 식별.
-이미 `tools/h5_extract_battle_funcs.py` 가 이 함수 disasm. 결과 `battle_damage_funcs.txt` 분석.
+BATTLER::AddBuff / AddBuffArray (이미 symbol 있음) 디스어셈블로 buff slot 별 의미 식별.
+`HERO::ApplyBuildupEffect` 는 단일 buff descriptor 만 식별 — 다중 stack 영역 미해결.
 
 ### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
@@ -129,6 +116,9 @@ for s in so.symbols:
 | GDScript Formula VM | ✅ FormulaVM autoload + battle 통합 | `formula_vm.gd`, Round 5 |
 | gv_sub 핵심 의미 식별 | ✅ writer 분석으로 V[58]=level / 0x248=SP / 0x24a=CP 등 18 fields 매핑 | `gv_substruct_writers.tsv`, [`GV_SUBSTRUCT_FIELDS.md`](GV_SUBSTRUCT_FIELDS.md), Round 6 |
 | 시각 효과 hookup | ✅ screen_shake tween + map highlight + narration text lookup | `demo.gd`, `map_renderer.gd`, Round 6 |
+| V[111..116] 의미 | ✅ Round 7: V[111]=atk_growth coef, V[112..116]=class secondary stat base | LoadResClassInfo disasm + id=24..29 cross-check |
+| V[125,126] buff descriptor | ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength | HERO::ApplyBuildupEffect entry 34..36 |
+| V[151..155] formula 의존 stat | ✅ Round 7: V[153]=con, V[154]=str, V[155]=max_sp 확정 | id=0 / id=24 공식 + ApplyBuildupEffect entry 32 |
 
 ---
 
@@ -265,8 +255,11 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~battle_system.gd 의 Formula VM 평가기 미구현~~ — ✅ FormulaVM autoload + battle 통합 (2026-05-09)
 - [x] ~~gv+0x1474 sub-struct offset 추출~~ — ✅ 111 fields 정확 매핑 (2026-05-09)
 - [x] ~~gv_sub 핵심 필드명 정확화~~ — ✅ Round 6 writer 분석으로 18 fields 의미 확정 (V[58]=level, V[60..63]=base, V[69]=SP, V[70]=CP, V[118..121]=bonus)
-- [ ] V[111..116] (클래스 base 계수) atk/def/hp/mp 인덱스 확정 (LoadResClassInfo disasm 필요)
-- [ ] V[125..147] (buff slot) effect type 별 의미 (ApplyBuildupEffect disasm — 이미 dump 존재)
+- [x] ~~V[111..116] (클래스 base 계수) 의미~~ — ✅ Round 7: V[111]=atk_growth, V[112..116]=secondary stat base
+- [x] ~~V[125,126] buff descriptor~~ — ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength
+- [x] ~~V[155]=max_sp~~ — ✅ Round 7: ApplyBuildupEffect SP clamp 상한
+- [ ] V[112..116] 5 stat 라벨 (hit/avoid/crit/...) 식별
+- [ ] V[127..147] 다중 buff stack slot 별 의미 (AddBuff/AddBuffArray disasm)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

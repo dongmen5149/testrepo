@@ -296,15 +296,26 @@ func _player_ctx() -> Dictionary:
 	ctx["666"] = max(0, def_v - GameState.stat_dex)  # 0x29a  V[119] bonus_dex (대용)
 	ctx["668"] = 0                                    # 0x29c  V[120] bonus_int
 	ctx["670"] = 0                                    # 0x29e  V[121] bonus_con
-	# === 추정 매핑 (calc_pl 공식 입력) — 클래스 base 계수 (LoadResClassInfo writer) ===
-	# V[111] (0x278) = atk_per_level coefficient (id=4 ATK 식에서 V[111]*level 형태로 사용)
-	ctx["632"] = max(1, atk / max(1, GameState.level))  # rough: avg atk per level
-	ctx["634"] = max(1, def_v / max(1, GameState.level))  # 0x27a  V[112] def coef
-	ctx["636"] = ctx["hp"]                                # 0x27c  V[113] (TouchPressed 등에서 set — UI? hp 임시)
-	ctx["638"] = ctx["max_hp"]                            # 0x27e  V[114] max_hp 추정
-	ctx["640"] = ctx["sp"]                                # 0x280  V[115] sp 추정
-	ctx["642"] = ctx["max_sp"]                            # 0x282  V[116] max_sp 추정
-	# 음수 패널티 var_id (formula_vm.gd 가 V[248,249] 를 -50 으로 처리, 248/249 는 직접 매핑 불요)
+	# === Round 7: LoadResClassInfo + ApplyBuildupEffect disasm 으로 정확화 ===
+	# V[111] (0x278) = atk_growth_per_(level*2+str) coefficient
+	#   id=24 공식: V[5] + V[111] * ((V[58]*2) + V[154]) → V[111] 가 multiplier.
+	var growth_denom: int = max(1, GameState.level * 2 + GameState.stat_str)
+	ctx["632"] = max(1, atk / growth_denom)               # 0x278  V[111] atk growth coef
+	ctx["634"] = 0                                        # 0x27a  V[112] secondary base #1
+	ctx["636"] = 0                                        # 0x27c  V[113] secondary base #2
+	ctx["638"] = 0                                        # 0x27e  V[114] secondary base #3
+	ctx["640"] = 0                                        # 0x280  V[115] secondary base #4
+	ctx["642"] = 0                                        # 0x282  V[116] secondary base #5
+	# V[125,126] (0x294, 0x296) = active buff descriptor (Round 7).
+	#   ApplyBuildupEffect entry 34..36 store: 0x294=type, 0x295=icon, 0x296=strength.
+	ctx["660"] = 0                                        # 0x294  buff effect_type (none)
+	ctx["662"] = 0                                        # 0x296  buff strength
+	# V[151..155] (0x2de..0x2e6) — formula 의존 stat (id=0 / id=24 cross-check).
+	ctx["734"] = GameState.stat_int                       # 0x2de  V[151] magic stat base
+	ctx["736"] = GameState.stat_dex                       # 0x2e0  V[152] magic stat (paired)
+	ctx["738"] = GameState.stat_con                       # 0x2e2  V[153] con  (id=0 MaxHP 10*V[153])
+	ctx["740"] = GameState.stat_str                       # 0x2e4  V[154] str  (id=24 ATK V[58]*2+V[154])
+	ctx["742"] = GameState.max_sp                         # 0x2e6  V[155] max_sp 확정
 	return ctx
 
 

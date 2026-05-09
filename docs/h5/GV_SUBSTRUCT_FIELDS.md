@@ -33,16 +33,42 @@
 
 ## 강한 추정 (writer 패턴만으로 확정 — 의미는 합리적 추론)
 
-| offset | var_id | writers | 추정 의미 |
+### Round 7 추가: LoadResClassInfo + ApplyBuildupEffect disasm 결과
+
+`HERO::LoadResClassInfo` (0x8beb4, sz=932) 디스어셈블 — `ByteToInt16` 으로
+6 stats 를 sequential 읽어 0x278..0x282 에 store. 이로써 V[111..116] 가
+**클래스별 6 secondary stat base** 임이 구조적으로 확정.
+
+`HERO::ApplyBuildupEffect` (0x95878, sz=1168) 디스어셈블 — 0x36 entry
+jumptable. Effect type 별 store target 식별:
+- entry 32 (orig type=32): `[0x248] = clamp([0x248]+arg, 0, [0x2e6])` → SP heal,
+  upper bound = `[0x2e6]` ⇒ **V[155] (0x2e6) = max_sp 확정**.
+- entry 33 (orig=33): `[0x1b61]` (HiperCount, 우리 영역 밖)
+- entry 34 (orig=34): `[0x294]=9, [0x295]=0x3b, [0x296]=arg`  → buff descriptor
+- entry 35 (orig=35): `[0x294]=3, [0x295]=0x71, [0x296]=arg`
+- entry 36 (orig=36): `[0x294]=8, [0x295]=0x72, [0x296]=arg`
+- entry 1 (default): `b BATTLER::ApplyBuildupEffect` (parent class delegation)
+
+→ **0x294 = active_buff_effect_type, 0x295 = active_buff_icon_idx, 0x296 = strength**.
+
+| offset | var_id | meaning | 근거 |
 |---|---|---|---|
-| 0x278 | V[111] | HERO::LoadResClassInfo, Monster::setEnemyData, Scene_Init | 클래스 atk 계수 (id=4 ATK 공식: V[5]+V[111]*((V[58]*2)+V[154])) |
-| 0x27a | V[112] | LoadResClassInfo, setEnemyData | 클래스 def 계수 |
-| 0x27c | V[113] | StateInGameMenu, BaseState (UI?), TargetEffect | 미확정 — 자주 modify 됨 |
-| 0x27e | V[114] | LoadResClassInfo, setEnemyData | 클래스 base #3 |
-| 0x280 | V[115] | LoadResClassInfo, setEnemyData, QuestRewardData | 클래스 base #4 |
-| 0x282 | V[116] | LoadResClassInfo, setEnemyData | 클래스 base #5 |
-| 0x294~0x2c0 | V[125..147] | HERO::ApplyBuildupEffect, Monster::Ai_Initialize | **buff/debuff 슬롯 영역** (effect % bonus, count, ...) |
-| 0x2c2~0x2fa | V[148..162] | Monster::Ai_* 위주 | enemy 전용 AI state 또는 player effect 추가 슬롯 |
+| 0x278 | V[111] | atk_growth_per_(level*2+str) coefficient | id=24 ATK 공식 multiplier 위치 |
+| 0x27a | V[112] | secondary stat #1 base | LoadResClassInfo seq + id=25 V[112]+V[129]*10 |
+| 0x27c | V[113] | secondary stat #2 base | id=26 V[113]+V[130]*10 |
+| 0x27e | V[114] | secondary stat #3 base | id=27 V[114]+V[131] |
+| 0x280 | V[115] | secondary stat #4 base | id=28 V[115]+V[132] |
+| 0x282 | V[116] | secondary stat #5 base | id=29 V[116]+V[133] |
+| 0x294 | V[125] u8 | **active buff effect_type** | HERO::ApplyBuildupEffect entry 34..36 store 3/8/9 |
+| 0x295 | (s8) | **active buff icon idx** | 동일 entry 들에서 0x3b/0x71/0x72 store |
+| 0x296 | V[126] u8 | **active buff strength** | 동일 entry 들에서 caller arg store |
+| 0x298~0x2c0 | V[127..147] | buff/debuff 추가 슬롯 (다중 buff stack 추정) | Monster::Ai_Initialize 와 공유 → BATTLER 공통 buff array |
+| 0x2c2~0x2da | V[148..150] | Monster AI state (enemy 전용) | Monster::Ai_* 위주 writer |
+| 0x2de | V[151] | magic stat (player ctx 한정 — int) | id=4 magic atk 공식 +V[151] |
+| 0x2e0 | V[152] | magic stat 짝 (player ctx — dex) | id=5 magic atk 공식 +V[152] |
+| 0x2e2 | V[153] | **stat_con** | id=0 MaxHP 공식 10*V[153] |
+| 0x2e4 | V[154] | **stat_str** | id=24 ATK 공식 V[58]*2+V[154] |
+| 0x2e6 | V[155] | **max_sp** | ApplyBuildupEffect entry 32 SP clamp 상한 |
 | 0x2fc | V[249] | (formula_vm 내장 -50 패널티) | special penalty constant |
 
 ## 미확정 (writer 분석으로도 의미 추출 불가)
@@ -80,9 +106,12 @@ ctx["584"] = GameState.sp            # 0x248  V[69]
 
 | 영역 | 현재 상태 | 후속 RE 작업 |
 |---|---|---|
-| V[111..116] 의미 | "클래스 base 계수" 까지만 | LoadResClassInfo disasm 으로 데이터 인덱스 확정 (atk/def/hp/mp/exp/?) |
-| V[125..147] buff slot | "effect % bonus" 까지만 | ApplyBuildupEffect disasm 으로 effect type 별 slot 매핑 |
-| V[150..162] | "boost var" 까지만 | 어느 item/spirit 가 store 하는지 추적 |
+| ~~V[111..116] 의미~~ | ✅ Round 7: V[111]=atk_growth coef, V[112..116]=secondary stats base | LoadResClassInfo + id=24..29 공식 cross-check 완료 |
+| ~~V[125,126] buff slot~~ | ✅ Round 7: 0x294=type, 0x295=icon, 0x296=strength | HERO::ApplyBuildupEffect entry 34..36 |
+| ~~V[155] = max_sp~~ | ✅ Round 7: ApplyBuildupEffect SP clamp 상한 | 확정 |
+| V[112..116] 5 stat 라벨 | "secondary base" 까지만 | calc_pl id=25..29 결과 stat 의미 식별 (hit/avoid/crit/?) |
+| V[127..147] buff slot 다중 stack | "extra buff slots" 까지만 | BATTLER::AddBuff / AddBuffArray disasm |
+| V[151,152] magic stat 라벨 | int/dex 추정 | calc_pl id=4 vs id=5 element 확정 (fire/ice 등?) |
 
 이상의 미확정 영역도 동작에는 영향 없음 — formula_vm 가 default 0 반환,
 battle_system 의 임시 공식 fallback 으로 게임플레이 보장.

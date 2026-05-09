@@ -273,18 +273,30 @@ func _player_default(var_id: int, _offset: int) -> int:
 		62: return int(gs.stat_int)           # 0x23a  base_int
 		63: return int(gs.stat_con)           # 0x23c  base_con
 		69: return int(gs.sp)                 # 0x248  SP (cur)
-		111: return max(1, int(gs.total_attack() if gs.has_method("total_attack") else 10) / max(1, int(gs.level)))
-		112: return max(1, int(gs.total_defense() if gs.has_method("total_defense") else 5) / max(1, int(gs.level)))
-		113: return int(gs.hp)                # 0x27c  hp 임시
-		114: return int(gs.max_hp)            # 0x27e  max_hp 추정
-		115: return int(gs.sp)                # 0x280
-		116: return int(gs.max_sp)            # 0x282
+		# V[111..116] = LoadResClassInfo 가 6 sequential s16 store — 클래스 base 계수 (Round 7).
+		# id=24 ATK 공식: V[5] + V[111] * ((V[58]*2) + V[154])
+		# → V[111] = atk_growth_per_(level*2+str) coefficient.
+		# id=25..29 의 V[112..116] = 5 secondary stats base (각각 V[129..133] 와 짝).
+		111: return max(1, int(gs.total_attack() if gs.has_method("total_attack") else 10) / max(1, int(gs.level) * 2 + int(gs.stat_str)))
+		112: return 0                         # 0x27a  secondary stat #1 base
+		113: return 0                         # 0x27c  secondary stat #2 base
+		114: return 0                         # 0x27e  secondary stat #3 base
+		115: return 0                         # 0x280  secondary stat #4 base
+		116: return 0                         # 0x282  secondary stat #5 base
 		118: return 0                         # 0x298  bonus_str (장비/버프, 미보유)
 		119: return 0                         # 0x29a  bonus_dex
 		120: return 0                         # 0x29c  bonus_int
 		121: return 0                         # 0x29e  bonus_con
+		# V[125,126] = HERO::ApplyBuildupEffect 의 buff descriptor (Round 7).
+		# 0x294 = effect_type, 0x295 = icon (버프 아이콘 idx), 0x296 = strength.
+		125: return 0                         # 0x294  active buff effect_type
+		126: return 0                         # 0x296  active buff strength
+		# V[151..154] = formula 의존 stat (Round 7 — id=0 MaxHP / id=24 ATK 공식 cross-check).
+		151: return int(gs.stat_int)          # magic stat base (id=4 magic atk +V[151])
+		152: return int(gs.stat_dex)          # magic stat base (id=5 paired with V[151])
 		153: return int(gs.stat_con)          # con 보정 (id=0 max_hp 공식 10*V[153])
-		154: return int(gs.stat_str)          # str 보정 (id=4 atk 공식 V[58]*2+V[154])
+		154: return int(gs.stat_str)          # str 보정 (id=24 atk 공식 V[58]*2+V[154])
+		155: return int(gs.max_sp)            # 0x2e6  max_sp 확정 (ApplyBuildupEffect SP clamp upper bound)
 		_:
 			return 0
 
