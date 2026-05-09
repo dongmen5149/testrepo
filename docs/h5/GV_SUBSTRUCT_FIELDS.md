@@ -137,6 +137,74 @@ type 의 store target 을 추출. HERO/BATTLER 두 함수 모두 동일 entry ta
 
 정확 라벨 식별은 status menu UI 함수 한글 string 매핑이 필요 (다음 라운드).
 
+### Round 10 추가: 한글 stat label string 위치 + status menu 표시 순서
+
+**한글 stat label 은 .so 에 직접 없음** — 모두 VFS 의 `vfs_entries/000NN.txt`
+(work/h5/converted/text/*.json 에 dump) 파일에 분산. status menu UI 함수가
+`ingame_text(string_idx)` 같은 패턴으로 fetch.
+
+`tools/h5_find_kr_stat_strings.py` 결과: .so 의 .rodata 에 0 reference.
+`tools/h5_find_kr_text_idx.py` 결과: 한글 stat 라벨이 여러 text 파일에 분산.
+
+**핵심 파일** `00017_488ab1c6.json` 의 first region (offset 142..420) 이
+status menu 의 stat 라벨 sequence (총 20 stat):
+
+| seq | offset | 한글 라벨 | 추정 mapping |
+|---:|---:|---|---|
+| 1 | 193 | 방어력 | Phys DEF (calc_pl id=2 or 3) |
+| 2 | 202 | 공격력 | ATK (calc_pl id=24) |
+| 3 | 211 | 물리방어력 | PhysDEF |
+| 4 | 224 | 마법방어력 | MagDEF |
+| 5 | 244 | 명중률 | Hit (id=?) |
+| 6 | 253 | 회피율 | Avoid |
+| 7 | 262 | 정확도 | Accuracy |
+| 8 | 279 | 근접방어 | Melee DEF |
+| 9 | 290 | 장거리방어 | Ranged DEF |
+| 10 | 303 | 마법공격 | Magic ATK |
+| 11 | 314 | 특수방어 | Special DEF |
+| 12 | 325 | 특수공격 | Special ATK |
+| 13 | 336 | 근접공격 | Melee ATK |
+| 14 | 347 | 장거리공격 | Ranged ATK |
+| 15 | 360 | 물리회피 | Phys Evade |
+| 16 | 371 | 문법저항 | (오타? 마법저항) |
+| 17 | 382 | 마법적중 | Magic Hit |
+| 18 | 393 | 마법방어 | Magic DEF (중복) |
+| 19 | 404 | 크리티컬 | Crit |
+| 20 | 415 | 크리티컬저항 | Crit Resist |
+
+20 stat 중 5 개가 V[112..116] 와 매칭되어야 함 (5 secondary stat base).
+가장 합리적 후보: **명중률 (5) / 회피율 (6) / 크리티컬 (19) / 정확도 (7) / 마법적중 (17)**
+또는 **근접공격 (13) / 장거리공격 (14) / 명중률 / 회피율 / 크리티컬**.
+정확 매핑은 DrawPropertyMenu dynamic dispatch 추적 또는 save 데이터 검증 필요.
+
+### Round 10 추가: DrawPropertyMenu 동적 dispatch 확인
+
+`StateInGameMenu::DrawPropertyMenu` (5072B, @0xf05e8) 디스어셈블 결과:
+- **Formula::calc 직접 호출 없음** — 이미 cache 된 stat 값을 read 만 함.
+- **stat read 가 모두 register-indirect**: `ldr r? , [reg, reg]` 형태.
+  cache offset table 이 GOT 또는 literal pool 을 거쳐 동적 lookup —
+  정적 분석으로 stat label ↔ cache offset 매핑 어려움.
+
+다음 라운드 단서 — GOT 의 string lookup table + cache offset table 동시 추적
+또는 save 파일 직접 분석.
+
+### Round 10 추가: CalcStatusComputation 의 calc_sk 매핑
+
+`tools/h5_calc_status_table.py` 가 자동 추출. CalcStatusComputation 는 24번
+호출하지만 **모두 calc_sk id=2003 (=0x7f3, V[41]) + calc_sk id=2004 (=0x7f4, V[156])**
+두 공식만 사용 (16 짝 + 4 sentinel + 4 spirit slot):
+
+| seq | formula_id | cache_off | 의미 |
+|---:|---:|---:|---|
+| 0..15 | 2003/2004 | 0x2bc..0x2d6 | 7 EquipItem slot × 2 stat (V[136..149]) |
+| 16..18 | (default) | — | sentinel (item 없을 시 zero) |
+| 19..22 | 2003/2004 | 0x17b6..0x17bc | 4 spirit slot × 2 stat (별도 영역) |
+
+`calc_sk[2003]` = `V[41]` (skill+0x98) — clamp [0,500]: melee/close-range bonus
+`calc_sk[2004]` = `V[156]` (pc 영역) — clamp [0,100]: long-range bonus
+→ EquipItem 별 두 종류 stat bonus 합산. 이는 V[136..148] (element bonus 영역)
+와 매칭하며, V[112..116] secondary stat 와는 직접 무관.
+
 ### Round 9 추가: HERO::CalcStatusComputation = calc_sk 호출 확인
 
 이 함수는 `Formula::calc(formula_id=0x7f0+N, ..)` 즉 calc_sk 호출자 — EquipItem

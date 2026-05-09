@@ -580,6 +580,25 @@ isolated bins. 후속 작업으로 보류.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
 
+**[Round 10 — 2026-05-09 완료]**
+- ✅ `tools/h5_find_kr_stat_strings.py` — .so .rodata 에서 한글 stat label 0건 확인.
+  → 한글 라벨이 .so 가 아닌 VFS text/*.json 에 분산 (Hero5 의 string indexing
+  방식). 정적 .so 분석으로 stat label↔calc_pl id 직접 매핑은 불가능 입증.
+- ✅ `tools/h5_find_kr_text_idx.py` — VFS text JSON 에서 stat label sequence 추출.
+  핵심: `00017_488ab1c6.json` first region (offset 142..420) 에 status menu 의
+  20-stat 표시 라벨 순서 발견 (방어력/공격력/물리방어력/마법방어력/명중률/회피율/
+  정확도/근접방어/장거리방어/마법공격/특수방어/특수공격/근접공격/장거리공격/
+  물리회피/문법저항/마법적중/마법방어/크리티컬/크리티컬저항).
+- ✅ `tools/h5_calc_status_table.py` — `HERO::CalcStatusComputation` 의 24 calc
+  호출 자동 추출. **모두 calc_sk[2003]=V[41] + calc_sk[2004]=V[156]** 두 공식만
+  사용 (7 EquipItem slot × 2 stat + 4 spirit slot × 2 stat). 결과는 0x2bc..0x2d6
+  (V[136..149] element bonus 영역) cache. → V[112..116] 와 직접 무관 확인.
+- ✅ `tools/h5_disasm_property_menu.py` — `StateInGameMenu::DrawPropertyMenu` 가
+  Formula::calc 직접 호출 0건이며, stat read 가 모두 register-indirect
+  (`ldr ?, [reg, reg]`) 형태임 확인. cache offset 이 GOT/literal pool 동적 lookup
+  → 정적 매핑 어려움. V[112..116] 5 stat 라벨 정확 식별을 위해 다른 경로
+  (save 데이터 / buildup csv / 동적 디버깅) 가 필요.
+
 **[Round 9 — 2026-05-09 완료]**
 - ✅ `tools/h5_apply_buildup_disasm.py` — HERO/BATTLER ApplyBuildupEffect
   jumptable 자동 추출 (56 entry × 2). 산출 `applybuildup_table.tsv`.
