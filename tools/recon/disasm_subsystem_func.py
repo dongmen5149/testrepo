@@ -90,48 +90,166 @@ def parse_imm(tok: str) -> int | None:
         return None
 
 
-def backtrace_r0(instrs: list[dict], idx: int, lookback: int = 4) -> dict:
-    """Look back from instrs[idx] (a BL) to find r0 setup."""
-    info = {"r0_imm": None, "r0_src_reg": None, "r0_src_addr": None, "r0_pcrel": None}
-    for j in range(idx - 1, max(idx - lookback - 1, -1), -1):
+def normalize_reg(r: str) -> str:
+    """Normalize ARM register aliases (sb/sl/fp/ip/sp/lr/pc) to rN form."""
+    aliases = {
+        "sb": "r9", "sl": "r10", "fp": "r11", "ip": "r12",
+        "sp": "r13", "lr": "r14", "pc": "r15",
+    }
+    return aliases.get(r, r)
+
+
+def track_reg_value(instrs: list[dict], idx: int, target_reg: str,
+                     depth: int = 15, visited: set | None = None) -> dict:
+    """Walk back from instrs[idx-1] looking for target_reg's source.
+
+    Recursive register propagation. Supports:
+      - mov Rd, #imm           → immediate
+      - mov Rd, Rs             → chain to Rs
+      - ldr Rd, [pc, #imm]     → PC-rel literal
+      - movw Rd, #imm          → Thumb-2 16-bit literal
+      - adds Rd, Rs, #imm      → chain + offset
+      - adds/subs Rd, #imm     → self-modify (chain prior Rd value)
+      - lsls Rd, Rs, #imm      → shift
+
+    Returns dict with: imm, pcrel_addr, src_chain (list of {addr, mnem, op_str}), unresolved_reason
+    """
+    if visited is None:
+        visited = set()
+    target_reg = normalize_reg(target_reg)
+    state_key = (idx, target_reg, depth)
+    if state_key in visited:
+        return {"imm": None, "unresolved_reason": "cycle", "src_chain": []}
+    visited.add(state_key)
+    if depth <= 0:
+        return {"imm": None, "unresolved_reason": "depth_exceeded", "src_chain": []}
+
+    chain: list[dict] = []
+    for j in range(idx - 1, -1, -1):
         ins = instrs[j]
+        mnem = ins["mnem"]
         op_str = ins["op_str"].replace(" ", "")
-        # mov r0, #imm | movs r0, #imm
-        if ins["mnem"] in ("mov", "movs", "mov.w") and op_str.startswith("r0,#"):
-            info["r0_imm"] = parse_imm(op_str.split(",", 1)[1])
-            info["r0_src_addr"] = ins["addr"]
-            return info
-        # adds r0, #imm  (rarely arg-final)
-        if ins["mnem"] in ("adds",) and op_str.startswith("r0,#"):
-            info["r0_imm_add"] = parse_imm(op_str.split(",", 1)[1])
-            info["r0_src_addr"] = ins["addr"]
-            return info
-        # mov r0, Rs | movs r0, Rs (Rs is another register — value indeterminate here)
-        if ins["mnem"] in ("mov", "movs", "mov.w") and op_str.startswith("r0,") and not op_str.startswith("r0,#"):
-            info["r0_src_reg"] = op_str.split(",", 1)[1]
-            info["r0_src_addr"] = ins["addr"]
-            return info
-        # adds r0, Rs, #imm
-        if ins["mnem"] in ("adds", "add") and op_str.startswith("r0,"):
-            info["r0_src_reg"] = "?"
-            info["r0_src_addr"] = ins["addr"]
-            return info
-        # ldr r0, [pc, #imm]
-        if ins["mnem"] in ("ldr", "ldr.w") and op_str.startswith("r0,[pc,#"):
+        parts = op_str.split(",")
+        if not parts:
+            continue
+        rd = normalize_reg(parts[0])
+        # If this instr does not write target_reg, skip
+        # Heuristic: most write instructions have Rd as first operand.
+        if rd != target_reg:
+            continue
+
+        step = {"addr": ins["addr"], "mnem": mnem, "op_str": ins["op_str"]}
+        chain.append(step)
+
+        # mov Rd, #imm   |  movs Rd, #imm  |  mov.w Rd, #imm  |  movw Rd, #imm
+        if mnem in ("mov", "movs", "mov.w", "movw") and len(parts) >= 2 and parts[1].startswith("#"):
+            imm = parse_imm(parts[1])
+            return {"imm": imm, "src_chain": chain}
+
+        # mov Rd, Rs (single src reg)
+        if mnem in ("mov", "movs", "mov.w") and len(parts) == 2 and parts[1].startswith("r") and not parts[1].startswith("r,"):
+            src = parts[1]
+            sub = track_reg_value(instrs, j, src, depth - 1, visited)
+            sub["src_chain"] = chain + sub.get("src_chain", [])
+            return sub
+
+        # ldr Rd, [pc, #imm]   (literal pool)
+        if mnem in ("ldr", "ldr.w") and "[pc,#" in op_str:
             try:
                 imm = parse_imm(op_str.split("#", 1)[1].rstrip("]"))
                 pc = (ins["addr"] + 4) & ~3
-                info["r0_pcrel"] = (pc + imm) if imm is not None else None
-                info["r0_src_addr"] = ins["addr"]
+                return {"pcrel_addr": pc + imm, "src_chain": chain}
             except (IndexError, ValueError):
-                pass
-            return info
-        # any write to r0 stops backtrace
-        if op_str.startswith("r0,") or op_str.startswith("r0 ") or op_str.startswith("r0]"):
-            info["r0_src_addr"] = ins["addr"]
-            info["r0_src_reg"] = "?other"
-            return info
+                return {"imm": None, "src_chain": chain, "unresolved_reason": "ldr_pcrel_parse_fail"}
+
+        # ldr Rd, [Rn, #imm]  or  ldrb/ldrh — value comes from memory
+        if mnem in ("ldr", "ldrb", "ldrh", "ldr.w", "ldrb.w", "ldrh.w") and "[" in op_str:
+            return {"imm": None, "src_chain": chain, "unresolved_reason": f"mem_load:{op_str}"}
+
+        # adds Rd, Rs, #imm  (3-arg form)
+        if mnem in ("adds", "add") and len(parts) == 3 and parts[2].startswith("#"):
+            offset = parse_imm(parts[2])
+            sub = track_reg_value(instrs, j, parts[1], depth - 1, visited)
+            if sub.get("imm") is not None and offset is not None:
+                sub["imm"] = sub["imm"] + offset
+            sub["src_chain"] = chain + sub.get("src_chain", [])
+            return sub
+
+        # adds Rd, #imm  (2-arg, Rd self-modify)
+        if mnem in ("adds", "subs") and len(parts) == 2 and parts[1].startswith("#"):
+            offset = parse_imm(parts[1])
+            sub = track_reg_value(instrs, j, target_reg, depth - 1, visited)
+            if sub.get("imm") is not None and offset is not None:
+                if mnem == "adds":
+                    sub["imm"] += offset
+                else:
+                    sub["imm"] -= offset
+            sub["src_chain"] = chain + sub.get("src_chain", [])
+            return sub
+
+        # lsls Rd, Rs, #imm  (logical left shift)
+        if mnem == "lsls" and len(parts) == 3 and parts[2].startswith("#"):
+            shift = parse_imm(parts[2])
+            sub = track_reg_value(instrs, j, parts[1], depth - 1, visited)
+            if sub.get("imm") is not None and shift is not None:
+                sub["imm"] = (sub["imm"] << shift) & 0xFFFFFFFF
+            sub["src_chain"] = chain + sub.get("src_chain", [])
+            return sub
+
+        # asrs/lsrs Rd, Rs, #imm
+        if mnem in ("asrs", "lsrs") and len(parts) == 3 and parts[2].startswith("#"):
+            shift = parse_imm(parts[2])
+            sub = track_reg_value(instrs, j, parts[1], depth - 1, visited)
+            if sub.get("imm") is not None and shift is not None:
+                if mnem == "asrs":
+                    # arithmetic shift — preserve sign
+                    val = sub["imm"]
+                    if val & 0x80000000:
+                        val = val - 0x100000000
+                    sub["imm"] = (val >> shift) & 0xFFFFFFFF
+                else:
+                    sub["imm"] = (sub["imm"] >> shift) & 0xFFFFFFFF
+            sub["src_chain"] = chain + sub.get("src_chain", [])
+            return sub
+
+        # adds Rd, Rs, Rt  — value depends on two regs, give up tracking sum
+        # Other unknown writers — return chain so caller can see context
+        return {"imm": None, "src_chain": chain, "unresolved_reason": f"unsupported:{mnem} {ins['op_str']}"}
+
+    return {"imm": None, "src_chain": chain, "unresolved_reason": "no_writer_found"}
+
+
+def backtrace_r0(instrs: list[dict], idx: int, lookback: int = 15) -> dict:
+    """Backtrace r0 via strengthened register propagation (kept name for back-compat)."""
+    sub = track_reg_value(instrs, idx, "r0", depth=lookback)
+    info = {"r0_imm": sub.get("imm"), "r0_src_reg": None, "r0_src_addr": None,
+            "r0_pcrel": sub.get("pcrel_addr"), "r0_unresolved": sub.get("unresolved_reason"),
+            "r0_chain_len": len(sub.get("src_chain", []))}
+    if sub.get("src_chain"):
+        info["r0_src_addr"] = sub["src_chain"][0]["addr"]
+    if sub.get("unresolved_reason") and sub.get("unresolved_reason").startswith("unsupported"):
+        info["r0_src_reg"] = "?other"
     return info
+
+
+def backtrace_args(instrs: list[dict], idx: int, lookback: int = 15) -> dict:
+    """Backtrace r0..r3 (ARM AAPCS first 4 args) for a BL site."""
+    out = {}
+    for reg_idx in range(4):
+        reg = f"r{reg_idx}"
+        sub = track_reg_value(instrs, idx, reg, depth=lookback)
+        out[reg] = {
+            "imm": sub.get("imm"),
+            "pcrel": sub.get("pcrel_addr"),
+            "unresolved": sub.get("unresolved_reason"),
+            "chain_len": len(sub.get("src_chain", [])),
+        }
+    # Capture previous 3 raw instructions for context (helps debugging chain_len=0 cases)
+    prev = []
+    for j in range(max(0, idx - 3), idx):
+        prev.append({"addr": instrs[j]["addr"], "mnem": instrs[j]["mnem"], "op_str": instrs[j]["op_str"]})
+    out["_prev"] = prev
+    return out
 
 
 def find_arms(instrs: list[dict]) -> list[dict]:
@@ -177,7 +295,7 @@ def find_arms(instrs: list[dict]) -> list[dict]:
 
 
 def extract_bls_with_args(instrs: list[dict], data: bytes) -> list[dict]:
-    """For each BL to a TARGET_OF_INTEREST, backtrace r0 to find arg."""
+    """For each BL to a TARGET_OF_INTEREST, backtrace r0..r3 to find args."""
     out = []
     for i, ins in enumerate(instrs):
         if ins["mnem"] not in ("bl", "blx"):
@@ -191,12 +309,26 @@ def extract_bls_with_args(instrs: list[dict], data: bytes) -> list[dict]:
             continue
         if t not in TARGETS_OF_INTEREST:
             continue
-        bt = backtrace_r0(instrs, i)
+        args = backtrace_args(instrs, i)
+        # Back-compat fields for r0
+        r0 = args["r0"]
         out.append({
             "site": ins["addr"],
             "target": t,
             "label": TARGETS_OF_INTEREST[t],
-            **bt,
+            "r0_imm": r0["imm"],
+            "r0_src_reg": "?other" if (r0["unresolved"] and r0["unresolved"].startswith("unsupported")) else None,
+            "r0_pcrel": r0["pcrel"],
+            "r0_unresolved": r0["unresolved"],
+            "r0_chain_len": r0["chain_len"],
+            "r1_imm": args["r1"]["imm"],
+            "r1_pcrel": args["r1"]["pcrel"],
+            "r1_chain_len": args["r1"]["chain_len"],
+            "r2_imm": args["r2"]["imm"],
+            "r2_chain_len": args["r2"]["chain_len"],
+            "r3_imm": args["r3"]["imm"],
+            "r3_chain_len": args["r3"]["chain_len"],
+            "prev_instrs": args["_prev"],
         })
     return out
 
