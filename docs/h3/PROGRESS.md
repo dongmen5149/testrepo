@@ -424,7 +424,7 @@ HD 4× 업스케일: **3149 frame** (work/h3/converted_hd/), Android assets 동�
 - ~~단위 테스트~~ ✅ 32 통과 (Character 7 / Inventory 6 / Skill 4 / PartyTurnOrder 15)
 - ~~AGP 업그레이드~~ ✅ 8.5.2 → 8.7.2 + Kotlin 2.0.20 (compileSdk 35 경고 해소)
 - ~~컴파일 경고 정리~~ ✅ 0건
-- ~~CI 셋업~~ ✅ [.github/workflows/android.yml](../.github/workflows/android.yml) — push/PR에 testDebugUnitTest + assembleDebug 자동 실행
+- ~~CI 셋업~~ ✅ [.github/workflows/android.yml](../.github/workflows/android.yml) — push/PR에 testDebugUnitTest + assembleDebug 자동 실행. [.github/workflows/python-tools.yml](../.github/workflows/python-tools.yml) (2026-05-09) — Python 변환기/i18n 89 test 자동 실행 (Hero3 JAR 추출 포함, Pillow/capstone 자동 설치).
 - ~~코드 리팩토링 1차~~ ✅ 2026-05-07 — Settings.lang/isEn 도입, GameState edit 헬퍼, NpcRegistry postBoss 리스트화, 23 파일 풀패스/ko·en 분기 정리. 동작 100% 보존.
 - 남은 후순위:
   - `_scn` 분석 결과 회귀 테스트 (Ghidra opcode 해독 후)

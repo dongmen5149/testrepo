@@ -1,0 +1,49 @@
+name: Python Tools CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/**'
+      - '.github/workflows/python-tools.yml'
+  pull_request:
+    paths:
+      - 'tools/**'
+      - '.github/workflows/python-tools.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow capstone
+
+      - name: Extract Hero3 JAR (for integration tests)
+        run: |
+          mkdir -p work/h3/extracted
+          cd work/h3/extracted
+          unzip -q -o ../../../Hero3/0103EFD4.jar
+
+      - name: Run Python unit tests
+        run: |
+          python -m unittest \
+            tools.recon.test_analyze_cif \
+            tools.converter.test_convert_cif \
+            tools.converter.test_convert_mp \
+            tools.converter.test_convert_scn \
+            tools.converter.test_convert_text \
+            tools.converter.test_convert_palette \
+            tools.converter.test_convert_dat \
+            tools.converter.test_convert_bm_v2 \
+            tools.i18n.test_translation_dict \
+            -v
