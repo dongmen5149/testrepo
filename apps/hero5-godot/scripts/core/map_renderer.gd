@@ -164,7 +164,39 @@ func spawn_npcs(parent: Node2D, max_count: int = 8) -> void:
 		queue_redraw()
 
 
+## 임시 highlight 영역 — Interpreter 의 map_tile_change / map_attribute_change
+## 이벤트가 emit 될 때 demo.gd 가 호출. 1.5초 동안 노란 사각형 표시.
+##   {x, y, expires_at}
+var _highlights: Array = []
+
+
+## 단일 tile 위치를 일정 시간 동안 노란 highlight 로 표시.
+##
+## x, y 는 tile 좌표 (픽셀이 아님 — interpreter signal 과 일치).
+func highlight_tile(x: int, y: int, duration: float = 1.5) -> void:
+	var expires := Time.get_ticks_msec() + int(duration * 1000.0)
+	_highlights.append({"x": x, "y": y, "exp": expires})
+	queue_redraw()
+	# 자동 cleanup
+	get_tree().create_timer(duration + 0.05).timeout.connect(func():
+		var now := Time.get_ticks_msec()
+		_highlights = _highlights.filter(func(h): return int(h.get("exp", 0)) > now)
+		queue_redraw())
+
+
 func _draw() -> void:
+	# 활성 highlight 부터 (위에 표시)
+	if not _highlights.is_empty():
+		var now := Time.get_ticks_msec()
+		for h in _highlights:
+			if int(h.get("exp", 0)) <= now: continue
+			var hx := int(h.get("x", 0))
+			var hy := int(h.get("y", 0))
+			# 노란 외곽 + 반투명 채우기
+			draw_rect(Rect2(hx * TILE_SIZE, hy * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+				Color(1.0, 1.0, 0.2, 0.35), true)
+			draw_rect(Rect2(hx * TILE_SIZE, hy * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+				Color(1.0, 0.9, 0.0, 1.0), false, 2.0)
 	if show_collision_debug and not _col_data.is_empty():
 		for ty in _col_height:
 			for tx in _col_width:

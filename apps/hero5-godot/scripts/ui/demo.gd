@@ -137,7 +137,16 @@ func _on_dialog_text(args: PackedByteArray) -> void:
 
 
 func _on_narration(args: PackedByteArray) -> void:
-	_dialog.show_dialog("나레이션", "...")
+	# args[0] = string_idx (low byte), args[1] = string_idx (high byte), args[2] = flag
+	var sid := 0
+	if args.size() >= 2:
+		sid = int(args[0]) | (int(args[1]) << 8)
+	elif args.size() == 1:
+		sid = int(args[0])
+	var msg: String = GameData.ingame_text(sid) if GameData.has_method("ingame_text") else ""
+	if msg.is_empty():
+		msg = "[narration #%d]" % sid
+	_dialog.show_dialog("나레이션", msg)
 
 
 func _npc_talk() -> void:
@@ -418,21 +427,48 @@ func _run_intro(scene_meta: Dictionary) -> void:
 	_interp.step(bytes, 64)
 
 
-## .scn body 의 Map / Camera / Audio signal 핸들러 ─ 받기만 하고 print 로 trace
-## (실제 visual 적용은 후속 작업으로: MapRenderer.set_tile, Camera2D.shake 트윈 등)
+## .scn body 의 Map / Camera / Audio signal 핸들러 — toast trace + 실제 visual 적용.
 
 func _on_map_tile_change(x: int, y: int, layer: int, tile_id: int) -> void:
-	preload("res://scripts/ui/toast.gd").show_msg(self,"타일 변경: (%d, %d) layer=%d tile=%d" % [x, y, layer, tile_id])
+	# MapRenderer 가 highlight overlay 를 1.5초 표시 (set_tile 시각화)
+	if _map and _map.has_method("highlight_tile"):
+		_map.highlight_tile(x, y, 1.5)
+	preload("res://scripts/ui/toast.gd").show_msg(self,
+		"타일 변경: (%d, %d) layer=%d tile=%d" % [x, y, layer, tile_id])
 
 func _on_map_attribute_change(x: int, y: int, attr: int) -> void:
-	preload("res://scripts/ui/toast.gd").show_msg(self,"충돌 변경: (%d, %d) attr=%d" % [x, y, attr])
+	if _map and _map.has_method("highlight_tile"):
+		_map.highlight_tile(x, y, 1.0)
+	preload("res://scripts/ui/toast.gd").show_msg(self,
+		"충돌 변경: (%d, %d) attr=%d" % [x, y, attr])
 
-func _on_screen_shake(a: int, b: int, c: int) -> void:
-	preload("res://scripts/ui/toast.gd").show_msg(self,"화면 흔들림 (%d, %d, %d)" % [a, b, c])
+## 화면 흔들림: a=강도, b=duration_frames(추정), c=axis flag (현재 c 무시).
+## .scn body 의 screen_shake opcode 가 emit. demo Node2D 의 position 을
+## Tween 으로 무작위 흔들기 (간이 구현, Camera2D 도입 시 교체 가능).
+func _on_screen_shake(a: int, b: int, _c: int) -> void:
+	var amp: float = clamp(float(a), 1.0, 16.0)
+	var dur: float = clamp(float(b) / 30.0, 0.15, 1.5)  # frames → seconds (30fps 가정)
+	_apply_screen_shake(amp, dur)
+	preload("res://scripts/ui/toast.gd").show_msg(self,
+		"화면 흔들림 (%d, %d)" % [a, b])
+
+func _apply_screen_shake(amp: float, dur: float) -> void:
+	var orig := position
+	var t := create_tween()
+	t.set_trans(Tween.TRANS_SINE)
+	# 8 step 무작위 oscillation, 점차 감쇠
+	var steps := 8
+	for i in range(steps):
+		var decay: float = 1.0 - float(i) / float(steps)
+		var dx: float = randf_range(-amp, amp) * decay
+		var dy: float = randf_range(-amp, amp) * decay
+		t.tween_property(self, "position", orig + Vector2(dx, dy), dur / float(steps))
+	t.tween_property(self, "position", orig, 0.05)
 
 func _on_system_message(str_id: int) -> void:
-	preload("res://scripts/ui/toast.gd").show_msg(self,"시스템 메시지 #%d" % str_id)
+	# system_message 는 dialog 가 아닌 작은 narration 형태 — toast 로 처리
+	preload("res://scripts/ui/toast.gd").show_msg(self, "시스템 메시지 #%d" % str_id)
 
 func _on_scene_change_bgm(bgm_id: int) -> void:
 	Audio.play_bgm(bgm_id)
-	preload("res://scripts/ui/toast.gd").show_msg(self,"BGM 변경 #%d" % bgm_id)
+	preload("res://scripts/ui/toast.gd").show_msg(self, "BGM 변경 #%d" % bgm_id)

@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (Round 5 — Formula VM GDScript 평가기 + battle_system 통합 완료)
+업데이트: 2026-05-09 (Round 6 — gv_sub 필드 정확화 + 시각 효과 visual hookup)
 
 ---
 
@@ -19,16 +19,23 @@ Title → ClassSelect → Demo 흐름 동작 가능한 Godot 4 프로젝트 (`ap
 - ✅ DES 변종 완전 해독 (S1[3][10]=2 단일 수정), calc_*.dat MD5 검증 평문 dump
 - ✅ Formula VM 186 공식 (39+19+128) 디스어셈블 + GDScript 평가기 + battle_system 통합
 - ✅ gv+0x1474 sub-struct 111 fields 정확 매핑
-- ⚠ **남은 작업**: gv_sub 필드명 정확화 (offset 0x278+ s16 → atk/def/hp/mp 매핑 RE 필요)
+- ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
+  V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
+- ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
 
-**이번 세션 (2026-05-09) 완료 항목**:
-- **DES 변종 해독** — 표준 DES + S1[3][10]=2 단일 수정. `tools/h5_des.py`.
-  자세히 [`DES_VARIANT.md`](DES_VARIANT.md).
-- **Formula VM 디스어셈블러** — 186 공식 infix dump. `tools/h5_formula_disasm.py`.
-- **GDScript Formula VM 평가기** — `formula_vm.gd` autoload + battle_system 통합.
-  `tools/h5_test_formula_eval.py` Python sanity test 통과 (id=0 → 4437 정확).
-- **gv_sub 111 fields 추출** — `tools/h5_extract_gv_subStruct.py` (var_id 58-167+249).
-- **opcode 매핑 정정** — `0x11=ADD .. 0x16=XOR` (이전 docs 가 역순이었음).
+**이번 세션 (2026-05-09 Round 6) 완료 항목**:
+- **gv_sub writer 분석 도구** — `tools/h5_find_gv_writers.py` (3568 함수 스캔, 547 stores 추적).
+  산출 `gv_substruct_writers.tsv` + `gv_substruct_writers_summary.txt` (135 unique offsets).
+- **gv_sub 필드 의미 식별** — calc_pl id=18 `(104*V[58]^2)+711+(level-1)*600` ⇒ V[58]=level 확정,
+  HERO::IncreaseSP/IncreaseCP writer ⇒ 0x248=SP / 0x24a=CP, calc_pl id=20..23 패턴 ⇒ 0x236..0x23c=base, 0x298..0x29e=bonus.
+  자세히 [`GV_SUBSTRUCT_FIELDS.md`](GV_SUBSTRUCT_FIELDS.md).
+- **`battle_system._player_ctx()` 정확화** — 12 확정 + 6 강한 추정 매핑 적용 (이전 추정 6 → 18).
+  Python sanity test (`h5_test_formula_eval.py`) id=0 → 4437 통과.
+- **`formula_vm._player_default()` 정확화** — defender side fallback 도 동일 매핑 적용.
+- **시각 효과 hookup** — demo.gd 의 toast trace → 실제 visual 적용:
+  - `screen_shake`: Demo Node2D position Tween 으로 8-step decay oscillation
+  - `map_tile_change`: MapRenderer.highlight_tile 노란 사각형 1.5초 표시
+  - `narration`: GameData.ingame_text(string_idx) lookup → DialogBox
 
 ---
 
@@ -63,38 +70,34 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. gv_sub 필드명 정확화 (RECOMMENDED — 자율 가능, 큰 임팩트)
+### 1. V[111..116] 클래스 base 계수 의미 확정 (자율 가능, 중간 임팩트)
 
-**현재 상태**: `gv+0x1474` sub-struct 의 111 offset 추출 완료, 그러나 각 offset 이
-정확히 무엇인지 (player.atk vs player.hp vs player.lv 등) 미확정.
-임시 매핑 (632=atk, 634=def, 636=hp, ...) 을 `battle_system.gd::_player_ctx()` 에서 사용 중 —
-틀려도 임시 공식 fallback 으로 동작 보장하지만 정확도 떨어짐.
-
-**필요 작업**: gv+0x1474 sub-struct 에 **writes 하는 함수** 추적해서 의미 식별.
-- `HERO::SetHP`, `HERO::SetAttack`, `HERO::AddExp` 등 setter 추적
-- 또는 `BATTLER::IncreaseHP` (이미 분석됨, 0x4b41c) 가 어떤 offset 에 write 하는지 확인
-- capstone+lief 로 `*(gv_sub + 0x278..0x2fa)` 에 store 하는 모든 함수 찾기
+**현재 상태**: V[111..116] (offset 0x278..0x282) 은 LoadResClassInfo 가 store —
+"클래스 base 계수" 까지만 확정. atk/def/hp/mp/exp/? 중 어느 인덱스인지 미확정.
 
 **시작 명령**:
 ```bash
-# 도구 작성: tools/h5_find_gv_writers.py 신규
-# 패턴: ldr rN, [GOT_ptr + 0x1474]; str/strh/strb rM, [rN, #OFFSET]
-# 결과: work/h5/analysis/gv_substruct_writers.tsv (offset → writer function)
-python tools/h5_find_gv_writers.py
+# HERO::LoadResClassInfo (어디 정의됐는지 검색 후) 의 store 순서를 분석.
+# c/csv/class_NN.dat 파일과 cross-check 하면 인덱스 확정 가능.
+python -c "
+import lief
+so = lief.parse('work/h5/extracted/lib/armeabi/libHeroesLore5.so')
+for s in so.symbols:
+    if 'LoadResClassInfo' in (s.name or ''):
+        print(f'{s.value:#x}  {s.size}  {s.name}')
+"
+# 그리고 capstone 으로 disasm.
 ```
 
-**산출**: `work/h5/analysis/gv_substruct_writers.tsv` + `_player_ctx()` 정확화.
+### 2. V[125..147] buff 슬롯 의미 확정 (자율 가능, 작은 임팩트)
 
-### 2. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
+`HERO::ApplyBuildupEffect` 가 store — effect type (poison/fire/freeze/...) 별 slot 의미 식별.
+이미 `tools/h5_extract_battle_funcs.py` 가 이 함수 disasm. 결과 `battle_damage_funcs.txt` 분석.
+
+### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
 `_midas_funcFntInvalidate` 디스어셈블로 581 glyph index ↔ Unicode 매핑 추출.
 시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 — 폰트 충실도 향상 only.
-
-### 3. MapRenderer.set_tile / Camera2D.shake 트윈 (POLISH)
-
-`H5Interpreter` 의 13 signal (map_tile_change/screen_shake/...) 이 현재 toast 로 trace 만.
-실제 visual 적용 (tile 교체 + camera shake tween + narration overlay) 추가하면 .scn body
-실행 결과가 시각적으로 드러남. 게임플레이 영향 적음.
 
 ### 4. P6: Android APK 실 빌드 검증 (USER TASK)
 
@@ -124,6 +127,8 @@ python tools/h5_find_gv_writers.py
 | Formula VM 186 공식 | ✅ infix 표현 dump | `work/h5/analysis/formulas_disasm.txt` |
 | gv_sub 111 fields | ✅ var_id 58-167+249 offset/type 매핑 | `gv_substruct_layout.tsv`, Round 5 |
 | GDScript Formula VM | ✅ FormulaVM autoload + battle 통합 | `formula_vm.gd`, Round 5 |
+| gv_sub 핵심 의미 식별 | ✅ writer 분석으로 V[58]=level / 0x248=SP / 0x24a=CP 등 18 fields 매핑 | `gv_substruct_writers.tsv`, [`GV_SUBSTRUCT_FIELDS.md`](GV_SUBSTRUCT_FIELDS.md), Round 6 |
+| 시각 효과 hookup | ✅ screen_shake tween + map highlight + narration text lookup | `demo.gd`, `map_renderer.gd`, Round 6 |
 
 ---
 
@@ -150,6 +155,7 @@ Demo:
 
 | 도구 | 역할 | 추가 |
 |---|---|---|
+| `tools/h5_find_gv_writers.py` | gv+0x1474 sub-struct offset 별 writer 함수 추적 (Round 6) | 2026-05-09 |
 | `tools/h5_des.py` | 표준 DES + S1[3][10]=2 변종 (mx_des_encrypt/decrypt) | 2026-05-09 |
 | `tools/h5_disasm_des.py` | DES 함수 disasm + 테이블 후보 dump | 2026-05-09 |
 | `tools/h5_resolve_des_got.py` | PC-relative GOT lookup 해석 | 2026-05-09 |
@@ -258,7 +264,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~Formula VM 공식 추출 미완~~ — ✅ 186 공식 infix dump (2026-05-09)
 - [x] ~~battle_system.gd 의 Formula VM 평가기 미구현~~ — ✅ FormulaVM autoload + battle 통합 (2026-05-09)
 - [x] ~~gv+0x1474 sub-struct offset 추출~~ — ✅ 111 fields 정확 매핑 (2026-05-09)
-- [ ] gv_sub 필드명 정확화 (offset 0x278+ s16 들이 atk/def/hp/mp 중 무엇인지 RE 추가 필요)
+- [x] ~~gv_sub 핵심 필드명 정확화~~ — ✅ Round 6 writer 분석으로 18 fields 의미 확정 (V[58]=level, V[60..63]=base, V[69]=SP, V[70]=CP, V[118..121]=bonus)
+- [ ] V[111..116] (클래스 base 계수) atk/def/hp/mp 인덱스 확정 (LoadResClassInfo disasm 필요)
+- [ ] V[125..147] (buff slot) effect type 별 의미 (ApplyBuildupEffect disasm — 이미 dump 존재)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)
@@ -292,5 +300,6 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [`EVENT_OPCODE_REFERENCE.md`](EVENT_OPCODE_REFERENCE.md) — 102개 Event_* opcode 의미 매핑 reference
 - [`ITEM_STRUCT.md`](ITEM_STRUCT.md) — EquipItemInfo struct 부분 layout + 19-카테고리 dispatch
 - [`P5_FONT_MAPPING.md`](P5_FONT_MAPPING.md) — table.dat=Unicode (EUC-KR 아님) 정정 + 매핑 위치
+- [`GV_SUBSTRUCT_FIELDS.md`](GV_SUBSTRUCT_FIELDS.md) — Round 6: HERO 객체 (=gv+0x1474) offset 별 의미 매핑 (writer 분석)
 - [`apps/hero5-godot/README.md`](../../apps/hero5-godot/README.md) — Godot 프로젝트 사용법
 - [`apps/hero5-godot/export_presets.cfg.template`](../../apps/hero5-godot/export_presets.cfg.template) — Android export 템플릿

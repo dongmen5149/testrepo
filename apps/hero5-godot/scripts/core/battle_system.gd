@@ -257,13 +257,17 @@ func _calc_player_damage(formula_id: int, defender_ctx: Dictionary, skill_data: 
 
 ## GameState 의 player stats 를 Formula VM ctx 형식으로 변환.
 ##
-## var_id 58..167 의 offset 별 매핑은 추정값 — 실제 BattleSystem 동작에서
-## 임시 공식 fallback 으로 검증 가능. 후속 RE 에서 정확화.
+## offset → 의미 매핑은 .so writer 분석 (h5_find_gv_writers.py) 으로 확정:
+##   0x22d (V[58]) = level                    — calc_pl id=18 max_exp 공식 검증
+##   0x230        = player_class               — ChangeHeroClass writer
+##   0x236..0x23c (V[60..63]) = base str/dex/int/con — calc_pl id=20..23 패턴
+##   0x248 (V[69]) = SP                        — HERO::IncreaseSP writer
+##   0x24a (V[70]) = CP                        — HERO::IncreaseCP writer
+##   0x278..0x282 (V[111..116]) = 클래스 base 계수  — HERO::LoadResClassInfo writer
+##   0x298..0x29e (V[118..121]) = bonus str/dex/int/con — calc_pl id=20..23 패턴
+## 미확정: V[111..116]의 6개 클래스 계수 (atk/def/hit/avoid 등) 의미 — calc_pl
+## formula 별 사용에서 추론은 가능하나 정확한 라벨은 후속 RE 필요.
 func _player_ctx() -> Dictionary:
-	# offset (gv+0x1474+OFF) 키로 저장. 자주 쓰이는 offset 만 매핑.
-	#   0x22d = stat (small)
-	#   0x278~0x2fa = 큰 stat 값 (s16, atk/def/hp/...)
-	# 우선 GameState 의 명명 stats 를 적정 offset 에 매핑.
 	var atk: int = GameState.total_attack() if GameState.has_method("total_attack") else 10
 	var def_v: int = GameState.total_defense() if GameState.has_method("total_defense") else 5
 	var ctx: Dictionary = {
@@ -279,25 +283,28 @@ func _player_ctx() -> Dictionary:
 		"atk": atk,
 		"def": def_v,
 	}
-	# offset 별 단순 매핑 (player_state 의 추정):
-	#   0x278 → atk, 0x27a → def, 0x27c → hp, 0x27e → max_hp,
-	#   0x280 → sp, 0x282 → max_sp, 0x298+ → bonus stats
-	ctx["632"] = atk      # 0x278
-	ctx["634"] = def_v    # 0x27a
-	ctx["636"] = ctx["hp"]
-	ctx["638"] = ctx["max_hp"]
-	ctx["640"] = ctx["sp"]
-	ctx["642"] = ctx["max_sp"]
-	ctx["644"] = GameState.stat_str     # 0x284
-	ctx["646"] = GameState.stat_dex     # 0x286
-	ctx["648"] = GameState.stat_int     # 0x288
-	ctx["650"] = GameState.stat_con     # 0x28a
-	ctx["652"] = GameState.level        # 0x28c
-	ctx["654"] = GameState.exp / 100    # 0x28e
-	# offset 0x22d (var_id 58) — 자주 쓰임 — base attack power 추정
-	ctx["557"] = atk
-	# offset 0x234..0x24a (var_id 59..66) — damage attributes
-	# 0x234 = ?, ... 우선 0
+	# === 확정 매핑 (writer 분석 + calc_pl 공식 cross-check) ===
+	ctx["557"] = GameState.level         # 0x22d  V[58]  level (확정 — id=18 max_exp 공식)
+	ctx["566"] = GameState.stat_str      # 0x236  V[60]  base_str
+	ctx["568"] = GameState.stat_dex      # 0x238  V[61]  base_dex
+	ctx["570"] = GameState.stat_int      # 0x23a  V[62]  base_int
+	ctx["572"] = GameState.stat_con      # 0x23c  V[63]  base_con
+	ctx["584"] = GameState.sp            # 0x248  V[69]  SP (cur)
+	ctx["586"] = 0                       # 0x24a  V[70]  CP (cur)  — GameState에 없음, 0
+	# bonus stats (장비/buff): GameState 에 분리 저장 없음 → total - base 로 계산하거나 0
+	ctx["664"] = max(0, atk - GameState.stat_str)    # 0x298  V[118] bonus_str (대용)
+	ctx["666"] = max(0, def_v - GameState.stat_dex)  # 0x29a  V[119] bonus_dex (대용)
+	ctx["668"] = 0                                    # 0x29c  V[120] bonus_int
+	ctx["670"] = 0                                    # 0x29e  V[121] bonus_con
+	# === 추정 매핑 (calc_pl 공식 입력) — 클래스 base 계수 (LoadResClassInfo writer) ===
+	# V[111] (0x278) = atk_per_level coefficient (id=4 ATK 식에서 V[111]*level 형태로 사용)
+	ctx["632"] = max(1, atk / max(1, GameState.level))  # rough: avg atk per level
+	ctx["634"] = max(1, def_v / max(1, GameState.level))  # 0x27a  V[112] def coef
+	ctx["636"] = ctx["hp"]                                # 0x27c  V[113] (TouchPressed 등에서 set — UI? hp 임시)
+	ctx["638"] = ctx["max_hp"]                            # 0x27e  V[114] max_hp 추정
+	ctx["640"] = ctx["sp"]                                # 0x280  V[115] sp 추정
+	ctx["642"] = ctx["max_sp"]                            # 0x282  V[116] max_sp 추정
+	# 음수 패널티 var_id (formula_vm.gd 가 V[248,249] 를 -50 으로 처리, 248/249 는 직접 매핑 불요)
 	return ctx
 
 

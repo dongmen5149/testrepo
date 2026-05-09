@@ -259,24 +259,34 @@ func _read_player(player: Dictionary, var_id: int, offset: int, type_str: String
 
 
 ## GameState 와 직접 연동된 기본 매핑 — autoload GameState 사용.
+##
+## var_id ↔ field 매핑은 .so writer 분석 (h5_find_gv_writers.py) +
+## calc_pl 공식 cross-check 로 확정 (battle_system.gd::_player_ctx 와 동일).
 func _player_default(var_id: int, _offset: int) -> int:
-	# 흔히 쓰이는 var_id 직접 매핑 (formulas_disasm.txt 분석 기반)
-	#   V[58] - 자주 등장 (player base attack power 추정)
-	#   V[20+] skill stats - skill 측에서 처리
-	#   V[111+] - HP/MP/방어/체력 추정
-	if not Engine.has_singleton("GameState"):
-		# ProjectSettings autoload — Engine.get_singleton 은 작동 안 할 수 있으니 대안:
-		var gs := get_node_or_null("/root/GameState")
-		if gs == null:
+	var gs := get_node_or_null("/root/GameState")
+	if gs == null:
+		return 0
+	match var_id:
+		58: return int(gs.level)              # 0x22d  V[58]  level (확정)
+		60: return int(gs.stat_str)           # 0x236  base_str
+		61: return int(gs.stat_dex)           # 0x238  base_dex
+		62: return int(gs.stat_int)           # 0x23a  base_int
+		63: return int(gs.stat_con)           # 0x23c  base_con
+		69: return int(gs.sp)                 # 0x248  SP (cur)
+		111: return max(1, int(gs.total_attack() if gs.has_method("total_attack") else 10) / max(1, int(gs.level)))
+		112: return max(1, int(gs.total_defense() if gs.has_method("total_defense") else 5) / max(1, int(gs.level)))
+		113: return int(gs.hp)                # 0x27c  hp 임시
+		114: return int(gs.max_hp)            # 0x27e  max_hp 추정
+		115: return int(gs.sp)                # 0x280
+		116: return int(gs.max_sp)            # 0x282
+		118: return 0                         # 0x298  bonus_str (장비/버프, 미보유)
+		119: return 0                         # 0x29a  bonus_dex
+		120: return 0                         # 0x29c  bonus_int
+		121: return 0                         # 0x29e  bonus_con
+		153: return int(gs.stat_con)          # con 보정 (id=0 max_hp 공식 10*V[153])
+		154: return int(gs.stat_str)          # str 보정 (id=4 atk 공식 V[58]*2+V[154])
+		_:
 			return 0
-		match var_id:
-			58: return int(gs.stat_str)
-			60: return int(gs.level)
-			153: return int(gs.stat_str + gs.level)
-			# 자주 쓰이는 var_id → GameState 매핑
-			_:
-				return 0
-	return 0
 
 
 ## 디버그: formula 의 infix 표현 반환 (formula_id 별로).
