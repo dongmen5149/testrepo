@@ -132,6 +132,14 @@ clamp((V[2] + 32*V[58] + 10*V[153]) * (100 + V[20]) / 100, 1, 30000)
 
 배틀 코드에서 `Formula.calc(formula_id, attacker, defender, skill, item)` 으로 호출 가능.
 
-### Formula 평가기 구현
-GDScript 측에 동일한 스택 VM 을 만들어 calc_*.dat 평문 (또는 디스어셈블된 infix 표현)
-을 그대로 평가하면 원본 데미지 시스템 100% 재현.
+### Formula 평가기 구현 — ✅ 완료 (2026-05-09)
+GDScript 측에 동일한 스택 VM 을 만들어 calc_*.dat 평문을 그대로 평가:
+
+- `apps/hero5-godot/scripts/core/formula_vm.gd` — autoload `FormulaVM` 신규
+- `apps/hero5-godot/assets/data/formula/{formulas,var_dict}.json` — `tools/h5_export_formulas.py`
+  가 생성 (186 공식 + 254 var_id 매핑, gv+0x1474 sub-struct 의 111 fields 포함)
+- `tools/h5_test_formula_eval.py` 가 Python 으로 같은 알고리즘 실행 → 동일 결과 검증
+  (id=0 = `(50+32*100+10*30)*(100+25)/100 = 4437` 정확)
+
+`battle_system.gd` 의 player attack 은 Formula id=0, skill 은 2000+skill_id, enemy turn
+은 1000 호출. var_lookup 미완 시 임시 공식 fallback 으로 동작 보장.

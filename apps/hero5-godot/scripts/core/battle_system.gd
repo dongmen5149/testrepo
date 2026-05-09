@@ -66,12 +66,16 @@ func start_battle(monster_id: int = 0) -> void:
 func player_action(action: Action, skill_id: int = 0) -> void:
 	match action:
 		Action.ATTACK:
-			var atk = max(8, GameState.total_attack())
-			var raw_dmg := atk + randi() % 8
-			var dmg = max(1, raw_dmg - enemy_def / 2)
+			# Formula VM id=0 (calc_pl[0]) 가 player attack base damage 공식.
+			# clamp((V[2]+(32*V[58])+10*V[153]) * (100+V[20]) / 100, 1, 30000)
+			# 변수가 정확히 매핑되지 않은 경우 임시 공식으로 fallback.
+			var dmg := _calc_player_damage(0, _enemy_ctx())
+			if dmg <= 0:
+				# Fallback (FormulaVM lookup 미완 또는 0 반환 시)
+				var atk = max(8, GameState.total_attack())
+				dmg = max(1, atk + randi() % 8 - enemy_def / 2)
 			enemy_hp = max(0, enemy_hp - dmg)
-			log_message.emit("플레이어 → %s 에게 %d 피해 (ATK %d, 적 DEF %d)" % [
-				enemy_name, dmg, atk, enemy_def])
+			log_message.emit("플레이어 → %s 에게 %d 피해 [F:0]" % [enemy_name, dmg])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -86,16 +90,20 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 				log_message.emit("MP 부족 (%d 필요)" % mp_cost)
 				return
 			player_mp -= mp_cost
-			# damage 계수: skill 의 stat[5] 가 % (없으면 100%)
-			var dmg_pct = int(skill_data.get("damage_pct", 150))
-			var base_atk = 10 + (skill_id % 5)
-			var dmg := base_atk * dmg_pct / 100 + randi() % 5
+			# 스킬 공식: calc_sk[skill_id] (id 2000+skill_id), 평가 결과가 데미지.
+			var formula_id := 2000 + skill_id
+			var dmg := _calc_player_damage(formula_id, _enemy_ctx(), skill_data)
+			if dmg <= 0:
+				# Fallback (FormulaVM 평가 0 시 임시 공식)
+				var dmg_pct = int(skill_data.get("damage_pct", 150))
+				var base_atk = 10 + (skill_id % 5)
+				dmg = base_atk * dmg_pct / 100 + randi() % 5
 			enemy_hp = max(0, enemy_hp - dmg)
 			var skill_name = skill_data.get("name", "스킬")
 			# cooldown 적용
 			var cd = int(skill_data.get("cooldown", 0))
 			if cd > 0: _cooldowns[skill_id] = cd
-			log_message.emit("[%s]! %d 피해 (MP -%d)" % [skill_name, dmg, mp_cost])
+			log_message.emit("[%s]! %d 피해 (MP -%d) [F:%d]" % [skill_name, dmg, mp_cost, formula_id])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -116,13 +124,17 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 func _enemy_turn(player_defending: bool) -> void:
 	is_player_turn = false
 	turn_changed.emit(turn_count, false)
-	var raw_dmg := enemy_attack + randi() % 5
-	if player_defending: raw_dmg = raw_dmg / 2
-	# 방어력 차감
-	var def = GameState.total_defense()
-	var dmg = max(1, raw_dmg - def / 2)
+	# Enemy 데미지: calc_en[0] = id 1000 으로 시도. 미구현 시 임시 공식.
+	var dmg := _calc_enemy_damage(1000)
+	if dmg <= 0:
+		var raw := enemy_attack + randi() % 5
+		if player_defending: raw = raw / 2
+		var def_v = GameState.total_defense() if GameState.has_method("total_defense") else 0
+		dmg = max(1, raw - def_v / 2)
+	elif player_defending:
+		dmg = dmg / 2
 	player_hp = max(0, player_hp - dmg)
-	log_message.emit("%s → 플레이어에게 %d 피해" % [enemy_name, dmg])
+	log_message.emit("%s → 플레이어에게 %d 피해 [F:1000]" % [enemy_name, dmg])
 	# 모든 cooldown 1 감소
 	for k in _cooldowns.keys():
 		_cooldowns[k] = max(0, _cooldowns[k] - 1)
@@ -184,6 +196,128 @@ func _finish(victory: bool) -> void:
 		battle_ended.emit(true, exp_g, gold_g, drops)
 	else:
 		battle_ended.emit(false, 0, 0, [])
+
+
+## Enemy 데미지 공식 평가 (calc_en).
+##
+## defender = player ctx (적이 플레이어를 공격하므로), skill = enemy stats.
+func _calc_enemy_damage(formula_id: int) -> int:
+	var fvm := get_node_or_null("/root/FormulaVM")
+	if fvm == null:
+		return 0
+	var ctx := {
+		"defender": _player_ctx(),
+		"player": _enemy_player_ctx(),
+		"skill": {"stats_u16": [enemy_attack, enemy_def, 0, 0, 0, 100]},
+		"item": {},
+	}
+	return int(fvm.calc(formula_id, ctx))
+
+
+## Enemy 의 상태를 "player" ctx 형식으로 변환 (대칭적 호출).
+func _enemy_player_ctx() -> Dictionary:
+	return {
+		"557": enemy_attack,
+		"632": enemy_attack,
+		"634": enemy_def,
+		"atk": enemy_attack,
+		"def": enemy_def,
+	}
+
+
+## Enemy 컨텍스트 — defender 로 Formula VM 에 전달.
+func _enemy_ctx() -> Dictionary:
+	return {
+		"hp": enemy_hp,
+		"max_hp": enemy_max_hp,
+		"atk": enemy_attack,
+		"def": enemy_def,
+	}
+
+
+## Formula VM 호출 wrapper. formula_id 의 결과를 정수로 받음.
+##
+## ctx 구성:
+##   - skill: skill_data (Dictionary, stats_u16 포함)
+##   - defender: enemy ctx
+##   - item: equipped weapon stats (있으면)
+##   - player: GameState 의 stat 매핑
+func _calc_player_damage(formula_id: int, defender_ctx: Dictionary, skill_data: Dictionary = {}) -> int:
+	var fvm := get_node_or_null("/root/FormulaVM")
+	if fvm == null:
+		return 0
+	var ctx := {
+		"defender": defender_ctx,
+		"player": _player_ctx(),
+		"skill": skill_data,
+		"item": _equipped_weapon_ctx(),
+	}
+	return int(fvm.calc(formula_id, ctx))
+
+
+## GameState 의 player stats 를 Formula VM ctx 형식으로 변환.
+##
+## var_id 58..167 의 offset 별 매핑은 추정값 — 실제 BattleSystem 동작에서
+## 임시 공식 fallback 으로 검증 가능. 후속 RE 에서 정확화.
+func _player_ctx() -> Dictionary:
+	# offset (gv+0x1474+OFF) 키로 저장. 자주 쓰이는 offset 만 매핑.
+	#   0x22d = stat (small)
+	#   0x278~0x2fa = 큰 stat 값 (s16, atk/def/hp/...)
+	# 우선 GameState 의 명명 stats 를 적정 offset 에 매핑.
+	var atk: int = GameState.total_attack() if GameState.has_method("total_attack") else 10
+	var def_v: int = GameState.total_defense() if GameState.has_method("total_defense") else 5
+	var ctx: Dictionary = {
+		"hp": GameState.hp,
+		"max_hp": GameState.max_hp,
+		"sp": GameState.sp,
+		"max_sp": GameState.max_sp,
+		"level": GameState.level,
+		"str": GameState.stat_str,
+		"dex": GameState.stat_dex,
+		"int": GameState.stat_int,
+		"con": GameState.stat_con,
+		"atk": atk,
+		"def": def_v,
+	}
+	# offset 별 단순 매핑 (player_state 의 추정):
+	#   0x278 → atk, 0x27a → def, 0x27c → hp, 0x27e → max_hp,
+	#   0x280 → sp, 0x282 → max_sp, 0x298+ → bonus stats
+	ctx["632"] = atk      # 0x278
+	ctx["634"] = def_v    # 0x27a
+	ctx["636"] = ctx["hp"]
+	ctx["638"] = ctx["max_hp"]
+	ctx["640"] = ctx["sp"]
+	ctx["642"] = ctx["max_sp"]
+	ctx["644"] = GameState.stat_str     # 0x284
+	ctx["646"] = GameState.stat_dex     # 0x286
+	ctx["648"] = GameState.stat_int     # 0x288
+	ctx["650"] = GameState.stat_con     # 0x28a
+	ctx["652"] = GameState.level        # 0x28c
+	ctx["654"] = GameState.exp / 100    # 0x28e
+	# offset 0x22d (var_id 58) — 자주 쓰임 — base attack power 추정
+	ctx["557"] = atk
+	# offset 0x234..0x24a (var_id 59..66) — damage attributes
+	# 0x234 = ?, ... 우선 0
+	return ctx
+
+
+## 장착된 무기 → item ctx (var_id 168..182 lookup 용).
+func _equipped_weapon_ctx() -> Dictionary:
+	var weapon = GameState.equipped_item(GameState.SLOT_WEAPON)
+	if weapon == null: return {}
+	# weapon 은 inventory 의 item 이름 (str). items.json 에서 stats 검색.
+	var item_name := str(weapon)
+	# GameData.item_stat 은 dict 또는 비어있는 값을 반환할 수 있음
+	var atk: int = 0
+	var def_v: int = 0
+	if GameData.has_method("item_stat"):
+		atk = int(GameData.call("item_stat", item_name, "atk"))
+		def_v = int(GameData.call("item_stat", item_name, "def"))
+	return {
+		"atk_value": atk,
+		"def_value": def_v,
+		"stats": [atk, def_v, 0, 0],
+	}
 
 
 ## 25% 확률로 drop_table 에서 1 ~ 2 개 아이템 결정.

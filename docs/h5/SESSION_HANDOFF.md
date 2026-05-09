@@ -2,7 +2,7 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-09 (DES 변종 완전 해독 + calc_*.dat 평문 dump + Formula VM 디스어셈블러 186 공식)
+업데이트: 2026-05-09 (Formula VM GDScript 평가기 + battle_system 통합 + gv+0x1474 sub-struct 111 fields 정확 추출)
 
 ---
 
@@ -124,11 +124,26 @@ python tools/verify_godot_project.py
   dump. 파일 포맷 + opcode 매핑 + body parse 전부 검증.
   `work/h5/analysis/formulas_disasm.txt`.
 
+### 추가 진전 (2026-05-09 Round 5 — Formula VM 통합)
+- ✅ **gv+0x1474 sub-struct layout** — 111 fields 정확 추출 (`tools/h5_extract_gv_subStruct.py`).
+  s8 영역 0x22d-0x2fc, s16 영역 0x234-0x2fa. var_id 58-167 + 249 매핑 완료.
+  산출: `work/h5/analysis/gv_substruct_layout.tsv`.
+- ✅ **Formula JSON export** — 186 공식 + 254 var_dict 를 GDScript 가 로드할 JSON 으로
+  변환. `tools/h5_export_formulas.py` → `apps/hero5-godot/assets/data/formula/{formulas,var_dict}.json`.
+  `tools/import_to_godot.py` 파이프라인에 추가됨.
+- ✅ **GDScript Formula VM 평가기** — `formula_vm.gd` autoload 신규.
+  스택 머신 + 6 opcode + var lookup (skill/defender/item/gv_sub/const).
+  Python 측 sanity test 통과 (`tools/h5_test_formula_eval.py`): id=0 → 4437 (정확).
+- ✅ **battle_system.gd 통합** — player attack 은 Formula id=0, skill 은 2000+skill_id,
+  enemy turn 은 1000 호출. var_lookup 미완 시 임시 공식 fallback.
+  Player/enemy ctx + equipped weapon ctx 자동 구성.
+- ⚠ **player gv_sub 필드명 매핑** — offset 0x278+ s16 들이 정확히 atk/def/hp/mp/...
+  중 무엇인지는 RE 추가 필요 (gv+0x1474 sub-struct 에 writes 하는 함수 추적).
+  현재는 추정 매핑 (632=atk, 634=def, ...) — 추정 틀려도 fallback 임시 공식이 동작 보장.
+
 ### 남은 자율 가능 작업
-- **gv struct 정확한 필드명** — gv+0x1474 sub-struct 에 writes 하는 함수 추적
-  (var_id 58-160 의 player.gold/exp/atk/def 등 의미 확정).
-- **battle_system.gd 의 Formula VM 평가기** — calc_*.dat 평문 또는 디스어셈블된 공식을
-  GDScript 측 스택 머신으로 평가 → 임시 공식 100% 대체.
+- **gv_sub 정확한 필드명** — `gv+0x1474+0x278..0x2fa` 에 writes 하는 함수 (HERO::SetHP,
+  HERO::SetAttack 등) 추적 → var_id 111-160 의 정확한 의미 확정.
 - **`_midas_funcFntInvalidate`** → kor.fnt 581 ↔ Unicode 매핑 (게임 영향 0).
 - **MapRenderer.set_tile / Camera2D.shake 트윈** — interpreter signal 을 받아
   실제 visual 적용 (현재는 toast 로 trace 만).
@@ -163,6 +178,9 @@ Demo:
 | `tools/h5_resolve_des_got.py` | PC-relative GOT lookup 해석 | 2026-05-09 |
 | `tools/h5_decrypt_calc.py` | calc_pl/en/sk.dat → 평문 (MD5 검증) | 2026-05-09 |
 | `tools/h5_formula_disasm.py` | Formula VM 186 공식 → infix 표현 dump | 2026-05-09 |
+| `tools/h5_extract_gv_subStruct.py` | var_id 58-160 의 gv+0x1474 sub-struct offset 추출 | 2026-05-09 |
+| `tools/h5_export_formulas.py` | 186 공식 + 254 var_dict → GDScript JSON | 2026-05-09 |
+| `tools/h5_test_formula_eval.py` | Formula VM 정합성 테스트 (id=0 → 4437 검증) | 2026-05-09 |
 | `tools/h5_extract_pipeline.py` | 9-step 통합 파이프라인 (incremental + --force/--only) | 2026-05-09 |
 | `tools/h5_scn_body_stats.py` | 258 scn body 정적 trace + opcode 빈도 TSV | 2026-05-09 |
 | `tools/h5_extract_battle_funcs.py` | 11 BATTLER/HERO/Monster 함수 ARM disasm + callee | 2026-05-09 |
@@ -253,8 +271,9 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~DES 복호화 차단~~ — ✅ 표준 DES + S1[3][10]=2 변종 해독 (2026-05-09)
 - [x] ~~calc_*.dat 평문 미확보~~ — ✅ MD5 검증 통과 (2026-05-09)
 - [x] ~~Formula VM 공식 추출 미완~~ — ✅ 186 공식 infix dump (2026-05-09)
-- [ ] battle_system.gd 의 Formula VM 평가기 미구현 (현재 임시 공식)
-- [ ] gv+0x1474 sub-struct 정확한 필드명 (player.gold/atk 등 매핑)
+- [x] ~~battle_system.gd 의 Formula VM 평가기 미구현~~ — ✅ FormulaVM autoload + battle 통합 (2026-05-09)
+- [x] ~~gv+0x1474 sub-struct offset 추출~~ — ✅ 111 fields 정확 매핑 (2026-05-09)
+- [ ] gv_sub 필드명 정확화 (offset 0x278+ s16 들이 atk/def/hp/mp 중 무엇인지 RE 추가 필요)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)
 - [ ] 자산 이름 7개 / 0.3% 미복원 (게임 영향 없음)

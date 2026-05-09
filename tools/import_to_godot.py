@@ -204,6 +204,46 @@ def import_opcode_table() -> int:
     return 1
 
 
+def import_formula_data() -> int:
+    """calc_pl/en/sk.dat 평문 + var_dict 를 GDScript 가 로드할 JSON 으로 export.
+
+    의존: tools/h5_des.py (DES 변종) + capstone/lief.
+    조건: calc_*_plain.bin 이 있어야 함 (없으면 h5_decrypt_calc.py 가 .so 와 vfs_entries 로 생성).
+    """
+    so = ROOT / 'work/h5/extracted/lib/armeabi/libHeroesLore5.so'
+    if not so.exists():
+        print('  [skip] formula: .so missing'); return 0
+    try:
+        import lief, capstone  # noqa: F401
+    except ImportError:
+        print('  [skip] formula: capstone/lief not installed'); return 0
+    import subprocess, sys as _sys
+    # 1. calc_*.dat 평문이 없으면 만든다
+    plain = ROOT / 'work/h5/analysis/calc_pl_plain.bin'
+    if not plain.exists():
+        decrypt = ROOT / 'tools' / 'h5_decrypt_calc.py'
+        if decrypt.exists():
+            subprocess.run([_sys.executable, str(decrypt)], capture_output=True, text=True)
+    # 2. var_dict TSV 도 확보
+    gv_tsv = ROOT / 'work/h5/analysis/gv_substruct_layout.tsv'
+    if not gv_tsv.exists():
+        for s in ['h5_extract_formula_vars.py', 'h5_extract_gv_subStruct.py']:
+            sp = ROOT / 'tools' / s
+            if sp.exists():
+                subprocess.run([_sys.executable, str(sp)], capture_output=True, text=True)
+    # 3. JSON export
+    export = ROOT / 'tools' / 'h5_export_formulas.py'
+    if not export.exists():
+        return 0
+    r = subprocess.run([_sys.executable, str(export)],
+                       capture_output=True, text=True, encoding='utf-8')
+    if r.returncode != 0:
+        print(f'  [warn] formula export failed:\n{r.stderr[-500:]}')
+        return 0
+    print(f'  formula JSON generated (186 formulas + 254 var_dict)')
+    return 1
+
+
 def main() -> int:
     DST.mkdir(parents=True, exist_ok=True)
     print(f'importing to {DST.relative_to(ROOT)}/')
@@ -215,6 +255,7 @@ def main() -> int:
     import_sprite_index()
     import_scn_index()
     import_opcode_table()
+    import_formula_data()
     print('\ndone.')
     return 0
 
