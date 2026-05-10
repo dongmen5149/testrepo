@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 31 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 32 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,37 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 32 — 2026-05-10 완료]** MixSmithTableInfo 데이터원 식별 + 288 NPC blacksmith recipes dump
+- ✅ **HERO::GetMixSmithTableInfoPtr (0x890f4, 20B)** 분석:
+  - 단순 lookup: `r0 = HERO+0x1d00 + r1 * 0x12c (300B)` — entry size 300 byte, base HERO+0x1d00
+- ✅ **HERO::LoadMixSmithTableInfo (0x8b958, 588B)** 분석:
+  - LoadRes("/c/csv/smith_%d.dat", arg) → HERO+0x1d00
+  - Format: u16 count + per entry (record_size + prefix + name + item_id + sub_record + 13byte smith data)
+  - 13-byte smith data layout = mix_book recipe (slot_15) 와 동일 (csv row-major, struct column-major)
+- ✅ **VFS 에서 smith_*.dat 발견** (3 파일):
+  - smith_0.dat: index=70, hash 0x70fbe64d, 5567B, 96 entries
+  - smith_1.dat: index=71, hash 0x710dfece, 6302B, 96 entries
+  - smith_2.dat: index=72, hash 0x7120174f, 6287B, 96 entries
+  - **총 288 NPC blacksmith recipes**
+- ✅ **smith table 의 의미 분석** (decoder 출력):
+  - **smith_0**: accessory craft (1 ingredient → cat 5/6/7 helmet/boots/accessory, 75%)
+  - **smith_1**: weapon craft (3 ingredients [mix material 다양] → cat 0/1/2, 75%)
+  - **smith_2**: weapon craft (3 ingredients → cat 0/1/2, 75%)
+  - 모두 75% success rate (mix_book recipe 100% 와 다름 — NPC blacksmith 가 더 어려움)
+- ✅ **Round 28 의 ApplyNormalMix 가 사용하는 데이터원 확정**:
+  - ApplyNormalMix(arg) → GetMixSmithTableInfoPtr(arg) → 288 recipes 중 하나
+  - Round 28 의 NPC blacksmith 시스템 = smith_0/1/2.dat 의 recipes
+- ✅ **mix_book recipe (slot_15) vs MixSmithTable 비교**:
+  - slot_15 (csv item_15.dat): 116 recipes, 다양한 success rate (정제 90%, 일반 100%)
+    → ApplySpecialMix (csv 직접 사용 + Mission::CheckMissionMix)
+  - smith_0/1/2 (csv smith_*.dat): 288 recipes, 모두 75% success
+    → ApplyNormalMix (NPC blacksmith UI 에서 호출)
+  - 두 시스템 모두 13-byte smith data layout 공유.
+- ✅ **decode_h5_smithtable.py + smithtable.json 발행** (`apps/hero5-godot/assets/gamedata/smithtable.json`):
+  - 3 smith tables × 96 entries = 288 records
+  - 각 record: name, prefix, item_id, recipe (ing1/ing2/ing3, result_cat, result_idx, success_rate)
+- 산출: `tools/converter/decode_h5_smithtable.py`, `work/h5/analysis/loadmixsmith_disasm.txt` (147 줄), smithtable.json
 
 **[Round 31 — 2026-05-10 완료]** droptable.dat byte→arg 정확한 매핑 — Monster::SetDropItem 의 multi-tier drop 시스템 식별
 - ✅ **Monster::SetDropItem 의 cat 결정 multi-path 시스템 발견** (Round 30 결론 추가 정정):

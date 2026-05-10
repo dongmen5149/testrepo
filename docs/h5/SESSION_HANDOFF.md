@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 31 — droptable.dat 의 multi-tier drop 시스템 식별. **byte 7 = default path cat (모든 EquipItem 0..9), byte 11 = highest tier path cat**. 5단계 Monster threshold 별로 다른 byte 사용. cat 4=armor 누락이 Round 22 Sorcerer stub cross-confirm.)
+업데이트: 2026-05-10 (Round 32 — MixSmithTableInfo 데이터원 식별. **/c/csv/smith_0/1/2.dat = 288 NPC blacksmith recipes**. smith_0=accessory craft 96, smith_1/2=weapon craft 96+96 (모두 75% success). Round 28 의 ApplyNormalMix 데이터원 확정.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 32 시작 — MixSmithTableInfo 데이터원 식별 (HERO::GetMixSmithTableInfoPtr 분석)"** 으로 진행 (Round 28 보완).
-또는 다른 옵션: enemy_g.dat 121B record 의 후반 layout 정밀 분석 (drop_count/type fields 식별). 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-32-후보-우선순위-순) 참조.
+**"Round 33 시작 — enemy_g.dat 121B record 후반 layout 정밀 분석"** 으로 진행 (drop_count, drop_type, monster +0x254..+0x26c thresholds 등 fields 식별).
+또는: 다른 미해결 항목 (V[151]/V[152] element 짝 fire/ice/lightning/dark, 한글 폰트 매핑 등). 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-33-후보-우선순위-순) 참조.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 31 시점, 2026-05-10)
+## 30초 요약 (Round 32 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~31 누적 발견 (요약)
+### Round 6~32 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -65,6 +65,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **register propagation: byte 0xb → r3** | 0xbcb0c ldrb r8 [r3,ip] → 0xbcc08 sp+0x40 → 0xbcc20 ldr ip → 0xbcc38 asr r3 (signed s8). NewDropItem r3 = signed byte 0xb (R30) |
 | **droptable.dat multi-tier drop 시스템** | Monster +0x254..+0x26c 의 5단계 threshold + Rand(0,0xffff) 으로 cat 결정 path 선택. byte 7 = default path cat (0..9 모든 EquipItem), byte 11 = highest tier path cat (helmet/boots/accessory). mid paths = Rand(0,9). cat 4=armor 누락 = Sorcerer stub cross-confirm (R31) |
 | **Monster progression 검증** | Monster 0=accessory only, Monster 62=weapon/shield/boots common + rare accessory bonus. 게임 difficulty 와 정확 일치 (R31) |
+| **MixSmithTable 데이터원 식별** | /c/csv/smith_0/1/2.dat (각 96 entries × 300B/entry = 288 NPC blacksmith recipes). smith_0=accessory craft, smith_1/2=weapon craft. 모두 75% success rate. HERO+0x1d00 = MixSmithTable_ptr (R32) |
+| **mix_book vs smith_table 비교** | 둘 다 13-byte recipe layout 공유. mix_book (slot_15, 116) = ApplySpecialMix + Mission, smith_table (288) = ApplyNormalMix (NPC blacksmith UI). success rate 다름 (mix_book 90-100% vs smith 75%) (R32) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -74,11 +76,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 31 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **MixSmithTableInfo 데이터 dump** (Round 28 보완) — HERO::GetMixSmithTableInfoPtr
-  (0x890f4) 의 implementation 분석으로 NPC blacksmith 합성 테이블 출처 식별.
-- 또는: enemy_g.dat 121B record 의 후반 (byte 0x40+) layout 정밀 분석 — drop_count, drop_type
-  같은 field 가 monster 의 drop 시스템과 어떻게 연동되는지.
+- Round 32 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **enemy_g.dat 121B record 의 후반 (byte 0x40+) layout 정밀 분석** —
+  drop_count, drop_type, Monster +0x254..+0x26c thresholds 같은 field 식별. Round 31 의
+  multi-tier drop 시스템 trigger 데이터.
+- 또는: V[151]/V[152] element 짝 식별 (fire/ice/lightning/dark), 한글 비트맵 폰트 매핑.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -303,9 +305,17 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 32 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 33 후보, 우선순위 순)
 
-### 1. MixSmithTableInfo 데이터원 식별 (Round 28 보완, 자율 가능)
+### 1. enemy_g.dat 121B record 의 후반 layout 정밀 분석 (자율 가능)
+
+Round 8 에서 record 의 byte 0x00..0x16 layout 분석 (HP/MP/ATK/DEF/EXP/Gold).
+미완: byte 0x18..0x78 (약 96 byte, drop 시스템 fields 가 있을 가능성)
+- Monster +0x254..+0x26c (5단계 drop threshold) 가 enemy_g 의 어디인지
+- Monster +0x270..+0x275 (drop count, drop type, drop 0/1 marker) 정확한 record offset
+- enemy_g 121B 안에 drop_table 인덱스 + monster_idx 와의 매핑
+
+### 2. (이전 Round 32) MixSmithTableInfo 데이터원 식별 (Round 28 보완, 자율 가능)
 
 Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
 HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
