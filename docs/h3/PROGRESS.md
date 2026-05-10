@@ -26,6 +26,24 @@
 - **Round 35** — ⭐⭐ **도구 immediate construction** (0x274 0→2) + **3 entity-bridge caller chain 확정** (sister/main entry + UI invocation wrapper) + **FUN_0008e89e = 16.3KB SCN bytecode interpreter** (62 cmp arms, 0xff/0x89/0x8f patterns)
 - **Round 36** — ⭐⭐⭐ **0x9b00 cluster direct wide-scan = 51 sites** (1 → 51, FUN_00041c6e 21+ dominant) + **FUN_0008e89e JT @ 0xabc68 디코드 완료** (19→7 dest, opcode 0x00~0x0c 공통 + 0x0d~0x12 unique = PROGRESS 가설 검증) + FUN_00082f4c UI wrapper (1.6KB)
 
+### 전체 진척률 추정 (Round 36 시점, 2026-05-11)
+
+> **결론**: "Android 리메이크 완성" 기준 약 **15~25% 완료**. 자산 변환은 거의 다 됐지만 **게임 로직** 이 핵심 미해결.
+
+| 영역 | 진척 추정 | 근거 |
+|---|---|---|
+| 자산 포맷 분석/변환 | **~80%** | _bm/_pa/_txt/_cif/_mp/_scn 모두 1차 해독. 미해결: tile 0x0c 압축, _mp extras (NPC/exit placement), SMAF→OGG |
+| 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 (사용자 ANTHROPIC_API_KEY 필요) |
+| Ghidra 게임 로직 리버싱 | **~10~20%** | 1,470 함수 중 ~40개 본문 분석. GVM architecture (9 GOT slots, 3 Object types) + 5 indirect entries + 1 dispatcher JT 디코드 (19→7 dest). **미해결: NPC dispatcher / page 0/1/2 dispatchers / 6 special SCN opcodes / 전투 시스템 / 메뉴 / save 포맷 / FUN_0009a008 의 두 JT** |
+| task_struct 모델 | **~30%** | 44KB+ 의 일부 — 39 known fields 매핑, substructure A (0x9bb4) + 38B entity state record (0xac78) + cluster #1 (0x9afc~0x9b3c) 식별. sound state cluster, 진짜 dispatch state 등 다수 미해독 |
+| Android 엔진 재구현 | **~5~10%** | 8 씬 골격 + NPC 4 hardcoded + i18n 인프라 + save slot. **진짜 게임 로직 (전투/스킬/이벤트/진행) 없음** |
+| i18n | UI 100% / 대사 0% | UI 어휘 196개 100% 영문, 9,741 unique 대사 번역 미진행 |
+
+**가장 큰 블로커** (진행 시 가장 큰 진척):
+1. **SCN bytecode 의 6 special opcodes (0x0d~0x12) 의미 풀이** — 이게 풀리면 게임 시나리오 진행 시스템 거의 완성 (Round 37 작업)
+2. **전투 시스템 발견** — 38B entity state record 가 전투에서 어떻게 작동하는지 미확인 (FUN_0009a008 의 8.6KB super function 안에 숨어있을 가능성)
+3. **NPC dispatcher JT @ 0xabaa8** 디코드 (Round 37 의 2DS, 19 entries) — sister entry 의 NPC 처리 시스템
+
 ### 한 줄 요약 (현재 상태)
 
 영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **0x9b00 cluster 51 sites + FUN_0008e89e JT 디코드 + FUN_00082f4c UI wrapper** (2026-05-11 PM-26 / Round 36). 0x9b00 cluster 직접 wide-scan (R0 propagation 무시) = **1 → 51 sites (50배 증가)**. **FUN_00041c6e (= FUN_00041c14 sub-label) = cluster #1 dominant reader** (21+ access). FUN_0008e89e JT @ 0xabc68 19 entries → **7 destinations** (case 0..12 13개 공통 → 0x8ec26 text output, case 13..18 6개 unique special opcodes) = **PROGRESS 가설 정확히 검증**. FUN_00082f4c (1.6KB) = entity UI overlay invocation wrapper (12 ctx_getter + 8 screen_ptr_getter + BL FUN_00030018). **도구 lenient 화 vs direct scan = 2% vs 100% recall** (cluster #1) = 다음 라운드 도구 강화 방향 = direct scan 통합. 다음 진척은 **(1) 0x8ec26 common handler 본문 (text output), (2) 6 special opcodes 본문, (3) NPC dispatcher JT @ 0xabaa8 디코드, (4) FUN_00041c6e cluster #1 본문, (5) 도구 통합 강화**.
@@ -256,21 +274,63 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 ### Round 37 즉시 시작 명령 (복사-붙여넣기)
 
+> **참고**: 7 SCN handlers (0x8ec26 / 0x8f110 / 0x8f31c / 0x8f544 / 0x8f884 / 0x8face / 0x8fc20) 모두 **FUN_0008e89e 안의 sub-labels** (push prologue 없음 — 단일 함수의 다른 case body). boundary 미리 계산:
+> - 0x8ec26 (common, 13 opcodes) ~ 0x8f110 = **1258 byte**
+> - 0x8f110 (opcode 0x0d) ~ 0x8f31c = 524 byte
+> - 0x8f31c (opcode 0x0e) ~ 0x8f544 = 552 byte
+> - 0x8f544 (opcode 0x0f) ~ 0x8f884 = 832 byte
+> - 0x8f884 (opcode 0x10) ~ 0x8face = 586 byte
+> - 0x8face (opcode 0x11) ~ 0x8fc20 = 338 byte
+> - 0x8fc20 (opcode 0x12) ~ 0x929e8 (FUN_0008e89e 끝) = 13256 byte (특이하게 큰 sub-handler)
+
 ```powershell
-# ⭐⭐⭐ 2DP: FUN_0008e89e 의 0x8ec26 common handler 본문 (13 opcodes 공통, text output 후보)
-PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x8ec26 <next> --label scn_common_8ec26
+$env:PYTHONIOENCODING = 'utf-8'
 
-# ⭐⭐ 2DQ: FUN_00041c6e cluster #1 reader 본문 분석 (cluster 의 의미적 사용)
-# (이미 Round 25 에 disasm 완료, 다시 깊이 들어가서 cluster #1 access 패턴 검증)
+# ⭐⭐⭐ 2DP: 0x8ec26 common handler (13 opcodes 공통, text output 후보)
+python tools/recon/disasm_subsystem_func.py 0x8ec26 0x8f110 --label scn_common_8ec26
 
-# ⭐⭐ 2DR: FUN_0008e89e 의 6 special opcodes 본문 (0x8f110/0x8f31c/0x8f544/0x8f884/0x8face/0x8fc20)
-# inline disasm
+# ⭐⭐ 2DR: 6 special SCN opcodes 본문
+python tools/recon/disasm_subsystem_func.py 0x8f110 0x8f31c --label scn_op0d_8f110
+python tools/recon/disasm_subsystem_func.py 0x8f31c 0x8f544 --label scn_op0e_8f31c
+python tools/recon/disasm_subsystem_func.py 0x8f544 0x8f884 --label scn_op0f_8f544
+python tools/recon/disasm_subsystem_func.py 0x8f884 0x8face --label scn_op10_8f884
+python tools/recon/disasm_subsystem_func.py 0x8face 0x8fc20 --label scn_op11_8face
+python tools/recon/disasm_subsystem_func.py 0x8fc20 0x929e8 --label scn_op12_8fc20
 
-# ⭐⭐ 2DS: FUN_0008b2e8 의 inline @ 0x8c19c → FUN_0008d5e4 JT @ 0xabaa8 디코드 (NPC dispatcher 19 entries)
-# binary 직접 read
+# ⭐⭐ 2DS: NPC dispatcher JT @ 0xabaa8 디코드 (FUN_0008b2e8 sister entry inline @ 0x8c19c → FUN_0008d5e4)
+python -c "
+import struct
+data = open('work/h3/extracted/client.bin64000', 'rb').read()
+jt_base = 0xabaa8
+print(f'=== JT @ 0x{jt_base:08x}, 19 entries ===')
+for i in range(19):
+    off = jt_base + i * 4
+    rel = struct.unpack('<i', data[off:off+4])[0]
+    abs_t = (jt_base + rel) & 0xFFFFFFFF
+    print(f'  case={i:2}: rel=0x{rel:08x}  -> 0x{abs_t:08x}')
+"
+
+# ⭐⭐ 2DQ: FUN_00041c6e cluster #1 reader 의 cluster 사용 부분 재분석
+# (Round 25 의 record_disp_41c14_disasm.json 재해석)
+python -c "
+import json
+d = json.load(open('work/h3/record_disp_41c14_disasm.json'))
+cluster1 = {0x9afc, 0x9b01, 0x9b06, 0x9b14, 0x9b1c, 0x9b3c}
+hits = [l for l in d['pcrel_literals'] if int(l['value'], 16) in cluster1]
+print(f'cluster #1 sites in FUN_00041c14: {len(hits)}')
+for h in hits[:20]:
+    print(f'  ldr@{h[\"site\"]} -> {h[\"value\"]}')
+"
+
+# ⭐ 2DT (선택): 도구 통합 강화 — direct wide-scan 모드 추가
+# tools/recon/find_task_struct_field_readers.py 에 --raw-scan flag 추가
 ```
 
-**Round 37 작업 후**: 위 Round 27 마무리 절차 동일.
+**Round 37 작업 후 (마무리 절차)**:
+1. 분석 결과 → 신규 문서 `docs/h3/ghidra-scn-opcodes-2026-05-XX.md` 작성
+2. PROGRESS.md 우선순위 표에 ✅ + 새로운 ⭐ 추가
+3. 메모리 파일 (`project_hero3_remake.md`) 에 **Round 37 항목** 추가
+4. Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -297,8 +357,8 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x8ec26 <next
 **3) Round 37 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가
-- Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
+- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 37 항목** 추가
+- Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
 - SMAF→OGG 변환 (`tools/converter/convert_h3_smaf.py`) — BGM/SFX 활성, 게임 체감 큼
