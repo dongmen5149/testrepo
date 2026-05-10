@@ -15,13 +15,13 @@ item_NN.dat 디코더.
 
 slot_N → ItemTable category (분석 결과, ITEM_STRUCT.md 참조):
   slot_0..slot_10 = EquipItemInfo (weapon/armor/etc, 376B runtime record)
-  slot_11        = (unused / reserved)
-  slot_12        = BattleUseItemInfo (potion/scroll, 312B)
-  slot_13        = OrbItemInfo (gem/orb, 312B)
+  slot_11        = BattleUseItemInfo (potion, 312B) — 4 byte ext
+  slot_12        = BattleUseItemInfo (scroll, 312B) — 4 byte ext (Round 19)
+  slot_13        = OrbItemInfo (gem/orb, 312B) — 2 byte ext
   slot_14, 15    = MixItemInfo (alchemy material, 308B)
-  slot_16        = MixBookItemInfo (recipe book, 324B)
-  slot_17, 18    = SkillBookItemInfo (skill book, 312B)
-  slot_19        = CashItemInfo (premium item, 312B)
+  slot_16        = MixBookItemInfo (recipe book, 324B) — 12 byte ext (Round 19)
+  slot_17        = SkillBookItemInfo (skill book, 312B) — 4 byte ext (Round 20)
+  slot_18        = CashItemInfo (premium item, 312B) — 2 byte ext (Round 20)
 
 산출:
   apps/hero5-godot/assets/gamedata/items.json
@@ -56,8 +56,8 @@ SLOT_META = {
     14: {"category": "mix",       "kind": "material", "runtime_struct": "MixItemInfo",        "runtime_size": 308},
     15: {"category": "mix",       "kind": "material_2", "runtime_struct": "MixItemInfo",      "runtime_size": 308},
     16: {"category": "mix_book",  "kind": "recipe",   "runtime_struct": "MixBookItemInfo",    "runtime_size": 324},
-    17: {"category": "skill_book", "kind": "skill_book", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
-    18: {"category": "skill_book", "kind": "skill_book_2", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+    17: {"category": "skill_book", "kind": "skill_book",   "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+    18: {"category": "cash",       "kind": "cash_item",    "runtime_struct": "CashItemInfo",      "runtime_size": 312},
 }
 
 
@@ -132,6 +132,58 @@ def parse_battle_use_extra(extra: bytes) -> dict:
 
 def parse_orb_extra(extra: bytes) -> dict:
     """OrbItem (cat 13) 의 추가 2 byte fields (struct +0x134..+0x135)."""
+    if len(extra) < 5:
+        return {}
+    sblen = extra[4]
+    sb_start = 5 + sblen
+    if sb_start + 2 > len(extra):
+        return {}
+    return {
+        'val_134': extra[sb_start + 0],
+        'val_135': extra[sb_start + 1],
+    }
+
+
+def parse_skill_book_extra(extra: bytes) -> dict:
+    """SkillBookItem (slot_17) 의 추가 4 byte fields (struct +0x134..+0x137).
+
+    LoadItemTable @0xa47c0 disasm (Round 20):
+      record_size = 0x138 (312B). jumptable case 16/17 모두 동일 코드 path 공유 —
+      slot_16 (= recipe book) 과 slot_17 (= skill book) 이 동일 layout.
+      common base 후 sb 시작 위치 (5+sblen) 부터 4 byte:
+        +0: u8 → struct +0x134  (skill_class — 2=gunslinger, 3=knight 등)
+        +1: u8 → struct +0x135  (skill_id within class)
+        +2: u8 → struct +0x136  (skill_level — 1, 2, 3, ...)
+        +3: u8 → struct +0x137  (required_level 또는 SP cost)
+      관찰: slot_17 records '연속사격LV1..LV4' → val_136 = 1, 2, 3, 4 정확 매칭.
+      val_137 monotonically increasing (1, 4, 10, 22) — required level 성장.
+    """
+    if len(extra) < 5:
+        return {}
+    sblen = extra[4]
+    sb_start = 5 + sblen
+    if sb_start + 4 > len(extra):
+        return {}
+    return {
+        'val_134': extra[sb_start + 0],
+        'val_135': extra[sb_start + 1],
+        'skill_level': extra[sb_start + 2],
+        'val_137': extra[sb_start + 3],
+    }
+
+
+def parse_cash_extra(extra: bytes) -> dict:
+    """CashItem (slot_18) 의 추가 2 byte fields (struct +0x134..+0x135).
+
+    LoadItemTable @0xa3b38 disasm (Round 20):
+      record_size = 0x138 (312B). jumptable case 18 의 단독 코드 path —
+      hardcoded type 0x12=18 at +0x14. SkillBook(case 16/17) 와 다른 layout.
+      common base 후 sb 시작 위치 (5+sblen) 부터 2 byte:
+        +0: u8 → struct +0x134
+        +1: u8 → struct +0x135
+      관찰: slot_18 records '창고확장(nt)', '프리미엄판매' 등 — premium/cash shop
+      items 의 metadata. 2 byte 의미는 다음 라운드 CashItemInfo::Use 분석으로 식별.
+    """
     if len(extra) < 5:
         return {}
     sblen = extra[4]
@@ -292,8 +344,11 @@ def parse_items(d: bytes, slot_idx: int = -1) -> list[dict]:
             rec.update(parse_orb_extra(extra))
         elif cat == "mix_book":         # cat 16 (slot 16 in items.json)
             rec.update(parse_mix_book_extra(extra))
+        elif cat == "skill_book":       # slot_17 (4 byte ext)
+            rec.update(parse_skill_book_extra(extra))
+        elif cat == "cash":             # slot_18 (2 byte ext)
+            rec.update(parse_cash_extra(extra))
         # 'mix' (cat 14, 15) 는 추가 fields 없음 (record_size 0x134 = base)
-        # 'skill_book' (cat 17, 18) 는 다음 라운드 분석
         out.append(rec)
     return out
 

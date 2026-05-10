@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 19 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 20 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -408,8 +408,8 @@ isolated bins. 후속 작업으로 보류.
 | ApplyBuildupEffect entry table | R9 | jumptable 자동 추출 (`tools/h5_apply_buildup_disasm.py`), 56 entry × 2 함수 |
 | EquipItemInfo struct field | R13~17 | +0x14=subtype, +0x155=class subtype, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S), +0x165..+0x167=refine fields, +0x168..+0x16d=6 socket |
 | ItemBase struct (Formula VM 5번째 인수) | R13 | V[168..182] = SP cost / cooldown / damage growth / divisor 등 |
-| LoadItemTable csv 매핑 | R14/18/19 | 가변 layout (name + sub_record) + u8/u16 mixed sequence. cat 12-16 카테고리별 추가 fields 추출 |
-| items.json named fields | R15/16/19 | subtype / class_mask / class_label / level_limit / item_id / sub_record / val_134..val_167 / triplet_162 / sub_record_hex |
+| LoadItemTable csv 매핑 | R14/18/19/20 | 가변 layout (name + sub_record) + u8/u16 mixed sequence. cat 12-18 모든 카테고리별 추가 fields 추출 (slot_17 SkillBook 4 byte + slot_18 Cash 2 byte) |
+| items.json named fields | R15/16/19/20 | subtype / class_mask / class_label / level_limit / item_id / sub_record / val_134..val_167 / triplet_162 / sub_record_hex / **skill_level** (slot_17) |
 
 **전체 진행 (Phase 2/3 완료 항목)**:
 
@@ -593,6 +593,33 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 20 — 2026-05-10 완료]**
+- ✅ LoadItemTable 함수 끝 영역 (0xa479c..0xa49c0, 548B) 추가 disasm —
+  capstone `skipdata=True` 옵션으로 invalid instruction (literal pool / jumptable
+  data) 통과. 새 도구 `tools/h5_dump_loaditem_tail.py` 추가.
+- ✅ **slot_17 (SkillBookItem) layout 식별** — jumptable case 16/17 모두
+  0xa47c0 으로 분기 (동일 코드 path). record_size=0x138 (312B), 4 byte ext:
+  - `+0x134` = u8 skill_class (2 = Gunslinger 계열, 3 = Knight 계열)
+  - `+0x135` = u8 skill_id (within class, 0..9)
+  - `+0x136` = u8 **skill_level** — '연속사격LV1..LV4' → val=1, 2, 3, 4 정확 매칭 ✓
+  - `+0x137` = u8 required_level (LV1..4 = 1, 4, 10, 22 monotonic)
+- ✅ **slot_18 (CashItem) layout 발견** — jumptable case 18 → **0xa3b38** 별도
+  코드 path (Round 19 가 0xa47c0 으로 추정한 것이 정정됨). hardcoded type 0x12=18
+  at +0x14, 2 byte ext:
+  - `+0x134` = u8 cash_category (val ∈ {0, 1, 2, 3})
+  - `+0x135` = u8 stack/type (val ∈ {0..5, 255} — 255 = passive 추정)
+- ✅ `decode_h5_item.py` 에 새 parsers 추가:
+  - `parse_skill_book_extra` (slot_17, 4 byte): val_134 / val_135 / **skill_level** / val_137
+  - `parse_cash_extra` (slot_18, 2 byte): val_134 / val_135
+- ✅ SLOT_META 정정 — slot_18 = `cash` category (이전: skill_book 잘못).
+- ✅ items.json 검증:
+  - slot_17: 98 records 모두 4 byte fields populated. v134=2 (49 records,
+    Gunslinger 계열) + v134=3 (49 records, Knight 계열). 클래스 별 10 skill ID.
+  - slot_18: 49 records 모두 2 byte fields populated. v135=255 (31 records,
+    passive 추정) + v135∈{0..5} (18 records, active/limited 추정).
+- ✅ ITEM_STRUCT.md "Round 20" 섹션 + `parse_skill_book_extra` /
+  `parse_cash_extra` parser docstring 업데이트.
 
 **[Round 19 — 2026-05-10 완료]**
 - ✅ LoadItemTable 의 cat 12+ jumptable case 별 sb 영역 (struct +0x134..+0x140)

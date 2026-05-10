@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 19 — cat 12+ 카테고리별 추가 fields layout 추출 + decode_h5_item.py 카테고리별 parser 부여 (BattleUseItem 4 byte 정확 검증))
+업데이트: 2026-05-10 (Round 20 — slot_17 SkillBookItem 4 byte ext (skill_level field 식별) + slot_18 CashItem 별도 jumptable case 0xa3b38 발견 + 2 byte ext)
 
 ---
 
-## 30초 요약 (Round 19 시점, 2026-05-10)
+## 30초 요약 (Round 20 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~19 누적 발견 (요약)
+### Round 6~20 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -27,6 +27,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | EquipItemInfo struct | +0x14=item_subtype, +0x155=class subtype code, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S, R16), +0x165..+0x167=refine_count/sub/locked (R17), +0x168..+0x16d=6 socket slots |
 | LoadItemTable csv layout | 모든 카테고리 공통 base (item_id u32 + sub_record + sub_record_data 256B memcpy). EquipItem 만 sb-area (struct +0x150..+0x167) 추가 (R14/18) |
 | cat 12-16 추가 fields | BattleUseItem +0x134..+0x137 (4 byte ✓ csv 매칭), OrbItem +0x134..+0x135, MixBookItem +0x134..+0x140 (R19) |
+| slot_17 SkillBookItem | +0x134=skill_class, +0x135=skill_id, **+0x136=skill_level** (LV1..7 정확 매칭 ✓), +0x137=required_level (R20) |
+| slot_18 CashItem | jumptable case 18 → **0xa3b38 별도 path** (R19 가설 정정), 2 byte ext +0x134/+0x135 (R20) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -36,9 +38,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 19 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **cat 17/18 (SkillBookItem/CashItem) layout 추출**
-  (LoadItemTable 0xa47c0 영역 — dump_caller size 부족으로 미분석).
+- Round 20 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **slot_17 4 byte fields 의미 추가 검증** —
+  v134=2/3 의 정확 의미 (5 클래스 중 2개만 등장 — Gunslinger/Knight 만 cash shop?
+  또는 skill_book "tier" 일 수도). SkillBookItemInfo::Use 또는 game shop UI
+  분석으로 확정 가능.
 - 또는: BattleUseItem +0x134..+0x137 의미 식별 (BattleUseItemInfo::Use 함수 분석).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
@@ -64,6 +68,18 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 20**: LoadItemTable 함수 끝 영역 (0xa479c..0xa49c0) 추가 disasm —
+  `tools/h5_dump_loaditem_tail.py` (`capstone.skipdata=True` 로 literal pool 통과).
+  - **slot_17 (SkillBookItem) 4 byte ext** @ 0xa47c0 (jumptable case 16/17 공유).
+    +0x134=skill_class (2/3), +0x135=skill_id (0..9), **+0x136=skill_level**
+    (V[1..7] 이름과 정확 매칭 ✓), +0x137=required_level (monotonic).
+    검증: '연속사격LV1..LV4' = (2, 0, 1..4, [1, 4, 10, 22]) — 4 byte 모두 일치.
+  - **slot_18 (CashItem) 2 byte ext** @ **0xa3b38** (jumptable case 18 별도 path —
+    Round 19 의 0xa47c0 가설 정정). hardcoded type 0x12=18 at +0x14, 2 byte:
+    +0x134 (cash_category 0..3), +0x135 (stack/type, 255=passive 추정).
+  - `decode_h5_item.py` 에 `parse_skill_book_extra` (4 byte) + `parse_cash_extra`
+    (2 byte) 추가, SLOT_META[18] = "cash" 로 정정 (이전 "skill_book" 잘못).
+  - items.json 검증: slot_17 98 records, slot_18 49 records 모두 추가 fields populated.
 - ✅ **Round 19**: LoadItemTable 의 cat 12+ jumptable case 별 추가 fields disasm:
   - cat 12 (BattleUseItem, 0xa4060): +0x134/0x135/0x136/0x137 (4 byte u8) — csv 에서 매칭 ✓
   - cat 13 (OrbItem, 0xa423c): +0x134/0x135 (2 byte, csv 에 보통 없음)
@@ -192,20 +208,23 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. cat 17/18 (SkillBookItem/CashItem) layout 추출 (자율 가능)
+### 1. slot_17 v134 (skill_class) 의미 정확 식별 (자율 가능)
 
-Round 19 에서 cat 12-16 layout 추출 완료. cat 17/18 (jumptable 0xa47c0) 가
-LoadItemTable 함수 끝 영역 — dump_caller 가 함수 size 까지 안 dump 한 듯.
-다시 disasm 해서 cat 17/18 의 sb 영역 fields 분석 필요. items.json 의 slot_17
-연속사격LV1 의 4 byte 가 어떤 fields 인지 식별.
+Round 20 에서 slot_17 의 4 byte 추출 + skill_level 식별 완료. v134=2 (Gunslinger
+계열 49 records) / v134=3 (Knight 계열 49 records) 만 등장 — 5 클래스 (W/R/G/K/S)
+중 2개만 등장하는 것이 의문. 가설:
+  (a) cash shop 에 Gunslinger/Knight 스킬북만 등록됨 (다른 클래스는 다른 경로 학습)
+  (b) v134 가 class 가 아니라 skill book "tier" 임 (basic/premium)
+  (c) item_17.dat 가 일부 클래스만 포함 (다른 csv 에 나머지 클래스)
+SkillBookItemInfo::Use 또는 c_csv_skill 와 cross-check 로 확정 가능.
 
-### 2. BattleUseItem 의 +0x134..+0x137 의미 식별 (자율 가능)
+### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
 
 Round 19 에서 정확한 csv 매칭 확인. 각 byte 의 의미 (cooldown / heal_amount
 / duration / etc) 식별을 위해 BattleUseItemInfo::Use 또는 사용 함수 disasm 필요.
 items.json 의 슬롯 11 records 의 분포 분석 가능.
 
-### 2. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
+### 3. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
 
 강화/orb 결합 시 어느 struct field 가 변경되는지 추적. socket slot
 (struct +0x168..+0x16d) 의 read/write 패턴 + level_limit / refine_value
@@ -288,6 +307,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | 모든 카테고리 (cat 1-18) common base | ✅ Round 18: item_id + sub_record_hex | `decode_h5_item.py::parse_common_extra` |
 | cat 12-16 카테고리별 추가 fields layout | ✅ Round 19: BattleUseItem 4 byte / OrbItem 2 byte / MixItem 0 / MixBookItem 12 byte | `parse_battle_use_extra` / `parse_orb_extra` / `parse_mix_book_extra` |
 | BattleUseItem (cat 12) +0x134..+0x137 csv 매칭 검증 | ✅ Round 19: slot_11 포션 4 byte 정확 추출 | items.json |
+| slot_17 (SkillBookItem) 4 byte ext + skill_level 식별 | ✅ Round 20: 0xa47c0 disasm, 98 records 모두 v134/v135/skill_level/v137 추출 | `parse_skill_book_extra`, items.json |
+| slot_18 (CashItem) 2 byte ext + 별도 jumptable case | ✅ Round 20: 0xa3b38 (Round 19 가설 정정), 49 records 모두 추출 | `parse_cash_extra`, items.json |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---
@@ -315,6 +336,7 @@ Demo:
 
 | 도구 | 역할 | 추가 |
 |---|---|---|
+| `tools/h5_dump_loaditem_tail.py` | LoadItemTable 의 cat 17/18 영역 (0xa479c..0xa49c0) 추가 disasm — `capstone.skipdata=True` 로 literal pool 통과 (Round 20) | 2026-05-10 |
 | `tools/h5_decode_buildup.py` | c_csv_buildup.json → ABE entry type 매핑 + V slot 라벨 자동 추출 (Round 11) | 2026-05-09 |
 | `tools/h5_find_kr_stat_strings.py` | .so .rodata 에서 한글 stat label 검색 (Round 10) | 2026-05-09 |
 | `tools/h5_find_kr_text_idx.py` | VFS text JSON 의 한글 stat label 위치 추출 (Round 10) | 2026-05-09 |
