@@ -50,11 +50,17 @@ SLOT_META = {
     8:  {"category": "equip", "kind": "accessory_2",  "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
     9:  {"category": "equip", "kind": "shield",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
     10: {"category": "equip", "kind": "spirit",       "runtime_struct": "EquipItemInfo",      "runtime_size": 376},
-    11: {"category": "battle_use", "kind": "potion",  "runtime_struct": "BattleUseItemInfo",  "runtime_size": 312},
-    12: {"category": "battle_use", "kind": "scroll",  "runtime_struct": "BattleUseItemInfo",  "runtime_size": 312},
-    13: {"category": "orb",       "kind": "orb",      "runtime_struct": "OrbItemInfo",        "runtime_size": 312},
-    14: {"category": "mix",       "kind": "material", "runtime_struct": "MixItemInfo",        "runtime_size": 308},
-    15: {"category": "mix",       "kind": "material_2", "runtime_struct": "MixItemInfo",      "runtime_size": 308},
+    # Round 23: SLOT_META 정정 — record 이름 + ext_after_sb 길이 cross-check 로:
+    # slot_11: 포션/미들포션/엘릭서 (포션류, 4 byte ext) ✓ BattleUseItem
+    # slot_12: 뇌제의오브/금강의오브/정령의오브 (오브, 2 byte ext) — 이전 'scroll' 잘못
+    # slot_13: 살코기/황혼버섯/재료2..9 (mix material, 0 ext) — 이전 'orb' 잘못
+    # slot_14: 전갈갑피/은빛귀걸이/광휘의열쇠 (mix material_2, 0 ext)
+    # slot_15: 황혼수프가루/포션/엘릭서 (mix_book recipe, 13 byte ext) — 이전 'material_2' 잘못
+    11: {"category": "battle_use", "kind": "potion",     "runtime_struct": "BattleUseItemInfo",  "runtime_size": 312},
+    12: {"category": "orb",       "kind": "orb",         "runtime_struct": "OrbItemInfo",        "runtime_size": 312},
+    13: {"category": "mix",       "kind": "material",    "runtime_struct": "MixItemInfo",        "runtime_size": 308},
+    14: {"category": "mix",       "kind": "material_2",  "runtime_struct": "MixItemInfo",        "runtime_size": 308},
+    15: {"category": "mix_book",  "kind": "recipe",      "runtime_struct": "MixBookItemInfo",    "runtime_size": 324},
     # Round 21: slot_16 은 실제로 SkillBookItem (Warrior+Rogue 스킬북: 양손베기/돌진/
     # 내려찍기 등). HERO::IfLearnSkill 의 (class_id/2)+16 공식이 cat 16 = Warrior(0)/
     # Rogue(1) 매핑. 기존 "mix_book" 라벨은 잘못.
@@ -110,14 +116,22 @@ def parse_common_extra(extra: bytes) -> dict:
 
 
 def parse_battle_use_extra(extra: bytes) -> dict:
-    """BattleUseItem (cat 12) 의 추가 4 byte fields (struct +0x134..+0x137).
+    """BattleUseItem (slot_11 only) 의 추가 4 byte fields (struct +0x134..+0x137).
 
-    LoadItemTable @0xa4060 disasm:
-      record_size = 0x138 (312B). common base 후 sb 시작 위치 (5+sblen) 부터 4 byte:
-        +0: u8 → struct +0x134
-        +1: u8 → struct +0x135
-        +2: u8 → struct +0x136
-        +3: u8 → struct +0x137
+    HERO::BattleUseItem (0x8fd20, 536B) 분석으로 의미 식별 (Round 23):
+      +0x134 (effect_type) HERO+0x2fe 에 저장 → CalcStatusComputation 분기:
+        91 (0x5b): HP heal — 포션/미들포션/하이포션/훈련용물약/포션ex 등
+        90 (0x5a): SP heal — 퀵포션/미들퀵포션/엘릭서 등
+        87 (0x57): buff (보호의 부적) — HERO[0x19c] = 100 set
+        92 (0x5c): special — 마석
+        19 (0x13): test — 포션9
+         0      : 제련석 (취급 불가능)
+      +0x135 (success_rate %) random(0,99) 와 비교 → blt 면 적용 (모든 records 100)
+      +0x136 (effect_value) HERO+0x300 (u16) 에 저장 → 실제 회복량 또는 buff 강도
+        포션 LV1/2/3: 4/10/20, 퀵포션 LV1/2/3: 40/100/160, 엘릭서: 250
+      +0x137 (duration) HERO+0x302 (s16) 에 저장 → 지속 시간 또는 보조 파라미터
+        HP buff: 50, SP instant: 1, 보호의부적: 120 (turn duration)
+      이후 SetPotionCoolTime(100) — 포션 cooldown 100 frames.
     """
     if len(extra) < 5:
         return {}
@@ -126,10 +140,10 @@ def parse_battle_use_extra(extra: bytes) -> dict:
     if sb_start + 4 > len(extra):
         return {}
     return {
-        'val_134': extra[sb_start + 0],
-        'val_135': extra[sb_start + 1],
-        'val_136': extra[sb_start + 2],
-        'val_137': extra[sb_start + 3],
+        'effect_type': extra[sb_start + 0],   # +0x134 → HERO+0x2fe
+        'success_rate': extra[sb_start + 1],  # +0x135
+        'effect_value': extra[sb_start + 2],  # +0x136 → HERO+0x300 (u16)
+        'duration': extra[sb_start + 3],      # +0x137 → HERO+0x302 (s16)
     }
 
 
@@ -351,11 +365,11 @@ def parse_items(d: bytes, slot_idx: int = -1) -> list[dict]:
         cat = SLOT_META.get(slot_idx, {}).get("category", "")
         if cat == "equip":              # cat 1-11
             rec.update(parse_equip_extra(extra))
-        elif cat == "battle_use":       # cat 11, 12 (slot 11, 12 in items.json)
+        elif cat == "battle_use":       # slot_11 only (potion, 4 byte ext)
             rec.update(parse_battle_use_extra(extra))
-        elif cat == "orb":              # cat 13 (slot 13 in items.json)
+        elif cat == "orb":              # slot_12 (orb, 2 byte ext)
             rec.update(parse_orb_extra(extra))
-        elif cat == "mix_book":         # cat 16 (slot 16 in items.json)
+        elif cat == "mix_book":         # slot_15 (recipe, 13 byte ext)
             rec.update(parse_mix_book_extra(extra))
         elif cat == "skill_book":       # slot_17 (4 byte ext)
             rec.update(parse_skill_book_extra(extra))

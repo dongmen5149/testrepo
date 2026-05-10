@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 22 — Sorcerer (class_id=4) 가 미구현 stub 임이 확정 — c_csv_skill_04 부재 / SORCERER class object 없음 / class_stats unk1..14 placeholder 1 / class_select.gd 에 "(미구현)" 라벨 표시)
+업데이트: 2026-05-10 (Round 23 — HERO::BattleUseItem 분석으로 slot_11 의 4 byte ext 의미 확정 (effect_type/success_rate/effect_value/duration). SLOT_META 전면 정정 — slot_12=orb / slot_13=mix material / slot_15=mix_book recipe 등 record 이름 vs ext 길이 cross-check.)
 
 ---
 
-## 30초 요약 (Round 22 시점, 2026-05-10)
+## 30초 요약 (Round 23 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~22 누적 발견 (요약)
+### Round 6~23 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -30,6 +30,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | slot_16/17 SkillBookItem | **+0x134=class_id**, +0x135=skill_index, **+0x136=skill_level** (LV1..7 정확 매칭 ✓), +0x137=required_level. slot_16 = Warrior(0)+Rogue(1), slot_17 = Gunslinger(2)+Knight(3). HERO::IfLearnSkill 의 (class_id/2)+16 공식 (R21) |
 | slot_18 CashItem | jumptable case 18 → **0xa3b38 별도 path** (R19 가설 정정), 2 byte ext +0x134/+0x135 (R20) |
 | 소서러 (class_id=4) 미구현 stub | c_csv_skill_04 부재 / SORCERER class object 없음 / class_stats unk1..14=1 placeholder. 출시 빌드 = 4 클래스 only. cat 18 매핑은 dead code (R22) |
+| slot_11 BattleUseItem 4 byte 의미 | +0x134=effect_type (91=HP/90=SP/87=buff/92=마석/19=test/0=무효), +0x135=success_rate%, +0x136=effect_value (HERO+0x300 u16), +0x137=duration (HERO+0x302 s16). HERO::BattleUseItem 분석 (R23) |
+| SLOT_META 전면 정정 | slot_12=orb (이전 scroll), slot_13=mix material (이전 orb), slot_15=mix_book recipe (이전 material_2). record 이름 + ext 길이 cross-check 결과 (R23) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -39,12 +41,12 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 22 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **BattleUseItem +0x134..+0x137 의미 식별** —
-  BattleUseItemInfo::Use 함수 또는 HERO::BattleUseItem 함수 분석으로 4 byte 의미
-  (cooldown / heal_amount / duration 등) 확정.
-- 또는: val_15f upper 3 bit (32/64/128) 의 정확 의미 — DropTable 또는 SetItemOption
-  cross-check.
+- Round 23 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **val_15f upper 3 bit (32/64/128) 의 정확 의미** —
+  DropTable 또는 SetItemOption cross-check 로 EquipItem 의 추가 metadata 식별.
+- 또는: RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism 정밀 분석.
+- 또는: slot_15 (mix_book recipe) 의 13 byte ext 구조 RE — 재료2개+결과+성공률
+  으로 추정.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -69,6 +71,19 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 23**: HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블 + SLOT_META 전면 정정:
+  - slot_11 의 +0x134..+0x137 의미 확정:
+    - +0x134 = effect_type → HERO[0x2fe] → CalcStatusComputation 분기
+      (91=HP heal, 90=SP heal, 87=buff 보호, 92=마석, 19=test, 0=무효)
+    - +0x135 = success_rate % → random(0,99) 와 cmp (모두 100 = 100% 성공)
+    - +0x136 = effect_value → HERO[0x300] (u16, 회복량/buff 강도)
+    - +0x137 = duration → HERO[0x302] (s16, 지속 turn)
+    - SetPotionCoolTime(100) — cooldown 100 frame.
+  - SLOT_META 전면 정정 (record 이름 + ext_after_sb 길이 cross-check):
+    - slot_12 = orb (이전 scroll 잘못, 2 byte ext, 뇌제의오브 등)
+    - slot_13 = mix material (이전 orb 잘못, 0 ext, 살코기/재료2..9)
+    - slot_15 = mix_book recipe (이전 material_2 잘못, 13 byte ext, 황혼수프/포션)
+  - parse_battle_use_extra 라벨 정정 (val_134→effect_type 등 의미있는 이름).
 - ✅ **Round 22**: Sorcerer (class_id=4) 미구현 stub 확정 분석:
   - .so 클래스 심볼 검색 → WARRIOR / ROGUE / GUNNER / KNIGHT 4개만 존재.
     SORCERER class object 없음.
@@ -235,13 +250,17 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. BattleUseItem +0x134..+0x137 의미 식별 (자율 가능)
+### 1. val_15f upper 3 bit (32/64/128) 정확 의미 (자율 가능)
 
-Round 19/20 에서 slot_11 (포션) 의 4 byte ext 정확 추출 완료 (val_134=91,
-val_135=100, val_136=4, val_137=50 — 첫 record). 각 byte 의 의미 (cooldown /
-heal_amount / sp_amount / duration / etc) 식별 필요.
-- HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블 — +0x134..+0x137 read pattern.
-- 또는 BattlelUseItemInfo::CopyData / IsEquipIng 의 field access 패턴 분석.
+Round 17 에서 EquipItem (slot_0..10) 의 val_15f 의 lower 5 bit = 클래스 마스크
+확정. upper 3 bit (값 32/64/128) 의 의미는 미확인. 가능 후보: career/tier/cash
+flag. SetItemOption / DropTable 분석으로 cross-check.
+
+### 2. slot_15 mix_book 13 byte ext 구조 RE
+
+Round 23 에서 slot_15 = MixBookItem (recipe) 임이 확인. ext 13 byte 의 구조:
+재료1 (cat, idx, count?) + 재료2 (cat, idx, count?) + 결과 (cat, idx) + 성공률
+으로 추정. MixBookItemInfo::Use 또는 ProcMixItem disasm 으로 확정.
 
 ### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
 

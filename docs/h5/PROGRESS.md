@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 22 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 23 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -594,6 +594,27 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 23 — 2026-05-10 완료]** HERO::BattleUseItem 분석 + SLOT_META 전면 정정
+- ✅ **HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블** → slot_11 의 4 byte fields
+  의미 정확 식별:
+  - `+0x134` = **effect_type** (HERO[0x2fe] 에 저장 → CalcStatusComputation 분기)
+    - 91 (0x5b) = HP heal, 90 (0x5a) = SP heal, 87 (0x57) = buff (보호의 부적)
+    - 92 (0x5c) = 마석, 19 (0x13) = test (포션9), 0 = 제련석 (무효)
+  - `+0x135` = **success_rate %** (random(0,99) 와 비교, 모든 records 100)
+  - `+0x136` = **effect_value** (HERO[0x300] u16: HP/SP 회복량 또는 buff 강도)
+    - 포션 LV1/2/3: 4/10/20, 퀵포션: 40/100/160, 엘릭서: 250
+  - `+0x137` = **duration** (HERO[0x302] s16: HP buff=50, SP instant=1, 보호의부적=120)
+  - 사용 후 SetPotionCoolTime(100) — 100 frame cooldown.
+- ✅ SLOT_META 전면 정정 — record 이름 + ext_after_sb 길이 cross-check 결과
+  다수 mismatch 발견:
+  - slot_12: scroll → **orb** (뇌제의오브/금강의오브, 2 byte ext)
+  - slot_13: orb → **mix material** (살코기/재료2..9, 0 ext)
+  - slot_15: material_2 → **mix_book recipe** (황혼수프/포션, 13 byte ext)
+- ✅ `parse_battle_use_extra` field 라벨 정정 — val_134→effect_type, val_135→
+  success_rate, val_136→effect_value, val_137→duration. 의미있는 이름으로.
+- ✅ dispatch 정리 — slot_12 (orb) 가 이전에 잘못 battle_use parser 받았던 것
+  수정. slot_15 (mix_book) 가 이전 slot_16 위치에서 정정.
 
 **[Round 22 — 2026-05-10 완료]** Sorcerer (class_id=4) 미구현 stub 확정
 - ✅ .so 바이너리 클래스 심볼 검색 — 4 player class object 만 존재:
