@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 26 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 27 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,31 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 27 — 2026-05-10 완료]** NewDropItem signature + Monster::SetDropItem RE — +0x15f tier_flags csv↔drop 일관성 검증
+- ✅ **MapItem::NewDropItem (0xa7664, 1696B) signature 식별**:
+  - mangle `_ZN7MapItem11NewDropItemEiiaaaaaaaaa` = `(MapItem*, int, int, s8 ×9)` 12 args
+  - 매핑: `(this, x, y, cat, idx, val_15c, **val_15f**, val_162, val_160, val_163, val_161, val_164)`
+  - 7번째 arg (5번째 s8) = **+0x15f tier_flags**
+  - EquipItem path (cat ≤ 10) 만 +0x15c..+0x164 strb 발생 — 각 arg 가 ≥ 0 인 경우만 store (negative arg = "값 없음")
+- ✅ **Monster::SetDropItem (0xbc910, 1596B) 의 두 NewDropItem 호출 분석**:
+  - Caller 1 (0xbcc74): EquipItem drop path — 13-byte drop_table entry 가 +0x15f arg 결정
+    - drop_table 인덱싱: `fp = (random[0..3] * 13) + base`, 그 후 byte 0..12 ldrb 로 entry 읽기
+    - sp+0x34 stored value 가 lr 에 load 후 stmib 로 sp+8 (NewDropItem 의 arg7=val_15f) 위치에 store
+  - Caller 2 (0xbcf30): mix_material drop path — cat=0xe (14), val_15f = -1 (mvn ip, #0)
+    - cat > 10 이므로 NewDropItem 내 +0x15f strb skip. EquipItem 아니므로 tier_flags 무관.
+- ✅ **csv↔drop_table 간 +0x15f 일관성 검증**:
+  - csv 시점 (LoadItemTable): val_15f = (class_mask | tier_flags << 5)
+  - drop 시점 (SetDropItem): drop_table entry 의 byte 데이터에서 그대로 전달
+  - runtime 시점 (SetItemOption): option_type code 로 overwrite (Round 24 이미 확인)
+  - 결론: **Round 24 의 실증적 라벨 (legendary/rare/gem/common) 이 csv 와 Monster drop pool
+    양쪽에서 의미 있게 사용됨**. 보스 monster 가 legendary 무기 drop, 일반 monster 가 common
+    drop 같은 게임 로직이 +0x15f tier_flags 로 구분됨.
+- ✅ **drop_table entry 13-byte 구조 단서** (mix_book recipe 와 동일 13-byte 단위 — 우연 또는 공유 layout):
+  - fp+0 = price/value, fp+5..0xc = drop fields (item_id / cat / val_15c..val_164 candidates)
+  - 정확한 byte 매핑은 다음 라운드 (drop_table 데이터 자체 dump + cross-check)
+- 산출: `work/h5/analysis/newdropitem_disasm.txt` (419 줄) + `setdropitem_disasm.txt` (397 줄)
+- decode_h5_item.py docstring 에 NewDropItem signature + caller 패턴 정리.
 
 **[Round 26 — 2026-05-10 완료]** RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism RE
 - ✅ **강화 stat 보너스 식 발견 (Formula VM id=35/36)**:

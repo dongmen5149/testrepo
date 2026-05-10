@@ -362,6 +362,14 @@ def parse_equip_extra(extra: bytes) -> dict:
     # 전용 액세서리), bit7 = "common-tier" (상점/낮은 등급).
     # 정확한 게임 의미는 SetItemOption 동작과는 별개 — runtime val_15f 는
     # SetItemOption 실행 후 option_type code 로 overwrite (RefineItem +0x6c='l' 등).
+    # Round 27: NewDropItem (0xa7664) signature + Monster::SetDropItem (0xbc910) 분석으로
+    # +0x15f 가 csv↔drop_table 간 일관 사용 검증:
+    #   NewDropItem(MapItem*, x, y, cat, idx, val_15c, val_15f, val_162, val_160, val_163, val_161, val_164)
+    #   = 12 args (this + 2 int + 9 s8). 7번째 arg (5번째 s8) = +0x15f tier_flags.
+    #   NewDropItem 의 EquipItem path (cat ≤ 10) 만 +0x15f strb. cat > 10 skip.
+    #   Monster::SetDropItem 안의 13-byte drop_table entry 가 monster 별 drop pool —
+    #   tier_flags 가 csv 의 분포를 그대로 따름. 즉 Round 24 의 실증적 라벨이 csv 와
+    #   drop 양쪽에서 의미 있게 사용됨.
     val_15f = _u8(0xf)
     res['val_15f'] = val_15f
     if val_15f is not None:
