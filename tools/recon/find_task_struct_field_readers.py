@@ -123,54 +123,94 @@ def main():
             ctx_calls.append(i)
     print(f"=== {len(ctx_calls)} context_getter BL sites ===")
 
-    # 2. For each ctx call, look forward up to 12 instr for:
-    #    pattern A: ldr Rx, [pc, #imm] (lit==target_field) + adds Ry, R0, Rx (or similar)
-    #    pattern B: ldr Rx, [pc, #imm] (lit==target_field) + add R?, R0, Rx
+    # 2. For each ctx call, track R0 propagation forward up to 16 instr.
+    #    R0 may be saved to other registers via:
+    #      - adds rZ, r0, #0      (save with flags)
+    #      - mov rZ, r0           (plain move)
+    #      - mov.w rZ, r0
+    #    Then field access via:
+    #      - ldr Rx, [pc, #imm]   (lit==field_offset)
+    #      - adds Ry, <R0-equiv>, Rx   (or commuted)
+    #
+    # Also captures R0 reuse before save (common case: register r0 stays r0 directly).
     field_hits: dict[int, list[dict]] = defaultdict(list)
+
+    SAVE_MNEM = {"adds", "add", "add.w", "mov", "mov.w", "movs"}
+
+    def is_r0_save(parts: list[str], src_regs: set[str]) -> str | None:
+        """Detect 'rZ <- r0-equivalent' patterns. Returns destination reg or None."""
+        if len(parts) < 2:
+            return None
+        dst = parts[0]
+        # mov rZ, rX  (where rX in src_regs)
+        if len(parts) == 2 and parts[1] in src_regs:
+            return dst
+        # adds rZ, rX, #0  (move with flags)
+        if len(parts) == 3 and parts[1] in src_regs and parts[2] == "#0":
+            return dst
+        # adds rZ, #0  (in-place, doesn't help)  -- skip
+        return None
 
     for ctx_idx in ctx_calls:
         ctx_addr = instrs[ctx_idx]["addr"]
-        # Look forward up to 12 instr
+        # Track which registers currently hold the task_ptr value (R0 equivalent set)
+        r0_equiv = {"r0"}
         ldr_target = None  # (idx, rd, lit_value)
-        for fwd in range(1, 13):
+
+        for fwd in range(1, 17):
             j = ctx_idx + fwd
             if j >= len(instrs):
                 break
             ins = instrs[j]
-            # Check for ldr Rx, [pc, #imm]
-            if ins["mnem"] in ("ldr", "ldr.w") and "[pc," in ins["op_str"].replace(" ", ""):
+            mnem = ins["mnem"]
+            op_str = ins["op_str"]
+            parts = [p.strip() for p in op_str.split(",")]
+
+            # Stop if any branch instruction (non-conditional or conditional)
+            if mnem.startswith("b") and mnem not in ("bic", "bics"):
+                break
+
+            # Track R0-propagation: save to other reg
+            if mnem in SAVE_MNEM:
+                saved_dst = is_r0_save(parts, r0_equiv)
+                if saved_dst:
+                    r0_equiv.add(saved_dst)
+
+            # Check for ldr Rx, [pc, #imm]  (loading literal pool)
+            if mnem in ("ldr", "ldr.w") and "[pc," in op_str.replace(" ", ""):
                 try:
-                    imm = int(ins["op_str"].split("#")[1].rstrip("]"), 0)
+                    imm = int(op_str.split("#")[1].rstrip("]"), 0)
                     pc_aligned = (ins["addr"] + 4) & ~3
                     lit_addr = pc_aligned + imm
                     if 0 <= lit_addr + 4 <= len(data):
                         val = struct.unpack("<I", data[lit_addr:lit_addr + 4])[0]
                         if val in fields:
-                            rd = ins["op_str"].split(",")[0].strip()
+                            rd = parts[0]
                             ldr_target = (j, rd, val)
                 except (IndexError, ValueError):
                     pass
-            # Check for adds/add Ry, Rz, Rx (where Rx = ldr_target's reg, OR Rx = R0)
+
+            # Check for adds/add Ry, <R0-equiv>, Rx  (field access)
             if ldr_target is not None:
                 ldr_idx, ldr_rd, lit_val = ldr_target
-                if ins["mnem"] in ("adds", "add", "add.w") and ldr_idx < j:
-                    parts = [p.strip() for p in ins["op_str"].split(",")]
-                    # Look for: adds Ry, R0, Rx OR adds Ry, Rx, R0 OR similar
-                    if len(parts) >= 3:
-                        third = parts[2]
-                        second = parts[1]
-                        # Pattern: adds rY, r0, rX  (where rX = ldr_rd)
-                        if (third == ldr_rd and second == "r0") or \
-                           (second == ldr_rd and third == "r0") or \
-                           (third == "r0" and second == ldr_rd):
-                            field_hits[lit_val].append({
-                                "ctx_addr": ctx_addr,
-                                "ldr_addr": instrs[ldr_idx]["addr"],
-                                "add_addr": ins["addr"],
-                                "post_pattern": instrs[j+1]["mnem"] + " " + instrs[j+1]["op_str"] if j+1 < len(instrs) else "?",
-                            })
-                            ldr_target = None
-                            break
+                if mnem in ("adds", "add", "add.w") and ldr_idx < j and len(parts) >= 3:
+                    second = parts[1]
+                    third = parts[2]
+                    # Match: adds rY, <R0-equiv>, rLDR  OR  adds rY, rLDR, <R0-equiv>
+                    matches = (
+                        (second in r0_equiv and third == ldr_rd) or
+                        (third in r0_equiv and second == ldr_rd)
+                    )
+                    if matches:
+                        field_hits[lit_val].append({
+                            "ctx_addr": ctx_addr,
+                            "ldr_addr": instrs[ldr_idx]["addr"],
+                            "add_addr": ins["addr"],
+                            "r0_via": "direct" if "r0" in (second, third) else f"saved:{second if second in r0_equiv else third}",
+                            "post_pattern": instrs[j+1]["mnem"] + " " + instrs[j+1]["op_str"] if j+1 < len(instrs) else "?",
+                        })
+                        ldr_target = None
+                        break
 
     # 3. Map to enclosing functions
     print(f"\n=== task_struct field reader summary ===\n")
@@ -197,6 +237,7 @@ def main():
             "top_readers": dict(sorted(func_count.items(), key=lambda x: -x[1])[:10]),
             "first_sites": [{"ctx_addr": f"0x{h['ctx_addr']:08x}",
                              "ldr_addr": f"0x{h['ldr_addr']:08x}",
+                             "r0_via": h.get("r0_via", "?"),
                              "add_addr": f"0x{h['add_addr']:08x}",
                              "func": find_func(h["ctx_addr"], addrs, names),
                              "post_pattern": h["post_pattern"]} for h in hits[:8]],
