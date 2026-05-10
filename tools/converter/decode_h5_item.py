@@ -246,6 +246,15 @@ def parse_mix_book_extra(extra: bytes) -> dict:
       - 퀵포션 (cat 0xb 결과): 포션 ×2 + 지혈초 ×1 → 퀵포션 (100%)
       - 재료 정제 (cat 0xd 결과): 엑토플라즘 ×10 → 에테르 (90%)
       - 무기 제작 (cat 0..3 결과): 칼날 ×20 + 가죽 ×6 + 강철 ×3 → 투란기어 (90%)
+
+    Round 28: csv↔struct layout 정정 — ApplySpecialMix (0xa6ed4) 분석으로:
+      - csv 파일 = row-major (per-ingredient: cat, idx, count) — 게임 의미상 사용자 관점 정확
+      - struct memory = col-major: cat[3] @ +0x135..+0x137, idx[3] @ +0x138..+0x13a,
+        count[3] @ +0x13b..+0x13d, result @ +0x13e..+0x13f, success_rate @ +0x140
+      - LoadItemTable @0xa4578 가 csv → struct transpose 처리.
+      - parse_mix_book_extra 의 row-major recipe 객체는 게임 의미상 정확하므로 그대로 유지.
+      - ApplySpecialMix 가 csv slot_15 데이터 직접 사용 + Mission::CheckMissionMix 호출.
+      - ApplyNormalMix (별개 — MixSmithTableInfo* 사용) 는 csv slot_15 와 다른 데이터원.
     """
     if len(extra) < 5:
         return {}

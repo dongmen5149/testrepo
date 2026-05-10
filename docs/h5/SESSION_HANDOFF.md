@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 27 — NewDropItem signature 식별 + Monster::SetDropItem 분석. **+0x15f tier_flags csv↔drop_table 일관 사용 검증** — Round 24 의 실증적 라벨 (legendary/rare/gem/common) 이 게임 drop 로직에서도 의미 있게 사용됨이 확인됨.)
+업데이트: 2026-05-10 (Round 28 — RefineItem 의 4 함수 RE 완료. **ApplyItemCompose / Decompose / NormalMix / SpecialMix mechanism 식별** — gv+0x1444+0x198/+0x1b8 의 결합/분해 prob 테이블, mix_book recipe 의 csv↔struct transpose, MixSmithTableInfo 별개 데이터원.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 28 시작 — RefineItem 의 4 함수 (Decompose/Compose/NormalMix/SpecialMix) 분석"** 으로 진행.
-또는 다른 옵션: drop_table 데이터 dump + 13-byte entry 정확한 byte 매핑 (Round 27 미완) — Monster 별 drop 분포 cross-check. 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-28-후보-우선순위-순) 참조.
+**"Round 29 시작 — drop_table 데이터 dump + 13-byte entry 정확한 byte 매핑"** 으로 진행 (Round 27 미완).
+또는 MixSmithTableInfo 데이터 dump + Round 28 의 NPC blacksmith 데이터원 식별. 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-29-후보-우선순위-순) 참조.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 27 시점, 2026-05-10)
+## 30초 요약 (Round 28 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~27 누적 발견 (요약)
+### Round 6~28 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -52,6 +52,12 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **NewDropItem signature + +0x15f arg position** | `NewDropItem(MapItem*, x, y, cat, idx, val_15c, val_15f, val_162, val_160, val_163, val_161, val_164)` 12 args. 7번째 arg (5번째 s8) = +0x15f tier_flags. cat ≤ 10 (EquipItem) 만 strb 발생 (R27) |
 | **Monster drop_table 13-byte entry** | Monster::SetDropItem 내 drop pool 이 13 byte/entry. 4 가지 drop type (idx ∈ [0..3]) × 13. byte 데이터에서 NewDropItem 의 +0x15f arg 직접 전달 — csv 의 tier_flags 분포를 따름 (R27) |
 | **+0x15f tier_flags csv↔drop 일관성** | csv val_15f = (class_mask | tier_flags<<5). drop_table 이 csv 분포 그대로 전달. 즉 Round 24 의 실증적 라벨 (legendary/rare/gem/common) 이 보스/일반 monster drop 로직에서도 의미 있게 사용됨 (R27) |
+| **ApplyNormalMix (NPC blacksmith)** | MixSmithTableInfo* 별개 데이터 (csv slot_15 와 다름). struct layout col-major: +0x11c (option_grade), +0x11d-1f (cat[3]), +0x120-22 (idx[3]), +0x123-25 (count[3]), +0x126-128 (result_cat/idx/sr) (R28) |
+| **ApplySpecialMix (csv slot_15 recipe)** | GetItemTableInfo 로 csv slot_15 데이터 직접 사용 + Mission::CheckMissionMix. struct +0x135-140 col-major (csv 13 byte transpose 후) (R28) |
+| **mix_book recipe csv↔struct layout** | csv 파일 = row-major (per-ing: cat,idx,count) = 사용자 관점 정확 (R25). struct memory = col-major (cat[3], idx[3], count[3]) — LoadItemTable transpose. 두 해석 모두 정당, parse_mix_book_extra row-major 객체 그대로 유지 (R28) |
+| **ApplyItemCompose (option 결합)** | 두 EquipItem (둘 다 grade ≤ 2 만) → option pair (+0x15f/+0x162, +0x160/+0x163) 결합. gv+0x1444+0x198+fp*6 = 결합 prob 테이블 (R28) |
+| **ApplyItemDecompose (분해)** | option_grade-based prob (gv+0x1444+0x1b8+grade*10, 4 s16 thresholds × 5 grade). 5-way: money refund (default) / mix material / potion / 기타 (R28) |
+| **gv+0x1444 sub-struct prob 테이블 영역** | +0x130-198 강화 prob (R17), +0x198-1b8 결합 prob (R28), +0x1b8-1f4 분해 prob (R28), +0x1f4-208 orb prob (R26) (R28) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -61,10 +67,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 27 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **RefineItem 의 나머지 4 함수 (Decompose / Compose / NormalMix / SpecialMix)**
-  분석 — 분해/합성/일반 mix/특수 mix mechanism. 특히 ApplyNormalMix 는 Round 25 의 mix_book
-  recipe 실행기. 또는 drop_table 데이터 자체 dump + 13-byte entry 정확한 byte 매핑.
+- Round 28 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **drop_table 데이터 dump + 13-byte entry 정확한 byte 매핑** (Round 27 미완) —
+  Monster 별 drop pool 분포 cross-check + +0x15f tier_flags 의 게임 의미 추가 검증.
+- 또는: MixSmithTableInfo 데이터 dump (HERO::GetMixSmithTableInfoPtr 분석으로 출처 식별) —
+  Round 28 의 NPC blacksmith 합성 테이블이 어디서 load 되는지 (VFS, GOT, hardcoded).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -289,21 +296,9 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 28 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 29 후보, 우선순위 순)
 
-### 1. RefineItem 의 나머지 4 함수 (분해/합성/normal mix/special mix) 분석 (자율 가능, 큰 임팩트)
-
-Round 26 에서 ApplyItemRefine (강화) + ApplyOrbCombine (orb 결합) 분석 완료.
-나머지:
-- `RefineItem::ApplyItemDecompose` (1228B, @0xa6330) — 아이템 분해 mechanism
-- `RefineItem::ApplyItemCompose` (936B, @0xa5f88) — 아이템 합성 mechanism
-- `RefineItem::ApplyNormalMix` (896B, @0xa7d04) — slot_15 일반 recipe 실행
-- `RefineItem::ApplySpecialMix` (1020B, @0xa6ed4) — slot_15 special recipe 실행
-
-특히 ApplyNormalMix 는 Round 25 의 mix_book recipe 실행기 — recipe 의 success_rate
-를 어떻게 적용하는지, 결과 아이템 생성 로직을 disasm.
-
-### 2. drop_table 데이터 dump + 13-byte entry 정확한 byte 매핑 (Round 27 미완)
+### 1. drop_table 데이터 dump + 13-byte entry 정확한 byte 매핑 (Round 27 미완, 자율 가능)
 
 Round 27 에서 drop_table 의 13-byte entry 가 NewDropItem 의 +0x15f tier_flags arg
 를 결정함 확인. 정확한 byte ↔ arg 매핑 미완:
@@ -311,6 +306,14 @@ Round 27 에서 drop_table 의 13-byte entry 가 NewDropItem 의 +0x15f tier_fla
 - 13-byte entry 의 각 byte (0..12) 가 NewDropItem 의 어떤 arg 인지 (cat / idx /
   val_15c / val_15f / val_162 / val_160 / val_163 / val_161 / val_164)
 - Monster 별 drop_table 분포 — 보스 monster 가 정말 legendary tier 만 drop 하는지 검증
+
+### 2. MixSmithTableInfo 데이터원 식별 (Round 28 보완)
+
+Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
+HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
+- MixSmithTableInfo 데이터의 위치 (VFS entry, .so .rodata 또는 별도 csv 파일)
+- 데이터 entry 갯수 + 각 entry 의 의미 (NPC blacksmith UI 와 cross-check)
+- struct layout (Round 28: +0x11c..+0x128) 의 csv layout 매핑
 
 ### 3. val_15f bit5/bit6/bit7 의 정확 게임 의미 (Round 24/27 가설 추가 검증)
 
@@ -401,6 +404,11 @@ SDK 필수. 사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets
 | NewDropItem signature 12 args + +0x15f position | ✅ Round 27: `(MapItem*, x, y, cat, idx, val_15c, val_15f, val_162, val_160, val_163, val_161, val_164)` 7번째 arg = tier_flags | `newdropitem_disasm.txt` |
 | Monster drop_table 13-byte entry | ✅ Round 27: SetDropItem 안에 13B/entry × 4 drop type. NewDropItem 의 +0x15f arg 가 entry byte 에서 직접 전달 | `setdropitem_disasm.txt` |
 | +0x15f tier_flags csv↔drop 일관성 | ✅ Round 27: csv val_15f = drop_table 의 byte data 와 동일 의미. Round 24 의 legendary/rare/gem/common 라벨이 게임 drop 로직에서 사용 검증 | 동일 |
+| ApplyNormalMix (NPC blacksmith) mechanism | ✅ Round 28: MixSmithTableInfo* 별개 데이터, struct +0x11c..+0x128 col-major | `applynormalmix_disasm.txt` |
+| ApplySpecialMix (csv slot_15 recipe) mechanism | ✅ Round 28: GetItemTableInfo 로 csv 직접 사용 + Mission 진척, struct +0x134..+0x140 col-major | `applyspecialmix_disasm.txt` |
+| ApplyItemCompose (option 결합) | ✅ Round 28: 두 EquipItem grade≤2 결합 → option set 합성, gv+0x1444+0x198 prob 테이블 | `applyitemcompose_disasm.txt` |
+| ApplyItemDecompose (분해) | ✅ Round 28: option_grade-based 5-way prob, gv+0x1444+0x1b8 테이블, money refund / mix material / potion 분기 | `applyitemdecompose_disasm.txt` |
+| mix_book recipe csv↔struct layout | ✅ Round 28: csv = row-major (사용자 의미), struct memory = col-major (LoadItemTable transpose). parse_mix_book_extra row-major 객체 그대로 유효 | `applyspecialmix_disasm.txt` |
 
 ---
 

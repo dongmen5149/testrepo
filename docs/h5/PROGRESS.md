@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 27 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 28 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,50 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 28 — 2026-05-10 완료]** RefineItem 의 4 함수 RE (Decompose/Compose/NormalMix/SpecialMix) — 강화 외 모든 mechanism 식별
+- ✅ **ApplyNormalMix (0xa7d04, 896B) — 일반 합성 (NPC 대장간)**:
+  - 입력: arg = MixSmithTableInfo index (HERO::GetMixSmithTableInfoPtr 로 lookup)
+  - csv slot_15 와 **별개 데이터** — MixSmithTableInfo 는 NPC blacksmith table.
+  - struct layout: +0x11c (option_grade), +0x11d..+0x11f (cat[3], col-major), +0x120..+0x122 (idx[3]),
+    +0x123..+0x125 (count[3]), +0x126 (result_cat), +0x127 (result_idx), +0x128 (success_rate)
+  - 동작: IsHaveNormalMixMaterial 검사 → 3 재료 차감 → Rand(0,99) vs success_rate →
+    성공 시 result item 생성 + MakeItemOption (cat ≤ 10) + MakeSocket → BagItem::NewBagItem
+  - 19-case jumptable (cat 0..18) 별 적절한 ItemInfo 서브클래스 alloc.
+- ✅ **ApplySpecialMix (0xa6ed4, 1020B) — special 합성 (csv slot_15 mix_book recipe)**:
+  - 입력: arg1 (idx) — slot_15 의 recipe 인덱스
+  - GetItemTableInfo(local_item, cat=15, idx=arg1) 로 csv slot_15 데이터를 stack local 에 load
+  - struct layout (csv ext byte → struct offset, transpose 후): +0x134 (option_grade), +0x135..+0x137
+    (cat[3] col-major), +0x138..+0x13a (idx[3]), +0x13b..+0x13d (count[3]), +0x13e (result_cat),
+    +0x13f (result_idx), +0x140 (success_rate)
+  - 동작 ApplyNormalMix 와 유사 + Mission::CheckMissionMix 호출 (special mix mission 진척)
+- ✅ **csv slot_15 mix_book recipe layout 정정** (Round 25 vs Round 28):
+  - csv 파일의 row-major (per-ingredient: cat,idx,count) 분석 (Round 25) = **사용자 관점에서 정확**
+  - struct memory 의 column-major (cat[3], idx[3], count[3]) — LoadItemTable 가 transpose 처리
+  - parse_mix_book_extra 의 row-major recipe 객체는 **게임 의미상 그대로 유효**, struct memory layout 만 추가 발견
+- ✅ **ApplyItemCompose (0xa5f88, 936B) — 두 아이템 option 결합**:
+  - 입력: 두 bag pos_index (EquipItem 만, cat ≤ 10)
+  - 조건: 둘 다 option_grade ≤ 2 (즉 미강화/약간 강화 상태). 그 이상이면 fail.
+  - 동작: 두 item 의 option pair (+0x15f/+0x162, +0x160/+0x163) 모아서 새 option set 생성.
+    각 option (option_value > 0) 만 stack 에 모음. 최대 4 option (fp count).
+  - gv+0x1444+0x198+fp*6 = 결합 확률 테이블 (6 byte/entry, fp = 모인 option 갯수)
+  - Rand(0, 999) vs prob → 성공/실패 결정
+- ✅ **ApplyItemDecompose (0xa6330, 1228B) — 아이템 분해**:
+  - 입력: bag pos_index + int* out_money
+  - 동작: option_grade (cap 4) 기반 확률 테이블 (gv+0x1444+0x1b8+grade*10) → 4 s16 prob thresholds
+  - Rand(0, 999) vs prob[0..3] → 5-way 결과:
+    - default (가장 높은 prob): money refund (item price / 2 → IncreaseMoney)
+    - case 0: cat 13 (mix material) drop
+    - case 1: cat 11 (potion) drop
+    - case 2/3: 기타 cat
+  - option_grade 가 높을수록 좋은 분해 결과 확률 증가 (강화 인 itme 분해 보상 큼)
+- ✅ **gv+0x1444 sub-struct 의 RefineItem 확률 테이블 영역 식별**:
+  - +0x130..+0x198: ApplyItemRefine 강화 prob table (Round 17 일부 분석)
+  - +0x198..+0x1b8: **ApplyItemCompose 결합 prob (6 byte/entry × fp)** ✅ Round 28
+  - +0x1b8..+0x1f4: **ApplyItemDecompose 분해 prob (10 byte × 5 grade)** ✅ Round 28
+  - +0x1f4..+0x208: ApplyOrbCombine orb prob (Round 26 분석)
+- 산출: `work/h5/analysis/applynormalmix_disasm.txt` (225 줄), `applyspecialmix_disasm.txt` (256 줄),
+  `applyitemcompose_disasm.txt` (235 줄), `applyitemdecompose_disasm.txt` (305 줄) — 1021 줄 총.
 
 **[Round 27 — 2026-05-10 완료]** NewDropItem signature + Monster::SetDropItem RE — +0x15f tier_flags csv↔drop 일관성 검증
 - ✅ **MapItem::NewDropItem (0xa7664, 1696B) signature 식별**:
