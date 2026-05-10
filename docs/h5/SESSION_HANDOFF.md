@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 34 — Monster +0x254..+0x275 데이터원 식별. **/c/csv/enemy_0/1/2.dat (3 files × 166 records)** = Monster::setEnemyData 가 사용. 3 files = 3 difficulty levels. 4 데이터원 (enemy_g/enemy_*/droptable/smith) 으로 Monster 시스템 완전 매핑.)
+업데이트: 2026-05-10 (Round 35 — enemy_*.dat record byte → Monster field 정밀 매핑 + decoder 발행. **3 difficulty × 166 records = 498 monster records 정확 parse**. drop progression 검증: easy=0, normal=17-19, hard=26-27.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 35 시작 — enemy_*.dat record 의 정확한 byte → Monster field 매핑"** 으로 진행 — Monster::setEnemyData 세밀 분석으로 각 stat field 의 record offset 식별.
-또는: V[151]/V[152] element 짝 식별, 한글 비트맵 폰트 매핑.
+**"Round 36 시작 — V[151]/V[152] element 짝 (fire/ice/lightning/dark) 식별"** 으로 진행.
+또는: 한글 비트맵 폰트 매핑 (P5, capstone+lief 로 가능). 다른 미해결 항목.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 34 시점, 2026-05-10)
+## 30초 요약 (Round 35 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~34 누적 발견 (요약)
+### Round 6~35 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -73,6 +73,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **Monster::setEnemyData 발견** | 0xc1a94, 1532B. LoadRes("/c/csv/enemy_%d.dat", arg) → Monster +0x218 (name) ..+0x275 (drop). +0x254..+0x275 의 모든 writer 가 이 함수에 (R34) |
 | **enemy_%d.dat 3 files (difficulty)** | enemy_0/1/2.dat 각 23190B × 166 records. 첫 record size 140B (variable). byte 0x10 만 다름 (0x16/0x2d/0x46) → 3 difficulty levels 추정 (R34) |
 | **Monster 시스템의 4 데이터원 정리** | enemy_g (Map HP/skills), enemy_*.dat (Monster stat+drop), droptable.dat (drop pool), smith_*.dat (craft recipes) — 모든 Monster/Item 시스템 데이터원 식별 (R34) |
+| **enemy_*.dat record byte → Monster field 정밀 매핑** | byte 0..3 → +0x22c..+0x22f (markers), byte 39..66 → +0x254..+0x26c (7 u32 drop thresholds), byte 67..72 → +0x270..+0x275 (drop count/markers), byte 73..79 → +0x276..+0x27c, byte 80+ → BATTLER stats (R35) |
+| **Monster decoder + 498 records JSON** | 3 difficulty × 166 records 정확 parse. Easy drop_count=0, Normal=17-19, Hard=26-27 (게임 difficulty 시스템 검증) (R35) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -82,11 +84,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 34 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **enemy_*.dat record 의 byte → Monster field 정밀 매핑** —
-  Monster::setEnemyData 1532B 의 ldrb/ldrh/strb 시퀀스 추적으로 각 byte/field 의미 식별.
-  특히 +0x254..+0x275 (drop thresholds + markers) 영역의 정확한 byte mapping.
-- 또는: V[151]/V[152] element 짝 (fire/ice/lightning/dark) 식별.
+- Round 35 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **V[151]/V[152] element 짝 (fire/ice/lightning/dark) 식별** —
+  Round 12 의 V[151]/V[152] 둘 다 INT-magic 정정 후 element 의 정확 매핑 미완.
+  formulas_disasm.txt 의 V[134..148] (element bonus) 참조로 식별.
+- 또는: 한글 비트맵 폰트 매핑 (P5).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -311,17 +313,17 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 35 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 36 후보, 우선순위 순)
 
-### 1. enemy_*.dat record 의 byte → Monster field 정밀 매핑 (자율 가능)
+### 1. V[151]/V[152] element 짝 식별 (자율 가능)
 
-Round 34 에서 Monster::setEnemyData 가 enemy_*.dat 사용함 확정. 정밀 매핑:
-- Monster +0x218 (name), +0x22c..+0x22f, +0x234, +0x23c, +0x240, +0x244 (s16), ...,
-  +0x260 (str), +0x264 (str), +0x268 (str), +0x26c (str), +0x270..+0x275 (strb)
-- 각 field 의 record offset 추적 (1532B disasm 분석)
-- decoder 작성: enemy_*.dat → JSON (166 records × Monster fields)
+Round 12 에서 V[151]/V[152] 둘 다 INT-magic stat 으로 정정. 이제 element pair
+(fire/ice/lightning/dark 4 element) 의 정확 매핑 필요:
+- formulas_disasm.txt 에서 V[134..148] (element bonus) 영역 참조 패턴 추적
+- Formula VM id=4..7 (calc_pl) 의 element-specific 식 분석
+- BATTLER 의 element resistance fields (+0x?? area) 와 cross-check
 
-### 2. V[151]/V[152] element 짝 식별 (이전 Round 34 후보)
+### 2. 한글 비트맵 폰트 매핑 (P5, LOW PRIORITY)
 
 Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
 HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:

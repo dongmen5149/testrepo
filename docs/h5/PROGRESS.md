@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 34 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 35 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,36 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 35 — 2026-05-10 완료]** enemy_*.dat record byte → Monster field 정밀 매핑 + decoder 발행
+- ✅ **Monster::setEnemyData 1532B disasm 정밀 추적** — record offset 대 Monster field 매핑 추출:
+  - record byte 0..3 → Monster +0x22c..+0x22f (4 markers, class/idx codes)
+  - byte 4..38 → Monster +0x230..+0x252 (interleaved s16/u8 stats — atk/def/element 등)
+  - byte 39..66 → Monster +0x254..+0x26c (7 u32 = drop chance thresholds, Round 31 매핑)
+  - byte 67..72 → Monster +0x270..+0x275 (drop count/type/markers)
+    - byte 70 = drop_count (Round 27 0xbca68 reader)
+    - byte 72 = drop_count_max (Round 27 0xbca44 reader)
+  - byte 73..79 → Monster +0x276..+0x27c
+  - byte 80..(continues) → Monster +0xf4..+0x114 area (BATTLER stats)
+- ✅ **record format 확정**:
+  - u16 record_size (per-record variable)
+  - u8 name_len + bytes[name_len] (EUC-KR name)
+  - data bytes (after name) — 위 매핑
+- ✅ **decode_h5_monster.py 새 도구 작성** + monster.json 발행:
+  - 3 difficulty × 166 records = **498 monster records 정확 parse**
+  - 각 record: name, drop_thresholds (7 tier), drop_markers, stat_f4 (BATTLER stat)
+- ✅ **Monster progression 게임 의미 검증** (decode 출력):
+  - Easy (enemy_0): drop_count=0 (no drops at all)
+  - Normal (enemy_1): drop_count=17~19 (mid drops)
+  - Hard (enemy_2): drop_count=26~27 (more drops)
+  - **drop chance 가 monster 별 + difficulty 별로 균형 조정** — 게임 difficulty 시스템과 정확 일치
+- ✅ **데이터 흐름 완전 매핑 정리**:
+  ```
+  enemy_*.dat record byte 39..66 → Monster+0x254..+0x26c (drop thresholds)
+  → Monster::SetDropItem 가 Rand(0,0xffff) 와 비교 → drop tier 결정
+  → droptable.dat 의 monster_idx*4+tier entry 의 byte 들로 NewDropItem 호출
+  ```
+- 산출: `tools/converter/decode_h5_monster.py` (새 도구), `apps/hero5-godot/assets/gamedata/monster.json` (498 records)
 
 **[Round 34 — 2026-05-10 완료]** Monster::setEnemyData 발견 + enemy_%d.dat 데이터원 식별 — Monster +0x254..+0x275 source 확정
 - ✅ **lief+capstone skipdata 로 Monster +0x254..+0x275 writers 전수 검색**:
