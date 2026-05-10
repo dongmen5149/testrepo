@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 33 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 34 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,37 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 34 — 2026-05-10 완료]** Monster::setEnemyData 발견 + enemy_%d.dat 데이터원 식별 — Monster +0x254..+0x275 source 확정
+- ✅ **lief+capstone skipdata 로 Monster +0x254..+0x275 writers 전수 검색**:
+  - +0x260 (str): 0xc1dac in Monster::setEnemyData
+  - +0x264 (str): 0xc1dbc in Monster::setEnemyData
+  - +0x268 (str): 0xc1dcc in Monster::setEnemyData
+  - +0x26c (str): 0xc1ddc in Monster::setEnemyData
+  - +0x270/+0x271/+0x272/+0x273/+0x275 (strb): 0xc1dec..0xc1e30 in Monster::setEnemyData
+- ✅ **Monster::setEnemyData (0xc1a94, 1532B) 분석**:
+  - 단일 함수가 Monster 의 모든 핵심 stat + drop fields 설정
+  - LoadRes("/c/csv/enemy_%d.dat", arg) — arg 가 monster_idx (또는 difficulty)
+  - 가변 길이 records (loop 으로 idx 째 record 까지 skip)
+  - Monster +0x218 = name string (10 byte 추정)
+  - Monster +0x22c..+0x22f, +0x234 (s16), +0x23c, +0x240, +0x244 (s16), ..., +0x254..+0x275: 모든 stat
+- ✅ **enemy_%d.dat 데이터원 발견** (VFS):
+  - enemy_0.dat: index=19, hash 0xfed40086, 23190B, 166 records
+  - enemy_1.dat: index=20, hash 0xfee61907, 23190B, 166 records
+  - enemy_2.dat: index=21, hash 0xfef83188, 23190B, 166 records
+  - 각 파일 첫 record size = 140B (variable-size records)
+  - 3 files 의 difference: byte 0x10 가 다름 (0x16/0x2d/0x46) — 추정 difficulty level
+- ✅ **drop 시스템 4 데이터원 최종 정리** (Round 33 의 3 → Round 34 의 4):
+  ```
+  enemy_g.dat (Map 의 enemy table)        → Map+0x1f0 (HP/MP/ATK/DEF/EXP/Gold + skills, 240B/enemy)
+  enemy_0/1/2.dat (Monster stat + drop)   → Monster+0x218..+0x275 (name + stat + drop thresholds + markers)
+  droptable.dat (drop pool)               → ItemTable+0x214 (cat × idx × val_15c..val_164)
+  smith_0/1/2.dat (NPC blacksmith)        → HERO+0x1d00 (288 craft recipes)
+  ```
+- ✅ **3 enemy_*.dat 의 의미 추정**:
+  - 모두 동일 size (23190B), 첫 14 byte 동일 ("히 고블린" 추정 + 0xc10b prefix + 0xf6 strlen)
+  - byte 0x10 (file 첫 record 의 16번째 byte) 만 다름 (0x16/0x2d/0x46) — **3 files = 3 difficulty levels (easy/normal/hard)**
+- 산출: `work/h5/analysis/monster_setenemydata_disasm.txt` (382 줄), `monster_mon_init_disasm.txt` (55 줄)
 
 **[Round 33 — 2026-05-10 완료]** enemy_g.dat 121B record layout 정밀 분석 + Monster struct vs enemy_g 분리 식별
 - ✅ **Map::MapEnemyG_set (0xae394, 820B) 분석**:
