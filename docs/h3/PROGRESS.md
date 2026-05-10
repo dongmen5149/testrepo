@@ -5,13 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-7 — **2U + 2T + 2V 일괄 + task pointer 클러스터 식별 + system-wide GOT slots 발견**. (1) ⭐⭐ **0xb3084 슬롯 direct write 0건 → GVM firmware 외부 주입 확정**. 0x4ad10-0x4af10 클러스터 (11+ 함수) 가 task pointer wrapper API. `ldr r3, [r3]; ldr r3, [r3]` double indirection 패턴 = task_ptr_ptr → task_struct. (2) ⚠ **FUN_0009b252 type-tag reader 가설 약화** — cmp #0x05 단 3 BL (type-5 dispatch 부재). 가장 무거운 arm 은 cmp #0x06 (23 BLs). (3) ⭐ **system-wide GOT slots 발견**: 0x9c70/0x9c71/0x9c84/0xac78 같은 추가 글로벌 슬롯들 (FUN_000818f0 / default_key_handler 등 다수 함수에서 반복 사용). (4) FUN_00026a80 (8.4KB) / FUN_000818f0 (5.4KB) = **GOT slot 액세스 압도적** (각각 150, 225 GOT slot LDR sites). 신규 도구 2개 (`find_global_slot_writers.py`, `analyze_arm_handlers.py`). 상세는 [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-8 (Round 18) — **2W + 2X + 2Y 일괄 + sub-handler 본문 + 9개 GOT slot wide-scan**. (1) ⭐⭐ **FUN_000439a0 = 7-entry JT type dispatcher** (0x38 stride record array, type field 4..10, JT @ binary 내부 0x8370). (2) ⭐⭐ **FUN_00047a14 = state transition function** — task_struct gate 검사 → 다른 task ptr 에 **0xf state write** + ctx flag set + **FUN_00098244 호출** (=다음 차례 onward 포인터). (3) ⭐⭐ **신규 GOT 슬롯 5개 발견 + 9 슬롯 모두 0 direct writes** — 0x16c (147 readers, alternate task_struct ptr, single indirection) / 0x128 (9 readers, state 0xf 가 쓰여지는 곳) / 0x29e / 0x9bb4 / 0x9cbc. **GVM 외부 주입은 시스템 표준 패턴 확정** (단일 0x444 슬롯이 아님). 상세는 [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md).
 
-**이전 세션** (2026-05-10 PM-6): context_getter 정체 확정 (단일 GOT 슬롯 getter, 인자 없음) + type-tag reader 자동 검색 + chain dispatcher 검증. 상세는 [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md).
+**이전 세션** (2026-05-10 PM-7): task pointer 클러스터 + system-wide GOT slots 발견 + arm handler 매핑. 상세는 [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **task pointer 클러스터 + system-wide global slots 식별** (2026-05-10 PM-7). 0xb3084 = task_ptr_ptr (GVM 외부 주입). 0x4ad10-0x4af10 클러스터 = task wrapper API. 추가 글로벌 슬롯 4개 (0x9c70/9c71/9c84/ac78) widespread 사용. type-tag reader 가설 부분 약화 — 풀이 미완. 다음 진척은 **(1) FUN_000439a0 / FUN_00047a14 핵심 sub-handler 본문, (2) 추가 GOT slot 의미 파악, (3) task_struct 필드 매핑, (4) SMAF/번역 사용자 블로커**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **sub-handler 2개 본문 + 9 GOT 슬롯 wide-scan** (2026-05-10 PM-8 / Round 18). FUN_000439a0 = 7-entry JT dispatcher (type 4..10, 0x38 stride record). FUN_00047a14 = state transition (0xf write + FUN_00098244 호출). **9 슬롯 모두 0 direct writes → GVM 외부 주입은 시스템 표준 확정**. 0x16c slot = 147 readers (0x444 와 동급의 핵심 task ptr). 다음 진척은 **(1) FUN_00098244 본문 = state-0xf consumer, (2) JT @ 0x8370 디코드, (3) FUN_00043508 (slot 0x16c top reader), (4) SMAF/번역 사용자 블로커**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -39,9 +39,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md)** ⭐⭐⭐ — **최신 PM-7** (task pointer 클러스터 + system-wide GOT slots + arm handler 매핑)
-5. (참고) [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter 정정)
-6. (참고) [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol)
+4. **[ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 18 / PM-8** (sub-handler 본문 + 9 GOT slot wide-scan + onward 포인터)
+5. (참고) [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터)
+6. (참고) [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -49,22 +49,23 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 17 = `a3e35715` 까지 완료)
-- 위 PM-7 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 18 까지 완료 — sub-handler 본문 + 9 슬롯 wide-scan)
+- 위 PM-8 / Round 18 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 18 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 19 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐ 2W | FUN_000439a0 본문 (popular sub-handler, 188B, 37 callers) | `python tools/recon/disasm_subsystem_func.py 0x439a0 0x44280 --label popular_helper_439a0` | `work/h3/popular_helper_439a0_disasm.json` — type-6 처리 핵심 식별 |
-| ⭐⭐ 2X | FUN_00047a14 본문 (또 다른 sub-handler) | next entry 확인 후 `disasm_subsystem_func.py 0x47a14 <end>` | `work/h3/sub_handler_47a14_disasm.json` |
-| ⭐ 2Y | 추가 GOT slot writer 추적 | `python tools/recon/find_global_slot_writers.py --slot-offset 0x9c70` (그리고 0x9c71, 0x9c84, 0xac78 각각) | 4개 슬롯의 writer 분포 → GVM 외부 주입 vs 게임 내부 셋팅 구분 |
-| 2Z | task_struct 필드 매핑 | 0x4ad34 클러스터 함수 본문 일괄 분석 | task_struct (offset → 의미) 매핑 |
+| ⭐⭐ 2AA | **FUN_00098244 본문** (FUN_00047a14 의 downstream — state-0xf 처리) | `disasm_subsystem_func.py 0x98244 <end>` (다음 push prologue 위치 확인 후 end) | `work/h3/state0xf_consumer_98244_disasm.json` — state 0xf transition 의 의미 |
+| ⭐⭐ 2AB | **FUN_000439a0 의 JT @ 0x8370 디코드** (7 entries, type 4..10) | 신규 helper 또는 capstone walk + `[0x8370..0x838c]` 범위 dword 읽어 7 target 식별 | type 4..10 sub-handler 7개 함수 식별 |
+| ⭐ 2AC | **FUN_00043508 본문** (1176B, slot 0x16c reader 3x — secondary task processor) | `disasm_subsystem_func.py 0x43508 0x439a0` | `work/h3/task_processor_43508_disasm.json` |
+| 2AD | slot 0x16c task_struct 필드 매핑 | 0x16c reader top-5 함수의 `[r3+offset]` 패턴 통계 | task_struct layout (offset → 필드 의미) |
+| 2AE | slot 0x128 readers 검증 (state 0xf consumer) | FUN_000982f0 / 000983e8 본문 분석 | state 0xf 의 의미 풀이 |
 
-**3) Round 18 작업 후 마무리**:
+**3) Round 19 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 18 항목 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 19 항목 추가
 - Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -106,10 +107,14 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 | ~~2T~~ | ~~FUN_0009b252 86 arm 별 BL target 매핑~~ | ✅ 2026-05-10 PM-7. cmp #0x06 (23 BLs) + cmp #0x00 (23) + cmp #0x01 (16) 위주. **cmp #0x05 단 3 BL** → type-5 reader 가설 약화. 핵심 sub-handler: **FUN_000439a0** (popular helper, 7x for cmp#6) + **FUN_00047a14** (6x for cmp#6) |
 | ~~2U~~ | ~~0xB3084 글로벌 슬롯 의미 추적~~ | ✅ 2026-05-10 PM-7. **direct write 0건 → GVM firmware 외부 주입 확정**. 0x4ad10-0x4af10 클러스터 (11+ 함수) = task pointer wrapper API. `ldr r3, [r3]; ldr r3, [r3]` double indirection (task_ptr_ptr → task_struct). 추가 GOT slots 발견 (0x9c70/9c71/9c84/ac78) |
 | ~~2V~~ | ~~FUN_00026a80 / FUN_000818f0 본문~~ | ✅ 2026-05-10 PM-7. FUN_00026a80 (8.4KB): GOT slot LDR 150 사이트 (subsystem router 가설 유지). FUN_000818f0 (5.4KB): GOT slot LDR 225 사이트 + task_ptr_getter 212x — entity update loop 확정 |
-| ⭐ **2W** | **FUN_000439a0 (188B, 37 callers) 본문 분석** | 가장 인기 sub-handler. 다양한 dispatcher 의 cmp arm 에서 재사용. type-6 처리 핵심. 자동 가능 |
-| ⭐ **2X** | **FUN_00047a14 본문 분석** | 또 다른 핵심 sub-handler. cmp arms 다수에서 등장 (cmp#6 6x, #1 3x, #7 2x). 자동 가능 |
-| 2Y | 추가 GOT slots (0x9c70/9c71/9c84/ac78) writer 추적 | `find_global_slot_writers.py --slot-offset 0x9c70` 등으로 검색. GVM 외부 주입 vs 게임 내부 셋팅 구분. 자동 가능 |
-| 2Z | task_struct 필드 매핑 | 0x4ad34 클러스터 함수 본문 분석으로 task_struct 의 (offset → 의미) 매핑. 자동 가능 |
+| ~~2W~~ | ~~FUN_000439a0 (188B, 37 callers) 본문 분석~~ | ✅ 2026-05-10 PM-8 (Round 18). **7-entry JT type dispatcher** (type 4..10, JT @ 0x8370). 0x38 stride record array, type field@(record+0x1d), 가드 helper 2개 (FUN_00044260/00044280). 결과: `work/h3/popular_helper_439a0_disasm.json` |
+| ~~2X~~ | ~~FUN_00047a14 본문 분석~~ | ✅ 2026-05-10 PM-8. **state transition function** — task_struct[0] gate 검사 → 0xf state write 다른 task ptr 로 + ctx flag set + FUN_00098244 호출. 결과: `work/h3/sub_handler_47a14_disasm.json` |
+| ~~2Y~~ | ~~추가 GOT slots writer 추적~~ | ✅ 2026-05-10 PM-8. **9 슬롯 모두 0 direct writes 확정** (0x9c70/9c71/9c84/ac78 + 신규 0x128/0x16c/0x29e/0x9bb4/0x9cbc). GVM 외부 주입은 시스템 표준 패턴. **0x16c slot = 147 readers, alternate task_struct ptr (single indirection) — 0x444 와 동급의 핵심 task ptr** |
+| ⭐ **2AA** | **FUN_00098244 본문** (FUN_00047a14 downstream — state 0xf consumer) | state 0xf transition 의 의미 풀이. param1/param2 받아 처리. 자동 가능 |
+| ⭐ **2AB** | **JT @ 0x8370 7 entries 디코드** | type 4..10 의 7 target 함수 식별 → FUN_000439a0 dispatcher 풀이 완성. 자동 가능 |
+| 2AC | FUN_00043508 (1176B, slot 0x16c reader 3x) 본문 | secondary task processor 정체. 자동 가능 |
+| 2AD | slot 0x16c task_struct 필드 매핑 | 0x16c reader top-5 함수 본문에서 `[r3+offset]` 패턴 통계 → task_struct layout |
+| 2AE | slot 0x128 readers 검증 (state 0xf consumer) | FUN_000982f0 / 000983e8 본문. 자동 가능 |
 | 2H | _mp NPC 좌표 외부 init/spawn 함수 추적 | 2D 의존 (main loop 발견 시 부속). 단독으로는 자동 검출 불가 |
 | 2 | SMAF→OGG 변환 (smaf-converter JAR + TiMidity++ + ffmpeg) | §4.5 — BGM/SFX 활성. 게임 체감 큼. **2026-05-10 도구 갱신**: `tools/converter/convert_h3_smaf.py` 실행으로 헤더 분석 + 변환 가이드 생성. JAR 다운받아 `bgm0_mf` 시범 변환 권장 |
 | 3 | 대사 LLM 번역 실행 (~$0.66) | §4.6 — "마지막에" 결정. _scn entries 추출 완료, 호출만 남음 |
@@ -125,7 +130,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — **⭐⭐⭐ 최신 PM-7** (task pointer 클러스터 + system-wide GOT slots + arm handler 매핑)
+- [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — **⭐⭐⭐ 최신 Round 18 / PM-8** (sub-handler 본문 + 9 GOT slot wide-scan + onward 포인터)
+- [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터 + system-wide GOT slots + arm handler 매핑)
 - [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter 정정 + FUN_0009b252 reader 후보 + chain dispatcher)
 - [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol 11 type tags + epilogue gadget 발견 + FUN_00056bf8 codec)
 - [ghidra-pic-stubs-2026-05-10.md](ghidra-pic-stubs-2026-05-10.md) — PM-3 (402 stub ranking + 큐 caller 매핑 + top 15 카테고리)
@@ -185,6 +191,12 @@ python tools/recon/find_global_slot_writers.py                                  
 python tools/recon/analyze_arm_handlers.py 0x9b252 0x9c280 --label type_tag_reader       # ⭐ 2T arm-by-arm BL 매핑 (PM-7)
 python tools/recon/disasm_subsystem_func.py 0x26a80 0x294a2 --label subsystem_router     # 2V (PM-7)
 python tools/recon/disasm_subsystem_func.py 0x818f0 0x82df4 --label entity_update_loop   # 2V (PM-7)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x439a0 0x43a5c --label popular_helper_439a0   # ⭐ 2W (Round 18)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x47a14 0x47a74  --label sub_handler_47a14     # ⭐ 2X (Round 18)
+PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x16c                         # ⭐ 2Y (Round 18) — 0x16c = 핵심 alternate task ptr
+PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x128                         # 2Y — state 0xf 가 쓰여지는 곳
+PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x9c70                        # 2Y — widespread (PM-7 후속)
+# 다른 슬롯 (0x9c71 / 0x9c84 / 0xac78 / 0x29e / 0x9bb4 / 0x9cbc) 도 동일 명령
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
