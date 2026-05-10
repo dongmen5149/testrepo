@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 21 — HERO::IfLearnSkill 분석으로 SkillBook 4 byte fields 의미 확정 (class_id/skill_index/skill_level/required_level) + slot_16 도 SkillBook 임이 확인 (Warrior+Rogue))
+업데이트: 2026-05-10 (Round 22 — Sorcerer (class_id=4) 가 미구현 stub 임이 확정 — c_csv_skill_04 부재 / SORCERER class object 없음 / class_stats unk1..14 placeholder 1 / class_select.gd 에 "(미구현)" 라벨 표시)
 
 ---
 
-## 30초 요약 (Round 21 시점, 2026-05-10)
+## 30초 요약 (Round 22 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~21 누적 발견 (요약)
+### Round 6~22 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -29,6 +29,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | cat 12-16 추가 fields | BattleUseItem +0x134..+0x137 (4 byte ✓ csv 매칭), OrbItem +0x134..+0x135, MixBookItem +0x134..+0x140 (R19) |
 | slot_16/17 SkillBookItem | **+0x134=class_id**, +0x135=skill_index, **+0x136=skill_level** (LV1..7 정확 매칭 ✓), +0x137=required_level. slot_16 = Warrior(0)+Rogue(1), slot_17 = Gunslinger(2)+Knight(3). HERO::IfLearnSkill 의 (class_id/2)+16 공식 (R21) |
 | slot_18 CashItem | jumptable case 18 → **0xa3b38 별도 path** (R19 가설 정정), 2 byte ext +0x134/+0x135 (R20) |
+| 소서러 (class_id=4) 미구현 stub | c_csv_skill_04 부재 / SORCERER class object 없음 / class_stats unk1..14=1 placeholder. 출시 빌드 = 4 클래스 only. cat 18 매핑은 dead code (R22) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -38,11 +39,12 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 21 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **Sorcerer (class_id=4) skill book 위치 식별** —
-  IfLearnSkill 공식이 cat 18 (CashItem) 으로 매핑하지만 slot_18 records 모두
-  cash shop items. Sorcerer 별도 학습 메커니즘 분석 필요.
-- 또는: BattleUseItem +0x134..+0x137 의미 식별 (BattleUseItemInfo::Use 함수 분석).
+- Round 22 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **BattleUseItem +0x134..+0x137 의미 식별** —
+  BattleUseItemInfo::Use 함수 또는 HERO::BattleUseItem 함수 분석으로 4 byte 의미
+  (cooldown / heal_amount / duration 등) 확정.
+- 또는: val_15f upper 3 bit (32/64/128) 의 정확 의미 — DropTable 또는 SetItemOption
+  cross-check.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -67,6 +69,18 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 22**: Sorcerer (class_id=4) 미구현 stub 확정 분석:
+  - .so 클래스 심볼 검색 → WARRIOR / ROGUE / GUNNER / KNIGHT 4개만 존재.
+    SORCERER class object 없음.
+  - skill csv 검색 → c_csv_skill_00..03 (player) + c_csv_skill_05 (16 monster
+    skills: 암흑탄/지옥소환/얼음폭풍/완전면역 등). c_csv_skill_04 완전 부재.
+  - class_stats.json 검토 → 소서러 unk1..unk14 모두 1 (다른 클래스 6/12/18/24).
+    unk0=320 (다른 1000) — 명백한 placeholder.
+  - IfLearnSkill 의 (class/2)+16=18 매핑은 dead code path. slot_18 (CashItem)
+    의 records 49 모두 class_id=4 없음.
+  - class_select.gd UI 정정 — "소서러" → "소서러 (미구현)" 라벨 표시.
+  결론: 영웅서기5 출시 빌드 = 4 클래스 only. 소서러는 향후 확장 클래스로
+  계획됐으나 미구현 채로 출시.
 - ✅ **Round 21**: HERO::IfLearnSkill (0x95d08, 316B) 디스어셈블 → SkillBook
   +0x134..+0x137 의 의미 정확 식별:
   - +0x134 = **class_id** (HERO 클래스 0..4)
@@ -221,19 +235,13 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. Sorcerer (class_id=4) skill book 위치 식별 (자율 가능)
+### 1. BattleUseItem +0x134..+0x137 의미 식별 (자율 가능)
 
-Round 21 에서 IfLearnSkill 공식 `(class_id/2)+16` 확인 완료. 이론적으로
-Sorcerer (class 4) 는 cat 18 (slot_18) 에 매핑되지만 slot_18 records 모두
-cash shop items (창고확장/오브원석 등) 이고 class_id=4 records 없음.
-
-가설:
-- (a) Sorcerer 는 출시 후 추가 클래스 → 별도 메커니즘으로 학습
-- (b) 공식이 5클래스 전부 지원 안 함 (4 클래스 limited)
-- (c) Sorcerer 의 모든 스킬은 자동 학습 (skill book 불필요)
-
-확인 방법: SORCERER 클래스 객체의 LearnSkill / SetUseSkill 함수 disasm,
-또는 c_csv_skill 의 5번째 클래스 데이터 분석.
+Round 19/20 에서 slot_11 (포션) 의 4 byte ext 정확 추출 완료 (val_134=91,
+val_135=100, val_136=4, val_137=50 — 첫 record). 각 byte 의 의미 (cooldown /
+heal_amount / sp_amount / duration / etc) 식별 필요.
+- HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블 — +0x134..+0x137 read pattern.
+- 또는 BattlelUseItemInfo::CopyData / IsEquipIng 의 field access 패턴 분석.
 
 ### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
 
@@ -328,6 +336,7 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | slot_18 (CashItem) 2 byte ext + 별도 jumptable case | ✅ Round 20: 0xa3b38 (Round 19 가설 정정), 49 records 모두 추출 | `parse_cash_extra`, items.json |
 | SkillBook 4 byte fields 의미 (class_id/skill_index/skill_level/required_level) | ✅ Round 21: HERO::IfLearnSkill 분석, (class_id/2)+16 공식 확인 | `iflearnskill_disasm.txt` |
 | slot_16 = SkillBook 정정 (이전 mix_book 잘못) | ✅ Round 21: Warrior 48 + Rogue 47, 양손베기/돌진/내려찍기 등 | items.json, SLOT_META |
+| 소서러 (class_id=4) 미구현 stub 확정 | ✅ Round 22: skill_04.dat 부재 + SORCERER class 없음 + class_stats unk1..14=1 | class_stats.json, c_csv_skill_*, class_select.gd "(미구현)" |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---

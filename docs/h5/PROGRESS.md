@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 21 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 22 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -594,6 +594,23 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 22 — 2026-05-10 완료]** Sorcerer (class_id=4) 미구현 stub 확정
+- ✅ .so 바이너리 클래스 심볼 검색 — 4 player class object 만 존재:
+  WARRIOR / ROGUE / GUNNER / KNIGHT. **SORCERER class 없음**.
+- ✅ skill csv 검색 — `c_csv_skill_00..03` (4 player class, 각 43 skills) +
+  `c_csv_skill_05` (16 monster/boss skills: 암흑탄/지옥소환/얼음폭풍/완전면역 등).
+  **`c_csv_skill_04` 완전 부재**.
+- ✅ class_stats.json 검토 — 소서러 entry STR/DEX/CON/INT 는 있지만 unk1..unk14
+  모두 1 (다른 4 클래스는 6/12/18/24 등 다양). unk0=320 (다른 1000) — 명백한
+  placeholder.
+- ✅ IfLearnSkill 의 `(class/2)+16=18` 매핑은 dead code path — Sorcerer 가
+  실제로 호출돼도 cat 18 (CashItem) 에 학습 가능한 records 없음.
+- ✅ class_select.gd UI 정정 — "소서러" → "소서러 (미구현)" 라벨 표시.
+  사용자가 선택 시 빈 스킬셋으로 시작하는 문제 인지 가능.
+- 결론: **영웅서기5 출시 빌드는 4 클래스 only**. 소서러는 향후 확장 클래스로
+  계획됐으나 미구현 채로 출시. cat 18 매핑은 placeholder, slot_18 은 실제로
+  cash shop 용도로 재활용.
 
 **[Round 21 — 2026-05-10 완료]**
 - ✅ **HERO::IfLearnSkill (0x95d08, 316B) 디스어셈블** → SkillBook +0x134..+0x137

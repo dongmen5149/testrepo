@@ -2,6 +2,10 @@
 ##
 ## class.dat 의 5 클래스 (워리어/로그/건슬링어/나이트/소서러) + 능력치
 ## 표시. 선택하면 GameState.class_id 설정 후 demo 씬으로.
+##
+## Round 22 (2026-05-10): 소서러 (class_id=4) 는 미구현 stub —
+## c_csv_skill_04 부재, .so 에 SORCERER class object 없음, class_stats unk1..14
+## 모두 placeholder 1. UI 라벨에 "(미구현)" 표시.
 extends Control
 
 @onready var info_label: Label = $Info
@@ -36,8 +40,12 @@ func _load_classes() -> void:
 
 func _populate() -> void:
 	class_list.clear()
-	for cls in _classes:
-		class_list.add_item(cls.get("name", "?"))
+	for i in range(_classes.size()):
+		var cls = _classes[i]
+		var label: String = cls.get("name", "?")
+		if i == 4:
+			label += " (미구현)"
+		class_list.add_item(label)
 
 
 func _on_select(idx: int) -> void:

@@ -343,10 +343,18 @@ category = (class_id / 2) + 16   ; signed div, round-toward-zero
 | 3 | Knight (나이트) | 17 | slot_17 |
 | 4 | Sorcerer (소서러) | 18 | slot_18 (CashItem!) |
 
-**Sorcerer (class_id=4) 가 slot_18 (CashItem) 으로 매핑되는 이유는 미확인** —
-가설: (a) 출시 후 추가 클래스라 별도 path 처리, (b) Sorcerer 는 다른 메커니즘으로
-스킬 학습. slot_18 records 49개 모두 cash shop items (창고확장/오브원석 등) 이며
-class_id=4 records 없음.
+**Sorcerer (class_id=4) 는 미구현 stub** (Round 22 확정):
+- `c/csv/skill_04.dat` 파일 **부재** (skill_00..03 + skill_05 만 존재; skill_05 는
+  몬스터/보스 스킬 — 암흑탄/지옥소환/얼음폭풍/완전면역 등 16개)
+- .so 바이너리에 **SORCERER class object 없음** (WARRIOR/ROGUE/GUNNER/KNIGHT 만)
+- `class_stats.json` 의 소서러 entry: STR/DEX/CON/INT 는 정의됐으나
+  **unk1..unk14 모두 placeholder 값 1** (다른 클래스는 6/12/18/24 등 secondary stat
+  growth 계수). unk0=320 (다른 1000)
+- IfLearnSkill 의 `(class/2)+16=18` 매핑은 placeholder — 실제로 호출되어도
+  slot_18 (CashItem) records 에 class_id=4 없음 → 학습 불가
+- `skills_for_class(4)` (game_data.gd) 가 빈 배열 반환 → 게임 동작 시 무스킬
+
+class_select.gd UI 에 "소서러 (미구현)" 라벨 표시 (Round 22).
 
 #### 검증 통계 (Round 21)
 
