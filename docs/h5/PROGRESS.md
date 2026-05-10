@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 37 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 38 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,45 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 38 — 2026-05-10 완료]** mission_list.dat record byte → MissionInfo 정밀 매핑 + decoder 발행
+- ✅ **LoadMissionTable 460B 정밀 disasm 추적**:
+  - r8 (file pos) 변화 추적: 2 (record 시작) → +3 (strlen byte 후) → +strlen (name 후) → +37 (record 끝)
+  - 각 byte → MissionInfo struct offset 매핑 식별
+- ✅ **File record format 확정** (105 missions × variable size):
+  - u16 record_size (body size, header 제외)
+  - u8 strlen + name (EUC-KR)
+  - u8 mission_type → MissionInfo +4
+  - u8 sub_type → MissionInfo +5
+  - u8 target_count → MissionInfo +6
+  - 5 × 6 byte sub-conditions (각 6 byte: slot u8 + flag u8 + value u32):
+    - byte +0 → MissionInfo +7..+0xb (5 slot indices)
+    - byte +1 → MissionInfo +0xc..+0x10 (5 sub-flags)
+    - bytes +2..+5 (u32) → MissionInfo +0x14, +0x18, +0x1c, +0x20, +0x24 (5 target values)
+  - u8 final_flag → MissionInfo +0x28
+- ✅ **decode_h5_mission.py 새 도구 작성** + mission.json 발행:
+  - 105 missions 모두 정확 parse (named=105/105)
+  - **mission_type 분포 (Round 37 의 13 Check* 함수와 매핑)**:
+    - type 0 (20 missions): general (sub_type 0/1/2)
+    - type 1 (5 missions): single condition
+    - type 2 (22 missions): collection (slot=5..8 = helmet/boots/accessory/accessory_2)
+    - type 3 (47 missions): rank/achievement (가장 많은 타입, sub_type 0..10)
+    - type 4 (5 missions): quest complete (sub_type 0..4)
+    - type 5 (5 missions): mix/craft
+    - type 255 (1 mission): metadata header
+- ✅ **Sub-condition 의미 해석 (mission.json 분석)**:
+  - slot=255 (sentinel): empty slot
+  - slot=5..8: equipment cat (helmet/boots/accessory/accessory_2 — Round 27 droptable cat 와 일치)
+  - sub_flag: condition type modifier (e.g., target item idx, stat threshold 등)
+  - target_value: u32 — count, gold amount, level, exp threshold 등
+- ✅ **Mission 시스템 호출 흐름 (Round 26/27/28 + Round 37/38 종합)**:
+  ```
+  플레이어 행동 (강화/orb결합/mix/quest 완료/...)
+  → 해당 함수 끝에서 Mission::Check<Type>() 호출
+  → mission_list[idx] 의 mission_type / sub_conditions 비교
+  → 조건 만족 시 Mission::CompleteMission(idx) → reward 지급
+  ```
+- 산출: `tools/converter/decode_h5_mission.py` (새 도구), `apps/hero5-godot/assets/gamedata/mission.json`
 
 **[Round 37 — 2026-05-10 완료]** Mission 시스템 데이터원 식별 + 13+ Check* 함수 매핑 (P5 폰트는 LOW PRIORITY — 시스템 폰트 우회 중 영향 없음)
 - ✅ **P5 한글 폰트 간단 검토** (게임 동작 영향 없음, 시스템 폰트 Noto Sans CJK KR 우회 중):
