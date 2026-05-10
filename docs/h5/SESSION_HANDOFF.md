@@ -6,10 +6,41 @@
 
 ---
 
+## 🎯 전체 진척 평가 (Round 39 시점)
+
+영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
+
+| 영역 | 추정 % | 비고 |
+|---|---:|---|
+| **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
+| **데이터 구조 RE** (csv/dat layout) | ~85% | items/monster/drop/smith/mission/quest 모두 식별. 남은 것: quest_*.dat 정밀 decoder, save 파일 |
+| **.so 함수 분석** (game logic) | ~50-60% | Formula VM, Item, Refine/Drop/Mix mechanism 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
+| **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
+
+**종합**:
+- **"원본 분석"** (RE+자산) 으로 보면 **65-75%**
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
+
+## 📦 미완 큰 덩어리 (우선순위 순)
+
+1. **UI 시스템 전반** — 인벤토리/강화/합성/스킬학습/NPC blacksmith/Quest/Mission/Shop 패널.
+   데이터는 다 있지만 Godot UI 미구현.
+2. **Monster AI** — `Monster::Ai_Action` (2136B), `Ai_onAction` (704B), `Ai_setActionList` 등 미분석
+3. **Battle 실행 흐름** — Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
+4. **Save 파일 포맷** — DES 키만 알려져 있고 record layout 미분석
+5. **Quest/Mission tracking** — 데이터 식별만, 실제 진척 추적 시스템 Godot 미구현
+
+---
+
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 40 시작 — quest_*.dat record 정밀 매핑 + decoder"** 으로 진행 (LoadQuestData 1188B 정밀 분석 + 151 quests JSON 발행).
-또는: scn opcode 실제 game scene 동작 검증, 한글 폰트 매핑.
+**선택 옵션 — 다음 중 하나로 시작**:
+- **(분석 track) Round 40 = quest_*.dat record 정밀 매핑 + decoder** (1 라운드, 151 quests JSON)
+- **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — UI 다음으로 큰 덩어리)
+- **(분석 track) Save 파일 포맷 분석** (DES 키 0EP@KO91 + save record layout)
+- **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
+- **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면 진입)
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
@@ -319,17 +350,57 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 40 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 40 후보)
 
-### 1. quest_*.dat record byte → Quest 368B struct 정밀 매핑 + decoder (자율 가능)
+> 진척 평가 (위 § 전체 진척 평가) 기준으로, 가장 큰 임팩트 순.
+
+### A. (분석 track) quest_*.dat record 정밀 매핑 + decoder — 1 라운드 (자율 가능)
 
 Round 39 에서 Quest 시스템 데이터원 (3 files × 151 quests) 식별. 정밀 매핑:
 - LoadQuestData 1188B 의 ByteToInt16/strb 시퀀스 추적
 - 151 quests × variable-size record (avg 148B) → struct 368B 매핑
 - decoder 작성: quest_*.dat → JSON (이름/타입/조건/보상/NPC 대화 등)
 - 3 files 동일성 검증 (save slot 가설 cross-check)
+- **임팩트**: Mission 시스템과 함께 quest progression 완료, 데이터 RE 거의 마무리
 
-### 2. 한글 비트맵 폰트 매핑 (LOW PRIORITY)
+### B. (분석 track) Monster AI 시스템 분석 — 2~3 라운드 (자율 가능, 큰 임팩트)
+
+미분석 큰 덩어리. UI 다음 가장 영향 큰 미완 영역:
+- `Monster::Ai_Action` (0xc1068, 2136B) — main AI dispatch
+- `Monster::Ai_onAction` (0xbee48, 704B) — action execution
+- `Monster::Ai_setActionList` (0xbd82c, 100B) — action list builder
+- `Monster::Ai_doActionList` (0xbf108, 184B) — action runner
+- `Monster::Ai_Initialize` / `Ai_SetPtr`
+- `Monster::IsTriggerEqual` (0xbd278, 1320B) — AI trigger check
+- **임팩트**: 실제 Monster 행동 로직 파악 → Godot battle 구현에 직결
+
+### C. (분석 track) Save 파일 포맷 분석 — 1~2 라운드
+
+DES 키 (`0EP@KO91`) + S1[3][10]=2 변종 알려져 있음. Save 파일 record layout 미분석.
+- `HERO::SaveAll` (0x8f924) 분석 — 어떤 fields 가 어떤 순서로 직렬화?
+- `HERO::LoadAll` 또는 LoadHeroData 분석 — 역직렬화 layout
+- save 파일 디코드 + 구조 식별
+- **임팩트**: 실제 게임 저장 데이터 호환 → save migration 가능
+
+### D. (구현 track) Godot UI 구현 시작 — 5~10 라운드 큰 작업
+
+데이터는 다 있지만 미구현. 가장 부족한 영역.
+- 인벤토리 패널 (items.json 1360 items 활용, equip/sort/filter)
+- 강화 UI (Round 17/26 ApplyItemRefine mechanism)
+- 합성 UI (mix_book + smith_table)
+- NPC 대화 / cutscene UI (scn opcode 77/77)
+- Quest / Mission 패널
+- **임팩트**: "리메이크 출시 가능" % 가장 크게 끌어올릴 작업
+
+### E. (검증 track) scn opcode 실제 game scene 동작 검증 — 2~3 라운드
+
+Round 22-39 에서 데이터/함수 분석은 했지만 실제 Godot 에서 scn 실행 검증 부족.
+- Title → ClassSelect → Demo 외 다른 화면 (Battle, Inventory, Quest 등) 진입 테스트
+- scn 258 body 의 opcode dispatch 가 정확히 동작하는지 확인
+- 잘못된 opcode 매핑 발견 + 정정
+- **임팩트**: 기존 분석의 정확성 검증
+
+### F. 한글 비트맵 폰트 매핑 (LOW PRIORITY)
 
 Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
 HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
@@ -337,31 +408,16 @@ HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
 - 데이터 entry 갯수 + 각 entry 의 의미 (NPC blacksmith UI 와 cross-check)
 - struct layout (Round 28: +0x11c..+0x128) 의 csv layout 매핑
 
-### 3. val_15f bit5/bit6/bit7 의 정확 게임 의미 (Round 24/27 가설 추가 검증)
-
-Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common) 부여.
-정확 의미 확정을 위해:
-- `MapItem::NewDropItem` (0xa7884) 의 11 args 중 +0x15f 에 사용되는 arg 추적
-- `DropTable::GetRandomItem` 또는 `ShopInventory::GetRandomItem` 의 호출 패턴
-- bit5/bit6/bit7 각각의 의미 (현재 가설: obtainable/gem-accessory/common-tier)
-
-### 3. Save 데이터 구조 검증 (선택, V[112..116] 라벨 재검증)
-
-save 파일 dump → HERO+0x278..0x282 (V[111..116] 영역) 의 game-saved 값을
-game UI 표시값과 매칭. Round 11 의 secondary stat 라벨 (근접명중/장거리명중/
-회피/방패방어/크리티컬) 재검증 가능.
-
-### 4. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
-
-`_midas_funcFntInvalidate` 디스어셈블로 581 glyph index ↔ Unicode 매핑 추출.
-시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 —
-폰트 충실도 향상 only.
-
-### 5. P6: Android APK 실 빌드 검증 (USER TASK — 자동화 불가)
+### G. P6: Android APK 실 빌드 검증 (USER TASK — 자동화 불가)
 
 Godot Editor 4.2+ + Build Template + Export Templates (~1GB) + JDK 17 + Android
 SDK 필수. 사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets.cfg.template`
-참조.
+참조. 모든 Godot UI/AI/battle 구현 완료 후 진행.
+
+### 추가 자율 작업 (LOW PRIORITY)
+
+- **val_15f bit5/bit6/bit7 정확 의미** (Round 24/27 가설 검증) — items.json 분포로 라벨 부여, NewDropItem args 추가 검증 필요
+- **save 파일 dump → V[112..116] 라벨 재검증** (Round 11 의 secondary stat) — Save 포맷 분석 (옵션 C) 후
 
 ---
 

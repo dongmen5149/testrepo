@@ -3,15 +3,41 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 39 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-11 (Round 39 종료) — **Phase 2 (자산/RE) + Phase 3 (Godot 골격) 핵심 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
-전투/퀘스트/상점/세이브/HUD/이펙트 통합.
+전투/퀘스트/상점/세이브/HUD/이펙트 골격 통합.
+
+## 🎯 전체 진척 평가 (Round 39 시점)
+
+| 영역 | 추정 % | 비고 |
+|---|---:|---|
+| 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
+| 데이터 구조 RE | ~85% | items/monster/drop/smith/mission/quest 식별. 남은 것: quest decoder, save 파일 |
+| .so 함수 분석 | ~50-60% | Item/Refine/Drop/Mix 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
+| Android 실 빌드 | 0% | 사용자 GUI 작업 |
+
+**종합**: 원본 분석 ≈ 65-75%, 리메이크 출시 ≈ 25-35%.
+
+## 📦 미완 큰 덩어리 (우선순위 순)
+
+1. UI 시스템 전반 (인벤토리/강화/합성/Quest/Mission 패널)
+2. Monster AI (Ai_Action 2136B 등 미분석)
+3. Battle 실행 흐름 (Formula VM 통합 후 turn order/animation/VFX)
+4. Save 파일 포맷 (DES 키만 알려져 있음)
+5. Quest/Mission tracking (데이터 식별만, Godot 미구현)
 
 ## 🚀 이어서 진행 한 마디로 시작할 때
 
 > **다음 세션 시작 시 이 한 줄만 보면 됨**
 
-다음 단계는 **Round 26 — RefineItem::ApplyItemRefine 강화 stat 보너스 식별**.
+다음 라운드는 5 track 중 선택:
+- **(분석 A) Round 40 = quest_*.dat decoder** — 1 라운드, 데이터 RE 마무리
+- **(분석 B) Monster AI 시스템** — 2~3 라운드, 큰 임팩트
+- **(분석 C) Save 파일 포맷** — 1~2 라운드
+- **(구현 D) Godot UI 구현** — 5~10 라운드, 출시 % 가장 크게 끌어올림
+- **(검증 E) scn opcode 실 동작 검증** — 2~3 라운드
+
 한 페이지 인수인계는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md). 우선순위 후보
 전체는 [§ 6.2.1 다음 우선순위](#621-다음-우선순위-남은-작업) 참조.
 
