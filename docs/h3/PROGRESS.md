@@ -5,13 +5,15 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-10 (Round 20) — **2AF + 2AG + 2AH + ObjectA cluster + FUN_000439a0 size 정정**. (1) ⭐⭐⭐ **FUN_000439a0 size 188B → 2372B 대폭 정정** (pic_stubs 가 frequent BL 로 함수 boundary 오인). 49 cmp arms (cmp #6 10x dominant), 4 GOT 슬롯 (0x9bb4/9cbc/9cfe/9cc0 — FUN_00043508 와 동일). (2) ⭐⭐⭐ **ObjectA C++ class 구현 모듈 식별** — slot 0x44c readers 8 함수 클러스터 (0x97fa8~0x98474, ~1.2KB) = resource manager 객체 모듈. (3) ⭐⭐ **FUN_00098364 = ObjectA destructor** (vtable[0x1c/0x2c/0xc] cleanup + first field clear). (4) ⭐⭐ **FUN_00099a9c = resource acquisition** (vtable[0x7c/0x54/0x58/0x80] + POSIX 에러 -12 ENOMEM / -18 EXDEV). (5) **acquire-use-release 라이프사이클 패턴 확정**: FUN_00099a9c → FUN_00098244 → FUN_00098364. JT 7 targets = 모두 FUN_000439a0 내부 sub-paths 확정. 상세는 [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-11 (Round 21) — **2AK + 2AL + 2AM + ObjectB master interface 발견 + ObjectA lifecycle 종합 + FUN_000439a0 49 arms BL 매핑**. (1) ⭐⭐⭐ **ObjectB (slot 0x18) = 게임의 마스터 GVM 인터페이스 객체** — 860 reader sites in 240 unique functions. sound (FUN_0003d5d0 31x), page UI (FUN_00060ab4/0x5d214), SCN dispatcher (FUN_0008e89e), NPC 등 **모든 핵심 dispatcher 가 사용**. ObjectA (8-함수) 의 100x scale. (2) ⭐⭐⭐ **ObjectA cluster 6 함수 본문 종합** → acquire-use-release 라이프사이클 완성. **FUN_00097ffc/0x980cc** = cmp #9 full lifecycle (cleanup→init→acquire→use). FUN_0004ad34 = task_ptr ↔ ObjectA bridge. (3) ⭐⭐ **FUN_000439a0 49 arms BL 매핑** — orchestrator 패턴 확정 (Round 18 의 FUN_00047a14 state transition 을 cmp #0 arm 에서 직접 호출). (4) **ObjectB vtable 9 methods 매핑** (offset 0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80). 신규 veneer 0xa42a4 (bx r4). 상세는 [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md).
+
+**이전 세션** (2026-05-10 PM-10 / Round 20) — **2AF + 2AG + 2AH + ObjectA cluster + FUN_000439a0 size 정정**. (1) ⭐⭐⭐ **FUN_000439a0 size 188B → 2372B 대폭 정정** (pic_stubs 가 frequent BL 로 함수 boundary 오인). 49 cmp arms (cmp #6 10x dominant), 4 GOT 슬롯 (0x9bb4/9cbc/9cfe/9cc0 — FUN_00043508 와 동일). (2) ⭐⭐⭐ **ObjectA C++ class 구현 모듈 식별** — slot 0x44c readers 8 함수 클러스터 (0x97fa8~0x98474, ~1.2KB) = resource manager 객체 모듈. (3) ⭐⭐ **FUN_00098364 = ObjectA destructor** (vtable[0x1c/0x2c/0xc] cleanup + first field clear). (4) ⭐⭐ **FUN_00099a9c = resource acquisition** (vtable[0x7c/0x54/0x58/0x80] + POSIX 에러 -12 ENOMEM / -18 EXDEV). (5) **acquire-use-release 라이프사이클 패턴 확정**: FUN_00099a9c → FUN_00098244 → FUN_00098364. JT 7 targets = 모두 FUN_000439a0 내부 sub-paths 확정. 상세는 [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md).
 
 **이전 세션** (2026-05-10 PM-9 / Round 19): vtable invoker + JT 디코드 + secondary task processor. 상세는 [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **ObjectA C++ class 모듈 + acquire-use-release 라이프사이클 패턴** (2026-05-10 PM-10 / Round 20). FUN_000439a0 = 2372B mega-dispatcher (49 cmp arms, 188B 가 아니었음). ObjectA cluster = 0x97fa8~0x98474 의 8 함수 (resource manager). FUN_00098364 destructor + FUN_00099a9c acquisition + FUN_00098244 vtable invoker = 라이프사이클. POSIX 에러 코드 (-12/-18) 사용 = Symbian/RTOS-like API. **task_ptr_wrapper (0x4ad10 cluster) 와 ObjectA 연결고리 발견** (FUN_0004ad34 가 양쪽 모두 사용). 다음 진척은 **(1) ObjectA cluster 6 함수 본문 → vtable layout, (2) ObjectB slot 식별 (FUN_00099a9c), (3) FUN_000439a0 49 arms BL 매핑, (4) FUN_0004ad34 본문 → 두 시스템 연결고리, (5) SMAF/번역**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **ObjectB master GVM interface (860 readers/240 functions) + ObjectA lifecycle 종합** (2026-05-10 PM-11 / Round 21). 게임의 모든 핵심 dispatcher 가 ObjectB (slot 0x18) 사용 — sound, page UI, SCN, NPC. ObjectA (slot 0x44c, 8-함수 모듈) = sub-system resource manager. FUN_00097ffc = full lifecycle entry (cleanup→init→acquire→use). ObjectB vtable 9 methods 매핑 (offset 0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80). FUN_000439a0 49 arms BL 매핑으로 orchestrator 패턴 확정 (FUN_00047a14 state transition 직접 호출). 신규 veneer 0xa42a4 (bx r4). 다음 진척은 **(1) ObjectB top reader 본문 (FUN_0003d5d0 sound 등) → vtable 추가 매핑, (2) veneer 영역 전체 스캔, (3) ObjectA destructor vtable 완전 매핑, (4) FUN_000439a0 sub-handler 0x464d0/0x467a8/0x467d0, (5) SMAF/번역**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -39,9 +41,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 20 / PM-10** (ObjectA cluster + lifecycle pattern + FUN_000439a0 size 정정)
-5. (참고) [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — Round 19 / PM-9 (vtable invoker + JT 디코드)
-6. (참고) [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — Round 18 / PM-8 (sub-handler 본문 + 9 GOT slot)
+4. **[ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 21 / PM-11** (ObjectB master interface 860 readers + ObjectA lifecycle 종합 + FUN_000439a0 BL 매핑)
+5. (참고) [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md) — Round 20 / PM-10 (ObjectA cluster + lifecycle)
+6. (참고) [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — Round 19 / PM-9 (vtable invoker)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -49,23 +51,23 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 20 까지 완료 — ObjectA cluster + lifecycle + FUN_000439a0 size 정정)
-- 위 PM-10 / Round 20 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 21 까지 완료 — ObjectB master interface + ObjectA lifecycle 종합)
+- 위 PM-11 / Round 21 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 21 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 22 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐ 2AK | **ObjectA cluster 미분석 6 함수 본문** (FUN_00097fa8/97ffc/980cc/98180/983b8 + FUN_0004ad34) | `disasm_subsystem_func.py` 6번 호출 | ObjectA vtable layout 종합 (vmethod offset → 의미) |
-| ⭐⭐ 2AL | **FUN_00099a9c 의 ObjectB slot offset 식별** | 본문 PC-rel literal 1번째 값을 GOT base 와 비교 | ObjectB slot 정체 — 새 cluster 발견 가능 |
-| ⭐ 2AM | **FUN_000439a0 full (2372B) cmp #6 10x arm BL 매핑** | `analyze_arm_handlers.py 0x439a0 0x442e4` | 49 arms 의 sub-handler 매핑 |
-| 2AN | FUN_00043508 / FUN_000439a0 sibling 검색 | 4 슬롯 (0x9bb4/9cbc/9cfe/9cc0) readers 합집합 | 같은 record array 처리하는 모든 함수 |
-| 2AO | FUN_0004ad34 본문 (ObjectA + task_ptr 연결고리) | `disasm_subsystem_func.py 0x4ad34 0x4ad7c` | task_ptr_wrapper API 와 ObjectA 의 관계 |
+| ⭐⭐ 2AP | **ObjectB top reader 함수 본문** (FUN_0003d5d0 sound 31x / FUN_00060ab4 page2 17x / FUN_0005d214 page0 17x) | `disasm_subsystem_func.py` 3개 | ObjectB vtable 사용 패턴 → 추가 vmethod 매핑 |
+| ⭐⭐ 2AQ | **veneer 영역 전체 스캔** (0xa42a0 ~ 0xa42ce) | inline disasm | 모든 veneer (bx rN) 식별 — 0xa42a0(bx r3) + 0xa42a4(bx r4) 외 |
+| ⭐ 2AR | **FUN_00098364 destructor vtable methods 완전 매핑** | 본문 + JT 추적 | ObjectA 와 ObjectB 의 vtable 분리 확정 |
+| 2AS | FUN_000439a0 sub-handler 0x464d0 / 0x467a8 / 0x467d0 본문 | `disasm_subsystem_func.py` | 추가 sub-handler 정체 |
+| 2AT | FUN_000980cc (cmp #9 sister) 본문 비교 | 본문 분석 | FUN_00097ffc 와의 차이점 — partial vs full lifecycle |
 
-**3) Round 21 작업 후 마무리**:
+**3) Round 22 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 21 항목 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 22 항목 추가
 - Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -116,11 +118,16 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 | ~~2AF~~ | ~~FUN_00098364 / FUN_00099a9c 본문~~ | ✅ 2026-05-10 PM-10 (Round 20). FUN_00098364 = **ObjectA destructor** (84B, vtable[0x1c/0x2c/0xc] cleanup + first field clear). FUN_00099a9c = **resource acquisition** (144B, vtable[0x7c/0x54/0x58/0x80] + POSIX 에러 -12 ENOMEM/-18 EXDEV) |
 | ~~2AG~~ | ~~slot 0x44c (ObjectA) 다른 readers 매핑~~ | ✅ 2026-05-10 PM-10. 8 readers 클러스터 (FUN_00097fa8/97ffc/980cc/98180/98244/98364/983b8 + 외부 wrapper FUN_0004ad34) = **ObjectA C++ class 구현 모듈** (0x97fa8~0x98474, ~1.2KB). FUN_0004ad34 가 task_ptr cluster 와 ObjectA 의 연결고리 |
 | ~~2AH~~ | ~~0x4425a / 0x44214 enclosing function~~ | ✅ 2026-05-10 PM-10. **FUN_000439a0 size 정정** (188B → **2372B**). 0x43a5c~0x442e4 전 범위 (push prologue 0건) 가 함수 내부 sub-paths. 49 cmp arms (cmp #6 10x dominant). pic_stubs 의 188B 는 frequent BL boundary 오인 |
-| ⭐ **2AK** | **ObjectA cluster 미분석 6 함수 본문** | ObjectA vtable layout 종합 (vmethod offset → 의미) |
-| ⭐ **2AL** | **FUN_00099a9c ObjectB slot offset 식별** | ObjectB slot 정체 — 새 cluster 가능 |
-| 2AM | FUN_000439a0 full (2372B) cmp #6 10x arm BL 매핑 | 49 arms sub-handler 매핑 |
+| ~~2AK~~ | ~~ObjectA cluster 미분석 6 함수 본문~~ | ✅ 2026-05-10 PM-11 (Round 21). 6 함수 모두 분석 — FUN_00097ffc/0x980cc = **cmp #9 full lifecycle dispatcher** (cleanup→init→acquire→use). FUN_00097fa8 = byte setter+notify. FUN_0004ad34 = **task_ptr ↔ ObjectA bridge** (ObjectB.method0/method17 + ObjectA helpers). ObjectA + ObjectB lifecycle 패턴 종합 완성 |
+| ~~2AL~~ | ~~FUN_00099a9c ObjectB slot offset 식별~~ | ✅ 2026-05-10 PM-11. **ObjectB slot = GOT+0x18** = Round 19 의 "vtable task_struct" 와 동일. ⭐⭐⭐ **ObjectB = 게임 마스터 GVM 인터페이스 (860 readers / 240 funcs)** — sound, page UI, SCN, NPC 모두 사용 |
+| ~~2AM~~ | ~~FUN_000439a0 full (2372B) 49 arms BL 매핑~~ | ✅ 2026-05-10 PM-11. **orchestrator 패턴 확정** — Round 18 의 FUN_00047a14 (state transition) + FUN_00047a74 + 0x464d0/0x467a8/0x467d0 등 17 unique BL targets. cmp #0 arm 에서 multiple state-transition helpers 직접 호출 |
+| ⭐ **2AP** | **ObjectB top reader 함수 본문** (FUN_0003d5d0/0x60ab4/0x5d214) | ObjectB vtable 사용 패턴 → 추가 vmethod 매핑 |
+| ⭐ **2AQ** | **veneer 영역 전체 스캔** (0xa42a0~0xa42ce) | 모든 veneer (bx rN) 식별 |
+| 2AR | FUN_00098364 destructor vtable 완전 매핑 | ObjectA/B vtable 분리 확정 |
+| 2AS | FUN_000439a0 sub-handler 0x464d0 / 0x467a8 / 0x467d0 | 추가 sub-handler 정체 |
+| 2AT | FUN_000980cc (cmp #9 sister) 본문 비교 | partial vs full lifecycle |
 | 2AN | FUN_00043508 / FUN_000439a0 sibling 검색 | 같은 record array 처리하는 모든 함수 |
-| 2AO | FUN_0004ad34 본문 (ObjectA + task_ptr 연결고리) | task_ptr_wrapper API 와 ObjectA 의 관계 |
+| 2AO | FUN_0004ad34 본문 | ✅ 2026-05-10 PM-11 (Round 21 안에서 같이 처리됨) |
 | 2AI | slot 0x18 (vtable task_struct, double indir) readers | task_struct method consumers 매핑 |
 | 2AJ | FUN_00043508 cmp #9 5 arms BL 매핑 | type-9 처리자 식별 |
 | 2AD | slot 0x16c task_struct 필드 매핑 | 0x16c reader top-5 함수 본문에서 `[r3+offset]` 패턴 통계 → task_struct layout |
@@ -140,8 +147,9 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md) — **⭐⭐⭐ 최신 Round 20 / PM-10** (ObjectA cluster + lifecycle + FUN_000439a0 size 정정 + 8 readers)
-- [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — Round 19 / PM-9 (vtable invoker + JT 디코드 + secondary task processor)
+- [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md) — **⭐⭐⭐ 최신 Round 21 / PM-11** (ObjectB master interface 860 readers + ObjectA lifecycle 종합 + FUN_000439a0 BL 매핑)
+- [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md) — Round 20 / PM-10 (ObjectA cluster + lifecycle + FUN_000439a0 size 정정)
+- [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — Round 19 / PM-9 (vtable invoker + JT 디코드)
 - [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — Round 18 / PM-8 (sub-handler 본문 + 9 GOT slot wide-scan)
 - [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터 + system-wide GOT slots + arm handler 매핑)
 - [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter 정정 + FUN_0009b252 reader 후보 + chain dispatcher)
@@ -216,6 +224,14 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x98364 0x983
 PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x99a9c 0x99b2c --label setup_helper_99a9c     # ⭐ 2AF (Round 20) — resource acquisition
 PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x44c                          # ⭐ 2AG (Round 20) — ObjectA cluster 발견
 PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x439a0 0x442e4 --label popular_helper_439a0_full # ⭐ 2AH (Round 20) — FUN_000439a0 정정 size 2372B
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x97fa8 0x97ffc --label objA_method_97fa8         # 2AK (Round 21)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x97ffc 0x980cc --label objA_method_97ffc         # 2AK (Round 21) — cmp #9 full lifecycle
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x980cc 0x98180 --label objA_method_980cc         # 2AK (Round 21) — cmp #9 sister
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x98180 0x98244 --label objA_method_98180         # 2AK (Round 21)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x983b8 0x98474 --label objA_method_983b8         # 2AK (Round 21)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x4ad34 0x4ad94 --label task_objA_link_4ad34     # 2AK (Round 21) — task_ptr↔ObjectA bridge
+PYTHONIOENCODING=utf-8 python tools/recon/analyze_arm_handlers.py 0x439a0 0x442e4 --label popular_helper_439a0_full  # ⭐ 2AM (Round 21) — 49 arms BL
+# 2AL: ObjectB slot 식별은 inline (FUN_00099a9c PC-rel literal 추적). 결과: slot 0x18 = 860 readers / 240 funcs (정밀 패턴 매칭, find_global_slot_writers 의 movw 결과는 false-positive)
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
