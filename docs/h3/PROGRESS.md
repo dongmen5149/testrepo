@@ -5,7 +5,9 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-13 (Round 23) — **2AU + 2AV + 2AW + 결정적 분류 정정 (GOT slot vs task_struct field) + sound id 11 식별**. (1) ⭐⭐⭐ **"GOT slot" vs "task_struct field" 분류 정정** — Round 18~22 의 다수 "GOT slot offset" (0x9bb4/0x9cbc/0x9e28/0xa220/0xa254/0x9c70 등 11개+) 이 실제로는 **`ctx + offset`** (context_getter 결과의 task_struct 필드). **진짜 GOT 슬롯은 8개로 축소** (0x18/0x16c/0x29e/0x128/0x444/0x44c/0xd00 + helper). (2) ⭐⭐⭐ **task_struct 가 거대 평면 구조체 (≥44KB)** — 모든 subsystem state 가 단일 struct 안. (3) ⭐⭐ **sound_trigger convention 정정** (r1=sound_id) — 21 호출 중 11 immediate ID 식별 (0x83/84/87/8d/8e/9b/a4/a5, 페어 패턴). (4) ⭐ **ObjectB 재정의** — 단순한 task_ptr_holder + context_getter source. 240 reader 함수 모두 task_struct 필드 접근. 상세는 [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-14 (Round 24) — **2AZ + 2BA + 2BB + task_struct field layout 매핑 + context_getter 본문 정정 + dynamic sound id 식별**. (1) ⭐⭐⭐ **task_struct 의 dominant field = 0x9bb4** (69 verified sites, 15 funcs, **FUN_0009b252 = PM-6 type-tag reader 가 46x 사용**). 신규 도구 `find_task_struct_field_readers.py` 로 15 known fields × 350K instr 검색. 신규 record array dispatchers 발견 (FUN_00044a38/0x482c8/0x41c6e). (2) ⭐⭐⭐ **context_getter (FUN_0004ad10) = single deref 만** (`r0 = *(slot 0x444)` = task_ptr). caller 가 추가 deref. ObjectB (slot 0x18) 는 독립 객체. (3) ⭐⭐ **dynamic sound id source** = stack frame 변수 (`[r7-0x18]`). (4) ⭐ **0x9c70 = byte array base** (task_struct 안의 array, 단순 field 아님). 상세는 [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md).
+
+**이전 세션** (2026-05-10 PM-13 / Round 23) — GOT slot vs task_struct field 분류 정정 + sound id 11 식별. 상세는 [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md). (1) ⭐⭐⭐ **"GOT slot" vs "task_struct field" 분류 정정** — Round 18~22 의 다수 "GOT slot offset" (0x9bb4/0x9cbc/0x9e28/0xa220/0xa254/0x9c70 등 11개+) 이 실제로는 **`ctx + offset`** (context_getter 결과의 task_struct 필드). **진짜 GOT 슬롯은 8개로 축소** (0x18/0x16c/0x29e/0x128/0x444/0x44c/0xd00 + helper). (2) ⭐⭐⭐ **task_struct 가 거대 평면 구조체 (≥44KB)** — 모든 subsystem state 가 단일 struct 안. (3) ⭐⭐ **sound_trigger convention 정정** (r1=sound_id) — 21 호출 중 11 immediate ID 식별 (0x83/84/87/8d/8e/9b/a4/a5, 페어 패턴). (4) ⭐ **ObjectB 재정의** — 단순한 task_ptr_holder + context_getter source. 240 reader 함수 모두 task_struct 필드 접근. 상세는 [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md).
 
 **이전 세션** (2026-05-10 PM-12 / Round 22) — veneer 14 완전 매핑 + sound/page2 UI 본문. 상세는 [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md). (1) ⭐⭐⭐ **veneer 영역 14개 완전 매핑** (0xa4294~0xa42cc) — 모든 ARM register r0~r7/r8/sb/sl/fp/ip/sp/lr 의 `bx rN` veneer. 향후 indirect call 분석의 디코더. (2) ⭐⭐ **FUN_0003d5d0 sound dispatcher 본문** (4332B, 37 cmp arms) — 21 sound_trigger + 17 paired helper. 5 sound 전용 GOT 슬롯 (0x9e28/0xa220/0xa244/0xa245/0xa254). (3) ⭐⭐ **FUN_00060ab4 page 2 UI 본문** (8808B, 21 cmp arms, 207 literals 중 111 negative_signed = inline JT 다수 후보). (4) ⭐ **FUN_00098364 destructor 정정** — slot **0xd00 (StorageCell)** gate + slot **0x44c (ObjectA)** cleanup vtable. ObjectA vtable 12 methods 매핑 (offset 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80). 신규 GOT 슬롯 5개 추가 → 누적 19 슬롯. 상세는 [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md).
 
@@ -17,7 +19,7 @@
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **task_struct field layout 발견 + 진짜 GOT 슬롯 8개로 축소 + sound id 11 식별** (2026-05-10 PM-13 / Round 23). Round 18~22 의 다수 "GOT slot offset" 정정 — 0x9bb4/0x9cbc/0x9e28/0xa220 등 11+개 가 사실 task_struct 필드 offset (ctx + offset 패턴). task_struct 는 거대 평면 구조체 ≥ 44KB, 모든 subsystem state 보유. sound_trigger r1=sound_id (NOT r0), 11 immediate IDs 식별 (0x83~0xa5, 페어 패턴). ObjectB 재정의: 단순 task_ptr_holder. 다음 진척은 **(1) task_struct field layout 매핑, (2) dynamic sound id source, (3) ObjectB wrapper struct 검증, (4) sound id ↔ snd/ 자산 매핑, (5) SMAF/번역**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **task_struct field layout 매핑 + context_getter 단일 deref 정정** (2026-05-10 PM-14 / Round 24). 신규 도구 `find_task_struct_field_readers.py` 로 15 known fields 매핑. **0x9bb4 = dominant field** (69 sites, FUN_0009b252 type-tag reader 가 46x 사용). 신규 record array dispatchers (FUN_00044a38/0x482c8/0x41c6e). context_getter = single deref (slot 0x444), ObjectB (slot 0x18) 는 독립. dynamic sound id = stack frame 변수. 0x9c70 = byte array base (단순 field 아님). 다음 진척은 **(1) FUN_0009b252 의 0x9bb4 dispatch 패턴 본문, (2) 신규 record array dispatchers 본문, (3) 0x9c70~0x9c84 byte array 검증, (4) sound id ↔ snd/ 자산 매핑, (5) SMAF/번역**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -45,9 +47,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 23 / PM-13** (GOT slot vs task_struct field 분류 정정 + sound id 11 식별 + ObjectB 재정의)
-5. (참고) [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) — Round 22 / PM-12 (veneer 14 + sound/page2 UI 본문)
-6. (참고) [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md) — Round 21 / PM-11 (ObjectB master interface)
+4. **[ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 24 / PM-14** (task_struct field layout 매핑 + context_getter 정정 + dynamic sound id)
+5. (참고) [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — Round 23 / PM-13 (GOT slot vs task_struct field 분류 정정)
+6. (참고) [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) — Round 22 / PM-12 (veneer 14 + sound/page2 UI)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -55,23 +57,23 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 23 까지 완료 — GOT slot vs task_struct field 분류 정정 + sound id 11)
-- 위 PM-13 / Round 23 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 24 까지 완료 — task_struct field layout + context_getter 정정 + dynamic sound id)
+- 위 PM-14 / Round 24 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 24 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 25 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ 2AZ | **task_struct field layout 매핑** (모든 known offsets 의 reader 분포) | `find_global_slot_writers.py` 시리즈 + 패턴 검증 | task_struct field-by-field 의미 |
-| ⭐⭐ 2BA | **dynamic sound id source** (FUN_0003d5d0 의 10 dynamic sound) | 본문 backtrace + task_struct 필드 식별 | sound id ↔ task_struct 필드 매핑 |
-| ⭐⭐ 2BB | **slot 0x18 wrapper struct 검증** | 본문 분석 + memory layout 추론 | ObjectB 의 정확한 구조 |
-| 2BC | sound id 0x83~0xa5 ↔ snd/ 자산 매핑 | binary sound table 검색 | 21 sound effect 정체 |
-| 2BD | FUN_00030018 본문 (ObjectB reader 26x) | 본문 분석 | task_struct 필드 사용 패턴 |
+| ⭐⭐⭐ 2BE | **FUN_0009b252 본문 — 0x9bb4 dispatch 패턴 재분석** | `disasm_subsystem_func.py 0x9b252 0x9c280 --label type_tag_dispatcher_v2` | task_struct[0x9bb4] dispatch 의 실제 의미 |
+| ⭐⭐ 2BF | **신규 record array dispatchers 본문** (FUN_00044a38/0x482c8/0x41c6e) | `disasm_subsystem_func.py` 3개 | record array 시스템 의 alternative dispatchers |
+| ⭐⭐ 2BG | **0x9c70~0x9c84 byte array 검증** | inline analysis + multiple call sites 비교 | task_struct 안의 array layout |
+| 2BH | FUN_0003d5d0 호출자 분석 | caller chain | dynamic sound id 의 진짜 source |
+| 2BI | FUN_000241dc 본문 (0xac78 5x reader, 단일 함수 전용 field) | 본문 분석 | 0xac78 의 의미 |
 
-**3) Round 24 작업 후 마무리**:
+**3) Round 25 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 24 항목 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가
 - Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -131,9 +133,14 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 | ~~2AU~~ | ~~sound subsystem 슬롯 readers/writers~~ | ✅ 2026-05-10 PM-13 (Round 23). **결정적 발견** — 5개 sound 슬롯 모두 GOT slot 이 아니라 **task_struct 필드 offset** (`ctx + 0xa220` 패턴). Round 18~22 의 다수 "GOT slot offset" 분류 정정. 진짜 GOT 슬롯은 8개로 축소 |
 | ~~2AV~~ | ~~FUN_0003d5d0 sound id immediate backtrace~~ | ✅ 2026-05-10 PM-13. **convention 정정** (sound_trigger r1=sound_id, NOT r0). 21 호출 중 **11 immediate sound id 식별** (0x83/84/87/8d/8e/9b/a4/a5 = 131~165, 페어 패턴 4쌍) |
 | ~~2AW~~ | ~~ObjectB top reader 추가~~ | ✅ 2026-05-10 PM-13 (부분). FUN_0002ce08 본문 검증으로 **ObjectB readers 가 모두 context_getter 경유** 확정. ObjectB = 단순 task_ptr_holder. 다른 readers (FUN_00030018/0x4d238) 는 Round 24 |
-| ⭐⭐ **2AZ** | **task_struct field layout 매핑** | task_struct field-by-field 의미 (모든 known offsets 의 reader 분포) |
-| ⭐ **2BA** | **dynamic sound id source** (FUN_0003d5d0 의 10 dynamic sound) | sound id ↔ task_struct 필드 매핑 |
-| 2BB | slot 0x18 wrapper struct 검증 | ObjectB 정확한 구조 |
+| ~~2AZ~~ | ~~task_struct field layout 매핑~~ | ✅ 2026-05-10 PM-14 (Round 24). 신규 도구 `find_task_struct_field_readers.py` 로 15 fields × 350K instr 검색. **0x9bb4 = dominant** (69 sites, FUN_0009b252 가 46x). 신규 record array dispatchers 발견 (FUN_00044a38/0x482c8/0x41c6e) |
+| ~~2BA~~ | ~~dynamic sound id source~~ | ✅ 2026-05-10 PM-14. **stack frame 변수** (`[r7-0x18]` 패턴) — caller-specified sound. FUN_0003d5d0 호출자가 sound id 결정 |
+| ~~2BB~~ | ~~slot 0x18 wrapper struct 검증~~ | ✅ 2026-05-10 PM-14. **context_getter (FUN_0004ad10) = single deref 만** (`r0 = *(slot 0x444)`). slot 0x18 (ObjectB) 와 slot 0x444 (task_ptr) 는 독립 |
+| ⭐⭐ **2BE** | **FUN_0009b252 본문 — 0x9bb4 dispatch 패턴 재분석** | task_struct[0x9bb4] dispatch 의 실제 의미 |
+| ⭐⭐ **2BF** | **신규 record array dispatchers** (FUN_00044a38/0x482c8/0x41c6e) | record array 시스템 alternative dispatchers |
+| ⭐ 2BG | 0x9c70~0x9c84 byte array 검증 | task_struct 안의 array layout |
+| 2BH | FUN_0003d5d0 호출자 분석 | dynamic sound id 진짜 source |
+| 2BI | FUN_000241dc 본문 (0xac78 5x reader) | 0xac78 의 의미 |
 | 2BC | sound id 0x83~0xa5 ↔ snd/ 자산 매핑 | 21 sound effect 정체 |
 | 2BD | FUN_00030018 본문 (ObjectB reader 26x) | task_struct 필드 사용 패턴 |
 | 2AX | FUN_00060ab4 inline JT 매핑 | page 2 UI JT 발견 |
@@ -161,9 +168,9 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — **⭐⭐⭐ 최신 Round 23 / PM-13** (GOT slot vs task_struct field 분류 정정 + sound id 11 식별 + ObjectB 재정의)
-- [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) — Round 22 / PM-12 (veneer 14 + sound/page2 UI 본문)
-- [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md) — Round 21 / PM-11 (ObjectB master interface)
+- [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) — **⭐⭐⭐ 최신 Round 24 / PM-14** (task_struct field layout 매핑 + context_getter 정정 + dynamic sound id)
+- [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — Round 23 / PM-13 (GOT slot vs task_struct field 분류 정정)
+- [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) — Round 22 / PM-12 (veneer 14 + sound/page2 UI)
 - [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md) — Round 20 / PM-10 (ObjectA cluster + lifecycle)
 - [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — Round 19 / PM-9 (vtable invoker + JT 디코드)
 - [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — Round 18 / PM-8 (sub-handler 본문 + 9 GOT slot wide-scan)
@@ -255,6 +262,9 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x60ab4 0x62d
 # 2AU (Round 23): 결정적 분류 정정 — find_global_slot_writers 의 PC-rel literal 매칭은 false-positive 다수
 # 진짜 GOT slot 검증: `add Rx, sl` 패턴 직접 따라가야 함. ctx+offset 패턴은 task_struct 필드 (sl 기반 X)
 # 2AV sound_trigger r1 backtrace: 21 중 11 immediate (0x83~0xa5)
+PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py                              # ⭐⭐⭐ 2AZ (Round 24) — 15 fields 매핑
+# 2BA dynamic sound id: inline (stack frame `[r7-0x18]` 패턴)
+# 2BB context_getter 본문: inline disasm 0x4ad10~0x4ad34 (single deref)
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
