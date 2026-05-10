@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 29 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 30 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,36 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 30 — 2026-05-10 완료]** droptable.dat 재해석 — EquipItem drop pool (Round 29 정정) + monster progression 검증
+- ✅ **Round 29 결론 정정**: byte 0 = 0x0b 가 cat 이 아닌 **byte 11 = NewDropItem cat arg** 발견.
+  Monster::SetDropItem caller 1 (0xbcc74) 의 register propagation 추적:
+  - 0xbcb0c `ldrb r8, [r3, ip]` ← r3=drop_table base, ip=fp+0xb (offset)
+  - 0xbcc08 `str r8, [sp+0x40]` ← sp+0x40 = byte 0xb (value)
+  - 0xbcc20 `ldr ip, [sp+0x40]` ← reload
+  - 0xbcc38 `asr r3, ip, #0x18` ← r3 (NewDropItem cat) = signed s8 of byte 0xb
+- ✅ **byte 11 (cat) 분포 분석 — droptable.dat = EquipItem drop pool**:
+  - 0x05 (helmet) 27 entries
+  - 0x06 (boots) 14 entries
+  - 0x07 (accessory) 61 entries
+  - 0x08 (accessory_2) 46 entries
+  - 0xff (-1, default → EquipItemInfo 376B alloc) 104 entries
+  - **총 252 entries — 모두 EquipItem 관련 (potion 아님!)**
+- ✅ **Monster progression 분포 검증** (큰 진전):
+  - Monster 0 (저급, 초반 지역): 모든 4 tier cat=-1 (default → generic EquipItem drop)
+  - Monster 30 (중반): 모든 tier cat=-1 (default)
+  - Monster 62 (강함, endgame): tier 0x0e 에 helmet (cat=5), tier 0x10 에 boots (cat=6),
+    tier 0x0f/0x11 에 default. **endgame monster 가 specific accessory drop**.
+  - 게임 progression 의미와 정확히 일치 — 강한 monster 가 specific cat 의 좋은 EquipItem drop.
+- ✅ **byte 0 의 진짜 의미 — constant marker** (format version 추정), cat 아님.
+- ✅ **droptable.dat 가 무기 (cat 0..3) drop 을 포함하지 않는 이유**:
+  - 무기 drop 은 **default tier (cat=-1)** 의 EquipItemInfo 처리에서 random pick 또는
+  - 별도 메커니즘 (Quest reward, Treasure chest 등 — 다음 라운드에서 추가 검증)
+- ✅ `decode_h5_droptable.py` + `droptable.json` 정정 발행 (cat / cat_label 의미있는 라벨 부여):
+  - 'helmet' / 'boots' / 'accessory' / 'accessory_2' / 'default' 라벨
+  - byte 4..10, 12 = NewDropItem 의 다른 args (정확 매핑은 Round 31 작업)
+- ✅ NewDropItem 의 r3=cat 이 -1 (=0xff signed) 이면 jumptable miss → default branch
+  (0xa7a14 → 0xa7b1c → EquipItemInfo allocation, 376B). 즉 cat=-1 = "generic EquipItem".
 
 **[Round 29 — 2026-05-10 완료]** drop_table 데이터 식별 + dump + decode 도구
 - ✅ **ItemTable::LoadItemDropTable (0xa0b54, 80B) 분석**:

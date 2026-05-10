@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 29 — drop_table 데이터 식별 + dump 완료. **droptable.dat = potion drop pool (252 entries = 63 monsters × 4 tier)**. byte 0=cat11, byte 2=monster_idx, byte 3=drop_tier. EquipItem drop 은 별도 메커니즘.)
+업데이트: 2026-05-10 (Round 30 — Round 29 결론 정정. **droptable.dat = EquipItem drop pool (potion 아님)**. byte 11 = NewDropItem cat arg (helmet/boots/accessory + default). Monster progression 검증 — endgame monster 가 specific cat drop.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 30 시작 — EquipItem drop 메커니즘 식별 (droptable.dat 와 별개 데이터원)"** 으로 진행.
-또는 MixSmithTableInfo 데이터원 식별 (HERO::GetMixSmithTableInfoPtr 분석). 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-30-후보-우선순위-순) 참조.
+**"Round 31 시작 — droptable.dat byte 4..10/12 정확한 NewDropItem arg 매핑"** 으로 진행 (Round 30 의 byte 11 = cat 발견 후 다른 args 도 매핑).
+또는 MixSmithTableInfo 데이터원 식별 (Round 28 보완). 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-31-후보-우선순위-순) 참조.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 29 시점, 2026-05-10)
+## 30초 요약 (Round 30 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~29 누적 발견 (요약)
+### Round 6~30 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -59,7 +59,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **ApplyItemDecompose (분해)** | option_grade-based prob (gv+0x1444+0x1b8+grade*10, 4 s16 thresholds × 5 grade). 5-way: money refund (default) / mix material / potion / 기타 (R28) |
 | **gv+0x1444 sub-struct prob 테이블 영역** | +0x130-198 강화 prob (R17), +0x198-1b8 결합 prob (R28), +0x1b8-1f4 분해 prob (R28), +0x1f4-208 orb prob (R26) (R28) |
 | **droptable.dat 식별** | VFS index 18, 3278B = 252 entries × 13B = 63 monsters × 4 drop tiers. byte 0=0x0b cat (potion only), byte 1=0, byte 2=monster_idx, byte 3=drop_tier (0x0e..0x11). LoadItemDropTable → ItemTable+0x214 (R29) |
-| **drop_table = potion drop pool only** | 모든 252 entries 가 cat=11 potion. EquipItem drop 은 droptable.dat 와 무관 — 별도 메커니즘 (다른 csv 또는 hardcoded data) (R29) |
+| **drop_table = potion drop pool only** | ❌ Round 30 정정: 사실은 EquipItem drop pool (R30) |
+| **droptable.dat = EquipItem drop pool (정정)** | byte 11 = NewDropItem cat arg (5/6/7/8/0xff). 0xff = default → generic EquipItem (376B alloc). Monster progression: 저급 monster=default, 강함=specific cat (helmet/boots/accessory) (R30) |
+| **byte 0 = constant marker** | 0x0b 일관 (format version 추정), cat 아님. byte 11 가 진짜 cat (R30) |
+| **register propagation: byte 0xb → r3** | 0xbcb0c ldrb r8 [r3,ip] → 0xbcc08 sp+0x40 → 0xbcc20 ldr ip → 0xbcc38 asr r3 (signed s8). NewDropItem r3 = signed byte 0xb (R30) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -69,12 +72,12 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 29 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **EquipItem drop 메커니즘 식별** — droptable.dat 가 potion only 임이
-  Round 29 에서 확인됨. 보스 monster 가 legendary 무기 drop 하는 메커니즘은 별개 데이터원
-  (다른 csv 파일 또는 hardcoded data) — 이를 추적.
-- 또는: MixSmithTableInfo 데이터 dump (HERO::GetMixSmithTableInfoPtr 분석으로 출처 식별) —
-  Round 28 의 NPC blacksmith 합성 테이블이 어디서 load 되는지.
+- Round 30 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **droptable.dat byte 4..10/12 정확한 NewDropItem arg 매핑** —
+  Round 30 에서 byte 11 = cat 확정. 나머지 byte (4/5/6/7/8/9/10/12) 가 어떤 args
+  (idx, val_15c, val_15f, val_162, val_160, val_163, val_161, val_164) 인지 추적.
+  caller 1 (0xbcc74) 의 register propagation: 각 sp+offset 의 source 추적.
+- 또는: MixSmithTableInfo 데이터 dump (Round 28 보완).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -299,26 +302,22 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 30 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 31 후보, 우선순위 순)
 
-### 1. EquipItem drop 메커니즘 식별 (Round 29 미완, 자율 가능)
+### 1. droptable.dat byte 4..10/12 정확한 NewDropItem arg 매핑 (Round 30 보완, 자율 가능)
 
-Round 29 에서 droptable.dat 가 **potion drop pool only** (cat=11) 임이 확인됨.
-보스 monster 가 legendary 무기를 drop 하는 메커니즘은 별개 데이터원:
-- Monster::SetDropItem 의 caller 1 path (cat ≤ 10 EquipItem drop) 의 13-byte entry 가
-  droptable.dat 가 아닌 어딘가에서 옴 — register propagation 추적 또는 별도 LoadRes 함수
-- 다른 후보 csv 파일 검색: "/c/csv/option.dat", "/c/csv/probability.dat", 등
-- 또는 monster 의 enemy_g.dat 의 121B record 안에 drop 정보 있을 수 있음 (Round 8 분석
-  확장 — drop 관련 byte field 식별)
+Round 30 에서 byte 11 = cat (NewDropItem r3 arg) 확정. 나머지 byte 들의 정확 매핑:
+- byte 4..10, byte 12 가 NewDropItem 의 8 stack args (idx, val_15c, val_15f, val_162,
+  val_160, val_163, val_161, val_164) 중 어떤 것인지
+- caller 1 (0xbcc74) 의 register propagation 정밀 추적:
+  - sp+0x4c = byte 0 → 어떤 arg?
+  - sp+0x40 = byte 5 → ...
+  - sp+0x3c = byte 6 → ...
+  - sp+0x38 = byte 7 → ...
+  - sp+0x48 = byte 9 → ...
+- 정확한 매핑 후 droptable.json 의 raw byte → 의미있는 fields 변환.
 
-### 2. droptable.dat 의 byte 4..12 정확한 NewDropItem arg 매핑 (Round 29 보완)
-
-Round 29 에서 byte 4..12 의 분포는 분석했지만 정확한 arg 매핑 미완:
-- byte 9 = 0xff sentinel 절반 (negative = strb skip) → 어떤 arg?
-- byte 4 ≈ byte 6 paired distribution → 같은 의미?
-- caller 1 (0xbcc74) 의 register propagation 추적: ldrb [r3, fp+N] → 어느 sp+offset → NewDropItem stack arg
-
-### 3. MixSmithTableInfo 데이터원 식별 (Round 28 보완)
+### 2. MixSmithTableInfo 데이터원 식별 (Round 28 보완)
 
 Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
 HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
