@@ -5,13 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-8 (Round 18) — **2W + 2X + 2Y 일괄 + sub-handler 본문 + 9개 GOT slot wide-scan**. (1) ⭐⭐ **FUN_000439a0 = 7-entry JT type dispatcher** (0x38 stride record array, type field 4..10, JT @ binary 내부 0x8370). (2) ⭐⭐ **FUN_00047a14 = state transition function** — task_struct gate 검사 → 다른 task ptr 에 **0xf state write** + ctx flag set + **FUN_00098244 호출** (=다음 차례 onward 포인터). (3) ⭐⭐ **신규 GOT 슬롯 5개 발견 + 9 슬롯 모두 0 direct writes** — 0x16c (147 readers, alternate task_struct ptr, single indirection) / 0x128 (9 readers, state 0xf 가 쓰여지는 곳) / 0x29e / 0x9bb4 / 0x9cbc. **GVM 외부 주입은 시스템 표준 패턴 확정** (단일 0x444 슬롯이 아님). 상세는 [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-9 (Round 19) — **2AA + 2AB + 2AC + vtable invoker 발견 + JT 디코드**. (1) ⭐⭐⭐ **FUN_00098244 = C++ vtable method invoker** (172B 선형, 0 cmp arm, 5 indirect call). Object @ 신규 슬롯 GOT+0x44c (= 0xb308c) 의 vtable methods 호출 (offset 0/0x10/0x20/0x68) + task_struct method via 신규 슬롯 GOT+0x18. **state 0xf flow 풀이 완성**: FUN_00047a14 (state set) → FUN_00098244 (vtable RPC). (2) ⭐⭐ **JT @ 0xa8370 디코드** (Round 18 의 0x8370 계산 정정) — 7-entry JT 가 사실상 3-way 분기 (type 4 dominant fall-through + 5/8 shared + 7 unique + 6/9/10 catch-all). (3) ⭐ **FUN_00043508 (1176B) = type-9 처리자** (cmp #9 5x dominant + FUN_000439a0 와 동일 0x9cbc record array 공유). 신규 GOT 슬롯 5개 추가 (0x44c/0xd00/0xd04/0xd08/0x18). 누적 14 슬롯 모두 0 direct writes. 상세는 [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md).
 
-**이전 세션** (2026-05-10 PM-7): task pointer 클러스터 + system-wide GOT slots 발견 + arm handler 매핑. 상세는 [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md).
+**이전 세션** (2026-05-10 PM-8 / Round 18): sub-handler 본문 + 9 GOT slot wide-scan. 상세는 [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md).
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **sub-handler 2개 본문 + 9 GOT 슬롯 wide-scan** (2026-05-10 PM-8 / Round 18). FUN_000439a0 = 7-entry JT dispatcher (type 4..10, 0x38 stride record). FUN_00047a14 = state transition (0xf write + FUN_00098244 호출). **9 슬롯 모두 0 direct writes → GVM 외부 주입은 시스템 표준 확정**. 0x16c slot = 147 readers (0x444 와 동급의 핵심 task ptr). 다음 진척은 **(1) FUN_00098244 본문 = state-0xf consumer, (2) JT @ 0x8370 디코드, (3) FUN_00043508 (slot 0x16c top reader), (4) SMAF/번역 사용자 블로커**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **vtable invoker 발견 + JT 디코드 + secondary task processor** (2026-05-10 PM-9 / Round 19). FUN_00098244 = C++ vtable method invoker (5 indirect call, ObjectA @ 신규 slot 0x44c). JT @ 0xa8370 = 3-way 분기 (type 4 dominant). FUN_00043508 = type-9 처리자 (cmp #9 5x). 누적 14 GOT 슬롯 모두 0 direct writes. **state 0xf flow 풀이 완성**: FUN_00047a14 → FUN_00098244 vtable RPC. 다음 진척은 **(1) FUN_00098364/99a9c init helpers, (2) slot 0x44c (ObjectA) 다른 readers, (3) 0x4425a/44214 enclosing function, (4) FUN_00043508 cmp #9 arm BL 매핑, (5) SMAF/번역 사용자 블로커**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -39,9 +39,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 18 / PM-8** (sub-handler 본문 + 9 GOT slot wide-scan + onward 포인터)
-5. (참고) [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터)
-6. (참고) [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter)
+4. **[ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 19 / PM-9** (vtable invoker + JT 디코드 + secondary task processor)
+5. (참고) [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — Round 18 / PM-8 (sub-handler 본문 + 9 GOT slot)
+6. (참고) [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -49,23 +49,23 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 18 까지 완료 — sub-handler 본문 + 9 슬롯 wide-scan)
-- 위 PM-8 / Round 18 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 19 까지 완료 — vtable invoker + JT 디코드 + secondary task processor)
+- 위 PM-9 / Round 19 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 19 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 20 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐ 2AA | **FUN_00098244 본문** (FUN_00047a14 의 downstream — state-0xf 처리) | `disasm_subsystem_func.py 0x98244 <end>` (다음 push prologue 위치 확인 후 end) | `work/h3/state0xf_consumer_98244_disasm.json` — state 0xf transition 의 의미 |
-| ⭐⭐ 2AB | **FUN_000439a0 의 JT @ 0x8370 디코드** (7 entries, type 4..10) | 신규 helper 또는 capstone walk + `[0x8370..0x838c]` 범위 dword 읽어 7 target 식별 | type 4..10 sub-handler 7개 함수 식별 |
-| ⭐ 2AC | **FUN_00043508 본문** (1176B, slot 0x16c reader 3x — secondary task processor) | `disasm_subsystem_func.py 0x43508 0x439a0` | `work/h3/task_processor_43508_disasm.json` |
-| 2AD | slot 0x16c task_struct 필드 매핑 | 0x16c reader top-5 함수의 `[r3+offset]` 패턴 통계 | task_struct layout (offset → 필드 의미) |
-| 2AE | slot 0x128 readers 검증 (state 0xf consumer) | FUN_000982f0 / 000983e8 본문 분석 | state 0xf 의 의미 풀이 |
+| ⭐⭐ 2AF | **FUN_00098364 / FUN_00099a9c** (vtable invoker init helpers) | `disasm_subsystem_func.py 0x98364 0x983b8` + `0x99a9c <end>` | vtable invoker 의 init/setup 단계 풀이 |
+| ⭐⭐ 2AG | **slot 0x44c (ObjectA C++ vtable obj) 의 다른 readers** | `find_global_slot_writers.py --slot-offset 0x44c` | ObjectA 의 다른 method 호출처 매핑 → vtable 전체 mapping |
+| ⭐ 2AH | **0x4425a / 0x44214 enclosing function** (JT type 5/7/8 의 진짜 진입점) | push prologue 검색 + 본문 식별 | type 5/7 sub-handler 정체 |
+| 2AI | slot 0x18 (vtable task_struct, double indir) readers | `find_global_slot_writers.py --slot-offset 0x18` | task_struct method consumers 매핑 |
+| 2AJ | FUN_00043508 cmp #9 5 arms — arm-by-arm BL 매핑 | `analyze_arm_handlers.py 0x43508 0x439a0` | type-9 처리자 식별 |
 
-**3) Round 19 작업 후 마무리**:
+**3) Round 20 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 19 항목 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 20 항목 추가
 - Python 회귀 (`python -m unittest ...` — 위 §재현 명령 참조) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -110,9 +110,14 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 | ~~2W~~ | ~~FUN_000439a0 (188B, 37 callers) 본문 분석~~ | ✅ 2026-05-10 PM-8 (Round 18). **7-entry JT type dispatcher** (type 4..10, JT @ 0x8370). 0x38 stride record array, type field@(record+0x1d), 가드 helper 2개 (FUN_00044260/00044280). 결과: `work/h3/popular_helper_439a0_disasm.json` |
 | ~~2X~~ | ~~FUN_00047a14 본문 분석~~ | ✅ 2026-05-10 PM-8. **state transition function** — task_struct[0] gate 검사 → 0xf state write 다른 task ptr 로 + ctx flag set + FUN_00098244 호출. 결과: `work/h3/sub_handler_47a14_disasm.json` |
 | ~~2Y~~ | ~~추가 GOT slots writer 추적~~ | ✅ 2026-05-10 PM-8. **9 슬롯 모두 0 direct writes 확정** (0x9c70/9c71/9c84/ac78 + 신규 0x128/0x16c/0x29e/0x9bb4/0x9cbc). GVM 외부 주입은 시스템 표준 패턴. **0x16c slot = 147 readers, alternate task_struct ptr (single indirection) — 0x444 와 동급의 핵심 task ptr** |
-| ⭐ **2AA** | **FUN_00098244 본문** (FUN_00047a14 downstream — state 0xf consumer) | state 0xf transition 의 의미 풀이. param1/param2 받아 처리. 자동 가능 |
-| ⭐ **2AB** | **JT @ 0x8370 7 entries 디코드** | type 4..10 의 7 target 함수 식별 → FUN_000439a0 dispatcher 풀이 완성. 자동 가능 |
-| 2AC | FUN_00043508 (1176B, slot 0x16c reader 3x) 본문 | secondary task processor 정체. 자동 가능 |
+| ~~2AA~~ | ~~FUN_00098244 본문~~ | ✅ 2026-05-10 PM-9 (Round 19). **C++ vtable method invoker** 확정 (172B 선형, 0 cmp arm, 5 indirect call). Object @ 신규 슬롯 GOT+0x44c 의 vtable methods 호출 (offset 0/0x10/0x20/0x68) + task_struct via 신규 슬롯 GOT+0x18. 결과: `work/h3/state0xf_consumer_98244_disasm.json` |
+| ~~2AB~~ | ~~JT @ 0x8370 디코드~~ | ✅ 2026-05-10 PM-9. **JT base 정정** (0x8370 → 0xa8370). **3-way 분기 풀이** — type 4 dominant fall-through (0x43a5a) + 5/8 → 0x4425a (shared) + 7 → 0x44214 (unique) + 6/9/10 → 0x43a6e (catch-all = bhi default). type 4 가 진짜 default behavior |
+| ~~2AC~~ | ~~FUN_00043508 본문~~ | ✅ 2026-05-10 PM-9. **type-9 처리자** (1176B, 24 cmp arms, cmp #9 5x dominant + cmp #0xa0 2x). FUN_000439a0 와 동일 record array (slot 0x9cbc) 공유. 신규 슬롯 0x9cfe/0x9cc0 발견. 결과: `work/h3/task_processor_43508_disasm.json` |
+| ⭐ **2AF** | **FUN_00098364 / FUN_00099a9c 본문** (vtable invoker init helpers) | vtable invoker 의 init/setup 단계 풀이. 자동 가능 |
+| ⭐ **2AG** | **slot 0x44c (ObjectA) 다른 readers 매핑** | ObjectA 의 다른 vtable method 호출처 매핑 → vtable 전체 layout |
+| 2AH | 0x4425a / 0x44214 enclosing function | JT type 5/7/8 의 실제 진입점 식별 |
+| 2AI | slot 0x18 (vtable task_struct, double indir) readers | task_struct method consumers 매핑 |
+| 2AJ | FUN_00043508 cmp #9 5 arms BL 매핑 | type-9 처리자 식별 |
 | 2AD | slot 0x16c task_struct 필드 매핑 | 0x16c reader top-5 함수 본문에서 `[r3+offset]` 패턴 통계 → task_struct layout |
 | 2AE | slot 0x128 readers 검증 (state 0xf consumer) | FUN_000982f0 / 000983e8 본문. 자동 가능 |
 | 2H | _mp NPC 좌표 외부 init/spawn 함수 추적 | 2D 의존 (main loop 발견 시 부속). 단독으로는 자동 검출 불가 |
@@ -130,7 +135,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — **⭐⭐⭐ 최신 Round 18 / PM-8** (sub-handler 본문 + 9 GOT slot wide-scan + onward 포인터)
+- [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) — **⭐⭐⭐ 최신 Round 19 / PM-9** (vtable invoker + JT 디코드 + secondary task processor + 14 GOT 슬롯 누적)
+- [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) — Round 18 / PM-8 (sub-handler 본문 + 9 GOT slot wide-scan)
 - [ghidra-task-state-2026-05-10.md](ghidra-task-state-2026-05-10.md) — PM-7 (task pointer 클러스터 + system-wide GOT slots + arm handler 매핑)
 - [ghidra-context-getter-readers-2026-05-10.md](ghidra-context-getter-readers-2026-05-10.md) — PM-6 (context_getter 정정 + FUN_0009b252 reader 후보 + chain dispatcher)
 - [ghidra-queue-protocol-2026-05-10.md](ghidra-queue-protocol-2026-05-10.md) — PM-5 (큐 protocol 11 type tags + epilogue gadget 발견 + FUN_00056bf8 codec)
@@ -197,6 +203,9 @@ PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-off
 PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x128                         # 2Y — state 0xf 가 쓰여지는 곳
 PYTHONIOENCODING=utf-8 python tools/recon/find_global_slot_writers.py --slot-offset 0x9c70                        # 2Y — widespread (PM-7 후속)
 # 다른 슬롯 (0x9c71 / 0x9c84 / 0xac78 / 0x29e / 0x9bb4 / 0x9cbc) 도 동일 명령
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x98244 0x982f0 --label state0xf_consumer_98244 # ⭐ 2AA (Round 19) — vtable invoker
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x43508 0x439a0 --label task_processor_43508    # ⭐ 2AC (Round 19) — type-9 처리자
+# JT @ 0xa8370 디코드는 inline python (struct.unpack) — 별도 도구 없음. ghidra-vtable-invoker-2026-05-10.md §2 참조
 python tools/recon/find_real_func_start.py          # 영역 내 push prologue 위치 → 함수 boundary
 python tools/recon/find_npc_record_offsets.py       # NPC slot record (0x3c4) offset access 추출
 python tools/recon/cluster_dispatcher_callers.py    # caller 들을 포함 함수 단위로 클러스터링
