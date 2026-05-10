@@ -7,15 +7,12 @@
 
 **최신 커밋 시점**: 2026-05-10 PM-14 (Round 24) — **2AZ + 2BA + 2BB + task_struct field layout 매핑 + context_getter 본문 정정 + dynamic sound id 식별**. (1) ⭐⭐⭐ **task_struct 의 dominant field = 0x9bb4** (69 verified sites, 15 funcs, **FUN_0009b252 = PM-6 type-tag reader 가 46x 사용**). 신규 도구 `find_task_struct_field_readers.py` 로 15 known fields × 350K instr 검색. 신규 record array dispatchers 발견 (FUN_00044a38/0x482c8/0x41c6e). (2) ⭐⭐⭐ **context_getter (FUN_0004ad10) = single deref 만** (`r0 = *(slot 0x444)` = task_ptr). caller 가 추가 deref. ObjectB (slot 0x18) 는 독립 객체. (3) ⭐⭐ **dynamic sound id source** = stack frame 변수 (`[r7-0x18]`). (4) ⭐ **0x9c70 = byte array base** (task_struct 안의 array, 단순 field 아님). 상세는 [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md).
 
-**이전 세션** (2026-05-10 PM-13 / Round 23) — GOT slot vs task_struct field 분류 정정 + sound id 11 식별. 상세는 [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md). (1) ⭐⭐⭐ **"GOT slot" vs "task_struct field" 분류 정정** — Round 18~22 의 다수 "GOT slot offset" (0x9bb4/0x9cbc/0x9e28/0xa220/0xa254/0x9c70 등 11개+) 이 실제로는 **`ctx + offset`** (context_getter 결과의 task_struct 필드). **진짜 GOT 슬롯은 8개로 축소** (0x18/0x16c/0x29e/0x128/0x444/0x44c/0xd00 + helper). (2) ⭐⭐⭐ **task_struct 가 거대 평면 구조체 (≥44KB)** — 모든 subsystem state 가 단일 struct 안. (3) ⭐⭐ **sound_trigger convention 정정** (r1=sound_id) — 21 호출 중 11 immediate ID 식별 (0x83/84/87/8d/8e/9b/a4/a5, 페어 패턴). (4) ⭐ **ObjectB 재정의** — 단순한 task_ptr_holder + context_getter source. 240 reader 함수 모두 task_struct 필드 접근. 상세는 [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md).
-
-**이전 세션** (2026-05-10 PM-12 / Round 22) — veneer 14 완전 매핑 + sound/page2 UI 본문. 상세는 [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md). (1) ⭐⭐⭐ **veneer 영역 14개 완전 매핑** (0xa4294~0xa42cc) — 모든 ARM register r0~r7/r8/sb/sl/fp/ip/sp/lr 의 `bx rN` veneer. 향후 indirect call 분석의 디코더. (2) ⭐⭐ **FUN_0003d5d0 sound dispatcher 본문** (4332B, 37 cmp arms) — 21 sound_trigger + 17 paired helper. 5 sound 전용 GOT 슬롯 (0x9e28/0xa220/0xa244/0xa245/0xa254). (3) ⭐⭐ **FUN_00060ab4 page 2 UI 본문** (8808B, 21 cmp arms, 207 literals 중 111 negative_signed = inline JT 다수 후보). (4) ⭐ **FUN_00098364 destructor 정정** — slot **0xd00 (StorageCell)** gate + slot **0x44c (ObjectA)** cleanup vtable. ObjectA vtable 12 methods 매핑 (offset 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80). 신규 GOT 슬롯 5개 추가 → 누적 19 슬롯. 상세는 [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md).
-
-**이전 세션** (2026-05-10 PM-11 / Round 21) — ObjectB master interface 발견 + ObjectA lifecycle 종합. 상세는 [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md). (1) ⭐⭐⭐ **ObjectB (slot 0x18) = 게임의 마스터 GVM 인터페이스 객체** — 860 reader sites in 240 unique functions. sound (FUN_0003d5d0 31x), page UI (FUN_00060ab4/0x5d214), SCN dispatcher (FUN_0008e89e), NPC 등 **모든 핵심 dispatcher 가 사용**. ObjectA (8-함수) 의 100x scale. (2) ⭐⭐⭐ **ObjectA cluster 6 함수 본문 종합** → acquire-use-release 라이프사이클 완성. **FUN_00097ffc/0x980cc** = cmp #9 full lifecycle (cleanup→init→acquire→use). FUN_0004ad34 = task_ptr ↔ ObjectA bridge. (3) ⭐⭐ **FUN_000439a0 49 arms BL 매핑** — orchestrator 패턴 확정 (Round 18 의 FUN_00047a14 state transition 을 cmp #0 arm 에서 직접 호출). (4) **ObjectB vtable 9 methods 매핑** (offset 0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80). 신규 veneer 0xa42a4 (bx r4). 상세는 [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md).
-
-**이전 세션** (2026-05-10 PM-10 / Round 20) — **2AF + 2AG + 2AH + ObjectA cluster + FUN_000439a0 size 정정**. (1) ⭐⭐⭐ **FUN_000439a0 size 188B → 2372B 대폭 정정** (pic_stubs 가 frequent BL 로 함수 boundary 오인). 49 cmp arms (cmp #6 10x dominant), 4 GOT 슬롯 (0x9bb4/9cbc/9cfe/9cc0 — FUN_00043508 와 동일). (2) ⭐⭐⭐ **ObjectA C++ class 구현 모듈 식별** — slot 0x44c readers 8 함수 클러스터 (0x97fa8~0x98474, ~1.2KB) = resource manager 객체 모듈. (3) ⭐⭐ **FUN_00098364 = ObjectA destructor** (vtable[0x1c/0x2c/0xc] cleanup + first field clear). (4) ⭐⭐ **FUN_00099a9c = resource acquisition** (vtable[0x7c/0x54/0x58/0x80] + POSIX 에러 -12 ENOMEM / -18 EXDEV). (5) **acquire-use-release 라이프사이클 패턴 확정**: FUN_00099a9c → FUN_00098244 → FUN_00098364. JT 7 targets = 모두 FUN_000439a0 내부 sub-paths 확정. 상세는 [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md).
-
-**이전 세션** (2026-05-10 PM-9 / Round 19): vtable invoker + JT 디코드 + secondary task processor. 상세는 [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md).
+**이전 라운드 종합**: Round 18~23 의 진척 요약은 **§"Round 18~24 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
+- **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
+- **Round 20~21** — ObjectA cluster 식별 + ObjectB master interface (860 readers) 발견
+- **Round 22** — veneer 14 완전 매핑 + sound/page2 UI 본문
+- **Round 23** — ⭐ **결정적 정정**: 다수 "GOT slot" 가 task_struct 필드로 재분류
+- **Round 24** — task_struct field layout 매핑 (0x9bb4 dominant 식별)
 
 ### 한 줄 요약 (현재 상태)
 
@@ -51,6 +48,128 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 5. (참고) [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — Round 23 / PM-13 (GOT slot vs task_struct field 분류 정정)
 6. (참고) [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) — Round 22 / PM-12 (veneer 14 + sound/page2 UI)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
+
+### Round 18~24 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+
+| Round | 핵심 발견 | 산출 문서 |
+|---|---|---|
+| **18** (PM-8) | FUN_000439a0 (popular helper, 188B) + FUN_00047a14 (state transition, 0xf write) + 9 GOT slot wide-scan | [ghidra-sub-handlers-2026-05-10.md](ghidra-sub-handlers-2026-05-10.md) |
+| **19** (PM-9) | **FUN_00098244 = C++ vtable invoker** (5 indirect call) + JT @ 0xa8370 디코드 (3-way 분기) + FUN_00043508 = type-9 처리자 | [ghidra-vtable-invoker-2026-05-10.md](ghidra-vtable-invoker-2026-05-10.md) |
+| **20** (PM-10) | **FUN_000439a0 size 정정** (188B→**2372B**, 49 cmp arms) + **ObjectA cluster** 식별 (slot 0x44c, 8 함수) + ObjectA destructor + resource acquisition + acquire-use-release lifecycle | [ghidra-objectA-cluster-2026-05-10.md](ghidra-objectA-cluster-2026-05-10.md) |
+| **21** (PM-11) | **ObjectB (slot 0x18) = 게임 마스터 객체** (860 readers / 240 funcs) + ObjectA cluster 6 함수 본문 + FUN_000439a0 49 arms BL 매핑 | [ghidra-objectB-master-2026-05-10.md](ghidra-objectB-master-2026-05-10.md) |
+| **22** (PM-12) | **veneer 14개 완전 매핑** (0xa4294~0xa42cc, 모든 register `bx rN`) + sound dispatcher (FUN_0003d5d0, 4332B) + page 2 UI (FUN_00060ab4, 8808B) + ObjectA vtable 12 methods | [ghidra-veneers-and-top-readers-2026-05-10.md](ghidra-veneers-and-top-readers-2026-05-10.md) |
+| **23** (PM-13) | ⭐⭐⭐ **결정적 분류 정정** — Round 18~22 의 다수 "GOT slot" 가 **task_struct 필드 offset**. 진짜 GOT 슬롯 8개로 축소. sound_trigger r1=sound_id 정정 + 11 immediate ID. ObjectB 재정의 (단순 task_ptr_holder) | [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) |
+| **24** (PM-14) | **task_struct field layout 매핑** (신규 도구 `find_task_struct_field_readers.py`) — **0x9bb4 = dominant** (69 sites, FUN_0009b252 가 46x). 신규 record array dispatchers (FUN_00044a38/0x482c8/0x41c6e). context_getter = single deref. dynamic sound id = stack frame. 0x9c70 = byte array base | [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) |
+
+### 현재 게임 시스템 모델 (Round 24 시점, 검증 vs 가설)
+
+**✅ 검증된 사실** (실측 disassembly + reader 통계):
+
+```
+GVM Firmware (외부 주입)
+  └─ 8 GOT slots @ binary 0xb2c40 base
+       ├─ slot 0x18  → ObjectB ptr (240 reader functions, vtable methods)
+       ├─ slot 0x16c → alternate task struct ptr (147 readers)
+       ├─ slot 0x29e → small flag
+       ├─ slot 0x128 → secondary state ptr (state 0xf write target)
+       ├─ slot 0x444 → task_ptr (= context_getter 가 read)
+       ├─ slot 0x44c → ObjectA ptr (resource manager, 8 readers)
+       ├─ slot 0xd00 → StorageCell ptr (current resource holder)
+       └─ slot 0xd04, 0xd08 → ObjectA helper data ptrs
+
+context_getter (FUN_0004ad10, single deref)
+  └─ returns r0 = *(slot 0x444) = task_ptr
+
+task_struct (44KB+ 거대 평면 구조체, *(task_ptr) 으로 진입)
+  ├─ 0x29e   small flag (3 sites, 2 funcs)
+  ├─ 0x9bb4  ⭐ dominant field (69 sites, 15 funcs, FUN_0009b252 46x) — type tag dispatch key
+  ├─ 0x9c70~0x9c84  byte array base (record_idx 기반 access)
+  ├─ 0x9cbc  record array base ptr_ptr (25 sites)
+  ├─ 0x9cc0  record array adjacent (9 sites)
+  ├─ 0x9cfe  record array variant (3 sites)
+  ├─ 0x9e28  sound state #1 (16 sites)
+  ├─ 0x9e78  per-context flag (5 sites)
+  ├─ 0xa220, 0xa244, 0xa245, 0xa254  sound state cluster
+  └─ 0xac78  FUN_000241dc 전용 (5 sites)
+
+ObjectA C++ class (8-함수 모듈, 0x97fa8~0x98474 ~1.2KB)
+  └─ vtable 12 methods @ offsets 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80
+       ├─ FUN_00097fa8: byte setter + conditional notify
+       ├─ FUN_00097ffc: ⭐ cmp #9 full lifecycle (cleanup→init→acquire→use)
+       ├─ FUN_000980cc: cmp #9 sister (partial lifecycle)
+       ├─ FUN_00098180: 2-gate accessor
+       ├─ FUN_00098244: C++ vtable invoker (5 indirect call)
+       ├─ FUN_00098364: destructor (vtable[0x1c/0x2c/0xc] cleanup + StorageCell clear)
+       ├─ FUN_000983b8: ObjectA query w/ context_getter
+       └─ FUN_0004ad34: task_ptr ↔ ObjectA bridge (외부 wrapper)
+
+acquire-use-release 라이프사이클:
+  FUN_00099a9c (acquire, vtable[0x7c/0x54/0x58/0x80], POSIX errors -12/-18)
+  → FUN_00098244 (use vtable RPC)
+  → FUN_00098364 (release/destructor)
+
+ObjectB vtable methods (slot 0x18, 9 known offsets):
+  0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80
+
+veneer 14 (0xa4294 ~ 0xa42cc):
+  bx r0/r1/r2/r3/r4/r5/r6/r7/r8/sb/sl/fp/ip/sp/lr (interleaved with mov r8,r8 NOP)
+
+Sound subsystem (FUN_0003d5d0, 4332B, 37 cmp arms):
+  - 21 sound_trigger calls (r0=ctx, r1=sound_id)
+  - 11 immediate IDs: 0x83/84/87/8d/8e/9b/a4/a5 (= 131~165, 페어 4쌍)
+  - 10 dynamic IDs: stack frame 변수 ([r7-0x18])
+
+JT @ 0xa8370 (FUN_000439a0 내부, type 4..10):
+  type 4 → fall-through (dominant)
+  type 5/8 → shared 0x4425a
+  type 6/9/10 → catch-all 0x43a6e
+  type 7 → unique 0x44214
+```
+
+**🔬 가설 단계** (다음 round 검증 필요):
+
+- **task_struct[0x9bb4] = state machine state** — FUN_0009b252 가 46x access, type-tag dispatch key 후보 (Round 25 2BE 의 핵심 추적 대상)
+- **ObjectA = audio/asset resource manager** — POSIX errors + acquire-use-release 패턴 + vtable[0x7c]=acquire / [0x80]=write 가 강력한 시사
+- **0x9c70 등 byte array** — 인접 슬롯 (0x9c70/0x9c71/0x9c84) 가 같은 array 의 인접 시작점인지 별개 array 인지 미결
+- **신규 record array dispatchers (FUN_00044a38/0x482c8/0x41c6e)** — FUN_000439a0/00043508 의 sibling 으로 추정, 본문 분석 필요
+- **3 entry indirect main_loop** — Ghidra Script 필요 (정적 ceiling)
+
+### Round 25 즉시 시작 명령 (복사-붙여넣기)
+
+```powershell
+# 1) 환경 (Python 만 필요)
+$env:PYTHONIOENCODING = 'utf-8'
+cd c:\gameRemake\testrepo
+
+# 2) 컨텍스트 복구 (1분)
+git log --oneline -8
+git status --short
+# 위 §"Round 18~24 한눈 요약" 표 + §"현재 게임 시스템 모델" 읽기
+
+# 3) Round 25 권장 진행 (우선순위 순)
+
+# ⭐⭐⭐ 2BE: FUN_0009b252 본문 — 0x9bb4 dispatch 패턴 재분석 (PM-6 의 type-tag reader 가 46x 사용)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x9b252 0x9c280 --label type_tag_dispatcher_v2
+
+# ⭐⭐ 2BF: 신규 record array dispatchers 본문 (FUN_000439a0/00043508 의 sibling)
+# 먼저 boundary 찾기 (다음 push prologue 위치):
+python -c "import struct; from pathlib import Path; data = Path('work/h3/extracted/client.bin64000').read_bytes(); [print(f'  0x{off:08x}') for off in range(0x44a38, 0x46000, 2) if (struct.unpack('<H', data[off:off+2])[0] & 0xFE00) == 0xB400]"
+# 그 다음 disasm:
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x44a38 <next_push> --label record_disp_44a38
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x482c8 <next_push> --label record_disp_482c8
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x41c6e <next_push> --label record_disp_41c6e
+
+# ⭐⭐ 2BG: 0x9c70~0x9c84 byte array 검증 (multiple call sites 비교)
+PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py --field 0x9c70  # 0 hits 확인용
+# inline disasm 으로 다양한 사용 패턴 검증
+```
+
+**Round 25 작업 후**:
+- 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
+- PROGRESS.md 우선순위 표에 ✅ + 새로운 ⭐ 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가
+- Python 회귀 (`python -m unittest tools.recon.test_analyze_cif ...`) 통과 확인 후 커밋
+
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
 
