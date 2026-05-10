@@ -3,9 +3,19 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-08 — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 25 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
-전투/퀘스트/상점/세이브/HUD/이펙트 통합. 다음 세션 빠른 재개 — [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
+전투/퀘스트/상점/세이브/HUD/이펙트 통합.
+
+## 🚀 이어서 진행 한 마디로 시작할 때
+
+> **다음 세션 시작 시 이 한 줄만 보면 됨**
+
+다음 단계는 **Round 26 — RefineItem::ApplyItemRefine 강화 stat 보너스 식별**.
+한 페이지 인수인계는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md). 우선순위 후보
+전체는 [§ 6.2.1 다음 우선순위](#621-다음-우선순위-남은-작업) 참조.
+
+새 클론 환경이라면 환경 복원 한 줄: `python tools/h5_extract_pipeline.py`.
 
 ---
 
@@ -594,6 +604,23 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 26 시작점 — 다음 세션에서 진행]**
+1. **RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 stat 보너스 식별** (큰 임팩트)
+   Round 17 에서 +0x165=refine_count / +0x166=sub_count / +0x167=locked 식별 완료.
+   강화 시 어떤 stat (atk/def/etc) 이 어떻게 증가하는지, 강화 단계별 보너스
+   공식 식별 필요. ApplyItemRefine (956B, @0xa292c) jumptable 더 분석 +
+   ApplyOrbCombine (1208B) socket +0x168..+0x16d read/write 패턴 추적.
+2. **val_15f upper 3 bit 정확 의미 추가 검증** (Round 24 가설 검증, 작은 임팩트)
+   NewDropItem 의 11 args 추적 + DropTable / ShopInventory 호출 패턴 분석으로
+   bit5/6/7 의 정확 의미 (현재 가설: obtainable / gem-accessory / common-tier)
+   확정.
+3. Save 데이터 구조 검증 (선택) — V[112..116] 라벨 (Round 11) 재검증.
+4. P6 Android APK 실 빌드 검증 (USER TASK — 자동화 불가).
+
+빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
+
+---
 
 **[Round 25 — 2026-05-10 완료]** slot_15 (mix_book recipe) 13 byte ext 구조 RE
 - ✅ **13 byte recipe layout 확정** (items.json 116 records 분석 + 이름 cross-check):

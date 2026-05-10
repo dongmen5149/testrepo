@@ -6,6 +6,16 @@
 
 ---
 
+## 🚀 다음 세션 빠른 시작 (한 줄)
+
+**"Round 26 시작 — RefineItem::ApplyItemRefine 강화 stat 보너스 식별"** 으로 진행.
+구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-26-후보-우선순위-순) 1번 참조.
+
+새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
+환경 복원 (`python tools/h5_extract_pipeline.py`).
+
+---
+
 ## 30초 요약 (Round 25 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
@@ -273,58 +283,45 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
+## 다음 세션 시작점 (Round 26 후보, 우선순위 순)
 
-### 1. RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism 정밀 분석
+### 1. RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 stat 보너스 식별 (자율 가능, 큰 임팩트)
 
 Round 17 에서 ApplyItemRefine (956B, @0xa292c) 의 jumptable case 일부 분석 완료
-(+0x165=refine_count, +0x166=sub_count, +0x167=locked). 강화 시 어떤 stat (atk/
-def/etc) 이 어떻게 증가하는지, 강화 단계별 보너스 식별 필요.
+— `+0x165=refine_count`, `+0x166=sub_count`, `+0x167=locked` 식별.
+**미해결**: 강화 시 어떤 stat (atk/def/등)이 어떻게 증가하는지, 강화 단계별
+보너스 공식.
 
-### 2. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증)
+추가 분석 대상:
+- `RefineItem::ApplyItemRefine` (956B, @0xa292c) — 강화 성공 시 stat 변경 추적
+- `RefineItem::ApplyOrbCombine` (1208B) — orb 결합 mechanism (socket +0x168..+0x16d)
+- ItemBase formula (V[168..182]) 와의 cross-check
 
-Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common)
-부여. NewDropItem 의 11 args 중 +0x15f 에 사용되는 arg 가 어떻게 채워지는지,
-DropTable / ShopInventory 의 호출 패턴 분석으로 정확 의미 확정 가능.
+### 2. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증, 작은 임팩트)
 
-### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
+Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common) 부여.
+정확 의미 확정을 위해:
+- `MapItem::NewDropItem` (0xa7884) 의 11 args 중 +0x15f 에 사용되는 arg 추적
+- `DropTable::GetRandomItem` 또는 `ShopInventory::GetRandomItem` 의 호출 패턴
+- bit5/bit6/bit7 각각의 의미 (현재 가설: obtainable/gem-accessory/common-tier)
 
-Round 19 에서 정확한 csv 매칭 확인. 각 byte 의 의미 (cooldown / heal_amount
-/ duration / etc) 식별을 위해 BattleUseItemInfo::Use 또는 사용 함수 disasm 필요.
-items.json 의 슬롯 11 records 의 분포 분석 가능.
+### 3. Save 데이터 구조 검증 (선택, V[112..116] 라벨 재검증)
 
-### 3. RefineItem::ApplyItemRefine (956B) + ApplyOrbCombine (1208B) 디스어셈블
+save 파일 dump → HERO+0x278..0x282 (V[111..116] 영역) 의 game-saved 값을
+game UI 표시값과 매칭. Round 11 의 secondary stat 라벨 (근접명중/장거리명중/
+회피/방패방어/크리티컬) 재검증 가능.
 
-강화/orb 결합 시 어느 struct field 가 변경되는지 추적. socket slot
-(struct +0x168..+0x16d) 의 read/write 패턴 + level_limit / refine_value
-(+0x16) 변경 패턴 식별.
-
-### 3. 비-EquipItem (cat 12+) parse 추가 (자율 가능)
-
-decode_h5_item.py 의 parse_equip_extra 와 같은 방식으로 BattleUseItem (cat 12),
-OrbItem (13), MixItem (14-15), MixBookItem (16), SkillBookItem (17-18) 의 csv
-layout 분석. LoadItemTable 의 idx 12..18 jumptable case 디스어셈블 필요.
-
-### 2. V[151] vs V[152] 의 element 차이 식별 (자율 가능, 작은 임팩트)
-
-Round 12 에서 V[151], V[152] 둘 다 INT-magic stat 확정. id=4 / id=5 의 두
-magic atk 가 어떤 element (fire/ice/lightning/dark 등) 짝인지 식별.
-calc_pl id=7, id=8 의 V[136..143] 4-element bonus 영역과 cross-check 가능.
-
-### 3. Save 데이터 구조 검증 (선택)
-
-save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game UI
-표시값과 매칭해서 V[112..116] 라벨 (Round 11) 을 다시 확인 가능.
-
-### 3. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
+### 4. 한글 비트맵 폰트 매핑 (LOW PRIORITY — 게임 영향 없음)
 
 `_midas_funcFntInvalidate` 디스어셈블로 581 glyph index ↔ Unicode 매핑 추출.
-시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 — 폰트 충실도 향상 only.
+시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 —
+폰트 충실도 향상 only.
 
-### 4. P6: Android APK 실 빌드 검증 (USER TASK)
+### 5. P6: Android APK 실 빌드 검증 (USER TASK — 자동화 불가)
 
-자동화 불가. Godot Editor 4.2+ + Build Template + Export Templates (~1GB) + JDK 17 + Android SDK 필수.
-사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets.cfg.template` 참조.
+Godot Editor 4.2+ + Build Template + Export Templates (~1GB) + JDK 17 + Android
+SDK 필수. 사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets.cfg.template`
+참조.
 
 ---
 
