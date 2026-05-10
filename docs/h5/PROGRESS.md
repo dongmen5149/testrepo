@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 20 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 21 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -408,8 +408,9 @@ isolated bins. 후속 작업으로 보류.
 | ApplyBuildupEffect entry table | R9 | jumptable 자동 추출 (`tools/h5_apply_buildup_disasm.py`), 56 entry × 2 함수 |
 | EquipItemInfo struct field | R13~17 | +0x14=subtype, +0x155=class subtype, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S), +0x165..+0x167=refine fields, +0x168..+0x16d=6 socket |
 | ItemBase struct (Formula VM 5번째 인수) | R13 | V[168..182] = SP cost / cooldown / damage growth / divisor 등 |
-| LoadItemTable csv 매핑 | R14/18/19/20 | 가변 layout (name + sub_record) + u8/u16 mixed sequence. cat 12-18 모든 카테고리별 추가 fields 추출 (slot_17 SkillBook 4 byte + slot_18 Cash 2 byte) |
-| items.json named fields | R15/16/19/20 | subtype / class_mask / class_label / level_limit / item_id / sub_record / val_134..val_167 / triplet_162 / sub_record_hex / **skill_level** (slot_17) |
+| LoadItemTable csv 매핑 | R14/18/19/20/21 | 가변 layout (name + sub_record) + u8/u16 mixed sequence. cat 12-18 모든 카테고리별 추가 fields 추출. R21: slot_16 도 SkillBook 임이 확인 (Warrior+Rogue) |
+| items.json named fields | R15/16/19/20/21 | subtype / class_mask / class_label / level_limit / item_id / sub_record / val_134..val_167 / triplet_162 / sub_record_hex / **class_id, skill_index, skill_level, required_level** (slot_16, slot_17) |
+| HERO::IfLearnSkill 분석 | R21 | (class_id/2)+16 → ItemTable category 공식. SkillBook +0x134..+0x137 의미 (class_id/skill_index/skill_level/required_level) 확정 |
 
 **전체 진행 (Phase 2/3 완료 항목)**:
 
@@ -593,6 +594,33 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 21 — 2026-05-10 완료]**
+- ✅ **HERO::IfLearnSkill (0x95d08, 316B) 디스어셈블** → SkillBook +0x134..+0x137
+  4 byte fields 의 정확 의미 식별:
+  - `+0x134` = **class_id** (0..4 — Warrior/Rogue/Gunslinger/Knight/Sorcerer)
+  - `+0x135` = **skill_index** (HERO::skills[] 배열 인덱스, 클래스별 0..9 = 10 skills)
+  - `+0x136` = **skill_level** (1..7, 이름 LV 와 정확 매칭)
+  - `+0x137` = **required_level** (HERO+0x22d 와 cmp)
+- ✅ IfLearnSkill 의 ItemTable category 공식 발견:
+  ```
+  category = (class_id / 2) + 16   ; signed div, round-toward-zero
+  ```
+  → Warrior(0)/Rogue(1) → cat 16 (slot_16),
+    Gunslinger(2)/Knight(3) → cat 17 (slot_17),
+    Sorcerer(4) → cat 18 (slot_18 = CashItem ?? — 별도 path 추정)
+- ✅ **slot_16 의 정체 정정** — 기존 SLOT_META 가 'mix_book' 이라 라벨링했으나
+  실제 records 모두 Warrior+Rogue 스킬북 (양손베기LV1..3, 돌진LV1..4, 내려찍기LV1..7,
+  어깨치기LV1..4, 회전베기 등). SLOT_META[16] 을 `skill_book` 으로 변경.
+- ✅ `parse_skill_book_extra` 의 라벨 정정 — val_134/val_135/val_137 을 의미있는
+  이름 (`class_id`/`skill_index`/`required_level`) 으로 변경. 기존 `skill_level` 유지.
+- ✅ items.json 검증 통계:
+  - slot_16: 95 records, class_id=0 (Warrior, 48) + class_id=1 (Rogue, 47)
+  - slot_17: 98 records, class_id=2 (Gunslinger, 49) + class_id=3 (Knight, 49)
+  - 각 클래스 정확히 10 skills (skill_index 0..9), 각 skill 1..7 levels
+- ⏸ Sorcerer (class_id=4) → cat 18 매핑이 CashItem 와 충돌. slot_18 에 class_id=4
+  records 없음 — Sorcerer 는 별도 메커니즘 (출시 후 추가 클래스 또는 다른 학습 path)
+  으로 추정. 다음 라운드 분석 가능.
 
 **[Round 20 — 2026-05-10 완료]**
 - ✅ LoadItemTable 함수 끝 영역 (0xa479c..0xa49c0, 548B) 추가 disasm —

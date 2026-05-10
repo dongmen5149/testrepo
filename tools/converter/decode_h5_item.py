@@ -55,9 +55,12 @@ SLOT_META = {
     13: {"category": "orb",       "kind": "orb",      "runtime_struct": "OrbItemInfo",        "runtime_size": 312},
     14: {"category": "mix",       "kind": "material", "runtime_struct": "MixItemInfo",        "runtime_size": 308},
     15: {"category": "mix",       "kind": "material_2", "runtime_struct": "MixItemInfo",      "runtime_size": 308},
-    16: {"category": "mix_book",  "kind": "recipe",   "runtime_struct": "MixBookItemInfo",    "runtime_size": 324},
-    17: {"category": "skill_book", "kind": "skill_book",   "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
-    18: {"category": "cash",       "kind": "cash_item",    "runtime_struct": "CashItemInfo",      "runtime_size": 312},
+    # Round 21: slot_16 은 실제로 SkillBookItem (Warrior+Rogue 스킬북: 양손베기/돌진/
+    # 내려찍기 등). HERO::IfLearnSkill 의 (class_id/2)+16 공식이 cat 16 = Warrior(0)/
+    # Rogue(1) 매핑. 기존 "mix_book" 라벨은 잘못.
+    16: {"category": "skill_book", "kind": "skill_book_wr", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+    17: {"category": "skill_book", "kind": "skill_book_gk", "runtime_struct": "SkillBookItemInfo", "runtime_size": 312},
+    18: {"category": "cash",       "kind": "cash_item",     "runtime_struct": "CashItemInfo",      "runtime_size": 312},
 }
 
 
@@ -145,18 +148,28 @@ def parse_orb_extra(extra: bytes) -> dict:
 
 
 def parse_skill_book_extra(extra: bytes) -> dict:
-    """SkillBookItem (slot_17) 의 추가 4 byte fields (struct +0x134..+0x137).
+    """SkillBookItem (slot_16, slot_17) 의 추가 4 byte fields (struct +0x134..+0x137).
 
     LoadItemTable @0xa47c0 disasm (Round 20):
-      record_size = 0x138 (312B). jumptable case 16/17 모두 동일 코드 path 공유 —
-      slot_16 (= recipe book) 과 slot_17 (= skill book) 이 동일 layout.
+      record_size = 0x138 (312B). jumptable case 16/17 모두 동일 코드 path 공유.
       common base 후 sb 시작 위치 (5+sblen) 부터 4 byte:
-        +0: u8 → struct +0x134  (skill_class — 2=gunslinger, 3=knight 등)
-        +1: u8 → struct +0x135  (skill_id within class)
-        +2: u8 → struct +0x136  (skill_level — 1, 2, 3, ...)
-        +3: u8 → struct +0x137  (required_level 또는 SP cost)
-      관찰: slot_17 records '연속사격LV1..LV4' → val_136 = 1, 2, 3, 4 정확 매칭.
-      val_137 monotonically increasing (1, 4, 10, 22) — required level 성장.
+        +0: u8 → struct +0x134  class_id (HERO 클래스, 0..4)
+        +1: u8 → struct +0x135  skill_index (HERO::skills[] 배열 인덱스)
+        +2: u8 → struct +0x136  skill_level (1, 2, 3, ...)
+        +3: u8 → struct +0x137  required_level (HERO 레벨 요구치)
+
+    HERO::IfLearnSkill (Round 21 — 0x95d08, 316B) 분석으로 의미 확정:
+      - 공식 (class_id/2)+16 → ItemTable category 결정:
+        Warrior(0)/Rogue(1) → cat 16 (slot_16)
+        Gunslinger(2)/Knight(3) → cat 17 (slot_17)
+        Sorcerer(4) → cat 18 (slot_18, CashItem — Sorcerer 별도 처리 추정)
+      - +0x135 (skill_index) 가 HERO+0x248+skill_index 의 byte 와 cmp →
+        이미 학습 여부 확인.
+      - +0x137 (required_level) 가 HERO+0x22d 와 cmp → bgt 면 학습 불가.
+
+    검증: slot_17 records '연속사격LV1..LV4' → skill_level = 1, 2, 3, 4 정확 매칭.
+    val_137 monotonically increasing (1, 4, 10, 22) — required level 성장.
+    slot_16 records '양손베기LV1..3', '돌진LV1..4' 등 Warrior 스킬 95개.
     """
     if len(extra) < 5:
         return {}
@@ -165,10 +178,10 @@ def parse_skill_book_extra(extra: bytes) -> dict:
     if sb_start + 4 > len(extra):
         return {}
     return {
-        'val_134': extra[sb_start + 0],
-        'val_135': extra[sb_start + 1],
+        'class_id': extra[sb_start + 0],
+        'skill_index': extra[sb_start + 1],
         'skill_level': extra[sb_start + 2],
-        'val_137': extra[sb_start + 3],
+        'required_level': extra[sb_start + 3],
     }
 
 

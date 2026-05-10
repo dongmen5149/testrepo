@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 20 — slot_17 SkillBookItem 4 byte ext (skill_level field 식별) + slot_18 CashItem 별도 jumptable case 0xa3b38 발견 + 2 byte ext)
+업데이트: 2026-05-10 (Round 21 — HERO::IfLearnSkill 분석으로 SkillBook 4 byte fields 의미 확정 (class_id/skill_index/skill_level/required_level) + slot_16 도 SkillBook 임이 확인 (Warrior+Rogue))
 
 ---
 
-## 30초 요약 (Round 20 시점, 2026-05-10)
+## 30초 요약 (Round 21 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~20 누적 발견 (요약)
+### Round 6~21 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -27,7 +27,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | EquipItemInfo struct | +0x14=item_subtype, +0x155=class subtype code, +0x15d=level_limit, +0x15f & 0x1f = 5-class mask (W/R/G/K/S, R16), +0x165..+0x167=refine_count/sub/locked (R17), +0x168..+0x16d=6 socket slots |
 | LoadItemTable csv layout | 모든 카테고리 공통 base (item_id u32 + sub_record + sub_record_data 256B memcpy). EquipItem 만 sb-area (struct +0x150..+0x167) 추가 (R14/18) |
 | cat 12-16 추가 fields | BattleUseItem +0x134..+0x137 (4 byte ✓ csv 매칭), OrbItem +0x134..+0x135, MixBookItem +0x134..+0x140 (R19) |
-| slot_17 SkillBookItem | +0x134=skill_class, +0x135=skill_id, **+0x136=skill_level** (LV1..7 정확 매칭 ✓), +0x137=required_level (R20) |
+| slot_16/17 SkillBookItem | **+0x134=class_id**, +0x135=skill_index, **+0x136=skill_level** (LV1..7 정확 매칭 ✓), +0x137=required_level. slot_16 = Warrior(0)+Rogue(1), slot_17 = Gunslinger(2)+Knight(3). HERO::IfLearnSkill 의 (class_id/2)+16 공식 (R21) |
 | slot_18 CashItem | jumptable case 18 → **0xa3b38 별도 path** (R19 가설 정정), 2 byte ext +0x134/+0x135 (R20) |
 
 ### Phase 2/3 인프라 완료
@@ -38,11 +38,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 20 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **slot_17 4 byte fields 의미 추가 검증** —
-  v134=2/3 의 정확 의미 (5 클래스 중 2개만 등장 — Gunslinger/Knight 만 cash shop?
-  또는 skill_book "tier" 일 수도). SkillBookItemInfo::Use 또는 game shop UI
-  분석으로 확정 가능.
+- Round 21 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **Sorcerer (class_id=4) skill book 위치 식별** —
+  IfLearnSkill 공식이 cat 18 (CashItem) 으로 매핑하지만 slot_18 records 모두
+  cash shop items. Sorcerer 별도 학습 메커니즘 분석 필요.
 - 또는: BattleUseItem +0x134..+0x137 의미 식별 (BattleUseItemInfo::Use 함수 분석).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
@@ -68,6 +67,20 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 21**: HERO::IfLearnSkill (0x95d08, 316B) 디스어셈블 → SkillBook
+  +0x134..+0x137 의 의미 정확 식별:
+  - +0x134 = **class_id** (HERO 클래스 0..4)
+  - +0x135 = **skill_index** (HERO::skills[] 배열 인덱스)
+  - +0x136 = **skill_level** (LV 매칭 ✓ Round 20)
+  - +0x137 = **required_level** (HERO+0x22d 와 cmp)
+  - 공식 `(class_id/2)+16` → Warrior/Rogue=cat 16 (slot_16), Gunslinger/Knight=cat 17
+    (slot_17), Sorcerer=cat 18 (slot_18 — 충돌, 별도 path 추정).
+  - slot_16 도 실제 SkillBook 임이 확인 (양손베기/돌진/내려찍기 등 Warrior 스킬)
+    — SLOT_META 정정 (이전 'mix_book' 잘못).
+  - parse_skill_book_extra 의 라벨 정정 (val_134→class_id, val_135→skill_index,
+    val_137→required_level).
+  - 검증: slot_16 95 records (Warrior 48 + Rogue 47), slot_17 98 records
+    (Gunslinger 49 + Knight 49). 각 클래스 정확히 10 skills × 1..7 levels.
 - ✅ **Round 20**: LoadItemTable 함수 끝 영역 (0xa479c..0xa49c0) 추가 disasm —
   `tools/h5_dump_loaditem_tail.py` (`capstone.skipdata=True` 로 literal pool 통과).
   - **slot_17 (SkillBookItem) 4 byte ext** @ 0xa47c0 (jumptable case 16/17 공유).
@@ -208,15 +221,19 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. slot_17 v134 (skill_class) 의미 정확 식별 (자율 가능)
+### 1. Sorcerer (class_id=4) skill book 위치 식별 (자율 가능)
 
-Round 20 에서 slot_17 의 4 byte 추출 + skill_level 식별 완료. v134=2 (Gunslinger
-계열 49 records) / v134=3 (Knight 계열 49 records) 만 등장 — 5 클래스 (W/R/G/K/S)
-중 2개만 등장하는 것이 의문. 가설:
-  (a) cash shop 에 Gunslinger/Knight 스킬북만 등록됨 (다른 클래스는 다른 경로 학습)
-  (b) v134 가 class 가 아니라 skill book "tier" 임 (basic/premium)
-  (c) item_17.dat 가 일부 클래스만 포함 (다른 csv 에 나머지 클래스)
-SkillBookItemInfo::Use 또는 c_csv_skill 와 cross-check 로 확정 가능.
+Round 21 에서 IfLearnSkill 공식 `(class_id/2)+16` 확인 완료. 이론적으로
+Sorcerer (class 4) 는 cat 18 (slot_18) 에 매핑되지만 slot_18 records 모두
+cash shop items (창고확장/오브원석 등) 이고 class_id=4 records 없음.
+
+가설:
+- (a) Sorcerer 는 출시 후 추가 클래스 → 별도 메커니즘으로 학습
+- (b) 공식이 5클래스 전부 지원 안 함 (4 클래스 limited)
+- (c) Sorcerer 의 모든 스킬은 자동 학습 (skill book 불필요)
+
+확인 방법: SORCERER 클래스 객체의 LearnSkill / SetUseSkill 함수 disasm,
+또는 c_csv_skill 의 5번째 클래스 데이터 분석.
 
 ### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
 
@@ -309,6 +326,8 @@ save 파일 dump 후 0x278..0x282 (V[111..116]) 영역의 game-saved 값을 game
 | BattleUseItem (cat 12) +0x134..+0x137 csv 매칭 검증 | ✅ Round 19: slot_11 포션 4 byte 정확 추출 | items.json |
 | slot_17 (SkillBookItem) 4 byte ext + skill_level 식별 | ✅ Round 20: 0xa47c0 disasm, 98 records 모두 v134/v135/skill_level/v137 추출 | `parse_skill_book_extra`, items.json |
 | slot_18 (CashItem) 2 byte ext + 별도 jumptable case | ✅ Round 20: 0xa3b38 (Round 19 가설 정정), 49 records 모두 추출 | `parse_cash_extra`, items.json |
+| SkillBook 4 byte fields 의미 (class_id/skill_index/skill_level/required_level) | ✅ Round 21: HERO::IfLearnSkill 분석, (class_id/2)+16 공식 확인 | `iflearnskill_disasm.txt` |
+| slot_16 = SkillBook 정정 (이전 mix_book 잘못) | ✅ Round 21: Warrior 48 + Rogue 47, 양손베기/돌진/내려찍기 등 | items.json, SLOT_META |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
 
 ---
