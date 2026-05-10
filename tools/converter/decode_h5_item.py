@@ -286,8 +286,8 @@ def parse_equip_extra(extra: bytes) -> dict:
         +2..+3: u16 → struct +0x152
         +4: u8 → struct +0x154
         +5: u8 → struct +0x155 (class_restriction)
-        +6..+7: u16 → struct +0x156
-        +8..+9: u16 → struct +0x158
+        +6..+7: u16 → struct +0x156  ← stat_a (V[184]) — Round 26 식별
+        +8..+9: u16 → struct +0x158  ← stat_b (V[185]) — Round 26 식별
         +0xa..+0xb: u16 → struct +0x15a
         +0xc: u8 → struct +0x15c
         +0xd: u8 → struct +0x15d (level_limit)
@@ -295,6 +295,29 @@ def parse_equip_extra(extra: bytes) -> dict:
         +0xf: u8 → struct +0x15f
         +0x10: u8 → struct +0x160
         +0x11..+0x13: u8 ×3 → struct +0x162..+0x164
+
+    Refine stat 보너스 mechanism (Round 26 — formula_var_dict.tsv + formulas_disasm.txt):
+      - V[184] = item +0x156 (s16) = stat_a — 무기 atk_min / 방어구 phys_def
+      - V[185] = item +0x158 (s16) = stat_b — 무기 atk_max / 방어구 mag_def
+      - V[186] = item +0x165 (s8)  = refine_count — Formula VM 미사용 (jumptable cap=10)
+      - V[187] = item +0x166 (s8)  = sub_count   = 실제 stat 보너스 양
+      - V[188] = item +0x168 (s8)  = orb_count
+      Formula VM:
+        id=35: clamp((V[184] + V[187]), 0, 9999)  → refined stat_a = stat_a + sub_count
+        id=36: clamp((V[185] + V[187]), 0, 9999)  → refined stat_b = stat_b + sub_count
+      ApplyItemRefine (0xa292c) jumptable (r7 결과):
+        case 0 (큰 성공): refine_count++, sub_count += 2
+        case 1 (성공)   : refine_count++, sub_count += 1
+        case 2 (stay)   : 재료만 소비, no change
+        case 3 (lock)   : +0x167 = 1 (영구 잠금 — 파괴 방지)
+        case 4 (실패)   : item destroy + DeleteBagItem
+      refine_count > 9 = 강화 max (return 5).
+
+    Stat slot semantics (val_156=stat_a / val_158=stat_b 분포 분석):
+      - weapon (slot 0..3): a < b 일관 → atk_min / atk_max (range)
+      - shield (slot 9)   : a ≈ b 일관 → phys_def / mag_def (균형)
+      - helmet/boots/acc  : a > b 평균 → primary / secondary def
+      - spirit (slot 10)  : a, b 모두 ≤1 → 무시 가능 (별도 mechanism)
     """
     if len(extra) < 5:
         return {}
@@ -318,8 +341,12 @@ def parse_equip_extra(extra: bytes) -> dict:
     # 은 cls=7 만 허용 — 즉 cls 가 weapon/armor sub-type 분류). 진짜 class mask 는
     # val_15f 후보 (다음 라운드 검증).
     res['subtype'] = _u8(5)              # struct +0x155 (이전 class_restriction 잘못)
-    res['val_156'] = _u16(6)
-    res['val_158'] = _u16(8)
+    # Round 26: V[184] = +0x156, V[185] = +0x158 — refined stat 식 id=35/36 의 base.
+    # weapon: atk_min/atk_max, shield: phys_def/mag_def, helmet/boots/acc: primary/secondary def.
+    res['stat_a'] = _u16(6)              # struct +0x156 → V[184]
+    res['stat_b'] = _u16(8)              # struct +0x158 → V[185]
+    res['val_156'] = res['stat_a']       # backward compat
+    res['val_158'] = res['stat_b']
     res['val_15a'] = _u16(0xa)
     res['val_15c'] = _u8(0xc)
     res['level_limit'] = _u8(0xd)        # struct +0x15d

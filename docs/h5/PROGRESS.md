@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 25 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 26 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,48 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 26 — 2026-05-10 완료]** RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism RE
+- ✅ **강화 stat 보너스 식 발견 (Formula VM id=35/36)**:
+  - id=35: `clamp((V[184] + V[187]), 0, 9999)` → refined stat_a = stat_a + sub_count
+  - id=36: `clamp((V[185] + V[187]), 0, 9999)` → refined stat_b = stat_b + sub_count
+  - V[184] = item +0x156 (s16) = stat_a (무기 atk_min / 방어구 phys_def / 방패 phys_def)
+  - V[185] = item +0x158 (s16) = stat_b (무기 atk_max / 방어구 mag_def / 방패 mag_def)
+  - V[186] = item +0x165 (s8) = refine_count → Formula VM 미사용 (jumptable cap=10 only)
+  - V[187] = item +0x166 (s8) = sub_count = **실제 stat 보너스 양**
+- ✅ **EquipItem stat 의미 (items.json 분포 + V[184]/V[185] cross-check)**:
+  - weapon (slot 0..3, 86×4=344 records): stat_a < stat_b 일관 (avg 100~140 / 173~308) → atk_min/atk_max
+  - shield (slot 9, 81 records): stat_a ≈ stat_b 일관 (avg 30/30) → 균형 phys/mag def
+  - helmet (slot 5, 90), boots (slot 6, 93), accessory (slot 7/8, 162): stat_a > stat_b → primary/secondary def
+  - spirit (slot 10, 18): stat_a, stat_b 모두 ≤1 → 별도 mechanism (V[184]/V[185] 사용 안함)
+  - armor (slot 4, 1 record "스태프"): 1/1 — Sorcerer placeholder (Round 22 cross-confirm)
+- ✅ **ApplyItemRefine (0xa292c, 956B) 5-case 결과 jumptable**:
+  - case 0 (큰 성공): `refine_count++, sub_count += 2` → +2 stat
+  - case 1 (성공)   : `refine_count++, sub_count += 1` → +1 stat
+  - case 2 (재료만 소비): no change (random fail before destruction)
+  - case 3 (lock)   : `+0x167 = 1` (영구 잠금 — 향후 실패 destroy 방지)
+  - case 4 (실패)   : item destroy + `BagItem::DeleteBagItem` + clear EquipItem refs
+  - return value cap: refine_count > 9 면 5 (강화 max)
+- ✅ **ApplyOrbCombine (0xa1e30, 1208B) 분석**:
+  - signature: `ApplyOrbCombine(EquipItemInfo* item, s16 pos, s8 orb_cat, s8 sub_orbs, ItemInfo** out)`
+  - orb category arg3 (sl): 3 그룹 (0xe..0x1a / 0x1b..0x27 / 0x28..0x34) × 13 종 = 39 종 orb
+  - sub_orbs == 9 면 강도 multiplier 2x (else 1x) — 랜덤 결과 강화
+  - item +0x168 = orb_count (현재 채워진 socket 수, V[188])
+  - item +0x169..+0x16d = 5 byte orb socket (각 byte = orb_id, 0xff=빈슬롯)
+  - 5-case prob outcome jumptable + Mission::CheckOrbCombine 호출 (mission 진척)
+- ✅ **decode_h5_item.py::parse_equip_extra 업데이트**:
+  - `stat_a` (V[184]) + `stat_b` (V[185]) 의미있는 라벨 추가
+  - val_156/val_158 backward-compat 유지
+  - refine 식 + ApplyItemRefine jumptable + slot 별 stat 의미 docstring 정리
+- ✅ **ITEM_STRUCT.md 정정**:
+  - +0x156 (s16 stat_a, V[184])
+  - +0x158 (s16 stat_b, V[185])
+  - +0x165 (refine_count, V[186])
+  - +0x166 (refine_sub_count, V[187]) — **실제 stat 보너스 양**
+  - +0x167 (refine_locked)
+  - +0x168 (orb_count, V[188])
+  - +0x155 = subtype (Round 16 정정 반영, 이전 "class_restriction" 잘못)
+- 산출: `work/h5/analysis/applyorbcombine_disasm.txt` (303 줄 disasm)
 
 **[Round 25 — 2026-05-10 완료]** slot_15 (mix_book recipe) 13 byte ext 구조 RE
 - ✅ **13 byte recipe layout 확정** (items.json 116 records 분석 + 이름 cross-check):

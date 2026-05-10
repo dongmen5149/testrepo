@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 25 — slot_15 (mix_book recipe) 13 byte ext 구조 RE 완료. 1~3 ingredients (cat/idx/count) + result (cat/idx) + success_rate %. 116 records 모두 정확히 parse — 쿠킹/포션 합성/재료 정제/무기 제작 카테고리화.)
+업데이트: 2026-05-10 (Round 26 — RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism RE 완료. **Formula VM id=35/36 강화 stat 식 발견** — refined stat = base + sub_count (V[187]). ApplyItemRefine 5-case jumptable (큰성공/성공/stay/lock/destroy) 의미 확정. ApplyOrbCombine 39 orb 종 + 5 socket 매핑 식별.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 26 시작 — RefineItem::ApplyItemRefine 강화 stat 보너스 식별"** 으로 진행.
-구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-26-후보-우선순위-순) 1번 참조.
+**"Round 27 시작 — NewDropItem +0x15f tier_flags 정확 의미 검증"** 으로 진행 (Round 24 가설 검증).
+또는 다른 옵션: ApplyItemDecompose / ApplyItemCompose / ApplyNormalMix / ApplySpecialMix 의 4 RefineItem 함수 분석 (강화 외 mechanism). 구체 단계는 아래 [§ 다음 세션 시작점](#다음-세션-시작점-round-27-후보-우선순위-순) 참조.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 25 시점, 2026-05-10)
+## 30초 요약 (Round 26 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~25 누적 발견 (요약)
+### Round 6~26 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -45,6 +45,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | val_15f csv vs runtime 용도 분리 | csv: lower 5 bit = class_mask + upper 3 bit = tier_flags. runtime: SetItemOption (0xa0ff8) 가 option_type code 로 overwrite. GetRelieveLevelLimit (0xa835c) 의 cmp #0x6c='l' 는 runtime option (R24) |
 | val_15f upper 3 bit 실증적 의미 | upper=0 (170, legendary 보스/named) / =1 (248, rare 중급) / =3 (9, gem 보석 헤어핀/서클릿) / =7 (362, common 상점 기본) (R24) |
 | slot_15 mix_book recipe 13 byte 구조 | 1~3 ingredients (cat/idx/count) + result (cat/idx) + success_rate%. 쿠킹/포션 합성/재료 정제/무기 제작 카테고리. 116 records 모두 검증 (R25) |
+| **강화 stat 보너스 식 (Formula VM)** | **id=35: clamp((V[184]+V[187]),0,9999)**, **id=36: clamp((V[185]+V[187]),0,9999)**. V[184]=item+0x156=stat_a, V[185]=item+0x158=stat_b, V[187]=item+0x166=sub_count. **refined_stat = base + sub_count** (R26) |
+| **EquipItem stat 의미 (slot 별)** | weapon (slot 0-3): atk_min/atk_max (a<b), shield (slot 9): phys/mag def (a≈b), helmet/boots/accessory: primary/secondary def (a>b), spirit (slot 10): 별도 mechanism (a,b ≤1) (R26) |
+| **ApplyItemRefine 5-case jumptable 의미** | case 0=큰성공 (refine_count++, sub+=2), case 1=성공 (refine_count++, sub+=1), case 2=재료소비 (no change), case 3=lock (+0x167=1 영구 잠금), case 4=destroy (item 파괴). refine_count cap 10 (R26) |
+| **ApplyOrbCombine orb socket mechanism** | item +0x168 = orb_count (V[188]), +0x169..+0x16d = 5 socket bytes. 39 orb 종 (3 그룹 × 13). sub_orbs=9 면 강도 multiplier 2x. Mission::CheckOrbCombine 호출로 mission 진척 (R26) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -54,11 +58,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 25 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism
-  정밀 분석** — refine 시 어떤 stat 이 변경되는지 (Round 17 일부 분석 완료).
-- 또는: NewDropItem 의 +0x15f arg 가 어떻게 채워지는지 — DropTable / ShopInventory
-  cross-check 로 tier_flags 의 정확 의미 추가 검증.
+- Round 26 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **NewDropItem +0x15f tier_flags 정확 의미 검증** — Round 24 의
+  실증적 라벨 (legendary/rare/gem/common) 을 정적 분석으로 확정. 또는 RefineItem 의
+  나머지 4 함수 (ApplyItemDecompose / ApplyItemCompose / ApplyNormalMix / ApplySpecialMix)
+  로 강화 외 mechanism (분해/합성/일반 mix/특수 mix) 식별.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -283,21 +287,29 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 26 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 27 후보, 우선순위 순)
 
-### 1. RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 stat 보너스 식별 (자율 가능, 큰 임팩트)
+### 1. NewDropItem +0x15f tier_flags 정확 의미 검증 (자율 가능, Round 24 가설 검증)
 
-Round 17 에서 ApplyItemRefine (956B, @0xa292c) 의 jumptable case 일부 분석 완료
-— `+0x165=refine_count`, `+0x166=sub_count`, `+0x167=locked` 식별.
-**미해결**: 강화 시 어떤 stat (atk/def/등)이 어떻게 증가하는지, 강화 단계별
-보너스 공식.
+Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common) 부여.
+정확 의미 확정을 위해:
+- `MapItem::NewDropItem` (0xa7884) 의 11 args 중 +0x15f 에 사용되는 arg 추적
+- `DropTable::GetRandomItem` 또는 `ShopInventory::GetRandomItem` 의 호출 패턴
+- bit5/bit6/bit7 각각의 의미 (현재 가설: obtainable/gem-accessory/common-tier)
 
-추가 분석 대상:
-- `RefineItem::ApplyItemRefine` (956B, @0xa292c) — 강화 성공 시 stat 변경 추적
-- `RefineItem::ApplyOrbCombine` (1208B) — orb 결합 mechanism (socket +0x168..+0x16d)
-- ItemBase formula (V[168..182]) 와의 cross-check
+### 2. RefineItem 의 나머지 4 함수 (분해/합성/normal mix/special mix) 분석 (자율 가능, 중간 임팩트)
 
-### 2. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증, 작은 임팩트)
+Round 26 에서 ApplyItemRefine (강화) + ApplyOrbCombine (orb 결합) 분석 완료.
+나머지:
+- `RefineItem::ApplyItemDecompose` (1228B, @0xa6330) — 아이템 분해 mechanism
+- `RefineItem::ApplyItemCompose` (936B, @0xa5f88) — 아이템 합성 mechanism
+- `RefineItem::ApplyNormalMix` (896B, @0xa7d04) — slot_15 일반 recipe 실행
+- `RefineItem::ApplySpecialMix` (1020B, @0xa6ed4) — slot_15 special recipe 실행
+
+특히 ApplyNormalMix 는 Round 25 의 mix_book recipe 실행기 — recipe 의 success_rate
+를 어떻게 적용하는지, 결과 아이템 생성 로직을 disasm.
+
+### 3. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증, 작은 임팩트, 1번과 동일)
 
 Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common) 부여.
 정확 의미 확정을 위해:
@@ -379,6 +391,10 @@ SDK 필수. 사용자가 GUI 로 진행 필요. `apps/hero5-godot/export_presets
 | slot_16 = SkillBook 정정 (이전 mix_book 잘못) | ✅ Round 21: Warrior 48 + Rogue 47, 양손베기/돌진/내려찍기 등 | items.json, SLOT_META |
 | 소서러 (class_id=4) 미구현 stub 확정 | ✅ Round 22: skill_04.dat 부재 + SORCERER class 없음 + class_stats unk1..14=1 | class_stats.json, c_csv_skill_*, class_select.gd "(미구현)" |
 | class_stats.json STR/DEX/CON/INT 순서 정정 | ✅ Round 11: decode_h5_class.py 정정 + 재생성 | `tools/converter/decode_h5_class.py` |
+| 강화 stat 보너스 식 (Formula VM id=35/36) | ✅ Round 26: refined_stat = base + sub_count (V[187]) | `formulas_disasm.txt`, `formula_var_dict.tsv` |
+| V[184]/V[185] = item +0x156/+0x158 stat | ✅ Round 26: weapon=atk_min/max, shield=phys/mag def, helmet/boots/acc=primary/secondary | items.json stat_a/stat_b 분포, `decode_h5_item.py::parse_equip_extra` |
+| ApplyItemRefine 5-case jumptable 의미 | ✅ Round 26: 큰성공/성공/stay/lock/destroy + refine_count cap=10 | `applyitemrefine_disasm.txt` |
+| ApplyOrbCombine orb socket mechanism | ✅ Round 26: 39 orb 종 (3×13), +0x168 orb_count, +0x169..+0x16d 5 socket | `applyorbcombine_disasm.txt` |
 
 ---
 
@@ -537,6 +553,8 @@ assets/                 # gitignore — import_to_godot.py 가 채움
 - [x] ~~V[62]/V[63] 매핑 정정~~ — ✅ Round 11: int/con → con/int (이전 매핑 오류, buildup csv 로 검증)
 - [x] ~~V[122..126] 5 buff slot 의미~~ — ✅ Round 12: EXP%/SP감소%/CP충전LV/쿨타임감소%/포션효과% 확정
 - [x] ~~V[151,152] magic stat~~ — ✅ Round 12: 둘 다 INT-magic (이전 V[152]=DEX 잘못)
+- [x] ~~RefineItem::ApplyItemRefine 강화 stat 보너스 mechanism~~ — ✅ Round 26: V[184]+V[187] / V[185]+V[187] (id=35/36), 5-case jumptable
+- [x] ~~ApplyOrbCombine orb 결합 mechanism~~ — ✅ Round 26: 39 orb 종, +0x168 count, +0x169..+0x16d 5 socket
 - [ ] V[151] vs V[152] 의 element 짝 (fire/ice/lightning/dark 어느 것)
 - [ ] 한글 비트맵 폰트 (시스템 폰트로 우회 중) — P5, capstone+lief 로 가능
 - [ ] SMAF (.mmf) 변환 (OGG 42개로 충당)

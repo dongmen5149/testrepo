@@ -31,19 +31,22 @@ GetLevelLimit 분석 결과 (Round 13 — 2026-05-10):
 | `+0x150` | u16 | ? | |
 | `+0x152` | u16 | ? | |
 | `+0x154` | u8 | flag | |
-| `+0x155` | s8 | **class_restriction** ✅ Round 13 | IsEquipPossible: `ldrb r0, [r0, #0x155]` 와 HERO+0x22c (class_id) 비교 |
-| `+0x156..0x15a` | u16 ×3 | stats | |
-| `+0x15c` | u8 | flag | |
+| `+0x155` | s8 | **subtype** ✅ Round 16 (이전 class_restriction 정정) | IsEquipPossibleSpirit cross-check — slot_10 spirit 이 cls=7 만 허용. 진짜 class mask 는 +0x15f |
+| `+0x156` | s16 | **stat_a** ✅ Round 26 (V[184]) | weapon: atk_min, shield: phys_def, helmet: primary_def. id=35 의 base. |
+| `+0x158` | s16 | **stat_b** ✅ Round 26 (V[185]) | weapon: atk_max, shield: mag_def, helmet: secondary_def. id=36 의 base. |
+| `+0x15a` | u16 | stat_c (?) | (formula 직접 사용 미발견) |
+| `+0x15c` | u8 | option_grade ✅ Round 18 | MakeItemOption 에서 SetItemOption 호출 여부 결정 |
 | `+0x15d` | s8 | **level_limit** ✅ Round 13 | GetLevelLimit: `ldrb r4, [r0, #0x15d]` - GetRelieveLevelLimit() |
 | `+0x15e` | s8 | flag | |
-| `+0x15f` | s8 | extra | |
+| `+0x15f` | s8 | **class_mask + tier_flags** ✅ Round 16/24 | lower 5bit = W/R/G/K/S 비트 마스크, upper 3bit = legendary/rare/gem/common. runtime SetItemOption 가 option_type 으로 overwrite. |
 | `+0x160` | s8 | flag | |
 | `+0x161` | s8 | flag | |
-| `+0x162` | u16 | ? | |
-| `+0x165` | u8 | flag | |
-| `+0x166` | u8 | flag | |
-| `+0x168` | u8 | **socket slot 0** (filled flag) ✅ Round 13 | EquipItem init: `dst[0x168]=0; memset(dst+0x169, 0xff, 5)` |
-| `+0x169..+0x16d` | u8 ×5 | **socket slots 1..5** (orb/refine ID) | 0xff=빈슬롯, otherwise orb_idx |
+| `+0x162` | u16 | option_value ✅ Round 18 | SetItemOption 시 level*param*rand |
+| `+0x165` | s8 | **refine_count** ✅ Round 17 (V[186]) | 강화 횟수 (max 10). Formula VM 미사용 — jumptable cap only. |
+| `+0x166` | s8 | **refine_sub_count** ✅ Round 26 (V[187]) | 보조 강화 횟수 = stat 보너스 양 (V[184]/V[185] 에 더해짐) |
+| `+0x167` | u8 | **refine_locked** ✅ Round 17 | 1 = 영구 잠금 (실패 시 destroy 방지) |
+| `+0x168` | s8 | **orb_count** ✅ Round 13 (V[188]) | 채워진 orb socket 수. EquipItem init: `dst[0x168]=0; memset(dst+0x169, 0xff, 5)` |
+| `+0x169..+0x16d` | u8 ×5 | **socket slots 1..5** (orb_id) | 0xff=빈슬롯, otherwise orb_idx (ApplyOrbCombine 가 채움) |
 | `+0x16e` | u16 | refine bonus | CopyData `mov r3, #0x16c; add r3, r3, #2; ldrh` |
 | `+0x170` | u16 | refine bonus | |
 
