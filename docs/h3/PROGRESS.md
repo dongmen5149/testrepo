@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-15 (Round 25) — **2BE + 2BF + 2BG + FUN_0009a008 super-function 발견 + 0x9bb4 bit-field 정정 + 0x9c70 cluster 정정**. (1) ⭐⭐⭐ **FUN_0009b252 는 sub-label**, 진짜 함수는 **FUN_0009a008 (8.6KB / 0x9a008~0x9c27e)** — 2-stage JT dispatch (1st: `caller_arg2[caller_arg4]` byte ∈ [4..10] 7 entries, 2nd: r6 ∈ [0..0xd] 14 entries). (2) ⭐⭐⭐ **task_struct[0x9bb4] = bit flag field** (NOT type tag dispatch key) — 모든 access 가 **FUN_0007d31c (bit helper)** 로 mask 전달. 다른 14 readers 도 같은 패턴. (3) ⭐⭐ **0x9bd0 = ptr-to-object slot** (vtable method @ offset 8 via FUN_0007cd58). (4) ⭐⭐ **0x9c70/71/84/85 = 4개 인접 byte fields** (Round 24 의 "array base" 가설 정정 — 단순 byte read/write). (5) ⭐ 신규 GOT slot 0xd1c (누적 9 slots). 상세는 [ghidra-fun9a008-bitfield-2026-05-10.md](ghidra-fun9a008-bitfield-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-16 (Round 26) — **2BJ + 2BK + 2BL + helper 정체 정정 + auto 도구 undercount 발견**. (1) ⭐⭐⭐ **FUN_0007d31c ≠ 단순 bit op helper** — 660B multi-stage 함수, 8 bit unrolled scan. **`ldr r3, [r0, #0x1c]`** 가 0x9bd0 dereference → **0x9bb4 와 0x9bd0 가 같은 substructure 의 멤버** (offset 0 + offset 0x1c, 32 byte 추정). (2) ⭐⭐⭐ **FUN_0007cd58 ≠ vtable invoker** — 1068B leaf function, GOT 미사용 (0 PC-rel literals), 0 BL targets. `ldrh [r0+0x10]; >>4` 산술 helper (vtable+0x18 halfword metadata). (3) ⭐⭐ **`find_task_struct_field_readers.py` auto 통계 = system-wide undercount** — 0x9c70 cluster (wide-scan 303 sites) auto = 0 hits. PM-7 의 0x9bb4 통계도 undercount 가능성. (4) ⭐⭐ **0x9bd0 ptr-to-object = 14 unique funcs 에서 사용** (system-wide 핵심 객체, ObjectA/B 외 신규). 상세는 [ghidra-helpers-and-undercount-2026-05-10.md](ghidra-helpers-and-undercount-2026-05-10.md).
 
 **이전 라운드 종합**: Round 18~24 의 진척 요약은 **§"Round 18~25 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -14,10 +14,11 @@
 - **Round 23** — ⭐ **결정적 정정**: 다수 "GOT slot" 가 task_struct 필드로 재분류
 - **Round 24** — task_struct field layout 매핑 (0x9bb4 dominant 식별)
 - **Round 25** — ⭐ **FUN_0009b252 = sub-label** 정정 + 0x9bb4 = bit flag field + 0x9c70 cluster 정정 + 신규 helper 매핑 (0x7d31c bit / 0x7cd58 vtable)
+- **Round 26** — ⭐ **helper 정체 정정** (0x7d31c = 8-bit unrolled scan, 0x7cd58 = leaf 산술 helper) + **0x9bb4/9bd0 = 같은 substructure** 발견 + auto 도구 undercount 확인
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **FUN_0009a008 super-function 발견 + 0x9bb4 bit-field 정정 + 0x9c70 cluster 정정** (2026-05-10 PM-15 / Round 25). PM-7 의 FUN_0009b252 (4KB) 가 사실 **FUN_0009a008 (8.6KB) 의 sub-label**. **task_struct[0x9bb4] = bit flag field** (FUN_0007d31c bit helper 호출, NOT type tag dispatch key). **task_struct[0x9bd0] = ptr-to-object** (vtable invoker FUN_0007cd58). **0x9c70/71/84/85 = 4개 인접 byte fields** (Round 24 array base 가설 정정). 신규 GOT slot 0xd1c. 다음 진척은 **(1) FUN_0007d31c bit helper 본문, (2) FUN_0007cd58 vtable invoker 본문, (3) FUN_0009a008 의 7-entry + 14-entry JT 디코드, (4) sound id ↔ snd/ 자산 매핑, (5) SMAF/번역**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **helper 정체 정정 + 0x9bb4/9bd0 same-substructure 발견 + auto 도구 undercount 확인** (2026-05-10 PM-16 / Round 26). FUN_0007d31c = 660B multi-stage 함수 (NOT 단순 bit op, 8 bit unrolled scan + 0x9bd0 deref). FUN_0007cd58 = 1068B leaf 산술 helper (NOT vtable invoker, GOT 미사용). **task_struct+0x9bb4 = 32 byte substructure** (offset 0 = bit flags, offset 0x1c = ptr-to-object). 0x9bd0-object 는 14 unique funcs 에서 사용되는 system-wide 핵심 object (ObjectA/B 외). `find_task_struct_field_readers.py` auto 통계 = 0x9c70 cluster 100% miss = system-wide undercount. 다음 진척은 **(1) auto 도구 lenient 화, (2) 0x9bd0-object vtable layout, (3) FUN_0009a008 JT 디코드, (4) sound id ↔ snd/ 자산 매핑, (5) SMAF/번역**.
 
 ### 게임 update flow (2026-05-10 정정)
 
@@ -45,12 +46,12 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-fun9a008-bitfield-2026-05-10.md](ghidra-fun9a008-bitfield-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 25 / PM-15** (FUN_0009a008 super-function + 0x9bb4 bit field + 0x9c70 정정 + 신규 helper)
-5. (참고) [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) — Round 24 / PM-14 (task_struct field layout, 0x9bb4 가설은 Round 25 에서 정정됨)
-6. (참고) [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — Round 23 / PM-13 (GOT slot vs task_struct field 분류 정정)
+4. **[ghidra-helpers-and-undercount-2026-05-10.md](ghidra-helpers-and-undercount-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 26 / PM-16** (helper 정체 정정 + same-substructure + undercount)
+5. (참고) [ghidra-fun9a008-bitfield-2026-05-10.md](ghidra-fun9a008-bitfield-2026-05-10.md) — Round 25 / PM-15 (FUN_0009a008 super-function, 0x7d31c/7cd58 가설은 Round 26 에서 정정됨)
+6. (참고) [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) — Round 24 / PM-14 (task_struct field layout)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~25 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~26 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -62,8 +63,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **23** (PM-13) | ⭐⭐⭐ **결정적 분류 정정** — Round 18~22 의 다수 "GOT slot" 가 **task_struct 필드 offset**. 진짜 GOT 슬롯 8개로 축소. sound_trigger r1=sound_id 정정 + 11 immediate ID. ObjectB 재정의 (단순 task_ptr_holder) | [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) |
 | **24** (PM-14) | **task_struct field layout 매핑** (신규 도구 `find_task_struct_field_readers.py`) — **0x9bb4 = dominant** (69 sites, FUN_0009b252 가 46x). 신규 record array dispatchers (FUN_00044a38/0x482c8/0x41c6e). context_getter = single deref. dynamic sound id = stack frame. ~~0x9c70 = byte array base~~ (Round 25 정정) | [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) |
 | **25** (PM-15) | ⭐⭐⭐ **FUN_0009b252 = sub-label** 정정 (진짜는 **FUN_0009a008, 8.6KB, 2-stage JT**). **0x9bb4 = bit flag field** (NOT dispatch key, FUN_0007d31c bit helper). 0x9bd0 = ptr-to-object (FUN_0007cd58 vtable invoker). 0x9c70/71/84/85 = 4개 인접 byte fields (array base 정정). 신규 GOT slot 0xd1c (누적 9). FUN_00041c14 신규 cluster 0x9afc~0x9b1c | [ghidra-fun9a008-bitfield-2026-05-10.md](ghidra-fun9a008-bitfield-2026-05-10.md) |
+| **26** (PM-16) | ⭐⭐⭐ **helper 정체 정정** — FUN_0007d31c = 660B multi-stage (8 bit unrolled scan, **0x9bd0 dereference 발견** = 0x9bb4 + 0x9bd0 가 **같은 32B substructure 의 멤버**). FUN_0007cd58 = 1068B leaf 산술 helper (NOT vtable invoker, GOT 미사용). **`find_task_struct_field_readers.py` auto undercount** — 0x9c70 cluster 0% (wide-scan 303 sites). 0x9bd0-object = 14 unique funcs system-wide | [ghidra-helpers-and-undercount-2026-05-10.md](ghidra-helpers-and-undercount-2026-05-10.md) |
 
-### 현재 게임 시스템 모델 (Round 25 시점, 검증 vs 가설)
+### 현재 게임 시스템 모델 (Round 26 시점, 검증 vs 가설)
 
 **✅ 검증된 사실** (실측 disassembly + reader 통계):
 
@@ -88,8 +90,11 @@ task_struct (44KB+ 거대 평면 구조체, *(task_ptr) 으로 진입)
   ├─ 0xb4    byte (record array byte offset, FUN_0009a008 의 saved register)
   ├─ 0x29e   small flag (3 sites, 2 funcs)
   ├─ 0x9afc~0x9b1c ⭐ byte field cluster #1 (FUN_00041c14 21+ refs, NEW Round 25)
-  ├─ 0x9bb4~0x9bc8 ⭐ bit flag substructure (NOT dispatch key — FUN_0007d31c bit helper, 정정 Round 25)
-  ├─ 0x9bd0  ptr-to-object slot (vtable[8] via FUN_0007cd58, NEW Round 25)
+  ├─ 0x9bb4~0x9bd0 ⭐ 32B substructure A (NEW Round 26 — same struct):
+  │    ├─ +0    (0x9bb4) bit flags (FUN_0007d31c 8-bit unrolled scan)
+  │    ├─ +0x02 (0x9bb6) byte field
+  │    ├─ +0x14 (0x9bc8) field
+  │    └─ +0x1c (0x9bd0) ptr-to-object (14 unique funcs, system-wide 핵심 객체)
   ├─ 0x9c70/71/84/85 ⭐ 4개 인접 byte fields (각 100+/100+/39/37 sites, 정정 Round 25)
   ├─ 0x9cb8/9cbc/9cc0/9cfe  record array slots
   ├─ 0x9e28  sound state #1 (16 sites)
@@ -103,8 +108,8 @@ FUN_0009a008 (8.6KB, 0x9a008~0x9c27e) — 2-stage JT dispatch (NEW Round 25):
 
 Helper functions:
   0x4ad10  context_getter (single deref *GOT[0x444])
-  0x7d31c  bit test/set/clear (r0=ptr, r1=mask, r2=output) ⭐ NEW Round 25
-  0x7cd58  vtable method invoker (r0=vtable+offset)       ⭐ NEW Round 25
+  0x7d31c  substructure A bit-scan dispatcher (660B, 8-bit unrolled, 0x9bd0 deref) ⭐ 정정 Round 26
+  0x7cd58  vtable+0x18 halfword 산술 helper (1068B leaf, NO GOT, NO BL)             ⭐ 정정 Round 26
   0x99764  sound_trigger (r0=ctx, r1=sound_id)
   0x9fd64  sound paired helper
 
@@ -144,16 +149,18 @@ JT @ 0xa8370 (FUN_000439a0 내부, type 4..10):
 
 **🔬 가설 단계** (다음 round 검증 필요):
 
-- ~~task_struct[0x9bb4] = state machine state~~ → Round 25 검증: **bit flag field** (NOT dispatch key, 0x7d31c bit helper)
-- ~~0x9c70 = byte array base~~ → Round 25 검증: **단순 byte field** (NOT array)
+- ~~task_struct[0x9bb4] = state machine state~~ → Round 25 검증: **bit flag field**
+- ~~0x9c70 = byte array base~~ → Round 25 검증: **단순 byte field**
+- ~~FUN_0007d31c = bit op helper~~ → Round 26 검증: **8-bit unrolled scanner + 0x9bd0 deref**
+- ~~FUN_0007cd58 = vtable invoker~~ → Round 26 검증: **leaf 산술 helper, GOT 미사용**
 - **ObjectA = audio/asset resource manager** — POSIX errors + acquire-use-release 패턴 + vtable[0x7c]=acquire / [0x80]=write 가 강력한 시사
-- **FUN_0007d31c bit op semantics** — r1 sign 으로 set/clear 분기 추정, 본문 검증 필요 (Round 26)
-- **FUN_0007cd58 vtable invoker** — vtable[8] method 호출, signature 검증 필요
-- **FUN_0009a008 2-stage JT entries 의미** — JT 디코드 + 각 entry 의 처리 매핑 (Round 26 후속)
+- **0x9bd0-object = system-wide 핵심 객체** (14 unique funcs reader, ObjectA/B 외 신규) — vtable layout 매핑 필요 (Round 27)
+- **`find_task_struct_field_readers.py` undercount** → 도구 lenient 화 후 재실행 시 통계 대거 변화 가능 (Round 27)
+- **FUN_0009a008 2-stage JT entries 의미** — JT 디코드 + 각 entry 의 처리 매핑
 - **FUN_00044a38/0x482c8 sibling 관계** — template-instantiated 또는 source-copy, caller chain 추적 필요
 - **3 entry indirect main_loop** — Ghidra Script 필요 (정적 ceiling)
 
-### Round 26 즉시 시작 명령 (복사-붙여넣기)
+### Round 27 즉시 시작 명령 (복사-붙여넣기)
 
 ```powershell
 # 1) 환경 (Python 만 필요)
@@ -163,28 +170,29 @@ cd c:\gameRemake\testrepo
 # 2) 컨텍스트 복구 (1분)
 git log --oneline -8
 git status --short
-# 위 §"Round 18~25 한눈 요약" 표 + §"현재 게임 시스템 모델" 읽기
+# 위 §"Round 18~26 한눈 요약" 표 + §"현재 게임 시스템 모델" 읽기
 
-# 3) Round 26 권장 진행 (우선순위 순)
+# 3) Round 27 권장 진행 (우선순위 순)
 
-# ⭐⭐⭐ 2BJ: FUN_0007d31c (bit helper) 본문 — Round 25 가 발견한 핵심 helper
-# 먼저 다음 push prologue 찾기:
-python -c "import struct; from pathlib import Path; data = Path('work/h3/extracted/client.bin64000').read_bytes(); [print(f'  0x{off:08x}') for off in range(0x7d320, 0x7e000, 2) if struct.unpack('<H', data[off:off+2])[0] in (0xb5f0, 0xb530, 0xb500, 0xb510, 0xb570)]"
-PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x7d31c <next_push> --label bit_helper_7d31c
+# ⭐⭐⭐ 2BO: find_task_struct_field_readers.py lenient 화 — Round 26 의 undercount 발견 후속
+#   현재 패턴: bl 0x4ad10 + ldr Rx,[pc,#imm] + adds Ry, R0, Rx (R0 직접 사용 only)
+#   확장: adds rZ, R0, #0 (R0 saved to rZ) 도 인식
+#   파일: tools/recon/find_task_struct_field_readers.py 수정 후 전체 재실행
+PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py
 
-# ⭐⭐ 2BK: FUN_0007cd58 (vtable invoker) 본문
-PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x7cd58 <next_push> --label vtable_inv_7cd58
+# ⭐⭐ 2BP: 0x9bd0-object 의 vtable layout 매핑 (14 unique funcs 의 method offset 종합)
+#   예: FUN_000409d4, FUN_00040fb0 (+0x8c), FUN_000487ec, FUN_0009ada4, FUN_0009b252 등
+#   각 reader 의 0x9bd0 access 후 어느 offset 에서 method 호출하는지 매핑
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next_push> --label obj_9bd0_reader_40fb0
 
-# ⭐⭐ 2BL: 신규 cluster 0x9afc~0x9b1c wide-scan
-PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py --field 0x9b14
-PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py --field 0x9b01
-PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py --field 0x9afc
+# ⭐⭐ 2BQ: FUN_0007d31c 의 vtable[8] sub-call 본문 (8 bit per arm 의 method)
+#   0x7d31c 안의 indirect call 검사 (mov pc, rN 또는 bx rN 패턴)
 ```
 
-**Round 26 작업 후**:
+**Round 27 작업 후**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ + 새로운 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 Round 26 항목 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 Round 27 항목 추가
 - Python 회귀 (`python -m unittest tools.recon.test_analyze_cif ...`) 통과 확인 후 커밋
 
 
@@ -193,22 +201,24 @@ PYTHONIOENCODING=utf-8 python tools/recon/find_task_struct_field_readers.py --fi
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 25 까지 완료 — FUN_0009a008 super-function + 0x9bb4 bit-field 정정 + 0x9c70 cluster 정정)
-- 위 PM-15 / Round 25 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 26 까지 완료 — helper 정체 정정 + 0x9bb4/0x9bd0 same-substructure + auto undercount)
+- 위 PM-16 / Round 26 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 26 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 27 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ 2BJ | **FUN_0007d31c (bit helper) 본문** | `disasm_subsystem_func.py 0x7d31c <next_push> --label bit_helper_7d31c` | r1 mask sign convention (set/test/clear) |
-| ⭐⭐ 2BK | **FUN_0007cd58 (vtable invoker) 본문** | `disasm_subsystem_func.py 0x7cd58 <next_push> --label vtable_inv_7cd58` | vtable[8] method 의 정체 |
-| ⭐⭐ 2BL | **0x9afc~0x9b1c cluster wide-scan** (신규 task_struct field cluster) | `find_task_struct_field_readers.py --field 0x9b14` etc | 신규 cluster 의 reader 분포 |
+| ⭐⭐⭐ 2BO | **`find_task_struct_field_readers.py` 패턴 lenient 화** | 도구 수정 (`adds rZ, R0, #0` save 도 인식) + 전체 재실행 | system-wide 통계 정정 |
+| ⭐⭐ 2BP | **0x9bd0-object vtable layout 매핑** (14 unique funcs) | 각 reader func 본문 분석 | 0x9bd0 ptr-to-object 의 method offsets |
+| ⭐⭐ 2BQ | FUN_0007d31c 의 vtable[8] sub-call 본문 (8 bit 각각의 method) | indirect call 추적 | per-bit 처리의 정체 |
 | ⭐ 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | ⭐ 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
+| ⭐ 2BR | 0x9bb4 substructure 의 정확한 size + 다른 멤버 발견 | wide-scan 모든 0x9bb4~0x9bd4 offset | 32B substructure layout |
+| ⭐ 2BS | FUN_0007cd58 caller chain 추적 | 사용 사이트 (vtable+8 호출) | leaf helper 의 정확한 의미 |
 | 2BH | FUN_0003d5d0 호출자 분석 | caller chain | dynamic sound id 의 진짜 source |
 | 2BI | FUN_000241dc 본문 (0xac78 5x reader) | 본문 분석 | 0xac78 의 의미 |
 
-**3) Round 26 작업 후 마무리**:
+**3) Round 27 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
 - 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가

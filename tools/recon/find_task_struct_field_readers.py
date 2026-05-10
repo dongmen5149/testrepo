@@ -39,10 +39,14 @@ DECOMPILED = REPO / "work" / "ghidra_out" / "all_decompiled.c"
 
 CONTEXT_GETTER = 0x0004AD10
 
-# Known task_struct field offsets (Round 18~23 misclassified slots)
+# Known task_struct field offsets (Round 18~25 verified)
 KNOWN_FIELDS = [
     0x29e,
-    0x9bb4, 0x9c70, 0x9c71, 0x9c84, 0x9cbc, 0x9cc0, 0x9cfe,
+    0x9afc, 0x9b01, 0x9b14, 0x9b1c,  # Round 25 신규 cluster #1
+    0x9bb4, 0x9bb6, 0x9bb7, 0x9bc8,  # Round 25 bit flag substructure
+    0x9bd0,                            # Round 25 ptr-to-object
+    0x9c70, 0x9c71, 0x9c84, 0x9c85,   # Round 25 정정: 4개 인접 byte fields
+    0x9cb8, 0x9cbc, 0x9cc0, 0x9cfe,   # record array slots
     0x9e28, 0x9e78,
     0xa220, 0xa244, 0xa245, 0xa254,
     0xac78,
