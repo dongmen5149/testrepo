@@ -224,20 +224,28 @@ def parse_cash_extra(extra: bytes) -> dict:
 
 
 def parse_mix_book_extra(extra: bytes) -> dict:
-    """MixBookItem (cat 16) 의 추가 fields.
+    """MixBookItem (slot_15, recipe) 의 13 byte ext.
 
-    LoadItemTable @0xa4578 disasm: record_size = 0x144 (324B). sb 영역:
-      +0: u8 → struct +0x134
-      +(loop 3회 idx=0,1,2):
-        +(loop_idx + 0x1)*1: u8 → struct +0x135 + loop_idx (의미상 +0x135, +0x136, +0x137)
-        +(loop_idx + 0x2)*1: u8 → struct +0x138 + loop_idx
-        +(loop_idx + 0x3): u8 → struct +0x13b + loop_idx
-      +0xa: u8 → struct +0x13e
-      +0xb: u8 → struct +0x13f
-      +0xc: u8 → struct +0x140
+    LoadItemTable @0xa4578 (case 15) disasm: record_size = 0x144 (324B), sb_loop
+    가 13 byte 를 struct +0x134..+0x140 영역에 sub-byte indexing 으로 저장.
 
-    실제 disasm 는 sub-byte indexing 가 더 복잡해서 추가 RE 필요 — 일단 단순 12 byte
-    raw dump.
+    Round 25: items.json 116 records 패턴 분석으로 layout 확정 (이름 cross-check):
+      byte  0: 0x00 (separator/version flag)
+      bytes 1..3: ingredient 1 — (cat: u8, idx: u8, count: u8)
+      bytes 4..6: ingredient 2 — (cat, idx, count) or (0xff, 0xff, 0x00/0xff) if unused
+      bytes 7..9: ingredient 3 — same format
+      bytes 10..11: result — (cat: u8, idx: u8) — count = 1
+      byte 12: success_rate % (0x64=100, 0x5a=90)
+
+    cat 인덱스는 items.json 의 slot_NN 과 동일 (0=weapon, 0xb=potion, 0xd=mix
+    material, 0xe=mix material_2, 0xf=mix book recipe).
+
+    Recipe 패턴 검증:
+      - 쿠킹 (cat 0xe 결과): 살코기+황혼버섯 → 황혼수프가루 (100%)
+      - 포션 합성 (cat 0xb 결과): 포션 ×2 → 미들포션 (100%)
+      - 퀵포션 (cat 0xb 결과): 포션 ×2 + 지혈초 ×1 → 퀵포션 (100%)
+      - 재료 정제 (cat 0xd 결과): 엑토플라즘 ×10 → 에테르 (90%)
+      - 무기 제작 (cat 0..3 결과): 칼날 ×20 + 가죽 ×6 + 강철 ×3 → 투란기어 (90%)
     """
     if len(extra) < 5:
         return {}
@@ -245,8 +253,24 @@ def parse_mix_book_extra(extra: bytes) -> dict:
     sb_start = 5 + sblen
     if sb_start + 13 > len(extra):
         return {}
+    sb = extra[sb_start:sb_start + 13]
+
+    def parse_ing(c: int, i: int, ct: int) -> dict | None:
+        """0xff sentinel 면 None 반환."""
+        if c == 0xff:
+            return None
+        return {'cat': c, 'idx': i, 'count': ct}
+
     return {
-        'sb_extra_hex': extra[sb_start:sb_start + 13].hex(),
+        'sb_extra_hex': sb.hex(),
+        'recipe': {
+            'ing1': parse_ing(sb[1], sb[2], sb[3]),
+            'ing2': parse_ing(sb[4], sb[5], sb[6]),
+            'ing3': parse_ing(sb[7], sb[8], sb[9]),
+            'result_cat': sb[10],
+            'result_idx': sb[11],
+            'success_rate': sb[12],
+        },
     }
 
 

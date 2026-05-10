@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 24 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 25 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -594,6 +594,23 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 25 — 2026-05-10 완료]** slot_15 (mix_book recipe) 13 byte ext 구조 RE
+- ✅ **13 byte recipe layout 확정** (items.json 116 records 분석 + 이름 cross-check):
+  - byte 0: 0x00 (separator/version)
+  - bytes 1-3 / 4-6 / 7-9: 최대 3 ingredients (cat, idx, count) — 0xff = 미사용
+  - bytes 10-11: result (cat, idx) — count=1 implicit
+  - byte 12: success_rate %
+- ✅ **Recipe 종류 분류**:
+  - 쿠킹 (cat 14 결과): 살코기+황혼버섯 → 황혼수프가루 (100%)
+  - 포션 합성 (cat 11 결과): 포션 ×2 → 미들포션 (100%)
+  - 퀵포션 (cat 11 결과): 포션 ×2 + 지혈초 ×1 → 퀵포션 (100%)
+  - 재료 정제 (cat 13 결과): 엑토플라즘 ×10 → 에테르 (90%)
+  - 무기 제작 (cat 0..9 결과): 칼날+가죽+강철 → 무기 (60-90% 일반, 20-22% 고급)
+- ✅ **success_rate 분포 = 게임 밸런스 검증**: 일반 100%, 정제 90%, 중급 60-70%,
+  고급 (legendary 무기) 20-22%. 높은 등급일수록 낮은 성공률.
+- ✅ `parse_mix_book_extra` 가 `recipe` 객체 부여 (ing1/ing2/ing3/result_cat/
+  result_idx/success_rate). 이전 raw `sb_extra_hex` 대비 의미있는 구조 노출.
 
 **[Round 24 — 2026-05-10 완료]** val_15f upper 3 bit (tier_flags) 의미 식별
 - ✅ **핵심 발견: csv val_15f vs runtime val_15f 용도 분리**

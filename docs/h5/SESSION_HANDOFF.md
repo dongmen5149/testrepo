@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 24 — val_15f upper 3 bit (tier_flags) 의 실증적 의미 식별 (legendary/rare/gem/common). csv-time vs runtime val_15f 용도 분리 발견 — runtime 은 SetItemOption 가 option_type code 로 overwrite.)
+업데이트: 2026-05-10 (Round 25 — slot_15 (mix_book recipe) 13 byte ext 구조 RE 완료. 1~3 ingredients (cat/idx/count) + result (cat/idx) + success_rate %. 116 records 모두 정확히 parse — 쿠킹/포션 합성/재료 정제/무기 제작 카테고리화.)
 
 ---
 
-## 30초 요약 (Round 24 시점, 2026-05-10)
+## 30초 요약 (Round 25 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~24 누적 발견 (요약)
+### Round 6~25 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -34,6 +34,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | SLOT_META 전면 정정 | slot_12=orb (이전 scroll), slot_13=mix material (이전 orb), slot_15=mix_book recipe (이전 material_2). record 이름 + ext 길이 cross-check 결과 (R23) |
 | val_15f csv vs runtime 용도 분리 | csv: lower 5 bit = class_mask + upper 3 bit = tier_flags. runtime: SetItemOption (0xa0ff8) 가 option_type code 로 overwrite. GetRelieveLevelLimit (0xa835c) 의 cmp #0x6c='l' 는 runtime option (R24) |
 | val_15f upper 3 bit 실증적 의미 | upper=0 (170, legendary 보스/named) / =1 (248, rare 중급) / =3 (9, gem 보석 헤어핀/서클릿) / =7 (362, common 상점 기본) (R24) |
+| slot_15 mix_book recipe 13 byte 구조 | 1~3 ingredients (cat/idx/count) + result (cat/idx) + success_rate%. 쿠킹/포션 합성/재료 정제/무기 제작 카테고리. 116 records 모두 검증 (R25) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -43,10 +44,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 24 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **slot_15 (mix_book recipe) 의 13 byte ext 구조 RE** —
-  MixBookItemInfo::Use 또는 ProcMixItem disasm. 재료2개 + 결과 + 성공률 추정.
-- 또는: RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism 정밀 분석.
+- Round 25 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism
+  정밀 분석** — refine 시 어떤 stat 이 변경되는지 (Round 17 일부 분석 완료).
+- 또는: NewDropItem 의 +0x15f arg 가 어떻게 채워지는지 — DropTable / ShopInventory
+  cross-check 로 tier_flags 의 정확 의미 추가 검증.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -71,6 +73,15 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 25**: slot_15 (mix_book recipe) 13 byte ext 구조 RE 완료:
+  - layout: byte 0 (separator) + 3×3 byte ingredients (cat/idx/count, 0xff=unused) +
+    2 byte result (cat/idx) + 1 byte success_rate %.
+  - 116 records 모두 정확히 parse (이름 cross-check 검증).
+  - 쿠킹 (살코기+황혼버섯 → 황혼수프가루 100%), 포션 합성 (포션 ×2 → 미들포션 100%),
+    재료 정제 (엑토플라즘 ×10 → 에테르 90%), 무기 제작 (보통칼날+가죽+강철 →
+    투란기어 90%) 등 카테고리화.
+  - success_rate 분포 = 게임 밸런스 검증 (legendary 무기 20-22%, 일반 100%).
+  - parse_mix_book_extra 가 의미있는 'recipe' 객체 부여 (이전 raw sb_extra_hex 대체).
 - ✅ **Round 24**: val_15f upper 3 bit (tier_flags) 의 실증적 의미 식별:
   - **csv-time vs runtime val_15f 용도 분리** 발견 — csv 는 (class_mask + tier_flags),
     runtime 은 SetItemOption (0xa0ff8) 가 option_type code 로 완전 overwrite.
@@ -264,11 +275,11 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. slot_15 (mix_book recipe) 13 byte ext 구조 RE (자율 가능)
+### 1. RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism 정밀 분석
 
-Round 23 에서 slot_15 = MixBookItem (recipe) 임이 확인. ext 13 byte 의 구조:
-재료1 (cat, idx, count?) + 재료2 (cat, idx, count?) + 결과 (cat, idx) + 성공률
-으로 추정. MixBookItemInfo::Use 또는 ProcMixItem disasm 으로 확정.
+Round 17 에서 ApplyItemRefine (956B, @0xa292c) 의 jumptable case 일부 분석 완료
+(+0x165=refine_count, +0x166=sub_count, +0x167=locked). 강화 시 어떤 stat (atk/
+def/etc) 이 어떻게 증가하는지, 강화 단계별 보너스 식별 필요.
 
 ### 2. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증)
 
