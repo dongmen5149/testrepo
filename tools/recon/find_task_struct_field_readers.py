@@ -128,16 +128,18 @@ def main():
             ctx_calls.append(i)
     print(f"=== {len(ctx_calls)} context_getter BL sites ===")
 
-    # 2. For each ctx call, track R0 propagation forward up to 16 instr.
+    # 2. For each ctx call, track R0 propagation forward up to 32 instr.
     #    R0 may be saved to other registers via:
     #      - adds rZ, r0, #0      (save with flags)
     #      - mov rZ, r0           (plain move)
     #      - mov.w rZ, r0
+    #    Or saved to stack via:
+    #      - str rX, [sp, #N]     where rX in r0_equiv
     #    Then field access via:
     #      - ldr Rx, [pc, #imm]   (lit==field_offset)
     #      - adds Ry, <R0-equiv>, Rx   (or commuted)
-    #
-    # Also captures R0 reuse before save (common case: register r0 stays r0 directly).
+    #    Stack reload tracked:
+    #      - ldr rZ, [sp, #N]     if sp+N is "stack-saved task_ptr" → rZ joins r0_equiv
     field_hits: dict[int, list[dict]] = defaultdict(list)
 
     SAVE_MNEM = {"adds", "add", "add.w", "mov", "mov.w", "movs"}
@@ -153,16 +155,33 @@ def main():
         # adds rZ, rX, #0  (move with flags)
         if len(parts) == 3 and parts[1] in src_regs and parts[2] == "#0":
             return dst
-        # adds rZ, #0  (in-place, doesn't help)  -- skip
         return None
+
+    def parse_stack_offset(op_str: str) -> int | None:
+        """Parse '[sp, #N]' or '[sp]' from operand string. Returns offset or None."""
+        normalized = op_str.replace(" ", "")
+        if "[sp]" in normalized:
+            return 0
+        if "[sp,#" in normalized:
+            try:
+                imm_part = normalized.split("[sp,#")[1].rstrip("]")
+                return int(imm_part, 0)
+            except (IndexError, ValueError):
+                return None
+        return None
+
+    def get_dst_reg(parts: list[str]) -> str | None:
+        return parts[0] if parts else None
 
     for ctx_idx in ctx_calls:
         ctx_addr = instrs[ctx_idx]["addr"]
-        # Track which registers currently hold the task_ptr value (R0 equivalent set)
+        # R0 equivalent set: registers currently holding the task_ptr value
         r0_equiv = {"r0"}
+        # Stack offsets currently holding task_ptr (saved via `str rX, [sp, #N]`)
+        stack_saved: set[int] = set()
         ldr_target = None  # (idx, rd, lit_value)
 
-        for fwd in range(1, 17):
+        for fwd in range(1, 33):  # extended from 16 to 32 instr lookahead
             j = ctx_idx + fwd
             if j >= len(instrs):
                 break
@@ -171,15 +190,31 @@ def main():
             op_str = ins["op_str"]
             parts = [p.strip() for p in op_str.split(",")]
 
-            # Stop if any branch instruction (non-conditional or conditional)
+            # Stop on branch (avoids tracking across control flow)
             if mnem.startswith("b") and mnem not in ("bic", "bics"):
                 break
 
-            # Track R0-propagation: save to other reg
+            # Track R0 register save: rZ <- r0_equiv
             if mnem in SAVE_MNEM:
                 saved_dst = is_r0_save(parts, r0_equiv)
                 if saved_dst:
                     r0_equiv.add(saved_dst)
+
+            # Track stack save: str rX, [sp, #N] where rX in r0_equiv
+            if mnem in ("str", "str.w") and len(parts) >= 2:
+                src_reg = parts[0]
+                if src_reg in r0_equiv:
+                    stack_off = parse_stack_offset(",".join(parts[1:]))
+                    if stack_off is not None:
+                        stack_saved.add(stack_off)
+
+            # Track stack reload: ldr rZ, [sp, #N] where sp+N in stack_saved
+            if mnem in ("ldr", "ldr.w") and len(parts) >= 2 and "[sp" in op_str:
+                stack_off = parse_stack_offset(",".join(parts[1:]))
+                if stack_off is not None and stack_off in stack_saved:
+                    dst = get_dst_reg(parts)
+                    if dst:
+                        r0_equiv.add(dst)
 
             # Check for ldr Rx, [pc, #imm]  (loading literal pool)
             if mnem in ("ldr", "ldr.w") and "[pc," in op_str.replace(" ", ""):
@@ -201,17 +236,17 @@ def main():
                 if mnem in ("adds", "add", "add.w") and ldr_idx < j and len(parts) >= 3:
                     second = parts[1]
                     third = parts[2]
-                    # Match: adds rY, <R0-equiv>, rLDR  OR  adds rY, rLDR, <R0-equiv>
                     matches = (
                         (second in r0_equiv and third == ldr_rd) or
                         (third in r0_equiv and second == ldr_rd)
                     )
                     if matches:
+                        via_reg = second if second in r0_equiv else third
                         field_hits[lit_val].append({
                             "ctx_addr": ctx_addr,
                             "ldr_addr": instrs[ldr_idx]["addr"],
                             "add_addr": ins["addr"],
-                            "r0_via": "direct" if "r0" in (second, third) else f"saved:{second if second in r0_equiv else third}",
+                            "r0_via": "direct" if via_reg == "r0" else f"saved:{via_reg}",
                             "post_pattern": instrs[j+1]["mnem"] + " " + instrs[j+1]["op_str"] if j+1 < len(instrs) else "?",
                         })
                         ldr_target = None

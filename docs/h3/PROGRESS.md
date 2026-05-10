@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-23 (Round 33) — **2CW + 2CX + 2CY + ObjectB writer 0건 확정 + Round 31 가설 완전 폐기**. (1) ⭐⭐⭐ **ObjectB GOT slot (0x18) writer 0건 확정** — 909 LDR 사이트 중 876 = 진짜 GOT[0x18] access (add+sl 패턴), 그 중 **read 876, WRITE 0**. → ObjectB 도 GVM firmware 외부 주입 (Round 23 의 8 GOT slots 패턴). **Round 21 의 원래 master interface 가설 confirmed**, **Round 31 의 dynamic proxy 가설 완전 폐기**. (2) ⭐⭐⭐ **17 ObjectB-read 사이트의 진짜 의미** — `ObjectB.method(entity_record_ptr)` 호출 패턴 (entity record 가 r2 인자로 전달). 3 entity-bridge funcs (FUN_00030018/0x8beba/0x8e89e) 가 entity-specific service 요청. (3) ⭐⭐ **FUN_00040cec = simple event code register** (240B, 6 cmp arms). 첫 액션 `*task_struct[0x274] = caller_arg` (4 events -4..-1 의 event code 등록). 0x274 = 신규 task_struct field 발견. 상세는 [ghidra-objectb-static-2026-05-10.md](ghidra-objectb-static-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-24 (Round 34) — **2DC + 2DA + 2DD + 도구 stack lenient 화 + FUN_00030018 = 10.1KB UI renderer + 0x274 immediate-construction limitation**. (1) ⭐⭐ **도구 stack save/reload lenient 화 효과 미미** — `find_task_struct_field_readers.py` 에 stack save/reload 추적 + 16→32-instr lookahead 추가. 결과: 0x9bb4 +2 sites (69→71), 0xac90 +1, 그 외 동일. **0x9b00 cluster 여전히 0 hits** = 다른 한계 (multi-hop reg propagation 또는 branch-crossing). (2) ⭐⭐⭐ **FUN_00030018 = 10.1KB 거대 UI/HUD renderer** — 4948 instr, 28 cmp arms, **121 BLs (37 screen_ptr_getter dominant)**, cmp '0x3b ;' '0x62 b' = ASCII text/dialog handling, 0x16c (364B) stack frame. 0xac94 14x reader = entity-별 그리기. (3) ⭐⭐ **0x274 도구 limitation 발견** — LDR pcrel 검색 단 1건, 실제 FUN_00040cec 의 0x274 access 는 **immediate construction** (`movs r2, #0x9d; lsls r2, r2, #2`). 도구 미커버 = 작은 task_struct field reader system-wide undercount. 상세는 [ghidra-tool-stack-and-renderer-2026-05-10.md](ghidra-tool-stack-and-renderer-2026-05-10.md).
 
 **이전 라운드 종합**: Round 18~24 의 진척 요약은 **§"Round 18~25 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -22,10 +22,11 @@
 - **Round 31** — ⭐⭐⭐ **0xac94 = ObjectB instance base** (Round 21 ObjectB master interface 정정 — current-active-entity proxy) + **task_struct GVM-injected 확정** (0x444 write 0건) + 7 handlers 본문 (0x24300 = bl 0x42758)
 - **Round 32** — ⭐⭐ **FUN_00042758 = entity state initializer** (Round 25 cluster #1 dominant reader) + **ObjectB read 패턴 정정** (17 사이트는 store 아닌 entity record + ObjectB 결합 read) + 3 entity-bridge funcs 발견
 - **Round 33** — ⭐⭐⭐ **ObjectB writer 0건 확정** (909 LDR/876 read/0 write) → Round 21 원래 master interface 가설 confirmed, Round 31 dynamic proxy 가설 완전 폐기. 17 사이트 = `ObjectB.method(entity_record)` 호출. FUN_00040cec = event code register (task_struct[0x274] = caller_arg)
+- **Round 34** — ⭐⭐ **도구 stack lenient 화** (0x9bb4 +2 sites, 0x9b00 cluster 여전히 0) + **FUN_00030018 = 10.1KB UI/HUD renderer** (37 screen_ptr_getter, 121 BL, ASCII dialog) + **0x274 immediate-construction limitation** (`movs+lsls`)
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **ObjectB writer 0건 확정 (Round 31 가설 완전 폐기) + FUN_00040cec event registrar + 도구 limitation 발견** (2026-05-10 PM-23 / Round 33). 909 LDR 사이트 중 876 add+sl, **read 876 / write 0** = ObjectB 도 GVM firmware 외부 주입 (Round 23 8 GOT slots 패턴). **Round 21 master interface 가설 최종 confirmed**. 17 사이트 = `ObjectB.method(entity_record_ptr)` 호출 (3 entity-bridge funcs). FUN_00040cec (240B, 6 cmp arms) = simple event code register (task_struct[0x274] = caller_arg). 0x9b00 cluster auto wide-scan 거의 0 hits = 도구 추가 lenient 화 필요 (stack save/reload 추적). 다음 진척은 **(1) 도구 stack-load 추적 추가, (2) task_struct[0x274] reader 매핑, (3) FUN_00030018/8beba/8e89e entity-bridge 본문, (4) 0x9c70 stack-load lenient 화, (5) FUN_0009a008 의 JT 디코드**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **도구 stack lenient + FUN_00030018 UI renderer + immediate-construction limitation** (2026-05-10 PM-24 / Round 34). 도구 stack save/reload 추적 + 16→32-instr lookahead 추가 → 0x9bb4 +2 sites (69→71), 0xac90 +1, 그 외 동일. **0x9b00 cluster 여전히 0 hits** (다른 한계 — multi-hop register propagation 또는 branch-crossing). **FUN_00030018 (10.1KB) = 거대 UI/HUD renderer** (4948 instr, 37 screen_ptr_getter dominant, 121 BL, ASCII '0x3b ;' = dialog/text handling, 0x16c stack frame). **0x274 (event code) 도구 limitation 발견** — LDR pcrel 단 1건, 실제는 immediate construction (`movs+lsls`) 패턴. 도구 미커버 → 작은 task_struct field reader system-wide undercount. 다음 진척은 **(1) 도구 immediate construction 패턴 추가, (2) FUN_00030018 caller chain, (3) FUN_0008beba/0x8e89e 본문, (4) 0x9b00 cluster 직접 wide-scan, (5) 0x274 reader scan**.
 
 ### 게임 update flow (2026-05-10 정정 + Round 29 신규 entry)
 
@@ -63,12 +64,12 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-objectb-static-2026-05-10.md](ghidra-objectb-static-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 33 / PM-23** (ObjectB writer 0건 확정 + FUN_00040cec event registrar + 도구 limitation)
-5. (참고) [ghidra-state-init-and-objectb-read-2026-05-10.md](ghidra-state-init-and-objectb-read-2026-05-10.md) — Round 32 / PM-22 (FUN_00042758 + ObjectB read)
-6. (참고) [ghidra-handlers-and-objectb-2026-05-10.md](ghidra-handlers-and-objectb-2026-05-10.md) — Round 31 / PM-21 (7 handlers 본문)
+4. **[ghidra-tool-stack-and-renderer-2026-05-10.md](ghidra-tool-stack-and-renderer-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 34 / PM-24** (도구 stack lenient 화 + FUN_00030018 UI renderer + immediate-construction limitation)
+5. (참고) [ghidra-objectb-static-2026-05-10.md](ghidra-objectb-static-2026-05-10.md) — Round 33 / PM-23 (ObjectB writer 0건 확정)
+6. (참고) [ghidra-state-init-and-objectb-read-2026-05-10.md](ghidra-state-init-and-objectb-read-2026-05-10.md) — Round 32 / PM-22 (FUN_00042758 + ObjectB read)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~33 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~34 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -88,8 +89,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **31** (PM-21) | ⭐⭐⭐ **0xac94 = ObjectB instance base** — 60 LDR 사이트의 second LDR = **GOT slot 0x18 (ObjectB) 17x dominant** → 게임 코드가 entity 활성화 시 ObjectB slot 에 task[0xac94] address 등록. **ObjectB = current-active-entity proxy** (Round 21 master interface 가설 정정). **task_struct allocator 검증 GVM-injected 확정** (GOT[0x444] write 0건). 7 destination handlers 본문 (0x24300 = bl FUN_00042758, cleanup path = ObjectA destructor + state reset) | [ghidra-handlers-and-objectb-2026-05-10.md](ghidra-handlers-and-objectb-2026-05-10.md) |
 | **32** (PM-22) | ⭐⭐ **FUN_00042758 본문** (1.1KB, entity state initializer) — task_struct[0x9afc~0x9b3c] cluster #1 (Round 25 발견) 의 dominant reader, 21 cmp arms + memset_like = entity lifecycle. 5 events (35/48/49/51/57) 응답. **ObjectB read 패턴 정정** (Round 31 store 가설 부분 정정) — 17 사이트는 task_struct[0xac94] + ObjectB instance 결합 read. 3 entity-bridge funcs 발견 (FUN_00030018/0x8beba/0x8e89e) | [ghidra-state-init-and-objectb-read-2026-05-10.md](ghidra-state-init-and-objectb-read-2026-05-10.md) |
 | **33** (PM-23) | ⭐⭐⭐ **ObjectB GOT slot writer 0건 확정** (909 LDR / 876 add+sl / 876 read / 0 write) — Round 21 master interface 가설 최종 confirmed, **Round 31 dynamic proxy 가설 완전 폐기**. 17 사이트 = `ObjectB.method(entity_record_ptr)` 호출 (entity record 가 r2 인자). FUN_00040cec = simple event registrar (240B, `task_struct[0x274] = caller_arg`). 0x9b00 cluster 도구 limitation 발견 (stack save/reload 미커버) | [ghidra-objectb-static-2026-05-10.md](ghidra-objectb-static-2026-05-10.md) |
+| **34** (PM-24) | ⭐⭐ **도구 stack lenient 화** (0x9bb4 +2 / 0xac90 +1 / 0x9b00 cluster 여전 0) + **FUN_00030018 = 10.1KB UI/HUD renderer** (4948 instr, 37 screen_ptr_getter dominant, 121 BL, cmp ASCII '0x3b' = dialog handling, 0x16c stack frame). **0x274 도구 limitation** — immediate construction (`movs+lsls`) 패턴 미커버 = 작은 task_struct field reader system-wide undercount | [ghidra-tool-stack-and-renderer-2026-05-10.md](ghidra-tool-stack-and-renderer-2026-05-10.md) |
 
-### 현재 게임 시스템 모델 (Round 33 시점, 검증 vs 가설)
+### 현재 게임 시스템 모델 (Round 34 시점, 검증 vs 가설)
 
 **✅ 검증된 사실** (실측 disassembly + reader 통계):
 
@@ -246,25 +248,26 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 #   0x7d31c 안의 indirect call 검사 (mov pc, rN 또는 bx rN 패턴)
 ```
 
-**※ Round 27~33 (PM-17~PM-23) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 34.
+**※ Round 27~34 (PM-17~PM-24) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 35.
 
-### Round 34 즉시 시작 명령 (복사-붙여넣기)
+### Round 35 즉시 시작 명령 (복사-붙여넣기)
 
 ```powershell
-# ⭐⭐⭐ 2DC: find_task_struct_field_readers.py 추가 lenient 화
-# stack save/reload 추적: str r0,[sp,#N] ↔ ldr rX,[sp,#N] 매칭
-# 0x9b00 cluster auto-detect 0 hits 정정 위해
+# ⭐⭐⭐ 2DF: 도구 immediate construction 패턴 추가
+# Track: movs Rd, #N → r2_const = N; lsls Rd, Rd, #shift → r2_const <<= shift
+# (FUN_00040cec 의 movs+lsls 0x9d→0x274 패턴 같은 케이스)
 
-# ⭐⭐ 2DA: FUN_00030018 본문 (entity-bridge func)
-PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x30018 <next_push>
+# ⭐⭐ 2DG: FUN_00030018 caller chain 추적
+# BL 0x30018 검색 + literal pool
 
-# ⭐⭐ 2DD: task_struct[0x274] (event code) 의 다른 reader 매핑
-# wide-scan 으로 0x274 read sites 찾기
+# ⭐⭐ 2DH: FUN_0008beba 본문 (entity-bridge, NPC dispatcher 영역)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x8beba <next_push>
 
-# ⭐⭐ 2CD: 0x9c70 stack-load 패턴 추가 lenient 화 (Round 27 92% miss, 같은 한계)
+# ⭐⭐ 2DI: FUN_0008e89e 본문 (SCN dispatcher main entry)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x8e89e <next_push>
 ```
 
-**Round 34 작업 후**: 위 Round 27 마무리 절차 동일.
+**Round 35 작업 후**: 위 Round 27 마무리 절차 동일.
 
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -272,23 +275,24 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x30018 <next
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 33 까지 완료 — ObjectB writer 0건 확정 + Round 31 가설 완전 폐기 + FUN_00040cec event registrar)
-- 위 PM-23 / Round 33 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 34 까지 완료 — 도구 stack lenient + FUN_00030018 UI renderer + 0x274 immediate-construction limitation)
+- 위 PM-24 / Round 34 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 34 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 35 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ 2DC | **find_task_struct_field_readers.py 추가 lenient 화** (stack save/reload 추적) | 도구 코드 수정 | 0x9b00 cluster system-wide 통계 정정 |
-| ⭐⭐ 2DD | task_struct[0x274] (event code) reader 매핑 | wide-scan | event code 가 어디서 사용되는지 |
-| ⭐⭐ 2DA | FUN_00030018 본문 (entity-bridge func) | `disasm_subsystem_func.py 0x30018` | entity ↔ system bridge 동작 |
-| ⭐⭐ 2CD | 0x9c70 stack-load 패턴 추가 lenient 화 (92% miss, 같은 한계) | 도구 추가 확장 | 0x9c70 의 진짜 reader 분포 |
-| ⭐ 2DB | FUN_0008beba/0x8e89e 본문 (다른 entity-bridge funcs) | `disasm_subsystem_func.py` | 다른 bridges 의 비교 |
-| ⭐ 2DE | 0x9b00 cluster 직접 wide-scan (R0 propagation 무시) | tool 추가 작성 | cluster #1 raw site 분포 |
+| ⭐⭐⭐ 2DF | **도구 immediate construction 패턴 추가** (`movs Rd, #N; lsls Rd, Rd, #s`) | 도구 코드 수정 | 작은 task_struct field reader 통계 정정 |
+| ⭐⭐ 2DG | FUN_00030018 caller chain 추적 (어떤 indirect entry 호출?) | BL 0x30018 검색 + literal pool | UI renderer 호출 시점 |
+| ⭐⭐ 2DH | FUN_0008beba 본문 (entity-bridge, NPC dispatcher 영역) | `disasm_subsystem_func.py 0x8beba` | NPC entity bridge 동작 |
+| ⭐⭐ 2DI | FUN_0008e89e 본문 (SCN dispatcher main entry, 알려진 함수) | `disasm_subsystem_func.py 0x8e89e` | SCN dispatcher 의 entity bridge |
+| ⭐ 2DJ | 0x9b00 cluster 직접 wide-scan (R0 propagation 무시, raw `ctx + offset` 패턴) | tool 추가 작성 | cluster #1 raw site 분포 |
+| ⭐ 2DK | 0x274 immediate-construction reader wide-scan | 패턴 검색 | event code reader 분포 |
+| ⭐ 2CD | 0x9c70 stack-load 패턴 추가 lenient 화 (Round 27 92% miss, 같은 한계) | 도구 추가 확장 | 0x9c70 의 진짜 reader 분포 |
 | 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
 
-**3) Round 34 작업 후 마무리**:
+**3) Round 35 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
 - 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가
