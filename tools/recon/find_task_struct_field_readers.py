@@ -39,7 +39,7 @@ DECOMPILED = REPO / "work" / "ghidra_out" / "all_decompiled.c"
 
 CONTEXT_GETTER = 0x0004AD10
 
-# Known task_struct field offsets (Round 18~25 verified)
+# Known task_struct field offsets (Round 18~28 verified)
 KNOWN_FIELDS = [
     0x29e,
     0x9afc, 0x9b01, 0x9b14, 0x9b1c,  # Round 25 신규 cluster #1
@@ -49,7 +49,10 @@ KNOWN_FIELDS = [
     0x9cb8, 0x9cbc, 0x9cc0, 0x9cfe,   # record array slots
     0x9e28, 0x9e78,
     0xa220, 0xa244, 0xa245, 0xa254,
-    0xac78,
+    # Round 28: 38B entity state record cluster (0xac78~0xac9d)
+    0xac78, 0xac79, 0xac7a, 0xac7c,
+    0xac80, 0xac84,
+    0xac90, 0xac92, 0xac94, 0xac98, 0xac9c, 0xac9d,
 ]
 
 ENTRY_RE = re.compile(

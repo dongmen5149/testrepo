@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-10 PM-18 (Round 28) — **2BT + 2BU + 2BV + FUN_000818f0 본문 + 0x9bd0 vtable+8 정체 + entity state record 38B**. (1) ⭐⭐⭐ **FUN_000818f0 = single-entity state handler** (NOT iteration loop, 0 backward branches). 5.6KB, 2559 instr, **212 context_getter** (PM-3 추정 일치). **task_struct[0xac78~0xac9d] = 38 byte entity-per state record cluster** (200+ access in 단일 함수, 13 distinct field offsets). 4x screen_ptr_getter rendering phase at end = state update + render 통합. (2) ⭐⭐⭐ **0x9bd0-Object vtable[+0x08] = function pointer to FUN_0007cd58** (60% dominant, 6/10 caught). 즉 vtable[+0x08] 가 Round 26 의 leaf 산술 helper 호출 → vtable[+0x18] halfword data 처리 = sprite tile/animation frame index 추정. (3) ⭐⭐ **FUN_0008d87c (1.1KB, 4 cmp arms) = simple sub-handler** — 0x9c70/0x9e28 dominant, sister entry record 0x3c4 inline 영역. 상세는 [ghidra-entity-handler-2026-05-10.md](ghidra-entity-handler-2026-05-10.md).
+**최신 커밋 시점**: 2026-05-10 PM-19 (Round 29) — **2CA + 2CB + 2CC + caller chain + 5번째 indirect entry 발견 + 0x9bd0-Object instance ≥84B**. (1) ⭐⭐⭐ **FUN_000818f0 의 caller chain** — direct BL caller **단 1건** (0x24366 in FUN_000241dc). FUN_000241dc 도 **0 direct callers + 0 literal entries** = **5번째 indirect-only entry function**. 진짜 dispatch = **74-entry massive JT** (caller_arg + 0x10 key, range [-0x10..0x39]) = GVM firmware 가 다양한 event 로 호출. (2) ⭐⭐⭐ **0xac78~0xac9d cluster reader 매핑** — **10/12 fields 가 FUN_000818f0 전용** (single-entity state record 가설 확정). **0xac94 만 system-wide** (57 sites, 4 funcs: FUN_000818f0 20x + FUN_00030018 14x + FUN_0008beba 14x + FUN_0008e89e 9x) = entity metadata 후보. (3) ⭐⭐ **0x9bd0-Object instance ≥84B** (10 distinct field offsets up to +0x54). Round 26 의 "0x9bb4 + 0x9bd0 same 32B substructure" 정정 — instance 는 **task_struct 외부 (heap-allocated)**, substructure A 의 +0x1c = ptr-to-instance. 상세는 [ghidra-callers-and-cluster-2026-05-10.md](ghidra-callers-and-cluster-2026-05-10.md).
 
 **이전 라운드 종합**: Round 18~24 의 진척 요약은 **§"Round 18~25 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -17,15 +17,16 @@
 - **Round 26** — ⭐ **helper 정체 정정** (0x7d31c = 8-bit unrolled scan, 0x7cd58 = leaf 산술 helper) + **0x9bb4/9bd0 = 같은 substructure** 발견 + auto 도구 undercount 확인
 - **Round 27** — ⭐⭐ **도구 lenient 화 + 통계 대거 정정** (0x9e28 +500%, 0xac78 +760%, 0x9bd0 21 unique funcs) + **0x9bd0-Object vtable** (+0x08 dominant) + **FUN_000818f0 entity update loop 강화**
 - **Round 28** — ⭐⭐ **FUN_000818f0 = single-entity state handler** (NOT iteration loop) + **task_struct[0xac78~0xac9d] = 38B entity state record** + 0x9bd0 vtable[+0x08] = FUN_0007cd58 (60% dominant)
+- **Round 29** — ⭐⭐ **caller chain 추적** + **FUN_000241dc = 5번째 indirect entry** (74-entry massive JT) + 0xac78 cluster system-wide reader (0xac94 = entity metadata) + 0x9bd0-Object instance ≥84B (heap-allocated)
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **FUN_000818f0 single-entity handler 정체 + entity state record 38B + 0x9bd0 vtable[+0x08]=FUN_0007cd58** (2026-05-10 PM-18 / Round 28). FUN_000818f0 (5.6KB) = **single-entity state handler** (NOT iteration loop, 0 backward branches). **task_struct[0xac78~0xac9d] = 38 byte entity-per state record** (200+ access, 13 distinct fields). 4x screen_ptr_getter rendering phase at end = state update + render 통합. 0x9bd0-Object vtable[+0x08] = FUN_0007cd58 (60% dominant) → vtable+0x18 halfword data 처리 = sprite tile/animation frame index 추정. FUN_0008d87c (1.1KB) = sister entry record 0x3c4 inline sub-handler. 다음 진척은 **(1) FUN_000818f0 의 외부 caller 추적 (entity iteration 위치), (2) 0xac78 cluster 다른 reader 매핑, (3) 0x9bd0-Object instance size, (4) 0x9c70 stack-load 도구 화, (5) sound id ↔ snd/ 자산 매핑, (6) SMAF/번역**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **5번째 indirect entry (FUN_000241dc) 발견 + entity state record 가설 확정 + 0x9bd0-Object instance ≥84B** (2026-05-10 PM-19 / Round 29). FUN_000818f0 의 direct BL caller 단 1건 (0x24366 in FUN_000241dc). **FUN_000241dc = 5번째 indirect-only entry function** (74-entry massive JT, caller_arg + 0x10 key, GVM firmware event handler). 0xac78~0xac9d 38B cluster 의 10/12 fields 가 FUN_000818f0 전용 = **single-entity state record 가설 확정**. **0xac94 만 system-wide** (57 sites, 4 funcs) = entity metadata 후보. 0x9bd0-Object instance ≥84B (10 distinct fields), task_struct 외부 heap-allocated. 다음 진척은 **(1) FUN_000241dc 74-entry JT 디코드, (2) 0xac94 의 4 readers 본문 (entity metadata 의미), (3) 0x9bd0-Object instance allocator 추적, (4) FUN_00081688/30018 본문, (5) sound id ↔ snd/ 자산, (6) SMAF/번역**.
 
-### 게임 update flow (2026-05-10 정정)
+### 게임 update flow (2026-05-10 정정 + Round 29 신규 entry)
 
 ```
-???_indirect_main_loop  (PIC indirect, 추적 한계 — Ghidra Script 필요)
+???_indirect_main_loop  (PIC indirect, 추적 한계 — GVM firmware 동적 주입)
   ├ FUN_0006619c  (paint/tick callback) — 매 프레임 호출
   │  └ FUN_00062d1c (state[0x94] = "현재 페이지 인덱스" 분기)
   │    ├ page 0 → FUN_0005c038 → FUN_0005d214 (jt 0xa9cc4, record 0x3c4×0x3c)
@@ -34,8 +35,11 @@
   ├ FUN_00070f34  (key handler) — 키 입력 시 호출. param_2=0x31('1')/0x33('3') 으로 page--/page++
   ├ FUN_0008b2e8  (sister entry, record 0x3c4)
   │  └ inline @ 0x8c19c → FUN_0008d5e4 (jt 0xabaa8)
-  └ FUN_0008dcd8  (main entry, record 0x3c4)
-     └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68)
+  ├ FUN_0008dcd8  (main entry, record 0x3c4)
+  │  └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68)
+  └ FUN_000241dc  ⭐ NEW Round 29 (event/state dispatcher, 74-entry JT, key=arg+0x10)
+     └ case "single-entity update" @ 0x24366 → FUN_000818f0 (5.6KB single-entity handler)
+        └ task_struct[0xac78~0xac9d] = 38B entity state record (200+ access)
 ```
 
 각 dispatcher: **19 entries (opcode 0~0x12) → 7 distinct handlers** (0x00~0x0c 공통 + 0x0d~0x12 각 unique).
@@ -48,12 +52,12 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-entity-handler-2026-05-10.md](ghidra-entity-handler-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 28 / PM-18** (FUN_000818f0 single-entity handler + entity state record 38B + 0x9bd0 vtable[+0x08] sub-call 정체)
-5. (참고) [ghidra-lenient-rescan-2026-05-10.md](ghidra-lenient-rescan-2026-05-10.md) — Round 27 / PM-17 (도구 lenient 화 + system-wide 통계)
-6. (참고) [ghidra-helpers-and-undercount-2026-05-10.md](ghidra-helpers-and-undercount-2026-05-10.md) — Round 26 / PM-16 (helper 정체 정정)
+4. **[ghidra-callers-and-cluster-2026-05-10.md](ghidra-callers-and-cluster-2026-05-10.md)** ⭐⭐⭐ — **최신 Round 29 / PM-19** (caller chain + 5번째 indirect entry + 38B cluster system-wide + 0x9bd0 instance ≥84B)
+5. (참고) [ghidra-entity-handler-2026-05-10.md](ghidra-entity-handler-2026-05-10.md) — Round 28 / PM-18 (FUN_000818f0 single-entity handler + entity state record 38B)
+6. (참고) [ghidra-lenient-rescan-2026-05-10.md](ghidra-lenient-rescan-2026-05-10.md) — Round 27 / PM-17 (도구 lenient 화 + system-wide 통계)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~28 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~29 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -68,8 +72,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **26** (PM-16) | ⭐⭐⭐ **helper 정체 정정** — FUN_0007d31c = 660B multi-stage (8 bit unrolled scan, **0x9bd0 dereference 발견** = 0x9bb4 + 0x9bd0 가 **같은 32B substructure 의 멤버**). FUN_0007cd58 = 1068B leaf 산술 helper (NOT vtable invoker, GOT 미사용). **`find_task_struct_field_readers.py` auto undercount** — 0x9c70 cluster 0% (wide-scan 303 sites). 0x9bd0-object = 14 unique funcs system-wide | [ghidra-helpers-and-undercount-2026-05-10.md](ghidra-helpers-and-undercount-2026-05-10.md) |
 | **27** (PM-17) | ⭐⭐⭐ **도구 lenient 화** (R0-propagation 추적) → **0x9e28 16→101 sites (83 funcs, +500%)**, 0xac78 5→43 (FUN_000818f0 34x dominant), 0x9c71 0→97, 0x9bd0 19→25 (21 funcs). **0x9bd0-Object vtable[+0x08] dominant** (30/42 = 71%, 별개 type 확정). **FUN_000818f0 entity update loop 강화** (0xac78 79% + 0x9c71 + 0x9e28 + PIC prologue). FUN_0008d87c 신규 핵심 함수 | [ghidra-lenient-rescan-2026-05-10.md](ghidra-lenient-rescan-2026-05-10.md) |
 | **28** (PM-18) | ⭐⭐⭐ **FUN_000818f0 본문** (5.6KB, 2559 instr, 212 ctx_getter) — **single-entity state handler** (NOT iteration loop, 0 backward branches). **task_struct[0xac78~0xac9d] = 38B entity state record** (200+ access, 13 distinct fields). 4x screen_ptr_getter rendering at end. **0x9bd0 vtable[+0x08] = FUN_0007cd58** (60% dominant) → halfword data 처리. FUN_0008d87c (1.1KB) = sister entry inline sub-handler | [ghidra-entity-handler-2026-05-10.md](ghidra-entity-handler-2026-05-10.md) |
+| **29** (PM-19) | ⭐⭐⭐ **caller chain** — FUN_000818f0 direct BL caller 단 1건 (0x24366 in FUN_000241dc). **FUN_000241dc = 5번째 indirect-only entry function** (PROGRESS의 4 entries 외 신규, 74-entry massive JT, caller_arg+0x10 key). 0xac78 cluster 의 10/12 fields 가 FUN_000818f0 전용 (single-entity record 확정). **0xac94 만 system-wide** (57 sites, 4 funcs = entity metadata). 0x9bd0-Object instance ≥84B (heap-allocated, 10 distinct fields up to +0x54) | [ghidra-callers-and-cluster-2026-05-10.md](ghidra-callers-and-cluster-2026-05-10.md) |
 
-### 현재 게임 시스템 모델 (Round 28 시점, 검증 vs 가설)
+### 현재 게임 시스템 모델 (Round 29 시점, 검증 vs 가설)
 
 **✅ 검증된 사실** (실측 disassembly + reader 통계):
 
@@ -220,26 +225,24 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 #   0x7d31c 안의 indirect call 검사 (mov pc, rN 또는 bx rN 패턴)
 ```
 
-**※ Round 27/28 (PM-17/PM-18) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 29.
+**※ Round 27/28/29 (PM-17/PM-18/PM-19) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 30.
 
-### Round 29 즉시 시작 명령 (복사-붙여넣기)
+### Round 30 즉시 시작 명령 (복사-붙여넣기)
 
 ```powershell
-# ⭐⭐⭐ 2CA: FUN_000818f0 의 외부 caller 추적 (entity iteration 의 진짜 위치)
-PYTHONIOENCODING=utf-8 python tools/recon/find_pic_xrefs.py 0x818f0
-# 또는 BL 0x818f0 검색
+# ⭐⭐⭐ 2CG: FUN_000241dc 의 74-entry JT 디코드 + 각 case 매핑
+# JT base @ binary 안 (0x24256 의 ldr r3, [pc, #0x2bc] = 0x24518)
+PYTHONIOENCODING=utf-8 python tools/recon/decode_scn_jumptable.py 0x24256 74
 
-# ⭐⭐ 2CB: task_struct[0xac78~0xac9d] cluster 의 다른 reader 매핑
-# (도구 KNOWN_FIELDS 에 cluster 모든 offset 추가 후 재실행)
+# ⭐⭐ 2CH: 0xac94 의 4 readers 본문 분석 (entity metadata 의 의미)
+# FUN_00030018, FUN_0008beba, FUN_0008e89e (FUN_000818f0 외)
+PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x30018 <next_push>
 
-# ⭐⭐ 2CC: 0x9bd0-Object instance size + member layout (FUN_0007cd58 caller chain)
-PYTHONIOENCODING=utf-8 python tools/recon/find_pic_xrefs.py 0x7cd58
-
-# ⭐⭐ 2CD: 0x9c70 stack-load 패턴 추가 lenient 화 (Round 27 의 92% miss)
-# 도구에 stack-load (subs r3, r7, #4; ldr r3, [r3]) 패턴 추가
+# ⭐⭐ 2CI: 0x9bd0-Object instance allocator 추적 (heap-allocated)
+# substructure A의 +0x1c 위치 (= task_ptr+0x9bd0) 에 ptr 저장하는 writer 검색
 ```
 
-**Round 29 작업 후**: 위 Round 27 마무리 절차 동일.
+**Round 30 작업 후**: 위 Round 27 마무리 절차 동일.
 
 
 ### 🚀 "이어서 진행" 한 마디로 시작할 때 (자동 진행 권장 흐름)
@@ -247,23 +250,23 @@ PYTHONIOENCODING=utf-8 python tools/recon/find_pic_xrefs.py 0x7cd58
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 28 까지 완료 — FUN_000818f0 single-entity handler + entity state record 38B + 0x9bd0 vtable+8 정체)
-- 위 PM-18 / Round 28 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 29 까지 완료 — caller chain 추적 + 5번째 indirect entry 발견 + 38B cluster 확정 + 0x9bd0-Object instance ≥84B)
+- 위 PM-19 / Round 29 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 29 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 30 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ 2CA | **FUN_000818f0 의 외부 caller 추적** (entity iteration 의 진짜 위치) | `find_pic_xrefs.py 0x818f0` | entity iteration 의 진짜 위치 |
-| ⭐⭐ 2CB | task_struct[0xac78~0xac9d] cluster 의 다른 reader 매핑 | KNOWN_FIELDS 확장 + 재실행 | 38B record 의 system-wide readers |
-| ⭐⭐ 2CC | 0x9bd0-Object instance size + member layout (FUN_0007cd58 caller chain) | indirect call 추적 | 0x9bd0-Object 의 instance 구조 |
-| ⭐⭐ 2CD | 0x9c70 stack-load 패턴 추가 lenient 화 (Round 27 92% miss) | 도구 추가 확장 | 0x9c70 의 진짜 reader 분포 |
-| ⭐ 2CE | FUN_000818f0 의 4x screen_ptr_getter rendering 영역 (0x82eaa~) | inline disasm | entity rendering 의 정체 |
-| ⭐ 2CF | 0x1668 (FUN_0008d87c medium_int) 정체 — GOT slot vs ctx field | usage pattern 검증 | 5736 의 의미 |
+| ⭐⭐⭐ 2CG | **FUN_000241dc 의 74-entry JT 디코드** + 각 case sub-handler 매핑 | `decode_scn_jumptable.py` 적용 | 74 events 의 의미 |
+| ⭐⭐ 2CH | 0xac94 의 4 readers 본문 분석 (entity metadata 의 의미) | FUN_00030018, FUN_0008beba, FUN_0008e89e | entity metadata 의 의미 |
+| ⭐⭐ 2CI | 0x9bd0-Object instance allocator 추적 (heap-allocated) | substructure A +0x1c writer 검색 | instance 의 allocation 위치 |
+| ⭐ 2CJ | FUN_00081688 본문 (FUN_000818f0 인접 peer entity handler 후보) | `disasm_subsystem_func.py 0x81688` | peer entity 의 정체 |
+| ⭐ 2CK | FUN_00030018 본문 (0xac94 14x reader) | `disasm_subsystem_func.py 0x30018` | entity metadata user |
+| ⭐ 2CD | 0x9c70 stack-load 패턴 추가 lenient 화 (92% miss) | 도구 추가 확장 | 0x9c70 의 진짜 reader 분포 |
 | 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
 
-**3) Round 29 작업 후 마무리**:
+**3) Round 30 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
 - 메모리 파일 (`project_hero3_remake.md`) 에 Round 25 항목 추가
