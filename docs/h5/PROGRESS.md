@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 32 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 33 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,37 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 33 — 2026-05-10 완료]** enemy_g.dat 121B record layout 정밀 분석 + Monster struct vs enemy_g 분리 식별
+- ✅ **Map::MapEnemyG_set (0xae394, 820B) 분석**:
+  - LoadRes("/c/csv/enemy_g.dat") + per-enemy 240 byte struct 영역 매핑
+  - Per enemy block: Map + (idx * 0xf0) + 0x1f0 (240 byte/enemy)
+  - File 의 r7 base 부터 117+ byte 읽음:
+    - file +4..0xf (12 byte u8) → struct +0x00..+0x0b: monster markers
+    - file +0x10..0x1b (12 byte = 6 u16) → struct +0x0c..+0x17: **HP/MP/ATK/DEF/EXP/Gold** (Round 8 확정)
+    - file +0x1c..+0x2a (15 byte u8) → struct +0x18..+0x26: drop / level fields
+    - arg2 (sp[0]) → struct +0x27: drop type marker (passed in)
+    - file +0x2b 이후: 4 skill blocks × 16 byte = 64 byte skills (struct +0x28..+0xa7)
+  - Total file read per enemy ≈ 121 byte (Round 8 결과 일치 확인)
+- ✅ **Monster::setEnemyG (0xba358, 68B) 분석**:
+  - Monster::setEnemyG(idx) 가 단순 link: Monster +0x2d8 = (gv [0x1488] + idx * 0xf0 + 0x1f0)
+  - 즉 Monster +0x2d8 = pointer to enemy_g block (Map struct 안의)
+  - **Monster struct 자체의 +0x254..+0x275 fields 는 별도 source**:
+    - Monster +0x254/+0x258/+0x25c/+0x260/+0x264/+0x268/+0x26c (5+2 thresholds) — Round 31 의 drop chance thresholds
+    - Monster +0x270/+0x271/+0x272/+0x273/+0x274/+0x275 — drop count, type, marker fields
+    - 이들은 Monster constructor 또는 game-state init 에서 set, enemy_g 와 직접 매핑되지 않음
+- ✅ **enemy_g.dat 의 monster_idx vs droptable.dat 의 monster_idx 매핑 추정**:
+  - droptable.dat byte 2 = 0..62 (63 monsters)
+  - enemy_g.dat 의 enemy 갯수는 별도 (count u16 in header)
+  - 두 데이터원이 같은 monster_idx 공유할 가능성 → cross-check 필요 (다음 라운드)
+- ✅ **drop 시스템의 데이터 흐름 정리**:
+  ```
+  enemy_g.dat → Map+0x1f0 (HP/MP/ATK/DEF/EXP/Gold + skills, 240B/enemy)
+  droptable.dat → ItemTable+0x214 (4 drop tiers × 63 monsters × 13B/entry)
+  Monster struct +0x254..+0x275 → 별도 init source (drop chance thresholds + markers)
+  Monster::SetDropItem (Round 27) 가 위 3 source 모두 사용해 drop 결정
+  ```
+- 산출: `work/h5/analysis/mapenemyg_set_disasm.txt` (204 줄)
 
 **[Round 32 — 2026-05-10 완료]** MixSmithTableInfo 데이터원 식별 + 288 NPC blacksmith recipes dump
 - ✅ **HERO::GetMixSmithTableInfoPtr (0x890f4, 20B)** 분석:
