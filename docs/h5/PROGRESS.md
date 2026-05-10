@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 28 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 29 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,34 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 29 — 2026-05-10 완료]** drop_table 데이터 식별 + dump + decode 도구
+- ✅ **ItemTable::LoadItemDropTable (0xa0b54, 80B) 분석**:
+  - LoadRes("/c/csv/droptable.dat") → ItemTable+0x214 = drop_table_ptr
+  - VFS index 18, hash 0xe58e8176, 3278 byte file
+- ✅ **droptable.dat layout 확정**: u16 count(252) + 252 × 13 byte
+  - **252 entries = 63 monsters × 4 drop tiers each**
+  - byte 0 = 0x0b (cat=11, **potion drop pool**) — all 252 entries 일관
+  - byte 1 = 0x00 (sub-flag) — all 252 일관
+  - byte 2 = monster_idx (0..62, 4 entries 단위)
+  - byte 3 = drop_tier (0x0e/0x0f/0x10/0x11, 4 distinct = 4 tier per monster)
+  - byte 4..12 = drop pool 데이터 (NewDropItem args 후보):
+    - byte 9 = 0xff sentinel 절반 (108/252) → NewDropItem strb skip 의미 (value < 0)
+    - byte 11 = 0xff sentinel 절반 (104/252) → 같은 패턴
+    - byte 4 ≈ byte 6 같은 빈도 분포 (paired field?)
+    - 정확한 byte ↔ NewDropItem arg 매핑은 caller 1 register propagation 추적 필요
+      (0xbcb74..0xbcc74 의 register 변환 — sl/r8/r7/sb 등이 stack 에 store)
+- ✅ **droptable.json 발행** (`apps/hero5-godot/assets/gamedata/droptable.json`):
+  - flat entries[] (252 records) + by_monster[] (monster_idx 별 group)
+  - meta: source/vfs_index/count/monsters/entries_per_monster
+- ✅ **droptable.dat 의미**: **monster 의 potion drop pool only**. Monster 가 죽으면
+  drop_tier (0..3) 가 random 선택되고 그 entry 의 byte data 가 NewDropItem args 로 전달.
+  EquipItem drop 은 별도 메커니즘 (caller 2 의 cat=0xe path 또는 다른 함수) — droptable.dat
+  에 포함되지 않음.
+- ✅ Round 24 의 tier_flags (legendary/rare/gem/common) 가 **potion drop 에는 무관** —
+  potion 은 cat=11 으로 NewDropItem 의 +0x15f strb path (cat ≤ 10) 에 진입하지 않음.
+  EquipItem drop 은 별도 데이터원에서 tier_flags 전달.
+- 산출: `tools/converter/decode_h5_droptable.py` (새 도구), `apps/hero5-godot/assets/gamedata/droptable.json`
 
 **[Round 28 — 2026-05-10 완료]** RefineItem 의 4 함수 RE (Decompose/Compose/NormalMix/SpecialMix) — 강화 외 모든 mechanism 식별
 - ✅ **ApplyNormalMix (0xa7d04, 896B) — 일반 합성 (NPC 대장간)**:
