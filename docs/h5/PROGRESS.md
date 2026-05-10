@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 36 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 37 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,46 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 37 — 2026-05-10 완료]** Mission 시스템 데이터원 식별 + 13+ Check* 함수 매핑 (P5 폰트는 LOW PRIORITY — 시스템 폰트 우회 중 영향 없음)
+- ✅ **P5 한글 폰트 간단 검토** (게임 동작 영향 없음, 시스템 폰트 Noto Sans CJK KR 우회 중):
+  - `_midas_funcFntInvalidate` (156B) = 단순 cache invalidate (glyph index 매핑 아님)
+  - `_midas_funcFntJohabToWan` (368B) = Johab → Wansung 변환 lookup loop
+  - 정확한 581 glyph 매핑은 시간/임팩트 고려 시 후순위
+- ✅ **Mission::LoadMissionTable (0x8b73c, 460B) 분석**:
+  - LoadRes("/c/csv/mission_list.dat") → MissionInfo* (entry size 44B)
+  - VFS index 48, hash 0x43b86236, 5355B, **count=105 missions**
+  - File format: u16 count + variable-size records (record 0 = 41B 등)
+- ✅ **13+ Mission Check* 함수 매핑** (Achievement / Quest system):
+  - `CheckMissionRefine` (0xa28e0) — 강화 mission (Round 26 ApplyItemRefine 호출)
+  - `CheckOrbCombine` (0x8ac0c, 236B) — orb 결합 mission (Round 26 ApplyOrbCombine 호출)
+  - `CheckMissionMix` (0x8acf8, 268B) — special mix mission (Round 28 ApplySpecialMix 호출)
+  - `CheckMissionPlaytime` (0x8af94, 340B) — playtime achievement
+  - `CheckMissionMoney` (0x8b1ac, 212B) — gold achievement
+  - `CheckMissionRank` (0x8ab10, 252B) — level/rank achievement
+  - `CheckMissionSetItem` (0x8b2e0, 292B) — set item collection
+  - `CheckCollection` (0x8a8f0, 372B) — general collection
+  - `CheckQuestComplete` (0x8a5ec, 256B) — quest completion
+  - `CompleteMission` (0x8a330, 204B) — mark complete
+  - `QuestCompleteCounting` (0x89ff0) — quest count tracking
+  - `EndingCounting` (0x89fac) — ending counter
+  - `SetCheckInit` (0x89ea0, 112B) — init checker
+- ✅ **MissionInfo struct = 44B/entry** (105 entries × 44B = 4620B + header 등):
+  - 각 mission record: name + condition_type + target_value + reward 등
+  - 정확한 byte layout 은 LoadMissionTable 의 BYTEtoInt16/strb 시퀀스 추적 필요 (다음 라운드)
+- ✅ **Mission 시스템과 다른 시스템 cross-reference 정리**:
+  - Quest 시스템 (별도, _ZN8QuestMgr*) → Mission::CheckQuestComplete 가 link
+  - Drop / Refine / Orb / Mix mechanism 의 모든 mission tracking 함수 식별
+  - Mission 호출 = 특정 행동 후 trigger (e.g., ApplyItemRefine 끝에서 Mission::CheckMissionRefine)
+- ✅ **모든 게임 시스템 데이터원 5종 최종 정리**:
+  ```
+  enemy_g.dat (1 file)         → Map enemy table
+  enemy_*.dat (3 files)        → Monster stat (3 difficulty)
+  droptable.dat (1 file)       → Monster drop pool
+  smith_*.dat (3 files)        → NPC blacksmith recipes
+  mission_list.dat (1 file) ✓  → Achievement/Quest missions ← Round 37 식별
+  + slot_15 (item_15.dat, mix_book recipes), c_csv_class.json, c_csv_skill_*, etc
+  ```
 
 **[Round 36 — 2026-05-10 완료]** 4 element 시스템 구조 식별 + V[151]/V[152] magic stat pair 의미 정리
 - ✅ **4 element 시스템 구조 식별** (formulas_disasm.txt id=7/8 분석):
