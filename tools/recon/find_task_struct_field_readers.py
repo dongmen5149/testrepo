@@ -179,9 +179,12 @@ def main():
         r0_equiv = {"r0"}
         # Stack offsets currently holding task_ptr (saved via `str rX, [sp, #N]`)
         stack_saved: set[int] = set()
+        # Constant-tracking: register → known integer value (for immediate construction
+        # patterns like `movs Rd, #N; lsls Rd, Rd, #s`)
+        const_regs: dict[str, int] = {}
         ldr_target = None  # (idx, rd, lit_value)
 
-        for fwd in range(1, 33):  # extended from 16 to 32 instr lookahead
+        for fwd in range(1, 33):  # 32-instr lookahead
             j = ctx_idx + fwd
             if j >= len(instrs):
                 break
@@ -190,7 +193,7 @@ def main():
             op_str = ins["op_str"]
             parts = [p.strip() for p in op_str.split(",")]
 
-            # Stop on branch (avoids tracking across control flow)
+            # Stop on branch
             if mnem.startswith("b") and mnem not in ("bic", "bics"):
                 break
 
@@ -216,7 +219,40 @@ def main():
                     if dst:
                         r0_equiv.add(dst)
 
-            # Check for ldr Rx, [pc, #imm]  (loading literal pool)
+            # Track immediate construction step 1: movs Rd, #N
+            if mnem == "movs" and len(parts) == 2 and parts[1].startswith("#"):
+                try:
+                    val = int(parts[1].lstrip("#"), 0)
+                    const_regs[parts[0]] = val
+                except ValueError:
+                    pass
+
+            # Track immediate construction step 2: lsls Rd, Rd, #shift  (Rd <<= shift)
+            # Or lsls Rd, Rs, #shift  (Rd = Rs << shift)
+            if mnem == "lsls" and len(parts) == 3 and parts[2].startswith("#"):
+                try:
+                    shift = int(parts[2].lstrip("#"), 0)
+                    src = parts[1]
+                    dst = parts[0]
+                    if src in const_regs:
+                        const_regs[dst] = (const_regs[src] << shift) & 0xFFFFFFFF
+                    elif dst in const_regs and src == dst:
+                        const_regs[dst] = (const_regs[dst] << shift) & 0xFFFFFFFF
+                except ValueError:
+                    pass
+
+            # Invalidate const_regs on overwriting writes (other than the lsls/movs above)
+            # Simple check: if instr is non-tracking arithmetic on a tracked reg, drop it.
+            if mnem in ("adds", "add", "add.w", "subs", "sub", "muls", "mov", "mov.w",
+                        "ldr", "ldrh", "ldrb", "ldrsh", "ldrsb"):
+                # The destination is parts[0]; if it's tracked but the instr isn't a known
+                # tracking pattern, drop the entry (best-effort to avoid stale values).
+                if parts and parts[0] in const_regs and mnem not in ("movs", "lsls"):
+                    # Allow `adds rD, rD, #0` which preserves value
+                    if not (mnem == "adds" and len(parts) == 3 and parts[1] == parts[0] and parts[2] == "#0"):
+                        const_regs.pop(parts[0], None)
+
+            # Check for ldr Rx, [pc, #imm]  (LDR pcrel literal pool)
             if mnem in ("ldr", "ldr.w") and "[pc," in op_str.replace(" ", ""):
                 try:
                     imm = int(op_str.split("#")[1].rstrip("]"), 0)
@@ -230,10 +266,18 @@ def main():
                 except (IndexError, ValueError):
                     pass
 
+            # Check for immediate-construction match: const_reg holds a known field value
+            if ldr_target is None:
+                for reg, cval in list(const_regs.items()):
+                    if cval in fields:
+                        # Mark this reg as a "field offset" reg, similar to ldr_target
+                        ldr_target = (j, reg, cval)
+                        break
+
             # Check for adds/add Ry, <R0-equiv>, Rx  (field access)
             if ldr_target is not None:
                 ldr_idx, ldr_rd, lit_val = ldr_target
-                if mnem in ("adds", "add", "add.w") and ldr_idx < j and len(parts) >= 3:
+                if mnem in ("adds", "add", "add.w") and ldr_idx <= j and len(parts) >= 3:
                     second = parts[1]
                     third = parts[2]
                     matches = (
@@ -250,6 +294,9 @@ def main():
                             "post_pattern": instrs[j+1]["mnem"] + " " + instrs[j+1]["op_str"] if j+1 < len(instrs) else "?",
                         })
                         ldr_target = None
+                        # Drop the matched const_reg so we don't double-count
+                        if ldr_rd in const_regs and const_regs[ldr_rd] == lit_val:
+                            const_regs.pop(ldr_rd, None)
                         break
 
     # 3. Map to enclosing functions
