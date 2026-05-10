@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 23 — HERO::BattleUseItem 분석으로 slot_11 의 4 byte ext 의미 확정 (effect_type/success_rate/effect_value/duration). SLOT_META 전면 정정 — slot_12=orb / slot_13=mix material / slot_15=mix_book recipe 등 record 이름 vs ext 길이 cross-check.)
+업데이트: 2026-05-10 (Round 24 — val_15f upper 3 bit (tier_flags) 의 실증적 의미 식별 (legendary/rare/gem/common). csv-time vs runtime val_15f 용도 분리 발견 — runtime 은 SetItemOption 가 option_type code 로 overwrite.)
 
 ---
 
-## 30초 요약 (Round 23 시점, 2026-05-10)
+## 30초 요약 (Round 24 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -14,7 +14,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~23 누적 발견 (요약)
+### Round 6~24 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -32,6 +32,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | 소서러 (class_id=4) 미구현 stub | c_csv_skill_04 부재 / SORCERER class object 없음 / class_stats unk1..14=1 placeholder. 출시 빌드 = 4 클래스 only. cat 18 매핑은 dead code (R22) |
 | slot_11 BattleUseItem 4 byte 의미 | +0x134=effect_type (91=HP/90=SP/87=buff/92=마석/19=test/0=무효), +0x135=success_rate%, +0x136=effect_value (HERO+0x300 u16), +0x137=duration (HERO+0x302 s16). HERO::BattleUseItem 분석 (R23) |
 | SLOT_META 전면 정정 | slot_12=orb (이전 scroll), slot_13=mix material (이전 orb), slot_15=mix_book recipe (이전 material_2). record 이름 + ext 길이 cross-check 결과 (R23) |
+| val_15f csv vs runtime 용도 분리 | csv: lower 5 bit = class_mask + upper 3 bit = tier_flags. runtime: SetItemOption (0xa0ff8) 가 option_type code 로 overwrite. GetRelieveLevelLimit (0xa835c) 의 cmp #0x6c='l' 는 runtime option (R24) |
+| val_15f upper 3 bit 실증적 의미 | upper=0 (170, legendary 보스/named) / =1 (248, rare 중급) / =3 (9, gem 보석 헤어핀/서클릿) / =7 (362, common 상점 기본) (R24) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -41,12 +43,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 23 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **val_15f upper 3 bit (32/64/128) 의 정확 의미** —
-  DropTable 또는 SetItemOption cross-check 로 EquipItem 의 추가 metadata 식별.
+- Round 24 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **slot_15 (mix_book recipe) 의 13 byte ext 구조 RE** —
+  MixBookItemInfo::Use 또는 ProcMixItem disasm. 재료2개 + 결과 + 성공률 추정.
 - 또는: RefineItem::ApplyItemRefine + ApplyOrbCombine 강화 mechanism 정밀 분석.
-- 또는: slot_15 (mix_book recipe) 의 13 byte ext 구조 RE — 재료2개+결과+성공률
-  으로 추정.
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -71,6 +71,20 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
   5 클래스 base 패턴이 모두 합리적으로 일치 (워리어=근접명중 24, 건슬링어=장거리명중 24, 워리어=방패방어 5).
   **V[62]/V[63] = base_con/base_int 정정** (이전 int/con 매핑 오류) — buildup csv "건강+#1" → ABE 4 → V[120] = bonus_con, "정신+#1" → ABE 5 → V[121] = bonus_int.
   decode_h5_class.py / class_stats.json / class_select.gd / battle_system.gd / formula_vm.gd 일괄 정정.
+- ✅ **Round 24**: val_15f upper 3 bit (tier_flags) 의 실증적 의미 식별:
+  - **csv-time vs runtime val_15f 용도 분리** 발견 — csv 는 (class_mask + tier_flags),
+    runtime 은 SetItemOption (0xa0ff8) 가 option_type code 로 완전 overwrite.
+    GetRelieveLevelLimit (0xa835c) 의 `cmp #0x6c` ('l') 는 runtime option_type 비교.
+    MakeItemOption (0xa10e8) 가 val_15c (option_grade) 로 SetItemOption 호출 여부 결정.
+  - **items.json 789 EquipItem records 분포 분석** 으로 upper 3 bit 의 의미 추정:
+    - upper=0 (170): **legendary** — 실가라스/투란기어/디바인세이버 보스 무기
+    - upper=1 (248, bit5): **rare** — 중급 무기/방어구
+    - upper=3 (9, bit5+6): **gem** — slot_5 보석 헤어핀/서클릿 (청금석/루비/오팔)
+    - upper=7 (362, bit5+6+7): **common** — 일반 상점 (롱소드/단검 등)
+  - 가설: bit5="obtainable" / bit6="gem-accessory" / bit7="common-tier".
+  - parse_equip_extra 가 tier_flags + tier_label 부여 (legendary/rare/gem/common).
+  - slot_4 "스태프" 1 record 가 tier=legendary + class_mask=0 (Sorcerer 전용 staff)
+    Round 22 미구현 stub 사실과 cross-confirm.
 - ✅ **Round 23**: HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블 + SLOT_META 전면 정정:
   - slot_11 의 +0x134..+0x137 의미 확정:
     - +0x134 = effect_type → HERO[0x2fe] → CalcStatusComputation 분기
@@ -250,17 +264,17 @@ python tools/verify_godot_project.py
 
 ## 다음 세션 시작점 (가장 임팩트 큰 후속 작업)
 
-### 1. val_15f upper 3 bit (32/64/128) 정확 의미 (자율 가능)
-
-Round 17 에서 EquipItem (slot_0..10) 의 val_15f 의 lower 5 bit = 클래스 마스크
-확정. upper 3 bit (값 32/64/128) 의 의미는 미확인. 가능 후보: career/tier/cash
-flag. SetItemOption / DropTable 분석으로 cross-check.
-
-### 2. slot_15 mix_book 13 byte ext 구조 RE
+### 1. slot_15 (mix_book recipe) 13 byte ext 구조 RE (자율 가능)
 
 Round 23 에서 slot_15 = MixBookItem (recipe) 임이 확인. ext 13 byte 의 구조:
 재료1 (cat, idx, count?) + 재료2 (cat, idx, count?) + 결과 (cat, idx) + 성공률
 으로 추정. MixBookItemInfo::Use 또는 ProcMixItem disasm 으로 확정.
+
+### 2. val_15f upper 3 bit 의 정확 의미 추가 검증 (Round 24 가설 검증)
+
+Round 24 에서 items.json 분포 기반 실증적 라벨 (legendary/rare/gem/common)
+부여. NewDropItem 의 11 args 중 +0x15f 에 사용되는 arg 가 어떻게 채워지는지,
+DropTable / ShopInventory 의 호출 패턴 분석으로 정확 의미 확정 가능.
 
 ### 2. BattleUseItem (slot_11) +0x134..+0x137 의미 식별 (자율 가능)
 

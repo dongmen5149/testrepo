@@ -302,6 +302,15 @@ def parse_equip_extra(extra: bytes) -> dict:
     res['val_15e'] = _u8(0xe)
     # Round 16: val_15f & 0x1f = 5 클래스 비트 마스크 (W=1/R=2/G=4/K=8/S=16)
     # 검증: val=31 (WRGKS all) 385 records, val=0 43 records, val=9 (WK) 31, val=17 (WS) 40.
+    # Round 24: val_15f >> 5 (upper 3 bit) 의 의미 식별 — items.json cross-check 결과:
+    #   upper=0 (170 records): 보스/전설 named weapons (실가라스/디바인세이버 등)
+    #   upper=1 (248 records, bit5): 중급 무기/방어구
+    #   upper=3 (9 records, bit5+6): slot_5 보석 헤어핀/서클릿 (청금석/루비 등)
+    #   upper=7 (362 records, bit5+6+7): 일반 상점 아이템 (롱소드/단검 등)
+    # 가설: bit5 = "obtainable" (named legendary 외), bit6 = "gem-accessory" (보석류
+    # 전용 액세서리), bit7 = "common-tier" (상점/낮은 등급).
+    # 정확한 게임 의미는 SetItemOption 동작과는 별개 — runtime val_15f 는
+    # SetItemOption 실행 후 option_type code 로 overwrite (RefineItem +0x6c='l' 등).
     val_15f = _u8(0xf)
     res['val_15f'] = val_15f
     if val_15f is not None:
@@ -314,6 +323,16 @@ def parse_equip_extra(extra: bytes) -> dict:
         if mask & 8:  labels.append('K')
         if mask & 16: labels.append('S')
         res['class_label'] = ''.join(labels) or '-'
+        # Round 24: upper 3 bit (tier flags)
+        tier = val_15f >> 5
+        res['tier_flags'] = tier
+        # 실증적 라벨 (items.json 분포 기반 — 정확한 의미 추후 확정)
+        res['tier_label'] = {
+            0: 'legendary',  # boss/named items
+            1: 'rare',       # mid-tier
+            3: 'gem',        # slot_5 gem headwear only
+            7: 'common',     # shop basic
+        }.get(tier, f'tier_{tier}')
     res['val_160'] = _u8(0x10)
     triplet = []
     for o in (0x11, 0x12, 0x13):

@@ -398,7 +398,7 @@ isolated bins. 후속 작업으로 보류.
 
 ## 6. 다음 세션 즉시 재개 체크리스트
 
-### 6.1 현재 상태 한눈에 (2026-05-10, Round 23 종료)
+### 6.1 현재 상태 한눈에 (2026-05-10, Round 24 종료)
 
 **최근 (Round 6~19) 누적 발견 — Formula VM 변수 라벨 / EquipItemInfo struct / 카테고리 별 layout**:
 
@@ -594,6 +594,25 @@ isolated bins. 후속 작업으로 보류.
   `_battle_ui` 인스턴스화 전이라 항상 nil — connect 위치를 인스턴스화 직후로 이동.
 
 ### 6.2.1 다음 우선순위 (남은 작업)
+
+**[Round 24 — 2026-05-10 완료]** val_15f upper 3 bit (tier_flags) 의미 식별
+- ✅ **핵심 발견: csv val_15f vs runtime val_15f 용도 분리**
+  - csv load: lower 5 bit = class_mask, upper 3 bit = tier_flags
+  - runtime: SetItemOption (0xa0ff8) 가 +0x15f 를 option_type code 로 덮어씀
+  - GetRelieveLevelLimit (0xa835c) 의 `cmp #0x6c` 는 runtime option_type 비교
+  - MakeItemOption (0xa10e8) 가 val_15c (option_grade) 로 SetItemOption 호출 여부 결정
+- ✅ **upper 3 bit 의 실증적 의미 (items.json 789 EquipItem 분포 분석)**:
+  - upper=0 (170 records, no flags): **legendary** — 실가라스/투란기어/디바인세이버 등 보스/named 무기
+  - upper=1 (248, bit5): **rare** — 중급 무기/방어구
+  - upper=3 (9, bit5+6): **gem** — slot_5 보석 헤어핀/서클릿 (청금석/루비/오팔 등 9종 only)
+  - upper=7 (362, bit5+6+7): **common** — 일반 상점 아이템 (롱소드/단검 등)
+- ✅ 가설: bit5 = "obtainable", bit6 = "gem-accessory", bit7 = "common-tier"
+- ✅ slot_4 (armor) 1 record "스태프" 가 tier=legendary + class_mask=0 인 점이 Round 22
+  Sorcerer 미구현 stub 사실과 cross-confirm (Sorcerer 전용 staff 인데 사용 가능 클래스 0개)
+- ✅ `decode_h5_item.py::parse_equip_extra` 에 `tier_flags` (정수 0/1/3/7) +
+  `tier_label` (legendary/rare/gem/common) string 부여.
+- ⏸ 정확한 비트 의미는 더 disasm 필요 (NewDropItem / DropTable cross-check).
+  현재 라벨은 records 분포 기반 실증적 추정.
 
 **[Round 23 — 2026-05-10 완료]** HERO::BattleUseItem 분석 + SLOT_META 전면 정정
 - ✅ **HERO::BattleUseItem (0x8fd20, 536B) 디스어셈블** → slot_11 의 4 byte fields
