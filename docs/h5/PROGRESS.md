@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 38 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 39 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,42 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 39 — 2026-05-10 완료]** Quest 시스템 식별 (QuestMgr 22+ 함수 + 3 quest 파일 × 151 quests)
+- ✅ **QuestMgr 함수 22+ 식별** (Mission 과 별도 시스템):
+  - `LoadQuestData` (0xd40e8, 1188B) — quest table loader
+  - `QuestStatusList` (0xd4b9c, 2620B), `QuestCheck` (0xd3acc, 1492B)
+  - `QuestRewardData` (0xd458c, 1552B), `QuestSetStatus` / `GetQuestStatus`
+  - `setQuestViewInfo` (0xd32cc, 2048B), `drawQuestInfo` (0xd2738, 2360B)
+  - `LoadNpcBody`, `DrawNpcBody`, `FreeNpcBody` (NPC body asset 처리)
+  - `SortQuestList`, `DelQuest`, `QuestListInit`, `Quest_GetOffset`
+  - `ItemStringSet`, `DrawQuestString`, `QuestSwitchStatus`
+- ✅ **QuestMgr::LoadQuestData 분석**:
+  - LoadRes("/c/csv/quest_%d.dat", arg) → arg = save slot index 또는 difficulty
+  - r2 = #0x170 (= 368 byte) — Quest struct = 368 byte/entry
+  - HERO+0x277 (Round 35 의 Monster +0x277 같은 영역) = quest set selector
+- ✅ **VFS 에서 3 quest files 발견**:
+  - quest_0.dat: index=55, hash 0x641e44fa, 22367B, count=151
+  - quest_1.dat: index=56, hash 0x64305d7b, 22367B, count=151
+  - quest_2.dat: index=57, hash 0x644275fc, 22367B, count=151
+  - **3 files 모두 동일 내용** (hex dump 일치) → 추정: **save slot 별 quest progress 저장소** (3 save slot 시스템)
+- ✅ **Quest record format 개요** (variable-size, avg 148B/record):
+  - First record size = 184 byte
+  - byte 2..3: record_size u16
+  - byte 4..5: 0x0000 (padding/prefix)
+  - byte 6: strlen u8 (= 26 첫 record)
+  - byte 7..(7+strlen): name string (EUC-KR, 첫 quest 이름 한글)
+  - byte (7+strlen)..end: quest data (조건/보상/대화 등 ~120 byte)
+- ✅ **Mission 과 Quest 의 관계**:
+  - Mission::CheckQuestComplete (Round 37) 가 QuestMgr::QuestCheck 호출
+  - Mission = "achievements" (105 metaquests), Quest = "actual story quests" (151 main quests)
+  - Mission 이 Quest progress 를 monitoring 하여 achievement 완료 처리
+- ✅ **3 quest files 의 의미 추정** (모두 동일):
+  - 게임 difficulty 별 quest 변경 없음 (Monster stat 만 difficulty 별 다름 — Round 34/35)
+  - 또는 game state 별 master copy/runtime copy/save copy
+  - 또는 미사용 redundancy
+- 산출: `work/h5/analysis/quest_loadquestdata_disasm.txt` (분석 시작)
+- decoder 작성은 다음 라운드 (record 의 quest data 영역 정밀 분석 필요)
 
 **[Round 38 — 2026-05-10 완료]** mission_list.dat record byte → MissionInfo 정밀 매핑 + decoder 발행
 - ✅ **LoadMissionTable 460B 정밀 disasm 추적**:

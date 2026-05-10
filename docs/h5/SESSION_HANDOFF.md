@@ -2,13 +2,13 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 38 — mission_list.dat decoder. **105 missions 정확 parse + mission_type 분포 식별** (type 0-5 + 255 metadata). Sub-condition slot 5..8 = helmet/boots/accessory cat (Round 27 droptable 와 일치).)
+업데이트: 2026-05-11 (Round 39 — Quest 시스템 식별. **QuestMgr 22+ 함수 + 3 quest_*.dat × 151 quests** (모두 동일 내용 → save slot 별 추정). Quest struct 368B/entry. Mission(achievements 105) ↔ Quest(main 151) 별도 시스템.)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 39 시작 — Quest 시스템 분석 (QuestMgr 함수들)"** 으로 진행 (Mission 과 별도, _ZN8QuestMgr*).
+**"Round 40 시작 — quest_*.dat record 정밀 매핑 + decoder"** 으로 진행 (LoadQuestData 1188B 정밀 분석 + 151 quests JSON 발행).
 또는: scn opcode 실제 game scene 동작 검증, 한글 폰트 매핑.
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
@@ -16,7 +16,7 @@
 
 ---
 
-## 30초 요약 (Round 38 시점, 2026-05-10)
+## 30초 요약 (Round 39 시점, 2026-05-11)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~38 누적 발견 (요약)
+### Round 6~39 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -80,6 +80,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **모든 게임 시스템 데이터원 5종** | enemy_g (Map enemy), enemy_*.dat (Monster ×3), droptable.dat (drop pool), smith_*.dat (craft ×3), mission_list.dat (105 missions) — Round 33-37 으로 모든 시스템 데이터 파이프라인 매핑 완료 (R37) |
 | **mission_list.dat record format** | u16 size + u8 strlen + name + (mission_type, sub_type, target_count) + 5×(slot u8, flag u8, value u32) + final_flag = strlen+39 byte. mission_type 0-5 (20/5/22/47/5/5) + 255 metadata. Slot 5..8 = helmet/boots/accessory cat (R38) |
 | **Mission decoder + 105 missions JSON** | 105 missions 모두 정확 parse. type 분포가 Round 37 의 13 Check* 함수에 매핑 (collection/rank/quest/mix 등) (R38) |
+| **Quest 시스템 식별 (Mission 과 별도)** | QuestMgr 22+ 함수, LoadQuestData (0xd40e8, 1188B) → /c/csv/quest_%d.dat. 3 files (각 22367B × 151 quests, 모두 동일 내용 → save slot 별 추정). Quest struct 368B (0x170)/entry. Mission(achievements) ↔ Quest(main story) 별도 시스템, Mission::CheckQuestComplete 가 link (R39) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -89,10 +90,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 38 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **Quest 시스템 분석 (QuestMgr 함수들)** — Mission 과 별도 시스템.
-  Mission::CheckQuestComplete (Round 37) 가 QuestMgr 와 link, QuestMgr 의 데이터원 +
-  quest 진척 logic 분석.
+- Round 39 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **quest_*.dat record 정밀 매핑 + decoder** — LoadQuestData
+  1188B 의 ByteToInt16/strb 시퀀스 추적으로 record format 확정. 151 quests JSON
+  발행 (이름/타입/조건/보상/대화 등 fields).
 - 또는: scn opcode 실제 game scene 동작 검증, 한글 폰트 매핑 (LOW PRIORITY).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
@@ -318,14 +319,15 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 39 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 40 후보, 우선순위 순)
 
-### 1. Quest 시스템 분석 (자율 가능)
+### 1. quest_*.dat record byte → Quest 368B struct 정밀 매핑 + decoder (자율 가능)
 
-Mission 과 별도. QuestMgr (`_ZN8QuestMgr*`) 클래스의 함수들 (Mission::CheckQuestComplete 가 link).
-- QuestMgr 의 데이터원 (csv 파일) 식별
-- Quest 진척 logic + reward 지급 흐름
-- Mission::CheckQuestComplete 가 QuestMgr 와 어떻게 cross-reference
+Round 39 에서 Quest 시스템 데이터원 (3 files × 151 quests) 식별. 정밀 매핑:
+- LoadQuestData 1188B 의 ByteToInt16/strb 시퀀스 추적
+- 151 quests × variable-size record (avg 148B) → struct 368B 매핑
+- decoder 작성: quest_*.dat → JSON (이름/타입/조건/보상/NPC 대화 등)
+- 3 files 동일성 검증 (save slot 가설 cross-check)
 
 ### 2. 한글 비트맵 폰트 매핑 (LOW PRIORITY)
 
