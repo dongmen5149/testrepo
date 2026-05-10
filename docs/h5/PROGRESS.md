@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 35 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 36 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,40 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 36 — 2026-05-10 완료]** 4 element 시스템 구조 식별 + V[151]/V[152] magic stat pair 의미 정리
+- ✅ **4 element 시스템 구조 식별** (formulas_disasm.txt id=7/8 분석):
+  - V[136..143] = **8 element bonus fields = 4 elements × 2 dimensions** (각 element 의 atk/def)
+    - V[136]/V[137] = element 0 (fire 추정) atk/def
+    - V[138]/V[139] = element 1 (ice 추정) atk/def
+    - V[140]/V[141] = element 2 (lightning 추정) atk/def
+    - V[142]/V[143] = element 3 (dark 추정) atk/def
+  - id=7 (calc_pl element atk total): `(sum_4_elements_atk + V[153]/2) * (100+V[27])/100 + V[144]*(100+30*V[89])/100`
+  - id=8 (calc_pl element def total): `(sum_4_elements_def + V[153]/2) * (100+V[28])/100 + V[145]*(100+30*V[93])/100`
+- ✅ **V[144]/V[145] = current element bonus** (active element 의 main bonus):
+  - V[89]/V[93] (HERO +0x262/+0x266) = current element index (atk/def 별 선택)
+  - 30% multiplier per element level
+- ✅ **V[88..98] = 11 stat fields** (HERO +0x261..+0x26b):
+  - id=44 sum 식: `clamp(V[88]+V[89]+...+V[98], 0, 999)` = 11 stats 합산
+  - V[89]=atk_element_idx, V[93]=def_element_idx 가 4 byte 간격 — 추정 element class index
+- ✅ **V[151]/V[152] = magic stat pair (skill slot 별 magic damage)**:
+  - id=4: `(V[6]_skill_atk_phys + (V[134]+V[135])/2 + V[151]) * (100+V[24])/100` — 1차 magic damage
+  - id=5: `(V[7]_skill_atk_sec + (V[134]+V[135])/2 + V[152]) * (100+V[25])/100` — 2차 magic damage
+  - id=6: `(V[8]_skill_atk_other + V[154]_str) * (100+V[26])/100` — 3차 (다른 type)
+  - V[151] vs V[152]: 둘 다 INT-magic 변종, 서로 다른 weapon/skill slot 의 magic bonus
+  - 추정: V[151]="phys-derived magic" (str+int), V[152]="pure magic" (int only) 또는 weapon slot 1/2 magic
+- ✅ **V[134]/V[135] = magic ATK base pair** (id=4/5 모두에서 평균 사용):
+  - 첫 두 element 의 base magic atk
+  - 평균 (V[134]+V[135])/2 → 캐릭터의 base magic damage core
+- ✅ **V[153]/V[154]/V[155] 의미 재확인**:
+  - V[153]: element resistance 또는 element_total_contribution (id=7/8 의 /2 weight)
+  - V[154]: stat_str (Round 7)
+  - V[155]: max_sp (Round 7)
+- ✅ **GV_SUBSTRUCT_FIELDS.md 의 기존 추정과 일치 검증**:
+  - 0x2b8/0x2ba = V[134]/V[135] (마법 ATK pair) ✓
+  - 0x2bc..0x2ca = V[136..143] (8 element bonus, 4 pair) ✓
+  - 0x2cc/0x2ce = V[144]/V[145] (main element bonus) ✓
+- ✅ **결론**: V[151]/V[152] 정확한 element 짝 식별은 게임 데이터 + UI 테스트 없이 미완 (BATTLER stat 표시 cross-check 필요), 그러나 **4 element 시스템 구조와 magic damage formula 구조**는 완전 식별.
 
 **[Round 35 — 2026-05-10 완료]** enemy_*.dat record byte → Monster field 정밀 매핑 + decoder 발행
 - ✅ **Monster::setEnemyData 1532B disasm 정밀 추적** — record offset 대 Monster field 매핑 추출:

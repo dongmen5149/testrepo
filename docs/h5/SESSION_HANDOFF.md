@@ -2,21 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-10 (Round 35 — enemy_*.dat record byte → Monster field 정밀 매핑 + decoder 발행. **3 difficulty × 166 records = 498 monster records 정확 parse**. drop progression 검증: easy=0, normal=17-19, hard=26-27.)
+업데이트: 2026-05-10 (Round 36 — 4 element 시스템 구조 식별. **V[136..143] = 4 elements × 2 (atk/def) 8 fields**. V[144]/V[145] = current element bonus (V[89]/V[93] 으로 선택, +30%/level). V[151]/V[152] = magic stat pair (skill slot 별).)
 
 ---
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**"Round 36 시작 — V[151]/V[152] element 짝 (fire/ice/lightning/dark) 식별"** 으로 진행.
-또는: 한글 비트맵 폰트 매핑 (P5, capstone+lief 로 가능). 다른 미해결 항목.
+**"Round 37 시작 — 한글 비트맵 폰트 매핑 (P5)"** 으로 진행 (capstone+lief 로 581 glyph index ↔ Unicode 추출).
+또는 다른 미해결 항목 (Mission 시스템, scn opcode 미구현 cross-check 등).
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
 
 ---
 
-## 30초 요약 (Round 35 시점, 2026-05-10)
+## 30초 요약 (Round 36 시점, 2026-05-10)
 
 영웅서기5 Android+HD 리메이크 — Phase 2 (자산 추출/분석) + Phase 3 (Godot 게임 시스템)
 + **모든 우선순위 P1~P4 + DES 해독 + Formula VM 통합 + Item struct 분석** 완료.
@@ -24,7 +24,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 
 **verify_godot_project.py: 0 errors / 0 warnings.**
 
-### Round 6~35 누적 발견 (요약)
+### Round 6~36 누적 발견 (요약)
 
 | 영역 | 핵심 결과 |
 |---|---|
@@ -75,6 +75,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **Monster 시스템의 4 데이터원 정리** | enemy_g (Map HP/skills), enemy_*.dat (Monster stat+drop), droptable.dat (drop pool), smith_*.dat (craft recipes) — 모든 Monster/Item 시스템 데이터원 식별 (R34) |
 | **enemy_*.dat record byte → Monster field 정밀 매핑** | byte 0..3 → +0x22c..+0x22f (markers), byte 39..66 → +0x254..+0x26c (7 u32 drop thresholds), byte 67..72 → +0x270..+0x275 (drop count/markers), byte 73..79 → +0x276..+0x27c, byte 80+ → BATTLER stats (R35) |
 | **Monster decoder + 498 records JSON** | 3 difficulty × 166 records 정확 parse. Easy drop_count=0, Normal=17-19, Hard=26-27 (게임 difficulty 시스템 검증) (R35) |
+| **4 element 시스템 구조 식별** | V[136..143] = 4 elements × 2 (atk/def). id=7/8 calc_pl 의 magic atk/def total 식 = sum_elements + V[153]/2 + V[144/145]*(100+30*V[89/93])/100. V[89]/V[93] = current element index. V[151]/V[152] = magic stat pair (skill slot 별 magic damage bonus) (R36) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -84,11 +85,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 35 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **V[151]/V[152] element 짝 (fire/ice/lightning/dark) 식별** —
-  Round 12 의 V[151]/V[152] 둘 다 INT-magic 정정 후 element 의 정확 매핑 미완.
-  formulas_disasm.txt 의 V[134..148] (element bonus) 참조로 식별.
-- 또는: 한글 비트맵 폰트 매핑 (P5).
+- Round 36 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션: **한글 비트맵 폰트 매핑 (P5)** — capstone+lief 로 _midas_funcFntInvalidate
+  분석으로 581 glyph index ↔ Unicode 매핑 추출. 시스템 폰트 (Noto Sans CJK KR) 로 우회 중,
+  폰트 충실도 향상 only.
+- 또는 Mission 시스템 분석 (Round 28 의 Mission::CheckMissionMix 호출 추적).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
 - ✅ **Round 6**: visual 효과 hookup — screen_shake tween, map_tile_change highlight, narration text lookup
@@ -313,17 +314,15 @@ python tools/verify_godot_project.py
 
 ---
 
-## 다음 세션 시작점 (Round 36 후보, 우선순위 순)
+## 다음 세션 시작점 (Round 37 후보, 우선순위 순)
 
-### 1. V[151]/V[152] element 짝 식별 (자율 가능)
+### 1. 한글 비트맵 폰트 매핑 (P5, LOW PRIORITY but 자율 가능)
 
-Round 12 에서 V[151]/V[152] 둘 다 INT-magic stat 으로 정정. 이제 element pair
-(fire/ice/lightning/dark 4 element) 의 정확 매핑 필요:
-- formulas_disasm.txt 에서 V[134..148] (element bonus) 영역 참조 패턴 추적
-- Formula VM id=4..7 (calc_pl) 의 element-specific 식 분석
-- BATTLER 의 element resistance fields (+0x?? area) 와 cross-check
+`_midas_funcFntInvalidate` 디스어셈블로 581 glyph index ↔ Unicode 매핑 추출.
+시스템 폰트 (Noto Sans CJK KR) 로 우회 중이므로 게임 동작에 영향 없음 —
+폰트 충실도 향상 only.
 
-### 2. 한글 비트맵 폰트 매핑 (P5, LOW PRIORITY)
+### 2. Mission 시스템 분석
 
 Round 28 에서 ApplyNormalMix 가 csv slot_15 와 별개로 MixSmithTableInfo* 사용 확인.
 HERO::GetMixSmithTableInfoPtr (0x890f4) 의 implementation 분석으로:
