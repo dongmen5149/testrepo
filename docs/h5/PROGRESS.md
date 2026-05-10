@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-10 (Round 30 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
+업데이트: 2026-05-10 (Round 31 종료) — **Phase 2 + Phase 3 핵심 시스템 모두 구현 완료**.
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 통합.
 
@@ -621,6 +621,36 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 31 — 2026-05-10 완료]** droptable.dat byte→arg 정확한 매핑 — Monster::SetDropItem 의 multi-tier drop 시스템 식별
+- ✅ **Monster::SetDropItem 의 cat 결정 multi-path 시스템 발견** (Round 30 결론 추가 정정):
+  - Rand(0,0xffff) → r0 → 5단계 threshold 체크 (Monster +0x254/+0x258/+0x25c/+0x260/+0x264/+0x268/+0x26c)
+  - 각 threshold path 별로 다른 byte 가 cat 으로 사용:
+    - **byte 7 = default path cat** (0xbcb54 fall-through 후 0xbcb84 ldr r2 [sp+0x48]=byte 7, 0xbcb98 r8=r2)
+    - **byte 11 = highest tier path cat** (0xbce24 → 0xbce70 ldr r2 [sp+0x4c]=byte 11)
+    - mid threshold paths (potion/normal/etc): cat = Rand(0,9) (random EquipItem)
+  - 최종 NewDropItem cat (r3) = signed s8 of (computed value at sp+0x40)
+- ✅ **byte 7 (default path cat) 분포 분석 — 모든 EquipItem cats 0..9 포함**:
+  - 0=weapon(28) / 1=weapon_2(28) / 2=weapon_3(27) / 3=weapon_4(28) /
+    5=helmet(25) / 6=boots(26) / 7=accessory(26) / 8=accessory_2(24) / 9=shield(28)
+  - 0xff (sentinel default) 12 entries
+  - **cat 4 (armor) 누락 = Round 22 의 Sorcerer 미구현 stub 사실 cross-confirm** (Sorcerer staff 가 armor 인데 droptable 에 없음)
+- ✅ **byte 11 (highest tier path cat) 분포** (Round 30 의 결론 — 정정해서 수용):
+  - 5=helmet(27) / 6=boots(14) / 7=accessory(61) / 8=accessory_2(46) / 0xff(default)(104)
+  - "rare drop bonus" — 보스급 monster 가 가끔 high-tier accessory drop
+- ✅ **Monster progression 정확한 의미 검증** (decode_h5_droptable.py 출력):
+  - Monster 0 (저급, 첫 지역): tier 0e/0f/10 common=accessory(7), rare=default. tier 11 common=default.
+  - Monster 62 (endgame, 보스): tier 0e common=weapon_4(3) rare=helmet(5), tier 0f common=shield(9) rare=default,
+    tier 10 common=shield(9) rare=boots(6), tier 11 common=boots(6) rare=default.
+  - **저급 monster = 단순 accessory drop, 고급 monster = 다양한 무기/방어구/방패 + rare accessory bonus**.
+- ✅ **caller 2 path (cat=0xe mix material drop) 추가 분석**:
+  - SetDropItem 끝에서 `Rand(0, 0xffff) < 0x6665` (=~40% 확률) → 별도 mix material drop
+  - sp+0x68 부근 5-byte 배열 (Monster offset table) 에서 random byte pick → drop offset
+  - 모든 args (val_15c..val_164) = -1 (sentinel, runtime SetItemOption 가 결정)
+- ✅ **caller 1 path 진입 조건**: Monster +0x271 byte != -1 일 때만 NewDropItem 호출 (0xbca40 beq 0xbcbb0)
+- ✅ **decode_h5_droptable.py 정정**:
+  - 'cat' 필드 → 'cat_default' (byte 7, 0..9 EquipItem) + 'cat_rare' (byte 11, helmet/boots/accessory + default)
+  - cat label dictionary 확장 (weapon/weapon_2/weapon_3/weapon_4/armor/helmet/boots/accessory/accessory_2/shield/spirit/default)
 
 **[Round 30 — 2026-05-10 완료]** droptable.dat 재해석 — EquipItem drop pool (Round 29 정정) + monster progression 검증
 - ✅ **Round 29 결론 정정**: byte 0 = 0x0b 가 cat 이 아닌 **byte 11 = NewDropItem cat arg** 발견.

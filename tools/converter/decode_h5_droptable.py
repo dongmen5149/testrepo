@@ -1,7 +1,7 @@
 """
 droptable.dat 디코더.
 
-Round 27 → Round 30 분석 종합:
+Round 27 → Round 31 분석 종합:
   ItemTable::LoadItemDropTable (0xa0b54) → LoadRes("/c/csv/droptable.dat")
   → ItemTable+0x214 = drop_table_ptr
   Monster::SetDropItem (0xbc910) 안에서 random drop_tier 선택 후 NewDropItem 호출.
@@ -9,32 +9,46 @@ Round 27 → Round 30 분석 종합:
 VFS index 18, hash 0xe58e8176, 3278 byte.
 
 Layout (u16 count + 252 × 13 byte = 63 monsters × 4 drop tiers):
-  byte 0  = 0x0b (constant marker — 모든 252 entries 일관, 의미 미상 — format version 추정)
+  byte 0  = 0x0b (constant marker — 모든 252 entries 일관)
   byte 1  = 0x00 (sub-flag — 모든 252 일관)
   byte 2  = monster_idx (0..62, 4 entries 단위)
   byte 3  = drop_tier (0x0e/0x0f/0x10/0x11, 4 unique = 4 tier per monster)
-  byte 4  = 12 unique values, byte 6 와 동일 분포 (paired field, val_15c?)
-  byte 5  = 20 unique values (val_15f tier_flags 또는 idx?)
-  byte 6  = 12 unique values, byte 4 와 동일 분포 (paired)
-  byte 7  = 10 unique (idx 또는 val_162)
-  byte 8  = 25 unique (val_160 또는 stat)
-  byte 9  = 7 unique, 0xff=108 (sentinel = NewDropItem strb skip)
+  byte 4  = 12 unique values, byte 6 와 동일 분포 (paired)
+  byte 5  = 20 unique values (idx 또는 stat 후보)
+  byte 6  = 12 unique values, byte 4 와 paired
+  byte 7  = **default path cat (NewDropItem r3 arg)** ✅ Round 31 발견:
+              cat 0..9 EquipItem cats (cat 4=armor 제외, 12 sentinel)
+              0=weapon(28) / 1=weapon_2(28) / 2=weapon_3(27) / 3=weapon_4(28) /
+              5=helmet(25) / 6=boots(26) / 7=accessory(26) / 8=accessory_2(24) /
+              9=shield(28) / 0xff(=-1, default branch)(12)
+              **cat 4 누락 = Round 22 Sorcerer 미구현 stub cross-confirm**
+  byte 8  = 25 unique (idx 또는 stat)
+  byte 9  = 7 unique, 0xff=108 (sentinel)
   byte 10 = 30 unique, 0x00=112 (val_163 또는 zero default)
-  byte 11 = **NewDropItem cat arg (signed s8)**:
+  byte 11 = **highest-tier path cat (NewDropItem r3 arg, 별도 path)** ✅ Round 30:
               0x05 (helmet) 27 / 0x06 (boots) 14 / 0x07 (accessory) 61 /
-              0x08 (accessory_2) 46 / 0xff (-1=default→EquipItemInfo) 104
-            ✅ Round 30 발견: byte 0 가 cat 이 아닌 byte 11 가 cat.
-            droptable.dat = **EquipItem drop pool** (potion 아님)
-  byte 12 = 13 unique, 0xff=104 (sentinel = strb skip)
+              0x08 (accessory_2) 46 / 0xff (default) 104
+              → 보스급 monster 의 specific accessory drop tier
+  byte 12 = 13 unique, 0xff=104 (sentinel)
 
-NewDropItem args 매핑 (Round 30 register propagation 추적):
-  r3 (cat) = signed s8 of byte 11
-  arg5..arg12 (sp+0..sp+0x1c) = stack args (idx, val_15c, val_15f, val_162, val_160,
-    val_163, val_161, val_164) — 정확한 byte→arg 매핑은 추가 검증 필요 (Round 31).
+Monster::SetDropItem 의 드롭 결정 로직 (Round 31 정밀 추적):
+  - Rand(0,0xffff) → r0
+  - if r0 < Monster.+0x254: skip (no drop)
+  - elif r0 < Monster.+0x258 (0xbcca8 path): cat = Rand(0,9) (random EquipItem cat)
+  - elif r0 < Monster.+0x25c (0xbccf8 path): cat = Rand(0,9) variant
+  - elif r0 < Monster.+0x260 (0xbcda0 path): cat = Rand(0,9) variant
+  - elif r0 < Monster.+0x264 (0xbcb54 default fall-through): **cat = byte 7** (specific)
+  - elif r0 < Monster.+0x268 (0xbcd60 path): high-tier mix
+  - elif r0 < Monster.+0x26c (0xbce24 path): **cat = byte 11** (highest tier)
+  - else: skip
+  - Each path sets various sp slots that NewDropItem reads as args (idx, val_15c, etc).
+  - Final NewDropItem call at 0xbcc74 (caller 1) reached if Monster +0x271 != -1.
+  - Caller 2 (0xbcf30) at function end: cat=0xe (mix material) drop, prob ~40%.
 
-각 entry = monster 의 한 drop_tier 의 EquipItem (helmet/boots/accessory + sentinel default).
-무기 (cat 0..3) drop 이 droptable.dat 에 없는 이유: 무기 drop 은 별도 메커니즘 (Quest reward,
-Treasure chest, 또는 default tier의 generic drop).
+cat 매핑 의미:
+  - byte 7 = "common drop cat" — random pick from monster's 4 entries × 4 tiers
+  - byte 11 = "rare drop cat" — specific accessory drop in highest tier
+  - 0xff = NewDropItem default branch = generic EquipItem (376B alloc, no specific cat)
 
 산출:
   apps/hero5-godot/assets/gamedata/droptable.json
@@ -70,27 +84,37 @@ def parse(data: bytes) -> dict:
     if expected != len(data):
         return {'error': f'size mismatch: got {len(data)}, expected {expected}'}
 
-    # Round 30: byte 11 = cat (NewDropItem r3 arg, signed s8)
+    # Round 30/31: byte 7 = default path cat, byte 11 = highest tier path cat
     CAT_LABELS = {
+        0: 'weapon', 1: 'weapon_2', 2: 'weapon_3', 3: 'weapon_4',
+        4: 'armor',  # Sorcerer 미구현 (Round 22) — droptable 에는 없음
         5: 'helmet', 6: 'boots', 7: 'accessory', 8: 'accessory_2',
+        9: 'shield', 10: 'spirit',
         0xff: 'default',  # NewDropItem default branch → EquipItemInfo (376B)
     }
+    def label(b: int) -> str:
+        if b >= 0x80:
+            return CAT_LABELS.get(b, f'sentinel_{b}')
+        return CAT_LABELS.get(b, f'cat_{b}')
+
     entries = []
     monsters: dict[int, list[dict]] = {}
     for i in range(count):
         e = data[2 + i * 13: 2 + (i + 1) * 13]
-        cat = e[11]
-        cat_signed = cat - 256 if cat >= 0x80 else cat  # signed s8
+        cat_default = e[7] - 256 if e[7] >= 0x80 else e[7]
+        cat_rare = e[11] - 256 if e[11] >= 0x80 else e[11]
         rec = {
             'idx': i,
             'marker':      e[0],   # 항상 0x0b (constant marker)
             'sub_flag':    e[1],   # 항상 0x00
             'monster_idx': e[2],   # 0..62
             'drop_tier':   e[3],   # 4 unique (0x0e..0x11)
-            'cat': cat_signed,     # NewDropItem r3 arg ← Round 30 핵심
-            'cat_label': CAT_LABELS.get(cat, f'cat_{cat}'),
-            'b4': e[4], 'b5': e[5], 'b6': e[6], 'b7': e[7], 'b8': e[8],
-            'b9': e[9],            # 0xff = sentinel (NewDropItem arg strb skip)
+            'cat_default': cat_default,        # byte 7 — common drop cat (Round 31)
+            'cat_default_label': label(e[7]),
+            'cat_rare':    cat_rare,           # byte 11 — highest-tier drop cat (Round 30)
+            'cat_rare_label':   label(e[11]),
+            'b4': e[4], 'b5': e[5], 'b6': e[6], 'b8': e[8],
+            'b9': e[9],            # 0xff = sentinel
             'b10': e[10],
             'b12': e[12],          # 0xff = sentinel
             'hex': e.hex(),
