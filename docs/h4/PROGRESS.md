@@ -4,21 +4,25 @@
 
 ## ⚡ 다음 세션 — 시작 전 30초 체크
 
+> **최신 상태 (2026-05-14)**: Hero4 자동 영역 **완전 종결**. DES brute-force v2 + ECB 단정 + HDAT PS schema 추론 완료. Phase B (Ghidra GUI) 만 차단.
+
 | 질문 | 답 위치 |
 |---|---|
-| 이번 세션에 뭐 했나 | 이 문서 §최신 세션 |
+| 이번 세션에 뭐 했나 | 이 문서 §최신 세션 (2026-05-14) |
 | **지금 1순위 차단 이슈** | **DES key 8 bytes (Phase B Ghidra)** — §🚨 핵심 차단 |
-| 자산 포맷 분석 디테일 | [`formats/`](formats/) (5 + README) |
-| 바이너리 정찰 결과 | [`binary/recon-results.md`](binary/recon-results.md) |
-| Ghidra GUI 분석 가이드 | [`ghidra-guide.md`](ghidra-guide.md) |
+| **"영웅서기4 다음 작업 진행" 시 어디부터?** | [`next-steps.md` §빠른 셀렉터](next-steps.md#⏭-영웅서기4-이어서-진행해줘-라고-했을-때--빠른-셀렉터) **★ 첫 줄부터 그대로 따라하면 됨** |
+| 사용자가 DES key 가져오면? | 1초 검증: `python -c "from Crypto.Cipher import DES; print(DES.new(bytes.fromhex('<KEY>'), DES.MODE_ECB).decrypt(bytes.fromhex('3b7af9a427907dac')).hex())"` → low-entropy 면 정답 |
+| 자산 포맷 분석 디테일 | [`formats/`](formats/) (5 + README, HDAT 는 2026-05-14 갱신) |
+| 바이너리 정찰 결과 | [`binary/recon-results.md`](binary/recon-results.md) + 2026-05-14 추가: `J@IWO8N7L0E7E` @0x86edc |
+| Ghidra GUI 분석 가이드 | [`ghidra-guide.md`](ghidra-guide.md) (2026-05-14: §5.1 DES key 발굴 절차 추가) |
 | **앞으로 뭐 해야 하나** | [`next-steps.md`](next-steps.md) ★ 빠른 셀렉터 |
-| 프로젝트 전체 (Hero3 포함) 컨텍스트 | [`../../Readme.md`](../../Readme.md), 메모리 `project_hero4_remake.md` |
+| 프로젝트 전체 (Hero3 포함) 컨텍스트 | [`../../Readme.md`](../../Readme.md), 메모리 [[project-hero4-state]] / [[project-hero4-des-key]] |
 
 ---
 
 ## 🚨 핵심 차단 — DES key (다음 세션 1순위)
 
-Hero4 SCN 350개 + 대사 corpus = **표준 DES (ECB 거의 확실) 로 암호화**. 자동 brute-force 한계 도달 → Ghidra GUI 작업 필요.
+Hero4 SCN 350개 + 대사 corpus = **표준 DES ECB 로 암호화** (2026-05-14 100% 확정). 자동 brute-force 완전 한계 → Ghidra GUI 작업 필수.
 
 **바로 시작 명령**:
 ```bash
@@ -33,6 +37,9 @@ rm work/h3/ghidra_proj/*.lock work/h3/ghidra_proj/*.lock~ 2>/dev/null
 # 3. 우선 추적 string xref:
 #    "/DAT/_DAT_DES" @ 0x86ecc → 사용 함수 = SCN decrypt 진입점
 #    그 함수 호출자에서 8-byte literal 또는 키 파생 input 추출
+#    🔍 **추가 단서 (2026-05-14)**: `_DAT_DES` 바로 다음 (0x86edc) 에
+#       의문의 13-char ASCII 문자열 `J@IWO8N7L0E7E\x00` 존재.
+#       label / 스크램블 키 / 별도 자원 명일 가능성. 이 string 의 xref 도 같이 확인.
 
 # 4. 키 발견 후 즉시 (자동 — Claude 가 처리 가능):
 HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key <KEY_HEX_OR_ASCII> --batch
@@ -42,11 +49,39 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py          # A1 번역
 
 근거 자료 (이미 자동 정찰로 확립):
 - [tools/recon/diagnose_h4_scn_cipher.py](../../tools/recon/diagnose_h4_scn_cipher.py): SCN 350개 — 99% 8-byte aligned, 엔트로피 7.9962, 첫 cipher block 22% sharing → ECB DES 강력 시사
-- [work/h4/extracted/DAT/_DAT_DES](../../work/h4/extracted/DAT/_DAT_DES) (824 bytes) = 표준 DES 테이블 (PC-1, E-box, P-box, S1) 1:1 매칭 검증 완료
-- [tools/recon/find_h4_des_key.py](../../tools/recon/find_h4_des_key.py): ASCII (2,311) + sliding-window (59,556) brute force 모두 max score 87/200+ — 키는 binary 안 단순 8-byte 가 아니거나 plaintext format 이 Hero3 와 다름
+- [work/h4/extracted/DAT/_DAT_DES](../../work/h4/extracted/DAT/_DAT_DES) (824 bytes) = 표준 DES 테이블 (PC-1, E-box, P-box, S1) 1:1 매칭 검증 완료. 추가 검증: 마지막 64 byte 도 표준 P-box / IP-Inv 패턴, **별도 키 첨부 없음**
+- [tools/recon/find_h4_des_key.py](../../tools/recon/find_h4_des_key.py) (v1): `.data` ASCII (2,311) + sliding-window (59,556) brute force 모두 키 미발견
+- [tools/recon/find_h4_des_key_v2.py](../../tools/recon/find_h4_des_key_v2.py) (v2, 2026-05-14): **전체 binary** (566K 바이트, 511,006 sliding 후보) + `__adf__`/`__class__` descriptor 토큰 (736) + AID 파생 (24) + weak/common keys (14) **모두 검증** — Phase 1 last-block sentinel 매치 0건
+- [tools/recon/des_key_extended_hypotheses.py](../../tools/recon/des_key_extended_hypotheses.py): MD5/SHA1 of `/DAT/_DAT_DES` / `J@IWO8N7L0E7E` / `010100D4` / `한빛` 등 + SLvl 숫자 BE/LE + sequential bytes 0x79..0x86 + `JIWONLEE` (J@IWO8N7L0E7E 에서 letter-only 추출) — 모두 매치 0건
 - Hero5 의 `KEY4ENCRYPT` (`ff 00 00 00 0a 33 22 3c …`) 패턴 Hero4 binary 에 NOT FOUND → Hero4 별도 키
 
-**키 발견 시 100% 검증 방법**: decrypted 첫 8 bytes 가 보통 의미 있는 magic / opcode 시퀀스로 시작해야 함 (ASCII / 낮은 byte 분포 / 0xff separator 등). 또는 `tools/converter/decrypt_h4_scn.py` 후 `convert_scn.py` 가 EUC-KR 한글을 정상 추출하면 성공.
+### 🔑 known-ciphertext leverage (Ghidra 키 발견 시 즉시 검증용)
+
+ECB 100% 확정 근거 + 강한 known-plaintext crib (2026-05-14):
+
+| ciphertext (hex) | 출현 위치 | 빈도 | 추정 plaintext |
+|---|---|---|---|
+| `3b7af9a427907dac` | SCN **마지막** 8 byte | **38 / 350** | EOS sentinel / 공통 종단 opcode |
+| `1b7559e5bcf49488` | SCN 마지막 8 byte | 13 / 350 | (다른) 종단 패턴 |
+| `ef9c94a1d8247276` | SCN 마지막 8 byte | 12 / 350 | (다른) 종단 패턴 |
+| `c0f2daf72c2210e1` | SCN 마지막 8 byte | 11 / 350 | (다른) 종단 패턴 |
+| `4655b8f39c0fe0b2` | SCN **첫** 8 byte | 8 / 350 | 공통 헤더 |
+| `38d18f6ac1c49c07` | SCN 첫 8 byte | 7 / 350 | 공통 헤더 |
+| `0206740aa7b9edea` | SCN 첫 8 byte | 6 / 350 | 공통 헤더 |
+
+**Ghidra 에서 키 후보 발견 시 1차 검증 방법**:
+```python
+from Crypto.Cipher import DES
+key = bytes.fromhex('<KEY_HEX>')  # 또는 ASCII
+c = DES.new(key, DES.MODE_ECB)
+# 가장 흔한 last block 복호화 — sentinel/low-entropy plaintext 면 키 정답
+print(c.decrypt(bytes.fromhex('3b7af9a427907dac')).hex())
+# 가장 흔한 first block 복호화 — Hero3 SCN signature `00 00 00 ff ff ff ...` 가설 검증
+print(c.decrypt(bytes.fromhex('4655b8f39c0fe0b2')).hex())
+```
+38회 반복은 CBC 모드에서는 거의 불가능 (per-file IV 라면 마지막 cipher block 도 거의 unique). ECB 단정.
+
+**키 발견 시 100% 최종 검증**: `tools/converter/decrypt_h4_scn.py --key <KEY> --batch` 후 첫 SCN 의 처음 16 byte 가 의미 있는 패턴이거나 (Hero3 처럼 `00 00 00 ff ff ff …`), EUC-KR 한글 (0xa1-0xfe) 시퀀스가 나타나면 성공.
 
 **부수 작업 (Ghidra 진입 후 같이)**: `_PAL` secondary RGB 의미, `_EXD` payload struct, `_MAP_M_` extras 영역 — 모두 string xref 기반.
 
@@ -315,3 +350,42 @@ errors=0 양 게임 모두. 다음: [`next-steps.md`](next-steps.md) 의 Phase B
 다음 작업: **Phase B (Ghidra GUI) — 사용자 환경 작업 필수**. 자동 정찰의 한계는 명확.
 1순위: `/DAT/_DAT_DES` (string @ 0x86ecc) xref 추적 → SCN decrypt 진입점 함수 → 그 함수 호출자에서 키 source (literal 8 bytes 또는 키 파생 input)
 키 발견 후: `python tools/converter/decrypt_h4_scn.py --key <KEY> --batch` 한 번이면 350 파일 즉시 복호화 → corpus 재생성 → A1 진행 가능.
+
+---
+
+## 📜 세션 (2026-05-14) — DES brute-force v2 + known-ciphertext leverage 확립
+
+자동 영역 추가 시도 (Phase B Ghidra 진입 전 마지막 자동 탐색). 결론: **자동 brute-force 완전 한계 확정**.
+
+1. **SCN ciphertext 정밀 통계** — ECB 모드 100% 단정
+   - 마지막 8-byte ciphertext `3b7af9a427907dac` 가 **38 / 350 SCN 에서 반복** (11%)
+   - 마지막 8-byte 가 13+회 반복되는 패턴이 최소 3종 (`1b7559e5bcf49488` ×13, `ef9c94a1d8247276` ×12, `c0f2daf72c2210e1` ×11)
+   - 첫 8-byte 도 `4655b8f39c0fe0b2` ×8, `38d18f6ac1c49c07` ×7 등 반복
+   - CBC 라면 per-file IV 로 거의 100% unique 해야 함 — **ECB 단정**, 38회 반복 last block 은 공통 평문 종단 (sentinel / EOS opcode) 의 강한 known-ciphertext crib
+
+2. **확장 brute-force 도구화** ([tools/recon/find_h4_des_key_v2.py](../../tools/recon/find_h4_des_key_v2.py))
+   - v1 한계 (`.data` start=0x77000 만) 해소 → **전체 binary** (start=0, 566K 바이트, 511,006 sliding-window 후보)
+   - 추가 후보 소스: `__adf__` / `__class__` SKT descriptor ASCII tokens (736), AID 파생 (24), weak/common DES keys (14)
+   - 검증 전략: 가장 흔한 last-block (`3b7af9a427907dac`) decrypt → plaintext 가 sentinel 패턴이면 통과
+   - 결과: **Phase 1 survivors 0** (sentinel/low-entropy 가설 모두 미통과)
+
+3. **확장 가설 별도 검증** ([tools/recon/des_key_extended_hypotheses.py](../../tools/recon/des_key_extended_hypotheses.py))
+   - MD5/SHA1 of `/DAT/_DAT_DES`, `_DAT_DES`, `DES`, `J@IWO8N7L0E7E`, `010100D4`, `한빛` (UTF-8/EUC-KR) 등 → 0 match
+   - `__adf__` 의 SLvl/SLvl2/FSize/Timestamp 를 BE/LE 8-byte → 0 match
+   - sequential bytes 0x79..0x86 (binary `_DAT_DES` 근처 ascending pattern) → 0 match
+   - `JIWONLEE` (J@IWO8N7L0E7E 에서 letter-only 추출 = "Lee Ji-won" 패턴, 매우 유망 가설) → 0 match
+   - `JIWONLEE` reversed / lowercase / 8-byte sliding 변형 → 0 match
+
+4. **`_DAT_DES` 파일 자체 검증**
+   - 824 byte 전체가 표준 DES 알고리즘 테이블만 (시작: PC-1 `3a 32 2a 22 1a 12 0a 02` = bit 58,50,42,34,26,18,10,2 ✓)
+   - 마지막 64 byte 도 표준 P-box / IP-Inv 패턴 — **별도 key 첨부 없음**
+
+5. **🔍 새 단서 — `J@IWO8N7L0E7E` @0x86edc**
+   - `_DAT_DES` 문자열 (@0x86ecc) 바로 다음 위치에 의문의 13-char ASCII null-term 문자열
+   - hex: `4a 40 49 57 4f 38 4e 37 4c 30 45 37 45 00 00 00`
+   - letter-only 추출 = `JIWONLEE` (8 chars, "Lee Ji-won" 한국 이름 패턴) — 키 직접 매치는 실패했지만 Ghidra 에서 xref 추적 필수
+   - 가능성: (a) 스크램블된 키 (XOR/permutation), (b) 다른 자원 식별자, (c) 개발자 서명 string
+
+6. **자동 영역 완전 종결 — 다음 진입은 Ghidra 1순위**
+   - 위 known-ciphertext (`3b7af9a427907dac`, `4655b8f39c0fe0b2`) 는 Ghidra 에서 키 발견 시 단발 검증용으로 즉시 사용 가능 — `decrypt_h4_scn.py` 돌리기 전에 `Crypto.Cipher.DES` 로 1초 검증
+   - 추적 대상 strings (Ghidra xref): `/DAT/_DAT_DES` @0x86ecc, `J@IWO8N7L0E7E` @0x86edc, `_DAT_DES` @0x86ed1

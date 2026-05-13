@@ -59,13 +59,35 @@ Hero3 의 `0xb2c40` 추정 방법을 그대로 적용:
 
 extract_strings 에서 확인한 file path string 들이 모두 **자산 로더 함수의 인자**. 함수 식별 우선순위:
 
-| String | 가리키는 함수 |
-|---|---|
-| `/H4/PAL/_H_%03d_PAL` | _PAL 로더 → 8byte/color secondary 의 의미 확정 |
-| `/H4/CIF/_H_%03d_CIF`, `/H4/EXD/_H_%03d_EXD` | 캐릭터 데이터 로더 |
-| `/MAP/M/_MAP_M_%03d` | 맵 로더 (extras 영역 파싱 함수 포함) |
-| `'====> Alpha Palette Index Not Found'` | _PAL 의 alpha logic 분기 — **secondary RGB 가 진짜 alpha mask 인지 검증** |
-| `'====> frameBuf is NULL'` | Hero3 와 동일 → BM 디코더 진입점 |
+| String | offset | 가리키는 함수 |
+|---|---|---|
+| ⭐ **`/DAT/_DAT_DES`** | **0x86ecc** | DES 테이블 로더 = SCN decrypt 진입점 (1순위) |
+| ⭐ **`J@IWO8N7L0E7E`** | **0x86edc** | `_DAT_DES` 바로 다음 13-char null-term ASCII — **키 후보 strong suspicion**, xref 같이 확인 |
+| `/H4/PAL/_H_%03d_PAL` | — | _PAL 로더 → 8byte/color secondary 의 의미 확정 |
+| `/H4/CIF/_H_%03d_CIF`, `/H4/EXD/_H_%03d_EXD` | — | 캐릭터 데이터 로더 |
+| `/MAP/M/_MAP_M_%03d` | — | 맵 로더 (extras 영역 파싱 함수 포함) |
+| `'====> Alpha Palette Index Not Found'` | 0x820dc | _PAL 의 alpha logic 분기 — **secondary RGB 가 진짜 alpha mask 인지 검증** |
+| `'====> frameBuf is NULL'` | 0x82104 | Hero3 와 동일 → BM 디코더 진입점 |
+
+### 5.1 DES key 발굴 절차 (Phase B 1순위)
+
+1. `/DAT/_DAT_DES` (offset 0x86ecc) xref 찾기 → 그 사용 함수 = DES setup
+2. setup 함수 안 / 호출자에서 8-byte key 추적:
+   - **(가설 A) literal 8 bytes**: ARM literal pool 에서 4×2 = 8 byte 연속 / 또는 `LDR rN, =0xXXXXXXXX` 두 번
+   - **(가설 B) `J@IWO8N7L0E7E` 사용**: 이 string 의 xref 가 같은 함수 안에 있으면 스크램블 키. 13 chars → 8 byte 변환 로직 추적 (예: letter-only filter `JIWONLEE`, XOR 마스크 적용 등)
+   - **(가설 C) 런타임 derive**: hash / 시드 기반. 함수 호출 트리에서 PRNG / hash 호출 찾기
+3. 8-byte 후보 발견 즉시 검증 (1초):
+   ```python
+   from Crypto.Cipher import DES
+   plain = DES.new(bytes.fromhex('<KEY>'), DES.MODE_ECB).decrypt(bytes.fromhex('3b7af9a427907dac'))
+   # plain 이 low-entropy sentinel (00*8, ff*8 등) 이면 정답
+   print(plain.hex(), len(set(plain)))
+   ```
+4. 정답 확인 시 즉시:
+   ```bash
+   HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key <KEY> --batch
+   # → work/h4/decrypted/SC/*_scn 생성, 350 file 즉시 검증
+   ```
 
 ### 6. 0x0c sparse pixel 디코더 (Hero3 와 공유)
 

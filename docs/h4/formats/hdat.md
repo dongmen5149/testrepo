@@ -34,24 +34,54 @@
 
 uint16/32 값들의 패턴 (`0x190=400`, `0x258=600`, `0xc8=200`, `0xd007=2000`) → exp / HP / level cap 같은 progression value table 추정.
 
-### Group C: 캐릭터 클래스 progression (70-byte 비슷, 공통 prefix)
+### Group C: 캐릭터 클래스 progression (70-byte, 공통 prefix) — **2026-05-14 entry layout 추론 완료**
 
-9개 파일 모두 70 byte 동일 크기:
-| 파일 | 첫 12 byte |
-|---|---|
-| `_H_PS000` | `06 00 01 02 03 04 01 01 01 06 01 85` |
-| `_H_PS001` | `06 00 01 02 03 04 02 01 01 06 01 85` |
-| `_H_PS002` | `06 00 01 02 03 04 02 01 01 06 01 85` |
-| `_H_PS003` | `06 00 01 02 03 04 03 01 01 06 01 85` |
-| `_H_PS004` | `06 00 01 02 03 04 03 01 01 06 01 85` |
-| `_H_PS005` | `06 00 01 02 03 04 03 01 01 06 01 85` |
-| `_H_PS006` | `06 00 01 02 03 04 04 01 01 06 01 85` |
-| `_H_PS007` | `06 00 01 02 03 04 04 01 01 06 01 85` |
-| `_H_PS008` | `05 00 01 02 03 04 04 01 01 06 01 84` (size=69, 다름) |
+9개 파일. **PS000~007 = 70 byte 동일 schema**, **PS008 = 69 byte 별도 schema**.
 
-공통 prefix `06 00 01 02 03 04` → byte 6 (`01`/`02`/`03`/`04`) 가 클래스 분류 (1: 워리어계, 2: 마법계, 3: 도적계, 4: 궁수계 추정). 9개 캐릭터의 클래스 progression 데이터.
+[`tools/recon/analyze_hdat_ps.py`](../../tools/recon/analyze_hdat_ps.py) 의 byte-position 분포 분석으로 다음 layout 확정 (Ghidra 없이 통계 추론):
 
-Hero3 분석에서 발견된 캐릭터별 클래스 (리츠 5클래스, 케이 5클래스 등) 와 유사한 시스템.
+**Schema A — PS000~007 (70 bytes)**:
+
+```
+Header (10 bytes, offset 0..9):
+   byte 0..5: 06 00 01 02 03 04        ← 고정 signature/version
+   byte 6   : <class>                  ← 1..4 (1=워리어, 2=마법, 3=도적, 4=궁수)
+   byte 7..9: 01 01 06                 ← 고정
+
+6 records × 10 bytes (offset 10..69):
+   byte 0   : 01                       ← 레코드 marker (PS003 R4/R5 만 a5)
+   byte 1   : 85                       ← 고정 type code
+   byte 2   : <param_a>                ← 캐릭터별 고정 (PS000=0x0b, PS001=0x28, PS003=0x0a, PS004=0x08)
+   byte 3..4: <flags>                  ← 보통 00 00 (PS003 만 변형)
+   byte 5,6 : <stat_pair> (보통 동일)  ← e.g. PS000: 0a/0a → 09/09 → 07/07 → 06/06...
+   byte 7   : <extra>                  ← 보통 00 (PS003 만 sequence)
+   byte 8   : <curve>                  ← PS000: ff→f0→dc→c8→c8→c8 (255→240→220→200 plateau)
+   byte 9   : <terminator>             ← 보통 0x1c (PS003 만 0x10/0x11)
+```
+
+| 파일 | class | byte 2 param | byte 5/6 stat seq (R0→R5) | byte 8 curve (R0→R5) |
+|---|---|---|---|---|
+| PS000 | 1 워리어 | 0x0b | 10/9/7/6/6/6 (descending) | ff/f0/dc/c8/c8/c8 |
+| PS001 | 2 마법 | 0x28 | 5/5/5/5/5/5 (flat) | ff/ff/dc/c8/c8/c8 |
+| PS002 | 2 마법 | 0x28 | 8/8/8/8/8/8 (flat) | ff/ff/dc/c8/c8/c8 |
+| PS003 | 3 도적 | 0x0a | 10/10/10/10/10/10 | ff/ff/ff/b4/78/50 (special curve) |
+| PS004 | 3 도적 | 0x08 | 8/8/8/8/8/8 | ff/ff/d2/dc/c8/c8 |
+| PS005 | 3 도적 | 0x09 | 8/8/8/8/8/8 | ff/ff/dc/d2/c8/c8 |
+| PS006 | 4 궁수 | 0x06 | 8/8/8/8/8/8 | ff/ff/dc/d2/c8/c8 |
+| PS007 | 4 궁수 | 0x09 | 8/8/8/6/6/6 (taper) | ff/dc/d2/c8/c8/c8 |
+
+**해석 가설** (Hero3 캐릭터 시스템 유사):
+- 6 records = **6 레벨/단계** (성장 곡선)
+- byte 5/6 stat pair = 레벨별 기본 능력치 (HP/MP/ATK?)
+- byte 8 curve = 다른 progression (cost? 누적 EXP? 0xff=∞ sentinel → 점진 감소)
+- PS003 (도적 0x0a) 가 특이한 변형 → 메인 캐릭터 또는 부스터 캐릭터 (`a5` 레코드 marker 변화)
+
+**Schema B — PS008 (69 bytes)**: 별도 entity (보스 / 펫 / 탈것 추정)
+- 헤더 끝 차이: `05 00 01 02 03 00 01 01 06 01` (vs PS000-007 `06 00 01 02 03 04 <c> 01 01 06`)
+- byte 5 = 0x00 (PS000-007 은 0x04)
+- 레코드 패턴이 PS000-007 과 align 안 됨 — 별도 파서 필요
+
+원본 분석 데이터: [`work/h4/converted/hdat_ps_analysis.json`](../../work/h4/converted/hdat_ps_analysis.json)
 
 ### Group D: 게임 시작 / UI 메타
 
@@ -62,20 +92,24 @@ Hero3 분석에서 발견된 캐릭터별 클래스 (리츠 5클래스, 케이 5
 
 ## 변환 결과
 
-현재 `tools/converter/` 에 HDAT 파서 없음. 모든 파일이 `skipped` 카운트에 포함. 정확한 entry layout 은 Ghidra 분석 후 게임-specific 파서 작성:
+현재 `tools/converter/` 에 HDAT 파서 부분만. 모든 파일이 `skipped` 카운트에 포함되어 있었으나 PS schema 가 풀려서 일부 자동 파싱 가능.
 
 ```python
-# 미래 작성 예시
+# 작성 가능
 tools/converter/convert_h4_hdat.py
-  - parse_progression_table(data) → exp_table.json
-  - parse_class_data(data) → classes.json
-  - parse_save_template(data) → save_template_blob (보존만)
+  - parse_ps_a(data)              → Schema A (PS000-007): class + 6 records
+  - parse_ps_b(data)              → Schema B (PS008): 별도 entity
+  - parse_progression_table(data) → exp_table.json (Group B, Phase B 후)
+  - parse_save_template(data)     → save_template_blob (Group A, 보존만)
 ```
 
-## 미해독: 정확한 entry struct
+## 미해독: 그룹 A/B/D 의 정확한 entry struct
 
-각 그룹의 entry layout 은 Ghidra 에서 다음 string xref 추적:
-- `/HDAT/_H_P*`, `/HDAT/_H_PS*`, `/HDAT/_H_S*` 같은 path string 이 binary 에 있는지 확인 (extract_strings 결과에서 보이지 않음 — 직접 파일명으로 로드되거나 인덱스 매핑)
-- 또는 string `'frameBuf is NULL'` 처럼 에러 메시지에서 함수 진입점 추적
+- **Group A** (random-look): 암호화 시드 or save template. Phase B 에서 `_DAT_DES` 키 발견 후 복호화 시도 가능
+- **Group B** (P000-P005): uint8/16/32 LE progression. 정확한 의미는 Phase B 에서 string xref 또는 게임 로직 추적 후 확정
+- **Group D** (PDAT, SG): Player Data 초기값 / Save Game 메타. Phase B 에서 string `'frameBuf is NULL'` 인접 함수에서 SaveGame 로직 추적
+- **Group C PS008**: 별도 schema. byte 0 = 0x05 (다른 그룹은 0x06) → entity type 분기
 
-Phase B 단계에서 진행.
+Phase B 에서 다음 string xref 추적 보강:
+- `/HDAT/_H_P*`, `/HDAT/_H_PS*`, `/HDAT/_H_S*` 같은 path string 이 binary 에 있는지 확인 (extract_strings 결과에서 보이지 않음 — 직접 파일명 enum 으로 로드되거나 인덱스 매핑)
+- 에러 메시지 인접 함수에서 HDAT 진입점 추적

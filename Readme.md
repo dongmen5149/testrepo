@@ -11,7 +11,7 @@
 | ID | 작품 | 원본 | 상태 |
 |---|---|---|---|
 | `h3` | 영웅서기3 - 운명의수레바퀴 (2008) | `Hero3/0103EFD4.jar` (SKT GVM/Clet) | 자산 변환 + Android 8개 씬 + i18n + HD 완료 |
-| `h4` | 영웅서기4 - 환영의검 (2009) | `Hero4/010100D4.jar` (SKT GVM/Clet) | 1차 dry-run 완료 (호환률 ~80%) |
+| `h4` | 영웅서기4 - 환영의검 (2009) | `Hero4/010100D4.jar` (SKT GVM/Clet) | Phase A 종결 (자산 변환 + HDAT PS schema 추론 완료). Phase B (Ghidra) DES key 차단 — 자동 brute-force exhausted |
 | `h5` | 영웅서기5 (2020 Android 포팅) | `Hero5/영웅서기5(최신폰전용).apk` | Phase 2-A 완료 — sprite 3,798 PNG / 한글 18,837 unique / DJB2 hash 복원. 자산 이름 복원은 DEX 디컴파일 대기 |
 
 > 작업을 이어서 할 때: 게임별 [`docs/<id>/PROGRESS.md`](docs/h3/PROGRESS.md) 를 먼저 확인.
