@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-17 PM-4 (Round 40) — **2GA + 2GB + 2GC + 2GD + task[0xa0c0] = NPC subsystem 확정 (cutscene 추측 정정)**. (1) ⭐⭐⭐ **0x9cb8 cluster = 2-stage frame callback queue 완전 풀이**: stage 1 (344B records, callback @+0x154, 3-level gating per-record [+0x11] + task[0x0a5d] + task[0x02b8]) + stage 2 (28B records, callback @+0x18). cursors 8B/frame stream-style advance. 6-field layout (0x9cb8 ptr / 0x9cbc src / 0x9cc0 count / 0x9ccc count2 / 0x9cd4 cursor / 0x9cd8 ptr2). (2) ⭐⭐⭐ **FUN_00025f30 = NPC table query** — Round 14 의 0x3c4×0x3c grid + +0x3b3 flag byte **정확히 일치** → ⭐⭐⭐ **task[0xa0c0] subsystem = NPC dialog/quest 시스템 확정** (이전 cutscene 가설 정정). mode 7 = NPC 조건 검사 + event 17 trigger. (3) ⭐⭐ **FUN_0002c6a4 = 17-caller system-wide event dispatcher** (996B, 9 arms, events 8/c/d/e/f/10 공통 handler 0x2c9ca). (4) ⭐⭐ **FUN_00041a68 = task[0x0a5d] flag byte reader** (20B tiny wrapper). (5) **FUN_00046de0 = record array cleanup/finalizer** (752B, 2 memset + cursor advance). 상세는 [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md).
+**최신 커밋 시점**: 2026-05-17 PM-5 (Round 41) — **2HA + NPC subsystem wide-scan + task[0x290] last_event_id 신규**. (1) ⭐⭐⭐ **FUN_0002c6a4 event dispatcher 풀이**: input event_id 에서 **3을 빼서 정규화** (valid range [3..18]). events 11/16/17/18/19 → 공통 handler 0x2c9ca = `bl FUN_0002cdb4 → obj.method58 → obj.method0c → clear pending`. (2) ⭐⭐ **task_struct[0x290] = "last_event_id" 신규 식별** — 모든 event call tail 에서 write. (3) ⭐⭐ **FUN_0002cdb4 = vtable [+0x58] invoker** (84B, 5 callers, PIC sl-trampoline). (4) ⭐⭐ **FUN_000260ec = stack-local NPC query wrapper** (68B, FUN_00025f30 의 2nd caller, transient 결과). (5) **Wide-scan**: task[0x9cb8] (callback queue base) **31 sites**, task[0xa0c0] (NPC mode) **14 sites** = system-wide critical. FUN_00041a68 4 callers = 4 distinct subsystems = task[0x0a5d] gate 광범위. FUN_0002ae44 callers = FUN_00024780/FUN_00024da8 (정규 함수). 상세는 [ghidra-event-dispatcher-and-wide-scan-2026-05-17.md](ghidra-event-dispatcher-and-wide-scan-2026-05-17.md).
 
 **이전 라운드 종합**: Round 18~36 의 진척 요약은 **§"Round 18~37 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -29,29 +29,30 @@
 - **Round 38** — ⭐⭐⭐ **opcode 0x12 inner JT @ 0xabcb4 디코드** (SL-relative 74-entry, 7 dests → FUN_00098904 8 entry labels, 66/74 sparse default) + **47 arms 정밀 분류** (state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 = token parser) + ⭐⭐⭐ **6번째 indirect entry function FUN_000245fc 발견** (388B, 0 BL caller, cluster #1 GVM-side 진입점) + **cluster #1 state machine 완전 체인**: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e
 - **Round 39** — ⭐⭐⭐ **FUN_000245fc state machine 완전 풀이**: task_struct[0xa0c0] = "subsystem mode byte" 신규, 4-way dispatch (mode 0/3/4/7), cluster #1 trigger = mode==3 AND task[0x7c]==4. ⭐⭐ **NPC vs SCN 6 special opcodes 비교**: opcode 0x10 완벽 동일, **opcode 0x12 SCN/NPC 차이 8배** (SCN 11720B Korean dialogue vs NPC 1434B short-message). ⭐⭐ **FUN_00098904 정정** (1524B/754instr/16arms/BL=3×screen_ptr only = memory-manipulation renderer) + 3 dedicated helpers (FUN_0002bee8/46de0/53010)
 - **Round 40** — ⭐⭐⭐ **0x9cb8 cluster = 2-stage frame callback queue** (stage 1: 344B/callback@0x154/3-level gating, stage 2: 28B/callback@0x18, cursor 8B/frame advance). ⭐⭐⭐ **FUN_00025f30 = NPC table query** (Round 14 의 0x3c4×0x3c grid + +0x3b3 flag 정확히 일치) → **task[0xa0c0] subsystem = NPC dialog/quest 시스템 확정** (cutscene 가설 정정). ⭐⭐ **FUN_0002c6a4 = 17-caller event dispatcher** (events 8/c/d/e/f/10 공통). FUN_00041a68 = task[0x0a5d] flag byte reader (20B). FUN_00046de0 = cleanup/finalizer (752B, 2 memset)
+- **Round 41** — ⭐⭐⭐ **FUN_0002c6a4 event dispatcher 풀이**: input event_id - 3 정규화 (valid range [3..18]), events 11/16/17/18/19 → 공통 handler = obj.method58 + obj.method0c double dispatch. ⭐⭐ **task[0x290] = last_event_id 신규 식별** (모든 path tail write). ⭐⭐ **FUN_0002cdb4 = vtable [+0x58] invoker** (84B). **FUN_000260ec = stack-local NPC query wrapper** (68B). ⭐⭐ **Wide-scan**: task[0x9cb8] 31 sites + task[0xa0c0] 14 sites system-wide. FUN_00041a68 = 4 distinct subsystems caller. FUN_0002ae44 callers = FUN_00024780/24da8 (정규 함수)
 
-### 전체 진척률 추정 (Round 40 시점, 2026-05-17 PM-4)
+### 전체 진척률 추정 (Round 41 시점, 2026-05-17 PM-5)
 
-> **결론**: "Android 리메이크 완성" 기준 약 **28~38% 완료**. Round 40로 callback queue 풀이 + NPC subsystem 확정 + 4 helper 함수 분석 = ~3%p 진척.
+> **결론**: "Android 리메이크 완성" 기준 약 **30~40% 완료**. Round 41로 event dispatcher 풀이 + wide-scan 분포 + task[0x290] 신규 + helpers 식별 = ~2%p 진척.
 
 | 영역 | 진척 추정 | 근거 |
 |---|---|---|
 | 자산 포맷 분석/변환 | **~80%** | _bm/_pa/_txt/_cif/_mp/_scn 모두 1차 해독. 미해결: tile 0x0c 압축, _mp extras (NPC/exit placement), SMAF→OGG |
 | 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 |
-| Ghidra 게임 로직 리버싱 | **~30~38%** ⬆ | 1,470 함수 중 ~70개 본문 분석. GVM architecture + 6 indirect entries + 3 dispatcher JT + cluster #1 완전 체인 + **0x9cb8 cluster = 2-stage frame callback queue** + **task[0xa0c0] = NPC dialog subsystem 확정** + **FUN_00025f30 = NPC table query (Round 14 layout 정확히 일치)** + FUN_0002c6a4 17-caller event dispatcher. **미해결: 전투 시스템 / FUN_0009a008 두 JT / event 8/c/d/e/f/10 공통 handler / callback queue records 의 destination 함수들** |
-| task_struct 모델 | **~35%** ⬆ | task[0xa0c0/0xa1f6/0xa288/0xa289] (NPC subsystem) + **0x9cb8 cluster 6 fields 정밀** (callback queue: ptr/src/count/count2/cursor/ptr2) + cluster #1 완전 체인 + task[0x0a5d/0x02b8] (callback gates) |
+| Ghidra 게임 로직 리버싱 | **~32~40%** ⬆ | 1,470 함수 중 ~75개 본문 분석. GVM architecture + 6 indirect entries + 3 dispatcher JT + cluster #1 완전 체인 + 0x9cb8 cluster = 2-stage frame callback queue + task[0xa0c0] = NPC dialog subsystem + **FUN_0002c6a4 event dispatcher 정규화 풀이** + **FUN_0002cdb4/FUN_000260ec helper 식별** + wide-scan 분포. **미해결: 전투 시스템 / FUN_0009a008 두 JT / 공통 handler 의 sl-relative object 정체 / callback queue records 의 destination 함수들** |
+| task_struct 모델 | **~37%** ⬆ | task[0xa0c0/0xa1f6/0xa288/0xa289] (NPC subsystem) + **task[0x290] = last_event_id 신규** + 0x9cb8 cluster 6 fields (callback queue) + cluster #1 완전 체인 + task[0x0a5d/0x02b8] (callback gates) |
 | Android 엔진 재구현 | **~5~10%** | 8 씬 골격 + NPC 4 hardcoded + i18n 인프라 + save slot. **진짜 게임 로직 (전투/스킬/이벤트/진행) 없음** |
 | i18n | UI 100% / 대사 0% | UI 어휘 196개 100% 영문, 9,741 unique 대사 번역 미진행 |
 
 **가장 큰 블로커** (진행 시 가장 큰 진척):
-1. **FUN_0002c6a4 event dispatcher 의 cmp 분기 별 본문 추적** — events 8/c/d/e/f/10 공통 handler 0x2c9ca 가 무엇을 하는지 풀이 (Round 41의 2HA)
-2. **NPC table 의 정확한 차원** (0x3c4 × 0x3c = row×col 개수, 게임 내 활성 NPC count) (Round 41의 2HB)
+1. **공통 handler 0x2c9ca 의 sl-relative 글로벌 object 정체** — vtable [+0xc] / [+0x58] 의 실제 메서드 (Round 42의 2IA)
+2. **callback queue records 의 함수 포인터 destinations** — record[+0x154] / record[+0x18] 의 실제 callback (Round 42의 2IH)
 3. **전투 시스템 발견** — 38B entity state record 가 전투에서 어떻게 작동하는지 미확인 (FUN_0009a008 의 8.6KB super function 안에 숨어있을 가능성)
-4. **callback queue records 의 함수 포인터 destinations** — record[+0x154] / record[+0x18] 의 실제 callback (Round 41의 2HE)
+4. **FUN_00024780 / FUN_00024da8 본문** — FUN_0002ae44 caller 함수들의 정체 (Round 42의 2IE/2IF)
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 40 callback queue 풀이 + NPC subsystem 확정** (2026-05-17 PM-4 / Round 40). 0x9cb8 cluster = 2-stage frame callback queue (stage 1: 344B/callback@0x154/3-level gating, stage 2: 28B/callback@0x18, cursor 8B/frame advance). **task[0xa0c0] subsystem = NPC dialog/quest 시스템 확정** (FUN_00025f30 의 0x3c4×0x3c grid + +0x3b3 flag 가 Round 14 NPC record layout 과 정확히 일치). mode 7 = NPC 조건 쿼리 → event 17 trigger via FUN_0002c6a4 (17-caller system-wide event dispatcher). FUN_00041a68 = 20B tiny task[0x0a5d] flag reader. FUN_00046de0 = 752B record array cleanup/finalizer. 다음 진척은 **(1) FUN_0002c6a4 event dispatcher 분기 본문, (2) NPC table 차원, (3) 전투 시스템 발견, (4) callback record destinations**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 41 event dispatcher 풀이 + NPC subsystem wide-scan** (2026-05-17 PM-5 / Round 41). FUN_0002c6a4 = `internal_key = event_id - 3` 정규화 (valid range [3..18]), events 11/16/17/18/19 → 공통 handler 0x2c9ca = `bl FUN_0002cdb4 (obj.method58) → obj.method0c → clear pending` double dispatch. **task[0x290] = last_event_id 신규 식별** (모든 path tail write). FUN_0002cdb4 = 84B vtable [+0x58] invoker (5 callers), FUN_000260ec = 68B stack-local NPC query wrapper. Wide-scan: task[0x9cb8] 31 sites + task[0xa0c0] 14 sites = system-wide critical. task[0x0a5d] gate = 4 distinct subsystems 사용. 다음 진척은 **(1) 공통 handler 의 sl-relative object 정체, (2) callback record destinations, (3) 전투 시스템 발견, (4) FUN_00024780/24da8 본문**.
 
 ### 이전 라운드 요약 (Round 39 시점, 2026-05-17 PM-3)
 
@@ -121,15 +122,15 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-1. **이 섹션 + 위 game update flow (2026-05-17 PM-4 최신판, NPC subsystem 풀이)** 읽기
+1. **이 섹션 + 위 game update flow (2026-05-17 PM-5 최신판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 40 / PM-4** (callback queue 2-stage 풀이 + NPC table query + event dispatcher)
-5. (참고) [ghidra-245fc-and-npc-opcodes-2026-05-17.md](ghidra-245fc-and-npc-opcodes-2026-05-17.md) — Round 39 (FUN_000245fc state machine + task[0xa0c0] mode byte + NPC/SCN opcode 0x12 비교)
-6. (참고) [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md) — Round 38 (op12 inner JT + 6th indirect entry)
+4. **[ghidra-event-dispatcher-and-wide-scan-2026-05-17.md](ghidra-event-dispatcher-and-wide-scan-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 41 / PM-5** (FUN_0002c6a4 event dispatcher 풀이 + task[0x290] 신규 + wide-scan)
+5. (참고) [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md) — Round 40 (callback queue 2-stage 풀이 + NPC table query)
+6. (참고) [ghidra-245fc-and-npc-opcodes-2026-05-17.md](ghidra-245fc-and-npc-opcodes-2026-05-17.md) — Round 39 (FUN_000245fc state machine + task[0xa0c0] mode byte)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~40 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~41 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -156,6 +157,7 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **38** (2026-05-17 PM-2) | ⭐⭐⭐ **opcode 0x12 inner JT @ 0xabcb4 디코드** — SL-relative 74-entry (Round 36 outer JT 와 동일 모델, code base 0xb43ec), 7 dests → **FUN_00098904 안의 8 entry labels** (computed-goto). 66/74 sparse default = Round 30 패턴 재확인. **47 arms 정밀 분류**: state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 = token-driven multi-byte text parser. ⭐⭐⭐ **6번째 indirect entry function 발견** — **FUN_000245fc** (388B, 0 BL caller, cluster #1 state machine GVM-side 진입점). **완성된 cluster #1 chain**: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e. ⭐⭐ **FUN_00098904 = 43 system-wide callers** (1524B popular helper, NOT op12 전용) | [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md) |
 | **39** (2026-05-17 PM-3) | ⭐⭐⭐ **FUN_000245fc state machine 완전 풀이** — task_struct[0xa0c0] = "subsystem mode byte" 신규, 4-way dispatch (mode 0/3/4/7). cluster #1 trigger 조건 = mode==3 AND task[0x7c]==4. mode 4 → ObjectA cluster (0x983e8), mode 7 → event 17 trigger (FUN_0002c6a4(0x11)). 3 dedicated helpers (FUN_0002bee8 init / FUN_00046de0 post-cluster#1 / FUN_00053010 terminal). ⭐⭐⭐ **NPC vs SCN 6 special opcodes 비교**: opcode 0x10 완벽 동일 (586B/281instr/2arms), **opcode 0x12 SCN/NPC 차이 8배** (SCN 11720B Korean dialogue full engine / NPC 1434B short-message stripped-down — no EUC-KR/no ASCII/no inner JT/no sound integration). ⭐⭐ **FUN_00098904 정정 (bounded)**: 1524B / 754 instr / 16 arms / BL=3× screen_ptr only = memory-manipulation multi-mode renderer | [ghidra-245fc-and-npc-opcodes-2026-05-17.md](ghidra-245fc-and-npc-opcodes-2026-05-17.md) |
 | **40** (2026-05-17 PM-4) | ⭐⭐⭐ **0x9cb8 cluster = 2-stage frame callback queue 풀이** — stage 1 (344B records, callback@+0x154, 3-level gating per-record[+0x11] + task[0x0a5d]==0 + task[0x02b8]==0) + stage 2 (28B records, callback@+0x18). cursors 8B/frame stream-style advance. ⭐⭐⭐ **FUN_00025f30 = NPC table query** (444B, Round 14 의 0x3c4×0x3c grid + +0x3b3 flag 정확히 일치) → **task[0xa0c0] subsystem = NPC dialog/quest 시스템 확정** (cutscene 가설 정정). ⭐⭐ **FUN_0002c6a4 = 17-caller system-wide event dispatcher** (996B, 9 arms, events 8/c/d/e/f/10 → 공통 handler 0x2c9ca). **FUN_00041a68 = task[0x0a5d] flag byte reader** (20B tiny wrapper, 4 callers). **FUN_00046de0 = record array cleanup/finalizer** (752B, 2 memset + cursor advance) | [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md) |
+| **41** (2026-05-17 PM-5) | ⭐⭐⭐ **FUN_0002c6a4 event dispatcher 풀이** — input event_id - 3 정규화 (valid range [3..18]), events 11/16/17/18/19 → 공통 handler 0x2c9ca = `bl FUN_0002cdb4 (obj.method58) → obj.method0c → clear pending` double dispatch. ⭐⭐ **task[0x290] = last_event_id 신규 식별** (모든 path tail). ⭐⭐ **FUN_0002cdb4 = vtable [+0x58] invoker** (84B, 5 callers, PIC sl-trampoline). **FUN_000260ec = stack-local NPC query wrapper** (68B, FUN_00025f30 2nd caller). ⭐⭐ **Wide-scan**: task[0x9cb8] 31 sites + task[0xa0c0] 14 sites = system-wide critical. task[0x0a5d] gate = 4 distinct subsystems. FUN_0002ae44 callers = FUN_00024780 (468B, 1 caller) + FUN_00024da8 (600B, 6 callers) | [ghidra-event-dispatcher-and-wide-scan-2026-05-17.md](ghidra-event-dispatcher-and-wide-scan-2026-05-17.md) |
 
 ### 현재 게임 시스템 모델 (Round 40 시점, 검증 vs 가설)
 
@@ -322,9 +324,39 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 41 즉시 시작 명령 (복사-붙여넣기)
+### Round 42 즉시 시작 명령 (복사-붙여넣기)
 
-> **참고**: Round 40 에서 callback queue 풀이 + NPC subsystem 확정 + 4 helper 분석 완료. 다음 라운드는 **FUN_0002c6a4 event dispatcher 분기 본문** + **NPC table 차원** + **callback record destinations**.
+> **참고**: Round 41 에서 event dispatcher 풀이 + wide-scan + task[0x290] 신규 식별 완료. 다음 라운드는 **공통 handler sl-relative object 정체** + **FUN_00024780/24da8 본문** + **event 3/15 specific path**.
+
+```powershell
+$env:PYTHONIOENCODING = 'utf-8'
+
+# ⭐⭐⭐ 2IA: 공통 handler 0x2c9ca 의 sl-relative 글로벌 object 정체
+# vtable [+0xc] / [+0x58] method 의 실제 함수 위치 추적
+# 0x2c9ce 의 ldr literal + sl base = global object 주소
+python tools/recon/disasm_2cdb4_helper.py
+# 본문 trace + sl-relative pcrel literal 추출
+
+# ⭐⭐ 2IB: event 3 specific path 본문 (0x2c848)
+python tools/recon/disasm_2c6a4_branches.py
+# 추가 윈도우: 0x2c848 ~ 0x2c950
+
+# ⭐⭐ 2IC: event 15 specific path 본문 (0x2c952, cmp #0xc bne 의 fall-through)
+# 0x2c952 ~ 0x2c96c 영역 disasm
+
+# ⭐⭐ 2IE: FUN_00024780 본문 (468B, 1 BL caller from 0x48ae8)
+python tools/recon/disasm_subsystem_func.py 0x24780 0x24954 --label fun_24780
+
+# ⭐⭐ 2IF: FUN_00024da8 본문 (600B, 6 BL callers system-wide)
+python tools/recon/disasm_subsystem_func.py 0x24da8 0x25000 --label fun_24da8
+
+# ⭐ 2IG: FUN_0002c6a4 의 17 callers caller-side 분석 (event trigger 사이트 매핑)
+python tools/recon/find_callers_generic.py 0x2c6a4
+python tools/recon/find_function_containing.py <each_caller>
+
+# ⭐ 2IH: callback queue stage 1 sub-struct 의 +0x11 외 다른 필드 (record dump)
+# heuristic: 0x158 stride 의 stage 1 records 의 0..0x153 layout
+```
 
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
@@ -417,22 +449,27 @@ python tools/recon/disasm_subsystem_func.py 0x8d2e2 0x8d87c --label npc_op12_ful
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 40 까지 완료 — callback queue 2-stage 풀이 + NPC subsystem 확정 + 4 helper 함수)
-- 위 Round 40 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 41 까지 완료 — event dispatcher 풀이 + wide-scan + task[0x290] 신규)
+- 위 Round 41 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 41 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 42 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ **2HA** | **FUN_0002c6a4 event dispatcher cmp 분기 별 본문** — events 8/c/d/e/f/10 공통 handler 0x2c9ca 풀이 + 다른 분기 의미 | inline disasm + arm 별 BL chain | 17-caller event 시스템 의미 |
-| ⭐⭐ **2HB** | NPC table 정확한 차원 (0x3c4 × 0x3c grid) — row×col count | wide-scan + ctx pcrel | 게임 내 활성 NPC 개수 |
-| ⭐⭐ **2HC** | callback queue stage 1 record sub-struct 구조 (+0x11 외 다른 필드들) | record dump + sub-struct 분석 | 어떤 데이터를 callback 에 전달하는지 |
-| ⭐⭐ **2HD** | FUN_00025f30 2nd caller (0x26124) 분석 — 다른 NPC 쿼리 context | container 함수 분석 | NPC 쿼리 사용 패턴 |
-| ⭐ **2HE** | callback queue records destinations (record[+0x154] / record[+0x18]) | 정적 + 휴리스틱 | 실제 callback 함수들 |
-| ⭐ **2HF** | task[0x0a5d / 0x02b8 / 0xa1f6 / 0xa288 / 0xa289] system-wide 분포 | wide-scan | NPC subsystem 가드 byte 의미 |
-| ⭐ **2HG** | FUN_00041a68 다른 3 callers (0x42f7c, 0x7b248, 0x7c8cc) 분석 | container 분석 | task[0x0a5d] 사용 context |
-| ⭐ **2HH** | FUN_0002ae44 callers (0x248ce, 0x24fd0) 추적 — Round 38 미완 | `find_callers_generic.py` | secondary state path |
+| ⭐⭐⭐ **2IA** | **공통 handler 0x2c9ca 의 sl-relative 글로벌 object 정체** — vtable [+0xc]/[+0x58] 메서드의 실제 함수 | sl-relative literal 추출 + 함수 추적 | event 시스템 의 게임 객체 |
+| ⭐⭐ **2IB** | event 3 specific path (0x2c848) 본문 | inline disasm | event 3 의 의미 |
+| ⭐⭐ **2IC** | event 15 specific path (0x2c952) 본문 | inline disasm | event 15 의 의미 |
+| ⭐⭐ **2ID** | FUN_0002cdb4 의 5 callers context (0x24496/0x244ee/0x2b626/0x2c9ca/0x2ccae) | container 분석 | vtable [+0x58] 사용 패턴 |
+| ⭐⭐ **2IE** | FUN_00024780 (468B, 1 caller from 0x48ae8) 본문 | inline disasm | FUN_0002ae44 caller 정체 |
+| ⭐⭐ **2IF** | FUN_00024da8 (600B, 6 callers) 본문 — 시스템 helper | inline disasm | secondary state path 의 역할 |
+| ⭐ **2IG** | 17 callers of FUN_0002c6a4 의 분포 — event trigger 사이트 매핑 | wide analysis | event 시스템 사용 위치 |
+| ⭐ **2IH** | callback queue stage 1 record sub-struct 구조 (+0x11 외 다른 필드들) | record dump | callback payload |
 | ⭐ 2GG | FUN_00098904 의 8 entry labels 본문 정밀 | window disasm | blit mode 별 의미 |
+| ~~2HA~~ | ~~FUN_0002c6a4 event dispatcher cmp 분기 별 본문~~ | ✅ Round 41. **internal_key = event_id - 3 정규화** (valid range [3..18]), events 11/16/17/18/19 → 공통 handler = obj.method58 + obj.method0c double dispatch + task[0x290]=last_event_id |
+| ~~2HB+2HD~~ | ~~NPC table 차원 + FUN_00025f30 2nd caller~~ | ✅ Round 41. 차원은 record SIZE (964×60), row/col은 외부 데이터. 2nd caller = **FUN_000260ec stack-local wrapper** (68B) |
+| ~~2HF~~ | ~~task field system-wide 분포~~ | ✅ Round 41. task[0x9cb8] 31, task[0xa0c0] 14, task[0x0a5d] gate = 4 distinct subsystems |
+| ~~2HG~~ | ~~FUN_00041a68 다른 3 callers~~ | ✅ Round 41. 4 distinct subsystems (FUN_000245fc/42f24/7ae9c/7c844) — task[0x0a5d] 광범위 |
+| ~~2HH~~ | ~~FUN_0002ae44 callers~~ | ✅ Round 41. FUN_00024780 (468B, 1 caller) + FUN_00024da8 (600B, 6 callers, 시스템 helper) |
 | ~~2GA~~ | ~~0x9cb8 record array 의 0x158-stride record 구조~~ | ✅ Round 40. **2-stage frame callback queue** 완전 풀이 (stage 1: 344B/3-level gating, stage 2: 28B) |
 | ~~2GB~~ | ~~FUN_00025f30 본문~~ | ✅ Round 40. **NPC table query** — Round 14 의 0x3c4×0x3c grid + +0x3b3 flag 정확히 일치 → **task[0xa0c0] = NPC subsystem 확정** |
 | ~~2GC~~ | ~~FUN_0002c6a4 본문~~ | ✅ Round 40. **17-caller system-wide event dispatcher** (996B, 9 arms, events 8/c/d/e/f/10 공통 handler 0x2c9ca) |
@@ -453,10 +490,10 @@ python tools/recon/disasm_subsystem_func.py 0x8d2e2 0x8d87c --label npc_op12_ful
 | 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
 
-**3) Round 41 작업 후 마무리**:
+**3) Round 42 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 41 항목** 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 42 항목** 추가
 - Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -551,7 +588,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md) — **⭐⭐⭐ 최신 Round 40** (0x9cb8 cluster 2-stage callback queue + NPC table query + 17-caller event dispatcher + record cleanup)
+- [ghidra-event-dispatcher-and-wide-scan-2026-05-17.md](ghidra-event-dispatcher-and-wide-scan-2026-05-17.md) — **⭐⭐⭐ 최신 Round 41** (FUN_0002c6a4 event dispatcher 풀이 + task[0x290] last_event_id 신규 + NPC subsystem wide-scan + FUN_0002cdb4 vtable invoker)
+- [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md) — Round 40 (0x9cb8 cluster 2-stage callback queue + NPC table query + 17-caller event dispatcher + record cleanup)
 - [ghidra-245fc-and-npc-opcodes-2026-05-17.md](ghidra-245fc-and-npc-opcodes-2026-05-17.md) — Round 39 (FUN_000245fc state machine 풀이 + task[0xa0c0] mode byte + NPC/SCN opcode 0x12 비교)
 - [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md) — Round 38 (op12 inner JT 디코드 + 6번째 indirect entry FUN_000245fc + cluster #1 완전 체인)
 - [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md) — Round 37 (SCN/NPC common 본문 + 통합 scripting engine + opcode 0x12 11.4KB + cluster #1 paired state machine + FUN_00040fb0 신규)
