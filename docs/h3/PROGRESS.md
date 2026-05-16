@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-17 PM-8 (Round 44) — **2KA + 2KB + 2KD + 2KE + event 3 = ObjectE.method0x10 확정 + 7번째 indirect entry 후보**. (1) ⭐⭐⭐ **event 3 = ObjectE.method0x10(0xb0, 0xa0) graphics call 확정** — sl-relative literal 추출로 GOT[+0x78]=ObjectE (Round 42 식별) vtable [+0x10] 호출 검증. (2) ⭐⭐⭐ **entity state record (task[0xac78], Round 28) ↔ ObjectE = KEY LINK 발견** — event 3 path 에서 entity record 2회 참조 = entity update → event 3 → ObjectE.method0x10 = entity 상태 변화가 screen transition / overlay 발동. (3) ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry 후보** (336B, 0 BL caller, pure-state 6 ctx all `r0=#3`, cmp #0/1/2 state dispatch, +0x6a 에서 event 3 fire). 시스템 진입점 6→7개 확장 가능. (4) ⭐⭐ **FUN_00053e08 = command/key input handler** (2112B, 21 arms, **cmp 'c' (0x63) 4x**, 44 ctx + 1 other, dynamic event source = NPC arg+7). (5) FUN_00081744/FUN_00081688 = event 3/15 single-caller dedicated helpers. FUN_000933e8 = state inspector (NOT indirect entry). 상세는 [ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md).
+**최신 커밋 시점**: 2026-05-17 PM-9 (Round 45) — **2LA + 2LB + 2LC + 2LD + 2LE + 7번째 indirect entry CONFIRMED + sound dispatcher 정규화**. (1) ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry CONFIRMED** (high confidence). 검증: 0 BL caller + 0 literal pool match = ALL 6 known indirect entries 와 동일 pattern (GVM firmware 별도 메커니즘 호출). 시스템 진입점 6 → 7개 확장 확정. 함수 동작 = command processor (input r0 → bl FUN_00085578c → sub-command 분기). (2) ⭐⭐⭐ **Sound dispatcher 입력 정규화 풀이**: `internal_id = sound_id - 4`, range guard [4..195], 22 arms sparse dispatch (FUN_0002c6a4 event dispatcher 와 유사 패턴). task[offset] = sound_id (last_sound_id 패턴). (3) ⭐⭐ **task[0x9c71..0x9c76] 6 byte cluster 신규 식별** (Round 27 byte field 영역 확장, 6 fields = "party member" 후보). (4) ⭐⭐ **신규 helper 함수 4개** (FUN_00085578c/85aa8/92bd0/92cc0 = FUN_00086058 의 helper chain). (5) FUN_00024a6c = state inspector (788B, 1 ctx only). FUN_0002cb78 = linear setter (284B, 0 cmp arms). FUN_00053e08 main caller = FUN_0003c920 (2 calls, ≥1.3KB). 상세는 [ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md).
 
 **이전 라운드 종합**: Round 18~36 의 진척 요약은 **§"Round 18~37 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -33,28 +33,33 @@
 - **Round 42** — ⭐⭐⭐ **GOT base = sl base = 0xb2c40 PIC 재검증** + **ObjectE 신규 식별** (GOT[+0x78], 46 sites, 0xDxxx 영역 집중). **5 신규 GOT slots** (0x74/0x78/0x140/0x144/0x160) → **14 known slots**. 공통 handler double dispatch 완전 풀이: ObjectB.method58 + ObjectE.method0c, 각자 pending flag (GOT[+0x160]=114 sites system-wide). ⭐⭐ **FUN_00024780 = ObjectE event handler** (468B, cmp #0xf range + cmp #4/5, ObjectE 4 slots + NPC mode). **FUN_00024da8 = NPC subsystem state inspector** (600B, BL=1 ctx only, 12 GOT slot literals, 6 callers). **FUN_0002c6a4 17 callers 분포**: 5th+6th indirect + **FUN_000818f0 entity update loop** + 2 multi-event sources + 3 indirect entry 후보. task[0xa0cc] 신규
 - **Round 43** — ⭐⭐⭐ **17 callers 의 event_id 매핑 완료** (9 distinct event_ids). **event 3 = dominant (8 callers, 47%)** = system-wide notification. ⭐⭐⭐ **event 3 specific path 풀이** = screen transition handler (sound 0x20+0x7 신규 + vtable[+0x10] graphics call(0xb0,0xa0) + state transitions 2→0→1 + 4 helpers). 3 indirect entry 후보 모두 부정 (FUN_00026a80/41c14 내부) — but **두 함수도 event trigger** 신규 finding. FUN_0003a444 = state-driven event 3 generator (1064B, 4 conditional firings). FUN_00053e08 = dynamic event source (NPC arg+7 = event_id, Round 14 layout 연결). 신규 sound IDs 0x20/0x7 (총 13)
 - **Round 44** — ⭐⭐⭐ **event 3 = ObjectE.method0x10(0xb0, 0xa0) graphics call 확정** (sl literal 추출 → GOT[+0x78] ObjectE 확인). ⭐⭐⭐ **entity state record (task[0xac78], Round 28) ↔ ObjectE 연결 = KEY LINK** (event 3 path 에서 entity record 2회 참조). ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry 후보** (336B, 0 BL caller, pure-state 6 ctx 모두 `r0=#3`, cmp #0/1/2, event 3 source). ⭐⭐ **FUN_00053e08 = command/key input handler** (2112B, 21 arms, cmp 'c' 4x, 44 ctx + 1 other). event 3/15 dedicated helpers (FUN_00081744 + 81688) 본문 분석
+- **Round 45** — ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry CONFIRMED** (high confidence, 0 literal pool match with ALL 6 known indirect entries). 시스템 진입점 6 → 7개 확장 확정. Function = command processor (input r0 → bl FUN_00085578c → sub-command 분기 = -5/-16/-2/-1). ⭐⭐⭐ **Sound dispatcher 입력 정규화 풀이**: `internal_id = sound_id - 4`, range [4..195], 22 arms sparse dispatch. task[offset] = sound_id (last_sound_id). ⭐⭐ **task[0x9c71..0x9c76] 6 byte cluster** 신규 (party member 후보). 4 신규 helper 함수 + state inspector/setter 본문 분석
 
-### 전체 진척률 추정 (Round 44 시점, 2026-05-17 PM-8)
+### 전체 진척률 추정 (Round 45 시점, 2026-05-17 PM-9)
 
-> **결론**: "Android 리메이크 완성" 기준 약 **37~48% 완료**. Round 44로 event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결 + 7번째 indirect entry 후보 = ~2%p 진척.
+> **결론**: "Android 리메이크 완성" 기준 약 **40~50% 완료**. Round 45로 7번째 indirect entry CONFIRMED + sound dispatcher 정규화 풀이 + 신규 6-byte cluster + 4 helper 함수 발견 = ~3%p 진척.
 
 | 영역 | 진척 추정 | 근거 |
 |---|---|---|
 | 자산 포맷 분석/변환 | **~80%** | _bm/_pa/_txt/_cif/_mp/_scn 모두 1차 해독. 미해결: tile 0x0c 압축, _mp extras (NPC/exit placement), SMAF→OGG |
 | 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 |
-| Ghidra 게임 로직 리버싱 | **~40~47%** ⬆ | 1,470 함수 중 ~88개 본문 분석. GVM architecture + **6 indirect entries (+1 후보 FUN_00086058)** + 3 dispatcher JT + 14 known GOT slots + cluster #1 완전 체인 + 0x9cb8 callback queue + NPC subsystem + event dispatcher double dispatch + 17 callers event_id 매핑 + **event 3 = ObjectE.method0x10 graphics call 확정** + **entity record ↔ ObjectE 연결** + FUN_00053e08 command input handler. **미해결: FUN_00086058 indirect entry 검증 / sound dispatcher 22 arms 매핑 / FUN_00024a6c/2cb78 본문 / 전투 시스템 / FUN_0009a008 두 JT** |
+| Ghidra 게임 로직 리버싱 | **~42~48%** ⬆ | 1,470 함수 중 ~93개 본문 분석. GVM architecture + **7 indirect entries CONFIRMED** (FUN_00086058 신규) + 3 dispatcher JT + 14 known GOT slots + cluster #1 완전 체인 + 0x9cb8 callback queue + NPC subsystem + event dispatcher double dispatch + 17 callers event_id 매핑 + event 3 = ObjectE.method0x10 + entity record ↔ ObjectE 연결 + **sound dispatcher 정규화 (sound_id - 4)** + **task[0x9c71..0x9c76] 6-byte cluster** + 4 신규 helper 함수. **미해결: FUN_00085578c (sub-command resolver) / sound dispatcher 22 arms 매핑 / 전투 시스템 / FUN_0009a008 두 JT** |
 | task_struct 모델 | **~38%** ⬆ | task[0xa0c0/0xa0cc/0xa1f6/0xa288/0xa289] (NPC subsystem) + task[0x290] = last_event_id + 0x9cb8 cluster + cluster #1 완전 체인 + task[0x0a5d/0x02b8] (callback gates) |
 | Android 엔진 재구현 | **~5~10%** | 8 씬 골격 + NPC 4 hardcoded + i18n 인프라 + save slot. **진짜 게임 로직 (전투/스킬/이벤트/진행) 없음** |
 | i18n | UI 100% / 대사 0% | UI 어휘 196개 100% 영문, 9,741 unique 대사 번역 미진행 |
 
 **가장 큰 블로커** (진행 시 가장 큰 진척):
-1. **FUN_00086058 indirect entry 검증** (336B, 0 BL caller, pure-state) → 시스템 진입점 6 → 7개 확장 가능성 (Round 45 의 2LA)
-2. **FUN_0003d5d0 sound dispatcher 22 arms 매핑** — sound_id → snd/ 파일 정확한 mapping (Round 45 의 2LB)
-3. **FUN_00024a6c (788B) / FUN_0002cb78 (284B) 본문** — event 3 path 의 다중 helpers (Round 45 의 2LC/2LD)
+1. **FUN_00085578c 본문** (FUN_00086058 의 sub-command resolver) — 7번째 indirect entry 의 정확한 게임 시스템 역할 식별 (Round 46 의 2MA)
+2. **FUN_0003d5d0 sound dispatcher 22 arms 정밀 매핑** — sound_id → snd/ 파일 (Round 46 의 2MB)
+3. **FUN_0003c920 본문** (FUN_00053e08 main caller, ≥1.3KB) — command input flow (Round 46 의 2MD)
 4. **전투 시스템 발견** — 38B entity state record (FUN_0009a008 8.6KB super function)
-5. **callback queue records destinations** — record[+0x154] / record[+0x18]
+5. **task[+1, +3] / task[0x9c71..0x9c76] 의미 풀이** — system-wide reader/writer (Round 46 의 2MC/2MG)
 
 ### 한 줄 요약 (현재 상태)
+
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 45 7번째 indirect entry CONFIRMED + sound dispatcher 정규화 + 6-byte cluster 신규** (2026-05-17 PM-9 / Round 45). FUN_00086058 = 7번째 indirect entry 확정 (336B, 0 BL caller + 0 literal pool match with 6 known entries, command processor). 시스템 진입점 6 → 7개 확장. Sound dispatcher 입력 정규화: `internal_id = sound_id - 4`, range [4..195]. task[0x9c71..0x9c76] 6-byte cluster 신규 (party member 후보). 4 신규 helper 함수 (FUN_00085578c/85aa8/92bd0/92cc0). FUN_00024a6c = 788B state inspector. FUN_0002cb78 = 284B linear setter (0 cmp). FUN_00053e08 main caller = FUN_0003c920 (≥1.3KB, 2 calls). 다음 진척은 **(1) FUN_00085578c sub-command resolver 본문, (2) sound dispatcher 22 arms 정밀, (3) FUN_0003c920 본문, (4) 전투 시스템**.
+
+### 이전 라운드 요약 (Round 44 시점, 2026-05-17 PM-8)
 
 영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 44 event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결 + 7번째 indirect entry 후보** (2026-05-17 PM-8 / Round 44). event 3 specific path sl-relative literal 추출 → GOT[+0x78] = ObjectE (Round 42 식별) → ObjectE.vtable[+0x10] graphics call(0xb0, 0xa0) 호출 확정. task[0xac78] (Round 28 의 38B entity state record) 가 event 3 path 에서 2회 참조 = entity update → event 3 → ObjectE 의 screen transition 발동. FUN_00086058 (336B, 0 BL caller, pure-state 6 ctx all `r0=#3`) = 7번째 indirect entry 후보. FUN_00053e08 (2112B) = command/key input handler (cmp 'c' 4x). 다음 진척은 **(1) FUN_00086058 indirect entry 검증, (2) sound dispatcher 22 arms 매핑, (3) FUN_00024a6c/2cb78 본문, (4) 전투 시스템**.
 
@@ -124,6 +129,17 @@
       └ task_struct refs: 0xa0c0 (mode) / 0x7c (gate) / 0x9cb8~0x9cd8 (callback queue) /
         0xa1f6 (mode 7 gate) / 0xa288 / 0xa289 (NPC index pair) / 0x0a5d / 0x02b8 (callback gates)
 
+  └ FUN_00086058  ⭐⭐⭐ 7번째 indirect entry CONFIRMED (Round 45) — command processor (336B, 0 BL caller)
+      ├ input r0 = command code → store to [r7-4]
+      ├ bl FUN_00085578c → r2 = sub-command resolver result
+      ├ r2 dispatch:
+      │  ├ r2 == -5  → state transition: bl FUN_00092bd0 → byte → task[+3] = byte
+      │  │              Clear task[0x9c71..0x9c76] (6 consecutive bytes!)
+      │  │              Read task[+3] state → set task[+1] = 4/2/5 (state machine)
+      │  ├ r2 == -16 → bl FUN_00085aa8 → bl FUN_0002c6a4(r0=3) [event 3 fire]
+      │  └ r2 ∈ {-2, -1} → bl FUN_00092cc0(command code)
+      └ task_struct refs: +1, +3 (state bytes) / 0x9c71~0x9c76 (6-byte cluster, party member 후보)
+
 scene script opcode 0x12 (FUN_0008e89e의 internal) — Korean dialogue sub-interpreter:
   cmp r1, #0x49 bls 0x90206 → inner JT @ 0xabcb4 (SL-relative 74-entry, code base 0xb43ec)
    ├ 66/74 (89%) → FUN_00098904 +0x3b0 (default, no-op-style)
@@ -138,15 +154,15 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-1. **이 섹션 + 위 game update flow (2026-05-17 PM-8 최신판)** 읽기
+1. **이 섹션 + 위 game update flow (2026-05-17 PM-9 최신판)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 44 / PM-8** (event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결 + 7번째 indirect entry 후보)
-5. (참고) [ghidra-event-id-mapping-2026-05-17.md](ghidra-event-id-mapping-2026-05-17.md) — Round 43 (17 callers event_id 매핑 + event 3 specific path 풀이)
-6. (참고) [ghidra-objectE-and-event-callers-2026-05-17.md](ghidra-objectE-and-event-callers-2026-05-17.md) — Round 42 (ObjectE 신규 + 14 GOT slots)
+4. **[ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 45 / PM-9** (FUN_00086058 = 7번째 indirect entry CONFIRMED + sound dispatcher 정규화 + 6-byte cluster)
+5. (참고) [ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md) — Round 44 (event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결)
+6. (참고) [ghidra-event-id-mapping-2026-05-17.md](ghidra-event-id-mapping-2026-05-17.md) — Round 43 (17 callers event_id 매핑)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~44 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~45 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -177,6 +193,7 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **42** (2026-05-17 PM-6) | ⭐⭐⭐ **GOT base = sl base = 0xb2c40 PIC trampoline 재검증** + **ObjectE 신규 식별** (GOT[+0x78], 46 sites, 0xDxxx 영역 집중 = FUN_00006334 영역). **5 신규 GOT slots** (0x74/0x78/0x140/0x144/0x160) → **14 known slots**. 공통 handler 완전 풀이 = ObjectB.method58 + ObjectE.method0c double dispatch, 각자 pending flag. GOT[+0x160] (ObjectB pending) **114 sites system-wide**. ⭐⭐ **FUN_00024780 = ObjectE event handler** (468B, cmp #0xf range + cmp #4/5, ObjectE 4 slots + NPC mode). **FUN_00024da8 = NPC subsystem state inspector** (600B, BL=1 ctx only, 12 GOT slot literals, 6 callers). ⭐⭐ **FUN_0002c6a4 17 callers 매핑**: 5th+6th indirect entries + **entity update loop FUN_000818f0** + 2 multi-event sources (FUN_0002ae44/FUN_0003a444 각 4 calls) + **3 indirect entry 후보**. task[0xa0cc] 신규 | [ghidra-objectE-and-event-callers-2026-05-17.md](ghidra-objectE-and-event-callers-2026-05-17.md) |
 | **43** (2026-05-17 PM-7) | ⭐⭐⭐ **17 callers 의 event_id 매핑 완료** (9 distinct ids): **event 3 dominant (8 callers, 47%)** + events 4/7/12/13/14 (log-only) + events 17/18 (공통 handler) + dynamic event (FUN_00053e08 = NPC arg+7). ⭐⭐⭐ **event 3 specific path 풀이** = screen transition handler (sounds 0x20+0x7 신규 + vtable[+0x10] graphics call(0xb0,0xa0) + state 2→0→1 + 4 helpers FUN_00081744/24a6c/2cb78/0xd53c). ⭐⭐ **3 indirect entry 후보 모두 부정**: 0x28ada/0x28de8 in FUN_00026a80 (subsystem router) + 0x424c2 in FUN_00041c14 (cluster #1 SM) → 시스템 진입점 6개 확정, but 두 함수도 event trigger (subsystem router events 12/13, cluster #1 SM event 7). ⭐⭐ **FUN_0003a444 = state-driven event 3 generator** (1064B, 16 arms, 20 ctx + 1 graphics, 4 conditional firings). 신규 sound IDs 0x20/0x7 (총 13) | [ghidra-event-id-mapping-2026-05-17.md](ghidra-event-id-mapping-2026-05-17.md) |
 | **44** (2026-05-17 PM-8) | ⭐⭐⭐ **event 3 = ObjectE.method0x10(0xb0, 0xa0) graphics call 확정** (sl literal 추출 → GOT[+0x78] = ObjectE Round 42 검증). ⭐⭐⭐ **entity state record (task[0xac78], Round 28) ↔ ObjectE 연결 발견 = KEY LINK** (event 3 path 에서 entity record 2회 참조 + 인접 fields ac6c/ac7a). entity update → event 3 → ObjectE.method0x10 = entity 상태 변화가 screen transition 발동. ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry 후보** (336B, **0 BL caller**, pure-state 6 ctx 모두 `r0=#3`, cmp #0/1/2 dispatch, +0x6a 에서 event 3 fire). ⭐⭐ **FUN_00053e08 = command/key input handler** (2112B, 21 arms, **cmp 'c' (0x63) 4x**, 44 ctx + 1 other, dynamic event source). FUN_00081744/81688 = event 3/15 single-caller dedicated helpers. FUN_000933e8 = state inspector (NOT indirect entry). sound assets = 19 BGM + 14 SFX = 33 files | [ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md) |
+| **45** (2026-05-17 PM-9) | ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry CONFIRMED** (high confidence): **0 literal pool occurrences = ALL 6 known indirect entries 와 동일 pattern**. 시스템 진입점 6 → 7개 확장 확정. Function = command processor: input r0 → bl FUN_00085578c → sub-command 분기 (-5/-16/-2/-1) → state machine on task[+3] + task[+1]. ⭐⭐⭐ **Sound dispatcher (FUN_0003d5d0) 입력 정규화 풀이**: `internal_id = sound_id - 4`, range guard [4..195], 22 arms sparse dispatch (event dispatcher 와 유사). task[offset] = sound_id (last_sound_id 패턴). ⭐⭐ **task[0x9c71..0x9c76] 6 byte cluster 신규** (Round 27 byte field 영역 확장, "party member" 후보). **4 신규 helper 함수**: FUN_00085578c/85aa8/92bd0/92cc0. FUN_00024a6c = state inspector (788B, 1 ctx only). FUN_0002cb78 = linear setter (284B, 0 cmp). FUN_00053e08 main caller = FUN_0003c920 (≥1.3KB) | [ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md) |
 
 ### 현재 게임 시스템 모델 (Round 40 시점, 검증 vs 가설)
 
@@ -348,9 +365,40 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 45 즉시 시작 명령 (복사-붙여넣기)
+### Round 46 즉시 시작 명령 (복사-붙여넣기)
 
-> **참고**: Round 44 에서 event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결 + 7번째 indirect entry 후보 발견. 다음 라운드는 **FUN_00086058 indirect entry 검증** + **sound dispatcher 22 arms 매핑** + **FUN_00024a6c/2cb78 본문**.
+> **참고**: Round 45 에서 FUN_00086058 = 7번째 indirect entry CONFIRMED + sound dispatcher 정규화 풀이 완료. 다음 라운드는 **FUN_00085578c sub-command resolver 본문** + **sound dispatcher 22 arms 정밀** + **FUN_0003c920 본문**.
+
+```powershell
+$env:PYTHONIOENCODING = 'utf-8'
+
+# ⭐⭐⭐ 2MA: FUN_00085578c 본문 (FUN_00086058 sub-command resolver)
+python tools/recon/find_next_function.py 0x8578c
+python tools/recon/find_callers_generic.py 0x8578c
+python tools/recon/disasm_subsystem_func.py 0x8578c <end> --label fun_8578c_subcmd_resolver
+
+# ⭐⭐ 2MB: FUN_0003d5d0 sound dispatcher 22 arms 정밀 매핑
+python tools/recon/disasm_subsystem_func.py 0x3d5d0 0x3e6bc --label sound_dispatcher_full
+
+# ⭐⭐ 2MC: task[+1, +3] system-wide reader/writer
+python tools/recon/find_task_struct_field_readers.py --field 1
+python tools/recon/find_task_struct_field_readers.py --field 3
+
+# ⭐⭐ 2MD: FUN_0003c920 본문 (FUN_00053e08 main caller, ≥1.3KB)
+python tools/recon/find_next_function.py 0x3c920
+python tools/recon/disasm_subsystem_func.py 0x3c920 <end> --label fun_3c920_input_flow
+
+# ⭐⭐ 2ME: FUN_00085aa8 본문 (FUN_00086058 event 3 path helper)
+python tools/recon/find_next_function.py 0x85aa8
+python tools/recon/disasm_subsystem_func.py 0x85aa8 <end> --label fun_85aa8
+
+# ⭐ 2MF: FUN_00092bd0 / FUN_00092cc0 본문 (FUN_00086058 helpers)
+python tools/recon/find_next_function.py 0x92bd0 0x92cc0
+
+# ⭐ 2MG: task[0x9c71..0x9c76] 6-byte cluster system-wide usage
+python tools/recon/find_task_struct_field_readers.py --field 0x9c72
+python tools/recon/find_task_struct_field_readers.py --field 0x9c73
+```
 
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
@@ -618,21 +666,29 @@ python tools/recon/disasm_subsystem_func.py 0x8d2e2 0x8d87c --label npc_op12_ful
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 44 까지 완료 — event 3 = ObjectE.method0x10 확정 + 7번째 indirect entry 후보)
-- 위 Round 44 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 45 까지 완료 — 7번째 indirect entry CONFIRMED + sound dispatcher 정규화)
+- 위 Round 45 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 45 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 46 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ **2LA** | **FUN_00086058 indirect entry 검증** — 6 ctx (r0=#3) literals 추출 + indirect caller scan (BLX register/movt 등) | 정밀 caller scan | 시스템 진입점 6→7 확장 |
-| ⭐⭐ **2LB** | FUN_0003d5d0 sound dispatcher 22 arms 매핑 — sound_id → snd/ 파일 정확한 mapping | arm 별 BL target 추적 | 신규 sound IDs 0x20/0x7 확정 |
-| ⭐⭐ **2LC** | FUN_00024a6c (788B) 본문 — event 3 path 2 calls + 다른 contexts | inline disasm | event 3 helper chain |
-| ⭐⭐ **2LD** | FUN_0002cb78 (284B) 본문 — event 3 + 3 외부 callers | inline disasm | shared helper |
-| ⭐⭐ **2LE** | FUN_00053e08 의 3 callers (0x3cad6/0x3ce22/0x430d6) 분석 | container 분석 | command input flow |
-| ⭐ **2LF** | ObjectE vtable 의 다른 메서드 슬롯 wide-scan | vtable offset 분포 | ObjectE 완전 인터페이스 |
-| ⭐ **2LG** | task[0xac78~0xac9d] 38B entity record 의 system-wide reader/writer 매핑 | wide-scan | entity record 시스템 |
+| ⭐⭐⭐ **2MA** | **FUN_00085578c 본문** (FUN_00086058 sub-command resolver) | inline disasm | 7번째 indirect entry 의 게임 시스템 역할 |
+| ⭐⭐ **2MB** | FUN_0003d5d0 sound dispatcher 22 arms 정밀 매핑 (sound_id → snd/ 파일) | full disasm + arm 별 BL target | sound ID file mapping |
+| ⭐⭐ **2MC** | task[+1, +3] system-wide reader/writer — state byte 의미 | wide-scan | state byte의 게임 의미 |
+| ⭐⭐ **2MD** | FUN_0003c920 본문 (FUN_00053e08 main caller, ≥1.3KB) | inline disasm | command input flow |
+| ⭐⭐ **2ME** | FUN_00085aa8 본문 (FUN_00086058 event 3 path helper) | inline disasm | helper chain |
+| ⭐ **2MF** | FUN_00092bd0 / FUN_00092cc0 본문 (FUN_00086058 helpers) | inline disasm | sub-command paths |
+| ⭐ **2MG** | task[0x9c71..0x9c76] 6 byte cluster 의 system-wide usage | wide-scan | "party member" 가설 검증 |
+| ⭐ **2MH** | sound dispatcher last_sound_id task field offset (0x3d616 pcrel literal) | sl-trampoline decode | last_sound_id field |
+| ⭐ 2LF | ObjectE vtable 의 다른 메서드 슬롯 wide-scan | vtable offset 분포 | ObjectE 완전 인터페이스 |
+| ⭐ 2LG | task[0xac78~0xac9d] 38B entity record system-wide reader/writer | wide-scan | entity record 시스템 |
 | ⭐ 2GG | FUN_00098904 의 8 entry labels 본문 정밀 | window disasm | blit mode 별 의미 |
+| ~~2LA~~ | ~~FUN_00086058 indirect entry 검증~~ | ✅ Round 45 **CONFIRMED**. 0 literal pool match with 6 known indirect entries. 시스템 진입점 6→7개 확장 확정 |
+| ~~2LB~~ | ~~sound dispatcher 22 arms 매핑~~ | ✅ Round 45 입력 정규화 풀이 (`internal_id = sound_id - 4`, range [4..195]). 22 arms 정밀 매핑은 2MB |
+| ~~2LC~~ | ~~FUN_00024a6c 본문~~ | ✅ Round 45. 788B / 4 cmp #0 / 1 ctx only / 19 GOT lit = state inspector |
+| ~~2LD~~ | ~~FUN_0002cb78 본문~~ | ✅ Round 45. 284B / **0 cmp arms** / 1 ctx / 7 GOT lit = linear setter |
+| ~~2LE~~ | ~~FUN_00053e08 3 callers~~ | ✅ Round 45. FUN_0003c920 (2 calls) + FUN_00043048 (1 call). FUN_0003c920 본문은 2MD |
 | ~~2KA~~ | ~~event 3 graphics obj 정체~~ | ✅ Round 44. **event 3 = ObjectE.method0x10(0xb0,0xa0) 확정** + entity record (task[0xac78]) ↔ ObjectE 연결 |
 | ~~2KB~~ | ~~FUN_00081744/81688 본문~~ | ✅ Round 44. event 3/15 single-caller dedicated helpers (small state) |
 | ~~2KD~~ | ~~FUN_00086058 / FUN_000933e8 본문~~ | ✅ Round 44. **FUN_00086058 = 7번째 indirect entry 후보** (336B, 0 BL caller, pure-state). FUN_000933e8 = state inspector |
@@ -669,10 +725,10 @@ python tools/recon/disasm_subsystem_func.py 0x8d2e2 0x8d87c --label npc_op12_ful
 | 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
 
-**3) Round 45 작업 후 마무리**:
+**3) Round 46 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 45 항목** 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 46 항목** 추가
 - Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -767,8 +823,9 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md) — **⭐⭐⭐ 최신 Round 44** (event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결 + 7번째 indirect entry 후보 + dynamic event source)
-- [ghidra-event-id-mapping-2026-05-17.md](ghidra-event-id-mapping-2026-05-17.md) — Round 43 (17 callers event_id 매핑 + event 3 specific path 풀이 + indirect entry 후보 부정)
+- [ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md) — **⭐⭐⭐ 최신 Round 45** (FUN_00086058 = 7번째 indirect entry CONFIRMED + sound dispatcher 정규화 + 6-byte cluster + 4 helper)
+- [ghidra-objectE-event3-and-7th-entry-2026-05-17.md](ghidra-objectE-event3-and-7th-entry-2026-05-17.md) — Round 44 (event 3 = ObjectE.method0x10 확정 + entity record↔ObjectE 연결)
+- [ghidra-event-id-mapping-2026-05-17.md](ghidra-event-id-mapping-2026-05-17.md) — Round 43 (17 callers event_id 매핑 + event 3 specific path 풀이)
 - [ghidra-objectE-and-event-callers-2026-05-17.md](ghidra-objectE-and-event-callers-2026-05-17.md) — Round 42 (ObjectE 신규 식별 + 14 known GOT slots)
 - [ghidra-event-dispatcher-and-wide-scan-2026-05-17.md](ghidra-event-dispatcher-and-wide-scan-2026-05-17.md) — Round 41 (FUN_0002c6a4 event dispatcher 풀이)
 - [ghidra-callback-queue-and-npc-query-2026-05-17.md](ghidra-callback-queue-and-npc-query-2026-05-17.md) — Round 40 (0x9cb8 cluster 2-stage callback queue + NPC table query + 17-caller event dispatcher + record cleanup)
