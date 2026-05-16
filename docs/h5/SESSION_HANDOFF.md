@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-17 (Round 46 — Monster AI **trigger stream layout 확정**. ActionOfTrigger (0xbd7a0, 140B) driver + IsTriggerEqual 13 trigger operand 매핑. Entry layout = `[trigger_code][operand 0-1B][action_id]`. trigger 1 (VISIBILITY_RECT) / 6 (TUTORIAL_FLAG) 만 1B operand, 나머지 11 trigger 0B. trigger 5 (ALWAYS_GOTO) 는 special path. **543 trigger entries 100% parse**. 분포: VISIBILITY_RECT 36% + ALWAYS_GOTO 36% (= 72% "idle→combat 전환" 패턴). 데이터 RE 100% 종료.)
+업데이트: 2026-05-17 (Round 47 — Monster AI **Ai_Action 13 sub-state 완전 매핑**. state 0=CHASE_TIMER (Fast_Distance vs +0x2c6 시야 비교) / 1=TURN_DIR (4 mode + face hero) / 2=COUNTDOWN / 3=SKILL_USE (IRect 충돌 검사 + cast) / 4=SET_ATTACK_MOTION (+0x2cc → motion lookup) / 5-8=4 skill cast path (+0x304/+0x305/+0x308/+0x30a source) / 9=SKILL_END / 10-12=exit. 5 opcode → 6 state skill dispatch matrix 완전. **Monster AI 분석 완전 종료** — VM (action+trigger) + state machine 모두 매핑.)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 46 시점)
+## 🎯 전체 진척 평가 (Round 47 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
-| **데이터 구조 RE** (csv/dat layout) | **~100%** | **모든 데이터 파일 식별 + decoder + struct 매핑 완료**. 남은 것 없음 |
-| **.so 함수 분석** (game logic) | **~82-85%** | + ActionOfTrigger driver + trigger operand 매핑. 미분석: UI, NPC 대화, Battle motion |
+| **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
+| **.so 함수 분석** (game logic) | **~85-88%** | + **Monster AI sub-state 13 완전 식별**. 미분석: UI, NPC 대화, Battle motion |
 | **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **88-94%** (데이터 RE 100% 종료)
+- **"원본 분석"** (RE+자산) 으로 보면 **90-95%** (Monster AI 완전 마무리)
 - **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
@@ -35,16 +35,14 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 47 부터, **데이터 RE 100% 완료** — 구현/검증 위주)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 48 부터, **Monster AI 분석 완전 종료** — 구현/검증 위주)**:
 - ~~Round 40-43 = 데이터 RE 트랙~~ ✅
-- ~~Round 44 = Monster AI VM~~ ✅
-- ~~Round 45 = AI_def 데이터원~~ ✅
-- ~~Round 46 = trigger stream layout~~ ✅
-- **(분석 track) Ai_Action 13 sub-state 정밀** (state 1-9 의 move/chase/cast 로직)
+- ~~Round 44-47 = Monster AI 전체 (VM + 데이터원 + trigger + sub-state)~~ ✅
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
-- **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
+- **(구현 track) Monster AI Godot 통합** — 48 AI defs + 13 opcode VM + 13 trigger + 13 sub-state → GDScript battle loop
 - **(구현 track) Save/Load Godot 통합** — layout 완전 매핑 → GDScript 직접 구현
-- **(구현 track) Monster AI Godot 통합** — 48 AI defs + VM → battle loop 사용
+- **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
+- **(분석 track) 잔여 — UI 함수 / NPC 대화 / Battle motion 분석** (분석 트랙은 95% 도달 시 종료점)
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
@@ -128,6 +126,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **Monster AI 시스템 = token-based bytecode VM** | 12 AI 함수 disasm. **Ai_onAction = 13 opcode interpreter** (SCN opcode 패턴 동일). op 0/1 = WALK/chance walk (motion 1/5), op 4 = SKILL slot (3B = skill_id/target/range → +0x2c9..+0x2cb), op 9 = next_skill_id (Ai_Action state 8 가 사용), op 11 = variable-length data block. **IsTriggerEqual = 13 trigger** (trigger 2 = IRect visibility/range check, trigger 1/11/13 = one-shot flags). Monster struct: +0x288 AI_def_ptr / +0x290 Tokenizer / +0x294 action_idx / +0x297 opcode / +0x2a8..+0x2ab operand buffer / +0x2c2..+0x315 state machine fields. Ai_Process entry (frame당 1회) = stun check → state check → cooldown (default 9 frames) → Ai_Action. AI 정의 데이터가 외부 byte stream (디자이너 가 monster 별 행동 작성). docs/h5/MONSTER_AI.md 신규 (R44) |
 | **Monster AI 데이터원 식별 + decoder** | Map::MonsterAdd → EnemyAI* alloc (120B) → EnemyAI::LoadData (700B) 가 `/c/mon/%d_ai` 로드. VFS 에 **48 AI 파일** 발견 (`c/mon/0_ai` ~ `63_ai`, 31-305B, DES 미적용). 파일 layout 완전 파악: trigger codes/handlers + sum(handlers) data + 3 action lookups (n_a + n_a + n_a*2) + trigger byte stream (Tokenizer #1) + 3 action_list lookups (action_list_offset_table 포함) + action byte stream (Tokenizer #2, 13 opcode VM). EnemyAI struct (120B) 매핑: +0x24/+0x44/+0x60 size headers, +0x58/+0x5c trigger stream ptr, +0x70/+0x74 action stream ptr. tools/converter/decode_h5_monsterai.py 신규 — 48/48 perfect parse. monster_ai.json (48 AI defs) 발행. opcode 통계: WALK + CHANCE_WALK = 286/524 (55%) (R45) |
 | **Monster AI trigger stream layout 확정** | ActionOfTrigger (0xbd7a0, 140B) driver + IsTriggerEqual 13 handler operand 매핑. Entry layout = `[trigger_code u8][operand 0-1B][action_id u8]`. trigger 1 (VISIBILITY_RECT, operand=IRect index ×40) / 6 (TUTORIAL_FLAG, operand vs gv+0x130..0x132) 만 1B operand. trigger 5 (ALWAYS_GOTO) 는 ActionOfTrigger 가 special path 처리 (IsTriggerEqual 안 부름, 즉시 action_id 처리). 나머지 11 trigger 0B operand (one-shot flag check/consume on Monster+0x2b6/0x2b7/0x29f/etc). decode_h5_monsterai.py 의 disasm_tokens(kind='trigger') 모드 추가. **543 trigger entries 100% perfect parse** (0 unknown, 0 incomplete). 분포: VISIBILITY_RECT 36% + ALWAYS_GOTO 36% (= 72% "idle→combat 시야진입 전환" 패턴). 데이터 RE 100% 종료 (R46) |
+| **Monster AI Ai_Action 13 sub-state 완전 매핑** | state 0=CHASE_TIMER (Fast_Distance(hero) vs Monster+0x2c6 시야범위 비교 → ImmadiatelyCheck(8)) / 1=TURN_DIR (4 mode jumptable + default=HeroTurnDirection) / 2=COUNTDOWN (timer + state 0 재진입) / 3=SKILL_USE (IRect 충돌 검사 + cast) / 4=SET_ATTACK_MOTION (Monster+0x2cc 에서 motion lookup) / 5-8=4 skill cast path (각각 Monster+0x304/+0x305/+0x308/+0x30a source) / 9=SKILL_END / 10-11=no-op / 12=GET_MOTION_EXIT. 5 opcode → 6 state skill dispatch matrix 완전 (opcode 4→state 3, opcode 5→state 4, opcode 6→state 5, opcode 7→state 6, opcode 8→state 7, opcode 9→state 8). 공통 gate: GetMotion==0 + IsAttackAble==1 + Monster+0x315==0 (skill_disable). cast 후 Monster+0x297=-1 reset. **Monster AI 분석 완전 종료** (R47) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump

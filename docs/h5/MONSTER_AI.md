@@ -80,25 +80,48 @@ Monster::Ai_Process (entry, frame 당 1회)
 | 11 | variable | Token_GetByte → N → Token_GetData(N bytes) — **variable-length data block** |
 | 12 | 1 byte | `+0x2a8 → +0x2c2` — animation override |
 
-## 4. Ai_Action sub-state machine (13 entries)
+## 4. Ai_Action sub-state machine (13 entries) — **확정 (Round 47)**
 
 Monster+0x297 가 sub-state index (0..12). Action_type (Monster+0x2c4) 가 0 이면 SetTargetPoint 후 재진입.
 
-| state | 핸들러 | 의미 |
+| state | 핸들러 | 의미 (분석 결과) |
 |---:|---:|---|
-| 0 | 0xc11ac | **timer decrement** (Monster+0x2c8 감소, 0 도달 시 hero 방향 추적) |
-| 1 | 0xc1254 | move/chase 처리 |
-| 2 | 0xc1288 | |
-| 3 | 0xc1470 | |
-| 4 | 0xc1338 | |
-| 5 | 0xc13d8 | |
-| 6 | 0xc12b8 | |
-| 7 | 0xc12e0 | |
-| 8 | 0xc10e4 | **SKILL USE** — IsAttackAble + IsAbleSkill(Monster+0x30a) → HeroTurnDirection → SkillUsed(+0x2c9) → SetCoolTime |
-| 9 | 0xc1324 | |
-| 10 | 0xc10d8 | (no-op / exit) |
-| 11 | 0xc10dc | (no-op / exit) |
-| 12 | 0xc11a0 | GetMotion + exit |
+| 0 | 0xc11ac | **CHASE_TIMER**: Monster+0x2c8 timer decrement. 0 도달 + Monster+0x2c4==1 시 hero 위치 비교 (Fast_Distance vs Monster+0x2c6 시야범위) → 시야 안이면 ImmadiatelyCheck(8) 로 SKILL state 진입 |
+| 1 | 0xc1254 | **TURN_DIRECTION**: Monster+0x2c5 (target_dir mode 0-3 + default) 에 따라 dir 설정. mode 0/2 = lookup 테이블 / mode 1 = 다른 lookup / mode 3 = flip 180° / default = HeroTurnDirection (face hero) |
+| 2 | 0xc1288 | **STATE_COUNTDOWN**: Monster+0x2c7 (countdown timer) 감소. 0 도달 + motion==1 시 state 0 로 재진입 (대기/looping) |
+| 3 | 0xc1470 | **SKILL_USE_WITH_TARGETING**: GetMotion + IsAttackAble + IsAbleSkill(Monster+0x2c9). Monster+0x2ca (dir mode) 0-4 jumptable: 0=current dir / 1=face hero / 2=set dir 2 / 3=set dir 3 / 4=set dir 0. 그 후 IRect 충돌 검사 + SkillUsed + SetCoolTime |
+| 4 | 0xc1338 | **SET_ATTACK_MOTION**: IsAttackAble + skill_disable (Monster+0x315) check. Monster+0x2cc → 사용 skill_id. Monster+0x2d8 + skill_id*offset 에서 skill data (motion+dir) 가져와 SetAttackMotion. SetCoolTime. Monster+0x297=-1, +0x2b8=0 |
+| 5 | 0xc13d8 | **SKILL_CAST_DIR304**: Monster+0x304 → Monster+0x2c9 (skill). GetDir → +0x2ca. IsAbleSkill → SkillUsed + SetCoolTime |
+| 6 | 0xc12b8 | **READY_ATTACK_305**: GetMotion + IsAttackAble. Monster+0x305 → state 4 fallthrough (SET_ATTACK_MOTION path) |
+| 7 | 0xc12e0 | **READY_ATTACK_308**: GetMotion + IsAttackAble. Monster+0x308 → Monster+0x2c9. IsAbleSkill 후 SkillUsed/CoolTime |
+| 8 | 0xc10e4 | **SKILL_USE_30A** (Round 44 식별): IsAttackAble + skill_disable check. Monster+0x30a → Monster+0x2c9 (next_skill_id, opcode 9 가 set). HeroTurnDirection → SetDir → SkillUsed + SetCoolTime. Monster+0x297=-1 |
+| 9 | 0xc1324 | **SKILL_END**: Monster+0x2c3 = 1, SkillEnd() 호출 (skill 종료 정리) |
+| 10 | 0xc10d8 | no-op (default fall-through to exit) |
+| 11 | 0xc10dc | no-op (default fall-through to exit) |
+| 12 | 0xc11a0 | **GET_MOTION_EXIT**: GetMotion 호출 후 exit (motion 상태 갱신만) |
+
+**공통 패턴**:
+- GetMotion==0 (idle) 조건 필수 — motion 중이면 wait 분기로 회피
+- IsAttackAble == 1 조건으로 skill 사용 게이트
+- Monster+0x315 (skill_disable flag) != 0 이면 차단
+- 모든 SKILL_USE state 가 `Monster+0x297 = -1` 로 sub-state 리셋 (다음 frame 새 dispatch)
+- `b 0xc118c` = 함수 exit (sp 복원 + pop)
+
+**skill 사용 path 종합**:
+- state 3 = 일반 skill (Monster+0x2c9 직접 사용, dir control)
+- state 4 = 동적 skill (Monster+0x2cc → +0x2c9, motion+dir from struct lookup)
+- state 5 = +0x304 source skill
+- state 6 = +0x305 trigger → state 4
+- state 7 = +0x308 source skill
+- state 8 = +0x30a source skill (opcode 9 의 next_skill_id)
+
+5 개 skill source 가 다른 opcode/state path 와 매핑:
+- opcode 4 (SKILL_SET, 3B) → Monster+0x2c9..+0x2cb → state 3
+- opcode 5 (SKILL_PARAM, 4B) → Monster+0x2cc..+0x2cf → state 4
+- opcode 6 (SET_303, 2B) → Monster+0x303/+0x304 → state 5
+- opcode 7 (SET_305, 3B) → Monster+0x305..+0x307 → state 6
+- opcode 8 (SET_308, 2B) → Monster+0x308/+0x309 → state 7
+- opcode 9 (NEXT_SKILL, 2B) → Monster+0x30a/+0x30b → state 8
 
 ## 5. IsTriggerEqual — 13 trigger 평가 함수 (1320B) — **확정 (Round 46)**
 
@@ -288,10 +311,14 @@ WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 
 1. ~~**Ai_SetPtr / Ai_Initialize 분석** — AI_def 데이터원 식별~~ ✅ Round 45 완료 (`/c/mon/<id>_ai`)
 2. ~~**trigger handler 의미 매핑** — trigger_stream disasm~~ ✅ Round 46 완료 (543 entries 100% parse)
-3. **state machine 핸들러 정밀 분석** — Ai_Action sub-state 1-9 각각의 동작 (move/chase/skill cast)
+3. ~~**state machine 핸들러 정밀 분석** — Ai_Action sub-state 1-9~~ ✅ Round 47 완료 (13 sub-state 의미 전부 식별)
 4. **trigger 1 (VISIBILITY_RECT) IRect 영역 정밀 분석** — Monster+0x2d8 의 5개 IRect 배열 의미 (현재는 거리/각도 공식만 식별)
 5. **enemy_g 의 4 skill block** (Round 33) 과 AI opcode 4 (skill slot) 연동 검증
 6. **action_lookup_3 (u16 array)** + action_list_offset_table 정밀 의미 — n_a/n_l/byte 어떻게 dispatch 되는지
+7. **Monster AI Godot 통합** — 48 AI defs JSON + 13 opcode VM → GDScript battle loop
+
+**Monster AI 분석 완전 종료** — 데이터원 / VM (action+trigger opcode) / 상태 머신
+모두 매핑. Godot 구현으로 이전 가능 상태.
 
 ## 9. 산출
 

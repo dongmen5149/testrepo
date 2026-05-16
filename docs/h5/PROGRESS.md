@@ -3,22 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 46 종료) — Monster AI **trigger stream layout 완전 식별**.
-ActionOfTrigger driver + IsTriggerEqual 13 trigger operand 매핑 + decoder 확장.
-**543 trigger entries 100% parse** (0 unknown). 분포: VISIBILITY_RECT 36% +
-ALWAYS_GOTO 36% + flag consumes 28%.
+업데이트: 2026-05-17 (Round 47 종료) — Monster AI **Ai_Action 13 sub-state 완전 식별**.
+state 0=CHASE_TIMER / 1=TURN_DIR / 2=COUNTDOWN / 3=SKILL_USE / 4=SET_ATTACK_MOTION /
+5-8=SKILL_CAST (4 source) / 9=SKILL_END / 10-12=exit. 5개 opcode → 6개 state path
+skill dispatch matrix 정밀 매핑. **Monster AI 분석 완전 종료**.
 
-## 🎯 전체 진척 평가 (Round 46 시점)
+## 🎯 전체 진척 평가 (Round 47 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~100%** | **모든 데이터 파일 식별 + decoder + struct 매핑 완료** (남은 것 없음) |
-| .so 함수 분석 | **~82-85%** | + ActionOfTrigger driver + trigger operand 매핑. 미분석: UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
+| .so 함수 분석 | **~85-88%** | + **Monster AI sub-state 13 완전 식별**. 미분석: UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **88-94%** (data RE 종료), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **90-95%** (Monster AI 완전 마무리), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -648,6 +648,35 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 47 — 2026-05-17 완료]** Monster AI Ai_Action 13 sub-state 정밀 분석 (Monster AI 분석 완전 종료)
+- ✅ **Ai_Action 13 sub-state 의미 완전 매핑** (Monster+0x297 jumptable):
+  - state 0: **CHASE_TIMER** — Monster+0x2c8 decrement, Fast_Distance(hero) vs +0x2c6 시야 비교 → ImmadiatelyCheck(8) trigger
+  - state 1: **TURN_DIR** — Monster+0x2c5 (mode 0-3+default) 별 dir 설정 (lookup / flip 180° / face hero)
+  - state 2: **COUNTDOWN** — Monster+0x2c7 timer, 0 도달 + motion==1 시 state 0 재진입
+  - state 3: **SKILL_USE_WITH_TARGETING** — Monster+0x2c9 skill, Monster+0x2ca (mode 0-4) dir 제어, IRect 충돌 검사 후 cast
+  - state 4: **SET_ATTACK_MOTION** — Monster+0x2cc → skill_id, Monster+0x2d8+offset 에서 motion+dir 데이터 가져와 SetAttackMotion
+  - state 5: **SKILL_CAST_DIR304** — Monster+0x304 → +0x2c9, GetDir → +0x2ca, IsAbleSkill → SkillUsed
+  - state 6: **READY_ATTACK_305** — Monster+0x305 → state 4 fallthrough
+  - state 7: **READY_ATTACK_308** — Monster+0x308 → +0x2c9, IsAbleSkill 후 cast
+  - state 8: **SKILL_USE_30A** — Monster+0x30a (opcode 9 next_skill) → +0x2c9, HeroTurnDirection → cast
+  - state 9: **SKILL_END** — Monster+0x2c3 = 1, SkillEnd() 호출 (skill 종료 정리)
+  - state 10, 11: no-op (default fall-through exit)
+  - state 12: **GET_MOTION_EXIT** — GetMotion 호출 후 exit
+- ✅ **공통 패턴 식별**:
+  - 모든 SKILL state 가 GetMotion==0 + IsAttackAble==1 + Monster+0x315==0 (skill_disable) 게이트
+  - cast 후 Monster+0x297 = -1 로 sub-state reset (다음 frame 새 dispatch)
+- ✅ **5 opcode → 6 state path skill dispatch matrix**:
+  ```
+  opcode 4 (SKILL_SET, 3B) → +0x2c9..+0x2cb → state 3
+  opcode 5 (SKILL_PARAM, 4B) → +0x2cc..+0x2cf → state 4
+  opcode 6 (SET_303, 2B) → +0x303/+0x304 → state 5
+  opcode 7 (SET_305, 3B) → +0x305..+0x307 → state 6
+  opcode 8 (SET_308, 2B) → +0x308/+0x309 → state 7
+  opcode 9 (NEXT_SKILL, 2B) → +0x30a/+0x30b → state 8
+  ```
+- ✅ **MONSTER_AI.md 갱신** — 13 sub-state 표 + 공통 패턴 + skill dispatch matrix
+- **Monster AI 분석 완전 종료** — 데이터원 + VM (action 13 op + trigger 13 op) + 13 sub-state 모두 매핑. Godot 구현 가능 상태.
 
 **[Round 46 — 2026-05-17 완료]** Monster AI trigger stream layout 완전 식별 — ActionOfTrigger + 13 trigger operand 매핑 + decoder 확장
 - ✅ **IsTriggerEqual 13 handler 정밀 분석**: 각 handler 의 trigger_data_block byte 소비 패턴 추출
