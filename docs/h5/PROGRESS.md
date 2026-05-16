@@ -3,22 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 48 종료) — **Monster AI Godot 통합 시작**. monster_ai.gd
-신규 (autoload) — 13 opcode interpreter + 13 trigger handler + MonsterAIState class.
-battle_system.gd hook — start_battle 시 AI runtime 생성 + `_ai_pick_skill()` helper.
-verify_godot_project.py 0 errors / 0 warnings.
+업데이트: 2026-05-17 (Round 49 종료) — **Save/Load binary 직렬화 GDScript 구현**.
+save_manager.gd 에 `serialize_hero_save` / `deserialize_hero_save` (H_*.sav 524B
+layout) + `serialize_slot_save` / `deserialize_slot_save` (SL_*.sav header) 추가.
+Python round-trip test 도구 — 4 samples + 8 critical offsets 모두 통과.
 
-## 🎯 전체 진척 평가 (Round 48 시점)
+## 🎯 전체 진척 평가 (Round 49 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~30-35%** | + **Monster AI VM autoload + battle 통합**. 미구현: 인벤토리/강화/합성/Quest UI |
+| Godot 실 구현 | **~33-38%** | + **Save/Load binary 호환 직렬화**. 미구현: 인벤토리/강화/합성/Quest UI, AI sub-state 정밀 |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **27-37%** (Monster AI Godot 통합 시작).
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **30-40%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -648,6 +648,35 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 49 — 2026-05-17 완료]** Save/Load binary 직렬화 GDScript 구현 + Python round-trip test
+- ✅ **save_manager.gd 확장** (Round 41-43 의 SAVE_FORMAT.md layout 을 GDScript 로 구현):
+  - `serialize_hero_save(state)` → PackedByteArray (524B = H_SAV_SIZE)
+  - `deserialize_hero_save(data)` → state dict
+  - `serialize_slot_save(state)` → PackedByteArray (header 0x17B)
+  - `deserialize_slot_save(data)` → state dict
+  - byte helpers (`_put_u16_le/u32_le/u64_le`, `_get_u16_le/u32_le/u64_le`) — LE encoding
+- ✅ **H_*.sav (HERO 524B) layout 매핑** (Round 42 21/21 cross-check 결과 일치):
+  - +0x00 u32 field_f0 / +0x04 class_id / +0x05 hero_22d / +0x06 gold u32
+  - +0x0a..+0x19 = **8 × u16 stat block** (HP/MP/STR/DEX/CON/INT + 2)
+  - +0x1a..+0x44 = **43B skill_buff** (skill list / buff state)
+  - +0x45..+0x4b = **7 × u8 equip slot** (EquipItem cat 0-6)
+  - +0x4c u32 / +0x50..+0x5f 16B sub-block / +0x60 record count
+  - +0x61..+(0x60+0x29*10) = **10 × 41B skill slot records**
+  - +0x1fc u64 timestamp_create / +0x204 u64 timestamp_update
+- ✅ **SL_*.sav (SlotInfo header 23B) layout 매핑** (Round 43 packing 규칙 반영):
+  - +0x00 = **`level * 10 + class_id` packed byte** (Load 측 umull fast-div-by-10 분리)
+  - +0x01 hero_22d / +0x02 pos_x s32 / +0x06 pos_y s32 / +0x0a playtime u64 / +0x12 scene_idx u32 / +0x16 state_flag
+- ✅ **tools/h5_test_save_layout.py 신규** — Python round-trip 검증 도구:
+  - GDScript serialize 의 Python equivalent 구현 (동일 byte 생성 검증)
+  - 4 samples (워리어 lv1 새 캐릭터 / 나이트 lv10 / 워리어 lv1 슬롯 / 소서러 lv25 max)
+  - 8 critical offsets (field_f0/class_id/hero_22d/gold/stat[0]/stat[7]/field_4c/SL packed)
+  - LE byte order 자동 검증
+  - **모든 테스트 통과** (4 samples round-trip + 8 critical offsets)
+- ✅ **verify_godot_project.py 0 errors / 0 warnings**
+- 산출: save_manager.gd (binary writer/reader 추가, 약 +150 line), tools/h5_test_save_layout.py
+- Godot 실 구현 30-35% → 33-38%. 출시 27-37% → 30-40%
+- 다음 라운드: AI Action sub-state 정밀 구현 또는 Godot UI (인벤토리 패널)
 
 **[Round 48 — 2026-05-17 완료]** Monster AI Godot 통합 시작 — autoload + VM + battle hook
 - ✅ **apps/hero5-godot/scripts/core/monster_ai.gd 신규** — 약 270 line autoload:
