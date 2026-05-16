@@ -2,7 +2,8 @@
 
 > Round 44 (2026-05-17) — Monster AI 12 함수 disasm + token-based bytecode VM 식별.
 > Round 45 (2026-05-17) — AI_def 데이터원 식별 (`/c/mon/<id>_ai` × **48 파일**) + EnemyAI struct layout + decoder.
-> Ai_onAction = 13 opcode interpreter, IsTriggerEqual = 13 trigger 평가 함수.
+> Round 46 (2026-05-17) — Trigger stream layout 식별 + 13 trigger operand 매핑 + decoder 확장. 543 trigger entry **100% parse (0 unknown)**.
+> Ai_onAction = 13 opcode interpreter, IsTriggerEqual = 13 trigger 평가 함수, ActionOfTrigger = stream driver.
 
 ## 1. 핵심 발견: token-based bytecode VM
 
@@ -99,29 +100,83 @@ Monster+0x297 가 sub-state index (0..12). Action_type (Monster+0x2c4) 가 0 이
 | 11 | 0xc10dc | (no-op / exit) |
 | 12 | 0xc11a0 | GetMotion + exit |
 
-## 5. IsTriggerEqual — 13 trigger 평가 함수 (1320B)
+## 5. IsTriggerEqual — 13 trigger 평가 함수 (1320B) — **확정 (Round 46)**
 
-AI 가 "조건이 만족하면 action list 전환" 하는 데 사용. Monster::ActionOfTrigger
-(140B) 가 이를 호출.
+AI 가 "조건이 만족하면 action list 전환" 하는 데 사용. `Monster::ActionOfTrigger`
+(140B, 0xbd7a0) 가 driver — trigger stream 을 walk 하며 매 entry 의 trigger_code
+를 IsTriggerEqual 에 전달.
 
-| trigger | 핸들러 | 의미 |
-|---:|---:|---|
-| 0 | 0xbd2f0 | always false (default no-trigger) |
-| 1 | 0xbd31c | `Monster+0x29f` 0 → 1 (**한 번만 발화** trigger) |
-| 2 | 0xbd334 | **IRect 위치 검사** (큰 코드 영역 — visibility/range check) |
-| 3 | 0xbd4e4 | |
-| 4 | 0xbd504 | |
-| 5 | 0xbd58c | |
-| 6 | 0xbd2f0 | always false |
-| 7 | 0xbd5d0 | |
-| 8 | 0xbd674 | |
-| 9 | 0xbd694 | |
-| 10 | 0xbd6b4 | |
-| 11 | 0xbd2d4 | `Monster+0x2be` 1 → 0 (one-shot consume) |
-| 12 | 0xbd5b0 | |
-| 13 | 0xbd2fc | `Monster+0x2b6` 1 → 0 (one-shot consume) |
+**Trigger stream entry layout** (per entry):
+```
+[trigger_code u8][operand bytes 0-1][action_id u8]
+```
 
-(Trigger 2 = IRect 검사가 가장 큰 핸들러 — hero 위치 vs monster 시야 범위 비교)
+trigger 가 fire (return 1) 하면 `action_id` 를 `Monster+0x294` 에 set 하고
+`ImmadiatelyInit` 호출. fail 면 다음 entry 로 advance.
+
+| trigger | 핸들러 | operand | 의미 |
+|---:|---:|---:|---|
+| 0 | 0xbd31c | 0 | **SET_29F**: `Monster+0x29f` == 0 시 1로 set + return 1 (one-shot trigger) |
+| 1 | 0xbd334 | **1** | **VISIBILITY_RECT**: operand = IRect index (×40 = base offset into Monster+0x2d8 IRect 배열). hero 위치 vs IRect intersect 검사 |
+| 2 | 0xbd4e4 | 0 | **CONSUME_2BC**: `Monster+0x2bc` == 1 시 0으로 set + return 1 (one-shot consume) |
+| 3 | 0xbd504 | 0 | **ALL_MONSTERS_DEAD**: 모든 monster Mon_isDie 확인 + Monster+0x2c1 set |
+| 4 | 0xbd58c | 0 | **SELF_DEAD**: Mon_isDie + Monster+0x2ba set |
+| 5 | 0xbd2f0 (no-op in IsTriggerEqual) | 0 | **ALWAYS_GOTO**: ActionOfTrigger 가 특수 처리 — IsTriggerEqual 안 부르고 즉시 action_id 읽어 jump (unconditional) |
+| 6 | 0xbd5d0 | **1** | **TUTORIAL_FLAG**: operand vs gv+0x130/0x131/0x132 (3 tutorial flag) 비교 |
+| 7 | 0xbd674 | 0 | **CONSUME_2BF** |
+| 8 | 0xbd694 | 0 | **CONSUME_2B9** |
+| 9 | 0xbd6b4 | 0 | **CONSUME_2BD** |
+| 10 | 0xbd2d4 | 0 | **CONSUME_2BE** |
+| 11 | 0xbd5b0 | 0 | **CONSUME_2B7** |
+| 12 | 0xbd2fc | 0 | **CONSUME_2B6** |
+
+### Trigger entry stride
+- code 1, 6: 3 bytes (code + 1 operand + action_id)
+- code 5: 2 bytes (no operand, action_id 만)
+- 나머지: 2 bytes
+
+### 통계 (48 AI 파일, 543 trigger entries 추출)
+
+| trigger | 출현 | % |
+|---|---:|---:|
+| VISIBILITY_RECT (1) | 196 | 36% |
+| ALWAYS_GOTO (5) | 195 | 36% |
+| CONSUME_2B6 (12) | 76 | 14% |
+| SET_29F (0) | 35 | 6% |
+| CONSUME_2B7 (11) | 33 | 6% |
+| CONSUME_2BD (9) | 7 | 1% |
+| CONSUME_2BF (7) | 1 | <1% |
+
+VISIBILITY_RECT + ALWAYS_GOTO = 72% — 대부분 "기본 idle action 으로 가다가
+hero 가 시야 범위에 들어오면 combat action 으로 전환" 패턴.
+
+**0 unknown, 0 incomplete** entries — operand size 매핑 완전 검증.
+
+### ActionOfTrigger 동작 (driver, 0xbd7a0, 140B)
+
+```
+ActionOfTrigger(this, trigger_code, &offset):
+  *offset += 1  ; advance past trigger_code byte
+  if trigger_code == 5:                          ; ALWAYS_GOTO special path
+    action_id = trigger_stream[*offset]
+    Monster+0x294 = action_id
+    *offset += 1
+    ImmadiatelyInit()
+    return 1
+  result = IsTriggerEqual(this, trigger_code, &offset)
+  if result == 0:
+    *offset += 1  ; skip action_id (no match)
+    return 0
+  else:
+    action_id = trigger_stream[*offset]
+    Monster+0x294 = action_id
+    *offset += 1
+    ImmadiatelyInit()
+    return 1
+```
+
+Trigger stream 은 보통 "default fallback" entry (code 5 = ALWAYS_GOTO) 로 끝나서
+어떤 조건도 안 맞을 때 default action 으로 가도록 설계됨.
 
 ## 6. AI 정의 데이터 (Monster+0x288)
 
@@ -232,11 +287,11 @@ WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 ## 8. 다음 라운드 작업
 
 1. ~~**Ai_SetPtr / Ai_Initialize 분석** — AI_def 데이터원 식별~~ ✅ Round 45 완료 (`/c/mon/<id>_ai`)
-2. **trigger handler 의미 매핑** — trigger_stream 의 opcode + operand 디스어셈블 (현재 raw hex)
+2. ~~**trigger handler 의미 매핑** — trigger_stream disasm~~ ✅ Round 46 완료 (543 entries 100% parse)
 3. **state machine 핸들러 정밀 분석** — Ai_Action sub-state 1-9 각각의 동작 (move/chase/skill cast)
-4. **trigger 2 (IRect) 정밀 분석** — visibility/range check 의 정확한 거리/각도 공식
-5. **trigger 3-12 각각 의미 식별**
-6. **enemy_g 의 4 skill block** (Round 33) 과 AI opcode 4 (skill slot) 연동 검증
+4. **trigger 1 (VISIBILITY_RECT) IRect 영역 정밀 분석** — Monster+0x2d8 의 5개 IRect 배열 의미 (현재는 거리/각도 공식만 식별)
+5. **enemy_g 의 4 skill block** (Round 33) 과 AI opcode 4 (skill slot) 연동 검증
+6. **action_lookup_3 (u16 array)** + action_list_offset_table 정밀 의미 — n_a/n_l/byte 어떻게 dispatch 되는지
 
 ## 9. 산출
 
@@ -244,6 +299,6 @@ WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 - `work/h5/analysis/ai_onaction_disasm.txt` (~180 lines, Ai_onAction 704B) [R44]
 - `work/h5/analysis/istriggerequal_disasm.txt` (~330 lines, IsTriggerEqual 1320B) [R44]
 - `work/h5/analysis/enemyai_loaddata_disasm.txt` (~175 lines, EnemyAI::LoadData 700B) [R45]
-- `tools/converter/decode_h5_monsterai.py` [R45]
-- `apps/hero5-godot/assets/gamedata/monster_ai.json` (48 AI defs + disasm) [R45]
+- `tools/converter/decode_h5_monsterai.py` [R45, R46 trigger disasm 추가]
+- `apps/hero5-godot/assets/gamedata/monster_ai.json` (48 AI defs + action+trigger disasm) [R45+R46]
 - `docs/h5/MONSTER_AI.md` (이 문서)

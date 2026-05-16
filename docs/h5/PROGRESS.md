@@ -3,21 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 45 종료) — Monster AI 데이터원 식별 완료. **`/c/mon/<id>_ai` 48 파일**
-+ EnemyAI struct (120B) layout + `decode_h5_monsterai.py` decoder (48/48 100% parse).
-WALK + CHANCE_WALK opcode 합계 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
+업데이트: 2026-05-17 (Round 46 종료) — Monster AI **trigger stream layout 완전 식별**.
+ActionOfTrigger driver + IsTriggerEqual 13 trigger operand 매핑 + decoder 확장.
+**543 trigger entries 100% parse** (0 unknown). 분포: VISIBILITY_RECT 36% +
+ALWAYS_GOTO 36% + flag consumes 28%.
 
-## 🎯 전체 진척 평가 (Round 45 시점)
+## 🎯 전체 진척 평가 (Round 46 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~99%** | + **monster_ai.json 48 AI defs 발행**. 남은: trigger handler 의미 매핑만 |
-| .so 함수 분석 | **~78-82%** | + EnemyAI::LoadData 정밀 분석. 미분석: UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | **~100%** | **모든 데이터 파일 식별 + decoder + struct 매핑 완료** (남은 것 없음) |
+| .so 함수 분석 | **~82-85%** | + ActionOfTrigger driver + trigger operand 매핑. 미분석: UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **85-92%** (Monster AI 완전 마무리), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **88-94%** (data RE 종료), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -647,6 +648,32 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 46 — 2026-05-17 완료]** Monster AI trigger stream layout 완전 식별 — ActionOfTrigger + 13 trigger operand 매핑 + decoder 확장
+- ✅ **IsTriggerEqual 13 handler 정밀 분석**: 각 handler 의 trigger_data_block byte 소비 패턴 추출
+  - trigger 1 (VISIBILITY_RECT): 1 byte operand = IRect index (×40 = base offset into Monster+0x2d8)
+  - trigger 6 (TUTORIAL_FLAG): 1 byte operand vs gv+0x130/0x131/0x132 (3 tutorial flag)
+  - 나머지 11 trigger: 0 operand (one-shot flag check/consume)
+- ✅ **ActionOfTrigger (0xbd7a0, 140B) driver 분석**: trigger stream 의 entry walk
+  - 매 entry layout: `[trigger_code u8][operand 0-1B][action_id u8]`
+  - 트리거 fire → action_id → Monster+0x294 → ImmadiatelyInit
+  - 트리거 5 (ALWAYS_GOTO) 는 IsTriggerEqual 안 부르고 즉시 action_id 처리 (special path)
+- ✅ **decode_h5_monsterai.py 확장** — trigger stream disasm 지원:
+  - TRIGGER_OPERAND table (13개 trigger × operand byte 수)
+  - TRIGGER_NAME table (의미 라벨)
+  - `disasm_tokens(kind='trigger')` 모드 추가 — entry stride = 1 + operand + 1 자동 처리
+- ✅ **48 AI 파일 재파싱 — 543 trigger entries 100% perfect parse** (0 unknown, 0 incomplete)
+- ✅ **Trigger 분포 통계**:
+  - VISIBILITY_RECT (1): 196 (36%) — hero 시야 검사
+  - ALWAYS_GOTO (5): 195 (36%) — default fallback
+  - CONSUME_2B6 (12): 76 (14%)
+  - SET_29F (0): 35 (6%)
+  - CONSUME_2B7 (11): 33 (6%)
+  - CONSUME_2BD/BF: 8
+- ✅ **AI 패턴 검증**: VISIBILITY_RECT + ALWAYS_GOTO = 72% — 대부분 "기본 idle 가다가 hero 시야 진입 시 combat 전환" 설계
+- ✅ **MONSTER_AI.md 갱신** — Round 46 trigger 13 handler 표 + ActionOfTrigger pseudo-code + 통계
+- 산출: 갱신된 decode_h5_monsterai.py / monster_ai.json / MONSTER_AI.md
+- **데이터 RE 100% 종료** — 모든 데이터 파일 식별 + decoder + struct + opcode/trigger 매핑 완료
 
 **[Round 45 — 2026-05-17 완료]** Monster AI 데이터원 식별 — `/c/mon/<id>_ai` 48 파일 + EnemyAI struct + decoder
 - ✅ **AI_def 데이터원 추적**: Map::MonsterAdd (0xb5814) → 메모리 할당 (0x78 = 120 byte) → EnemyAI::EnemyAI(ai_type_id) → str → Monster+0x288

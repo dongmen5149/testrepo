@@ -56,6 +56,41 @@ OPCODE_NAME = {
     12: 'ANIM_OVERRIDE',
 }
 
+# Round 46 — IsTriggerEqual 13 trigger 의 operand size (IsTriggerEqual 본체가
+# 데이터를 읽는 바이트 수). ActionOfTrigger 가 매 entry 의 끝에 action_id 1 byte
+# 추가로 읽어 Monster+0x294 에 set. 따라서 entry stride = 1 (code) + operand + 1 (action_id).
+TRIGGER_OPERAND = {
+    0: 0,   # +0x29f one-shot SET
+    1: 1,   # IRect visibility check (operand = IRect index 0-3, mul by 40)
+    2: 0,   # +0x2bc one-shot consume
+    3: 0,   # all-monsters-dead check
+    4: 0,   # this-monster isDie check
+    5: 0,   # special: skip IsTriggerEqual, immediate action_id read
+    6: 1,   # tutorial flag check (operand vs gv+0x130/0x131/0x132)
+    7: 0,   # +0x2bf one-shot consume
+    8: 0,   # +0x2b9 one-shot consume
+    9: 0,   # +0x2bd one-shot consume
+    10: 0,  # +0x2be one-shot consume
+    11: 0,  # +0x2b7 one-shot consume
+    12: 0,  # +0x2b6 one-shot consume
+}
+
+TRIGGER_NAME = {
+    0: 'SET_29F',
+    1: 'VISIBILITY_RECT',
+    2: 'CONSUME_2BC',
+    3: 'ALL_MONSTERS_DEAD',
+    4: 'SELF_DEAD',
+    5: 'ALWAYS_GOTO',
+    6: 'TUTORIAL_FLAG',
+    7: 'CONSUME_2BF',
+    8: 'CONSUME_2B9',
+    9: 'CONSUME_2BD',
+    10: 'CONSUME_2BE',
+    11: 'CONSUME_2B7',
+    12: 'CONSUME_2B6',
+}
+
 
 def find_ai_files() -> list[tuple[int, pathlib.Path]]:
     """asset_names.tsv 에서 c/mon/<id>_ai 패턴 추출."""
@@ -82,8 +117,31 @@ def disasm_tokens(stream: bytes, kind: str = 'action') -> list[dict]:
         13 handler 정밀 분석 필요 (현재는 raw hex 만 dump).
     """
     if kind == 'trigger':
-        # trigger stream 은 별도 opcode 시스템 — 현재 raw hex 만
-        return [{'kind': 'trigger_raw', 'hex': stream.hex(), 'size': len(stream)}]
+        # Round 46: trigger stream layout = [code][operand][action_id] per entry
+        out = []
+        pos = 0
+        while pos < len(stream):
+            code = stream[pos]
+            if code not in TRIGGER_OPERAND:
+                out.append({'pc': pos, 'code': code, 'name': f'unk_{code:#x}',
+                            'note': 'unknown trigger — stop'})
+                break
+            opn = TRIGGER_OPERAND[code]
+            opname = TRIGGER_NAME.get(code, '?')
+            if pos + 1 + opn + 1 > len(stream):
+                # trailing — last entry might have no action_id (end marker)
+                operand = stream[pos + 1:pos + 1 + opn]
+                out.append({'pc': pos, 'code': code, 'name': opname,
+                            'operand_hex': operand.hex(),
+                            'note': 'incomplete entry (no action_id)'})
+                break
+            operand = stream[pos + 1:pos + 1 + opn]
+            action_id = stream[pos + 1 + opn]
+            out.append({'pc': pos, 'code': code, 'name': opname,
+                        'operand_hex': operand.hex(),
+                        'action_id': action_id})
+            pos += 2 + opn
+        return out
 
     out = []
     pos = 0
