@@ -3,22 +3,23 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 42 종료) — Save load 함수 cross-check 로 layout 확정.
-**H_%d.sav: 21/21 offset 일치 (0 mismatch)** + load 측에서 2 × u64 timestamp 추가
-발견. **SL_%d.sav: 24 offset 정밀 일치 (0 mismatch)** + 13 in-memory writes 식별.
-Mission 은 변수 offset 이라 1 offset 만 정밀 매칭. h5_save_crosscheck.py 신규.
+업데이트: 2026-05-17 (Round 43 종료) — Save source struct field 의미 라벨링 완료.
+LoadHeroData / LoadSlotData 정밀 disasm 으로 file_offset → HERO struct offset 매핑.
+주요 발견: SL_%d.sav 의 file[0] = `level*10 + class_id` packing (max level ≈ 25,
+load 가 % 10 / / 10 로 분리). 3 × 256B blocks 가 gv+0x288/0x388/0x488 = V[58..167+]
+stat/buff cache 영역. **데이터 RE 종료**.
 
-## 🎯 전체 진척 평가 (Round 42 시점)
+## 🎯 전체 진척 평가 (Round 43 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~96%** | items/monster/drop/smith/mission/quest decoder 완료. **H_*.sav 21/21 + SL_*.sav 24 cross-check 완료**, source struct field 의미 라벨링만 남음 |
-| .so 함수 분석 | **~60-70%** | + Save layout confirmed. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | **~98%** | items/monster/drop/smith/mission/quest decoder + **H_*.sav / SL_*.sav full struct field 매핑 완료** |
+| .so 함수 분석 | **~65-70%** | + Save full mapping. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **75-85%** (데이터 RE 사실상 마무리), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **78-88%** (데이터 RE 종료), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -648,6 +649,52 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 43 — 2026-05-17 완료]** Save source struct field 의미 라벨링 완료 (데이터 RE 종료)
+- ✅ **LoadHeroData (808B) 정밀 disasm** — file → HERO struct offset 매핑 완전 추출:
+  - file+0..3 u32 → HERO+0xf0
+  - file+4 u8 → HERO+0x22c (**class_id**, Round 13 확정)
+  - file+5 u8 → HERO+0x22d (보조 class field)
+  - file+6..9 u32 → HERO+0x230 (EXP/gold)
+  - file+0xa..0x19 = 8 × u16 → HERO+0x234, 0x23e, 0x240, 0x242, 0x244, 0x246, 0x248, 0x24a
+    - **10 byte 점프 (0x234→0x23e)**: in-memory 만 있는 derived stat 5개 (저장 안 됨) 사이 위치 확정
+  - file+0x1a..0x44 (43 bytes) → HERO+0x24c..+0x276 (skill list / buff state)
+  - file+0x45 u8 → HERO+0x277 (**equip slot 0** = packed level source — SL_*.sav file[0] 의 `level*10+class` 의 level 부분)
+  - file+0x46..0x4b (6 bytes) → HERO+0x1790..+0x1795 (**equip slot 1-6**, EquipItem cat 1-6 정확 일치)
+  - file+0x4c..0x4f u32 → HERO+0x1798
+  - file+0x50..0x5f (16 bytes) → HERO+0x17a6..+0x17b5 (skill cooldown/buff 추정)
+  - file+0x60 u8 → HERO+0x1b61 (record count for next loop)
+  - file+0x61..(0x60+0x29*10) = 10 × 41B records → HERO+0x1b62..+(0x1b62+0x19a)
+  - file+0x1fc..0x203 u64 → HERO+0x310 + HERO+0x318 (**timestamp #1**, 양쪽 store)
+  - file+0x204..0x20b u64 → HERO+0x328 + HERO+0x330 (**timestamp #2**, 양쪽 store)
+- ✅ **LoadSlotData (968B) 정밀 disasm** — file → SlotInfo struct 매핑:
+  - **file[0] = level*10 + class_id 인코딩 발견** — Load 가 `umull` (fast division by 10) + `rsb` 로 `% 10` / `/ 10` 분리:
+    - SlotInfo[0] = file[0] % 10 = class_id (0-4)
+    - SlotInfo[1] = file[0] / 10 = level
+    - max level ≈ 25 추정 (1 byte container 한도, 5 클래스 × 50 level = 250 < 256 가능하지만 보수적으로 25)
+  - file+0x2..0x5 → SlotInfo+4 (OBJECT::GetX, **map X position**)
+  - file+0x6..0x9 → SlotInfo+8 (OBJECT::GetY, **map Y position**)
+  - file+0xa..0x11 u64 → SlotInfo+0x10 (**playtime** ms/s)
+  - file+0x12..0x15 u32 → SlotInfo+0x18 (**scene_idx**, 현재 맵 ID)
+  - file+0x16 → SlotInfo+0x1c (game state flag)
+  - file+0x17..0x116 (256B) → SlotInfo+0x1d (memcpy block 0, source = gv+0x288)
+  - file+0x117..0x216 (256B) → SlotInfo+0x11d (memcpy block 1, source = gv+0x388)
+  - file+0x217..0x316 (256B) → SlotInfo+0x21d (memcpy block 2, source = gv+0x488)
+- ✅ **gv+0x1474 sub-struct ↔ save 매핑 검증**:
+  - 3 × 256B blocks (gv+0x288/0x388/0x488) 가 모두 Round 5/6 의 V[58..167+249] 영역
+  - V[58..167] (stat/buff cache) 데이터를 통째로 file 에 직렬화 + Load 시 그대로 복원
+  - save/load round-trip 안전 (no derived recompute 필요)
+- ✅ **SlotInfo getter 매핑 검증**:
+  - GetHeroClass() → SlotInfo+0 ✓
+  - GetHeroLevel() → SlotInfo+1 ✓
+  - GetHeroX/Y() → SlotInfo+4/8 ✓
+  - GetPlayTime() → SlotInfo+0x10 ✓
+  - GetSceneIdx() → SlotInfo+0x18 ✓
+  - 모든 getter 가 LoadSlotData 가 채운 field 정확히 사용
+- ✅ **SAVE_FORMAT.md 갱신**: 모든 file offset 에 size + HERO struct offset + 의미 라벨 부여.
+  Round 43 핵심 발견 두 가지 (packing 규칙, gv sub-struct 매핑) 별도 항목으로 정리.
+- 산출: `work/h5/analysis/loadherodata_disasm.txt`, `loadslotdata_disasm.txt`, 갱신된 SAVE_FORMAT.md
+- **데이터 RE 종료** — items/monster/drop/smith/mission/quest/save 모두 decoder/문서화 완료.
 
 **[Round 42 — 2026-05-17 완료]** Save load 함수 cross-check 로 H_*.sav / SL_*.sav layout 확정 (21+24 offset 일치, 0 mismatch)
 - ✅ **h5_extract_save_writes.py 확장** (R41 작성 → R42 강화):

@@ -2,6 +2,7 @@
 
 > Round 41 (2026-05-17) — 8개 save 파일 종류 식별 + dispatch + write event 자동 추출.
 > Round 42 (2026-05-17) — load 함수 cross-check 로 layout **확정**.
+> Round 43 (2026-05-17) — load 함수 disasm 으로 file offset → HERO struct offset 매핑 + **의미 라벨링**.
 > H_*.sav: **21/21 write↔read 매칭 (0 mismatch)**. SL_*.sav: 24 matched + 13 in-memory writes.
 
 ## 1. 핵심 발견
@@ -56,61 +57,88 @@ python tools/h5_extract_save_writes.py _ZN8SlotInfo12SaveSlotDataEa
 
 ## 3. 파일별 layout 개요 (Round 41 시점)
 
-### 3.1 H_%d.sav (HERO::SaveHeroData, 736B 함수) — **확정**
+### 3.1 H_%d.sav (HERO::SaveHeroData, 736B 함수) — **확정 + struct field 매핑**
 
 Save 23 event + Load 33 event cross-check 결과 **21/21 offset 일치 (0 mismatch)** +
-load 측에서 추가 발견된 timestamp 2 × u64.
+load 측에서 추가 발견된 timestamp 2 × u64. **LoadHeroData disasm 으로 file →
+HERO struct field 매핑 추가 (Round 43)**.
 
-| offset | size | 의미 (Save write ↔ Load read 양쪽 검증) |
-|---:|---:|---|
-| +0x0 | u32 | (Save) Int32ToByte / (Load) ByteToInt32 → HERO+0xf0 |
-| +0x4 | u8 | HERO+0x22c (class_id, Round 13 의 IsEquipPossible 와 일치) |
-| +0x5 | u8 | HERO+0x22d (level 또는 보조 class field) |
-| +0x6 | u32 | EXP 또는 gold |
-| +0xa..+0x19 | **8 × u16** | **stat block** (HP/MP/STR/DEX/CON/INT + 2 — Round 11 base stat 와 매핑 후보) |
-| +0x45..+0x4b | **7 × u8** | **equipment slot** (EquipItem cat 0-6, Round 14 일치 추정) |
-| +0x4c..+0x4f | u32 | 추가 stat |
-| +0x60 | u8 | flag |
-| **+0x1fc..+0x203** | **u64** | timestamp #1 (생성 시각 추정) |
-| **+0x204..+0x20b** | **u64** | timestamp #2 (최근 저장 시각 추정) |
+| file offset | size | HERO struct | 의미 |
+|---:|---:|---|---|
+| +0x0 | u32 | HERO+0xf0 | (용도 미상 — 큰 정수 stat composite) |
+| +0x4 | u8 | HERO+0x22c | **class_id** (Round 13 IsEquipPossible 일치) |
+| +0x5 | u8 | HERO+0x22d | level 또는 보조 class field |
+| +0x6 | u32 | HERO+0x230 | EXP 또는 gold |
+| +0xa | u16 | HERO+0x234 | **stat[0]** (HP base 추정) |
+| +0xc | u16 | HERO+0x23e | stat[1] (10 byte 점프 — in-memory 만 있는 derived stat 5개 사이에) |
+| +0xe | u16 | HERO+0x240 | stat[2] |
+| +0x10 | u16 | HERO+0x242 | stat[3] |
+| +0x12 | u16 | HERO+0x244 | stat[4] |
+| +0x14 | u16 | HERO+0x246 | stat[5] |
+| +0x16 | u16 | HERO+0x248 | stat[6] |
+| +0x18 | u16 | HERO+0x24a | stat[7] |
+| +0x1a..+0x44 | 43 × u8 | HERO+0x24c..+0x276 | **불연속 byte block** (skill list/buff state, Round 11 의 V[112..116] secondary stat cache 추정) |
+| +0x45 | u8 | HERO+0x277 | **equip slot 0** (Save 시 SlotInfo+1 = level 인코딩 byte 와 동일 — slot 슬롯 vs level encoded 양면) |
+| +0x46..+0x4b | 6 × u8 | HERO+0x1790..+0x1795 | **equip slot 1-6** (EquipItem cat 1-6, Round 14 일치) |
+| +0x4c..+0x4f | u32 | HERO+0x1798 | quest/inventory composite |
+| +0x50..+0x5f | 16 × u8 | HERO+0x17a6..+0x17b5 | sub-block (skill cooldown/buff 추정) |
+| +0x60 | u8 | HERO+0x1b61 | obj_count (다음 loop 의 record count, signed) |
+| +0x61..+(0x60+0x29*10) | 10 × 41B | HERO+0x1b62..+(0x1b62+0x19a) | **10 slot × 41B** records (스킬 entry?) |
+| +0x1fc..+0x203 | u64 | HERO+0x310, HERO+0x318 (양쪽 write) | **timestamp #1** (save 생성 시각) |
+| +0x204..+0x20b | u64 | HERO+0x328, HERO+0x330 (양쪽 write) | **timestamp #2** (save 갱신 시각) |
 
-전체 사용 영역 = 약 0x20c bytes (524 B). 524 B 이외 영역은 0 padding 또는 안 씀.
+전체 사용 영역 = 약 **0x20c bytes (524 B)**. 524 B 이외 영역은 0 padding 또는 안 씀.
 
-Round 13 의 EquipItemInfo +0x14 = item_subtype/cat 과 +0x45..+0x4b 의 7 슬롯이 정확
-대응 (weapon/shield/helmet/boots/accessory ×2/spirit).
+**핵심 발견** (Round 43):
+- HERO+0x277 은 **equip slot 0** 또는 **level 의 인코딩 source** 두 가지 역할.
+  SaveSlotData 가 `file[0] = HERO+0x277 * 10 + HERO+0x22c` 로 packing —
+  즉 `class_id + 10 * level` (5 클래스 × max 25 level = 125 < 256 byte 안 들어감,
+  따라서 max level 약 25 추정).
+- 8 u16 stat block 의 HERO+0x234 → 0x23e 점프 (10 byte 간격) 은 in-memory derived
+  stat 5개 (저장 안 됨) 가 그 사이에 위치 — 보조 stat 캐시.
 
-### 3.2 SL_%d.sav (SlotInfo::SaveSlotData, 2076B 함수) — **확정 (대부분)**
+### 3.2 SL_%d.sav (SlotInfo::SaveSlotData, 2076B 함수) — **확정 + 인코딩 패킹 규칙**
 
 Save 91 event + Load 73 event cross-check 결과 **24 offset 정밀 일치 (0 mismatch)** +
 변수 offset memcpy 12-18 block (file content 영역). r4=SlotInfo struct (in-memory)
 의 13 write 는 file 영역 아님. malloc(0x2d80 + 0x1f = 11679 B) buffer 가 실 파일.
 
-**Header (+0x00..+0x15) — 확정**:
+**Header (+0x00..+0x15) — 확정 + 매핑**:
 
-| offset | size | 의미 |
-|---:|---:|---|
-| +0x0..+0x1 | 2 bytes | class+level encode (Save: strb r4+0=HERO+0x22c, +1=HERO+0x22d) |
-| +0x2..+0x5 | u32 | GetX (OBJECT::GetX 호출) |
-| +0x6..+0x9 | u32 | GetY |
-| +0xa..+0x11 | **u64** | playtime (MC_knlCurrentTime - HERO+0x1fd0 delta) — Load 측 ByteToInt64 검증 |
-| +0x12..+0x15 | u32 | scene_idx (HERO_class+0xa0) |
+| file offset | size | SlotInfo struct | HERO source | 의미 |
+|---:|---:|---|---|---|
+| +0x0 | u8 | SlotInfo[0]=class, SlotInfo[1]=level | HERO+0x22c, HERO+0x277 | **packed class+level**: `file[0] = HERO+0x277 * 10 + HERO+0x22c`. Load 가 `% 10` / `/ 10` 으로 분리. **max level ≈ 25** 추정 |
+| +0x1 | u8 | SlotInfo+2 | HERO+0x22d | 보조 class field |
+| +0x2..+0x5 | u32 | SlotInfo+4 | OBJECT::GetX() | **map X position** |
+| +0x6..+0x9 | u32 | SlotInfo+8 | OBJECT::GetY() | **map Y position** |
+| +0xa..+0x11 | u64 | SlotInfo+0x10 | MC_knlCurrentTime - HERO+0x1fd0 | **playtime (ms 또는 s)** |
+| +0x12..+0x15 | u32 | SlotInfo+0x18 | HERO_class+0xa0 | **scene_idx** (현재 맵 ID) |
+| +0x16 | u8 | SlotInfo+0x1c | HERO_class+0x8b | 게임 상태 flag |
 
-**Body sub-blocks — Save 면만 확정 (Load 도 같은 offset 사용)**:
+**Body sub-blocks — file content layout 추가 매핑** (Round 43):
 
-| offset 영역 | size | 의미 추정 |
-|---:|---:|---|
-| +0x16 | u8 | HERO_class+0x8b flag |
-| +0x17 부터 | 3 × 256B | inventory / stat snapshot / buff (HERO_class+0x288/0x388/0x488) |
-| +0x321..+0x324 | 4 bytes (strb pairs) | item slot marker |
-| +0x425..+0x426 | 2 bytes | flag pair |
-| **+0x433..+0x438** | **6 bytes** | sub-block 1 (cat-style 6 entries — 강화/orb socket 후보) |
-| **+0x45d..+0x462** | **6 bytes** | sub-block 2 (sub-block 1 의 보조) |
-| +0x487..+0x489 | 3 bytes | trailer markers |
-| +0x494..+0x496 | 3 bytes | 추가 markers (in-memory only?) |
+| file offset | size | source (gv+0x1474 sub-struct 가능) | 의미 추정 |
+|---:|---:|---|---|
+| +0x17..+0x116 | 256B memcpy | gv+0x288 | **block 0**: 인벤토리 grid 또는 stat 스냅샷 |
+| +0x117..+0x216 | 256B memcpy | gv+0x388 | **block 1**: stat / buff cache |
+| +0x217..+0x316 | 256B memcpy | gv+0x488 | **block 2**: secondary cache (skill cooldown 추정) |
+| +0x317..+0x31b | 5B memcpy | gv+? | sub-block (5 단위 = formula stat slot 후보) |
+| +0x31c..+0x320 | 5B memcpy | gv+? | sub-block |
+| +0x321..+0x324 | 4B strb | individual fields | item slot markers |
+| +0x425..+0x426 | 2B strb | flag pair | game state flags |
+| +0x433..+0x438 | 6B strb | 6 individual byte fields | **sub-block 1** (cat-style 6 entries, 강화/orb socket 후보) |
+| +0x45d..+0x462 | 6B strb | 6 individual byte fields | **sub-block 2** (sub-block 1 의 보조 — 같은 6 entries 의 두 번째 dim) |
+| +0x487..+0x489 | 3B strb | individual fields | trailer markers |
+| (+0x494..+0x496) | 3B | r8 base writes | (in-memory only — file 영역 아닐 가능 높음) |
 
-7개 in-memory writes (r4 base, +0x0/+0x16/+0x18/+0x1c 등) 는 file 영역이 아니라
-SlotInfo struct 의 cached field — Save 후 다음 호출에서 사용. Load 측에서는 별도
-함수에서 동일 정보 set 하므로 cross-check 에는 안 나옴.
+**핵심 발견** (Round 43):
+- **class + level encoded packing**: `file[0] = level * 10 + class`. 5 클래스 (0-4) +
+  max level 약 25. 게임 디자인의 level cap 추정 가능.
+- **gv+0x1474 sub-struct (Round 5/6 의 111 fields 영역) 가 save 의 핵심 source** —
+  3 × 256B blocks 는 모두 gv+0x288/0x388/0x488 영역 (= V[58..167+] 의 stat/buff
+  cache 와 인접한 영역). Load 가 그대로 복원 → save/load round-trip 안전.
+- 7개 in-memory writes (r4 base, +0x0/+0x16/+0x18/+0x1c 등) 는 file 영역이 아니라
+  SlotInfo struct 의 cached field — Save 후 다음 호출에서 사용.
 
 ### 3.3 M.sav (Mission::SaveData, 572B / Mission::LoadData 604B) — 부분 확인
 

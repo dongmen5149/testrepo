@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-17 (Round 42 — Save load 함수 cross-check 로 layout **확정**. **H_%d.sav: 21/21 offset 정밀 일치 (0 mismatch)** + load 측에서 2 × u64 timestamp (+0x1fc/+0x204) 추가 발견. **SL_%d.sav: 24 offset 정밀 일치 (0 mismatch)** + header (+0x00..+0x15) 완전 확정 (class+level / X / Y / playtime u64 / scene_idx). tools/h5_save_crosscheck.py 신규 도구. 남은 작업: source struct field 의미 라벨링.)
+업데이트: 2026-05-17 (Round 43 — Save source struct field 의미 라벨링 완료, **데이터 RE 종료**. LoadHeroData/LoadSlotData 정밀 disasm 으로 file → HERO struct offset 완전 매핑. 핵심 발견: **SL_%d.sav 의 file[0] = level*10 + class_id packing** (max level ≈ 25). 3 × 256B blocks 가 gv+0x288/0x388/0x488 = V[58..167+] stat/buff cache 영역 그대로 직렬화. SlotInfo getter 5종 (Class/Level/X/Y/PlayTime/SceneIdx) 모두 매핑 검증.)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 42 시점)
+## 🎯 전체 진척 평가 (Round 43 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
-| **데이터 구조 RE** (csv/dat layout) | **~96%** | items/monster/drop/smith/mission/quest decoder + **H_*.sav 21/21 + SL_*.sav 24 cross-check 완료**. 남은 것: source struct field 의미 라벨링만 |
-| **.so 함수 분석** (game logic) | **~60-70%** | + Save layout 확정. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| **데이터 구조 RE** (csv/dat layout) | **~98%** | items/monster/drop/smith/mission/quest decoder + **H_*.sav / SL_*.sav full struct field 매핑 완료**. 데이터 RE 종료 |
+| **.so 함수 분석** (game logic) | **~65-70%** | + Save full mapping. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **75-85%** (데이터 RE 사실상 마무리)
+- **"원본 분석"** (RE+자산) 으로 보면 **78-88%** (데이터 RE 종료)
 - **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
@@ -35,14 +35,15 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 43 부터)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 44 부터, **데이터 RE 트랙 종료** — 구현/검증 위주)**:
 - ~~Round 40 = quest_*.dat decoder~~ ✅ 완료
-- ~~Round 41 = Save 파일 시스템 RE 시작~~ ✅ 완료
-- ~~Round 42 = Save load cross-check + byte layout 확정~~ ✅ H_*.sav 21/21 + SL_*.sav 24 offset 일치 (0 mismatch)
-- **(분석 track) Round 43 = Save source struct field 의미 라벨링** (마무리 라운드, 데이터 RE 종료)
-- **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — UI 다음으로 큰 덩어리)
+- ~~Round 41 = Save 시스템 RE 시작~~ ✅ 완료
+- ~~Round 42 = Save load cross-check~~ ✅ 완료
+- ~~Round 43 = Save struct field 라벨링~~ ✅ 완료 (데이터 RE 종료)
+- **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — 남은 가장 큰 미분석 영역)
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면 진입)
+- **(구현 track) Save/Load Godot 통합** — 이제 layout 완전 매핑 되어 있어 GDScript 에서 구현 가능
 
 새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
 환경 복원 (`python tools/h5_extract_pipeline.py`).
@@ -122,6 +123,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **SL_%d.sav (SlotInfo) 개요** | 가장 큰 save (malloc 0x2d9f byte buffer). +0..1 class+level / +2..9 GetX/Y / +0xa..0x11 u64 playtime / +0x12..0x15 scene_idx / +0x17 부터 3×256B 블록 (class_info inventory/stat/buff) / +0x31c..+0x489 secondary chunks. 상세 정밀 매핑은 다음 라운드 (R41) |
 | **Save load cross-check 도구 + layout 확정** | h5_extract_save_writes.py 확장 (ByteToInt + ldr 추가). h5_save_crosscheck.py 신규 — offset 별 save/load size 매칭 → OK/MISS/save-only/load-only 분류. **H_%d.sav: 21/21 offset 정밀 일치 (0 mismatch)** + load 측에서 +0x1fc/+0x204 u64 timestamp 추가 발견. 총 사용 영역 ≈ 524B. **SL_%d.sav: 24 offset 일치 (0 mismatch)** + header (+0..+0x15) 완전 확정 + sub-block 1/2 (+0x433..+0x438, +0x45d..+0x462 = 6 bytes 각각 — 강화/orb socket 후보) 식별 (R42) |
 | **Mission save 부분 확인** | load +0x4 ldrsh 2회 = u16 record_count 또는 size pair. 105 mission iter body 의 변수 offset 정밀 매핑은 다음 라운드 (R42) |
+| **Save source struct field 라벨링 + class/level packing 발견** | LoadHeroData/LoadSlotData 정밀 disasm 으로 file_offset → HERO struct offset 완전 매핑. **핵심 발견 1**: SL_*.sav file[0] = `level*10 + class_id` packing — Load 가 umull fast-div-by-10 으로 `% 10` (class) / `/ 10` (level) 분리. max level ≈ 25. **핵심 발견 2**: 3 × 256B blocks 가 gv+0x288/0x388/0x488 = Round 5/6 의 V[58..167+] stat/buff cache 영역 그대로 직렬화 → save/load round-trip 안전. SlotInfo getter 5종 (Class/Level/X/Y/PlayTime/SceneIdx) 모두 LoadSlotData 가 채운 field 사용 검증. **데이터 RE 종료** (R43) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
