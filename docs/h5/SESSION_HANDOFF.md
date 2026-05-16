@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-17 (Round 40 — quest_*.dat record byte 정밀 매핑 + decoder 발행. 3 difficulty × 151 quests, **save slot 가설 정정 → 3 difficulty scaling** (enemy_*.dat Round 34 와 동일). body = 44 + strlen0 + strlen1 + strlen2, phase1 (objectives 3×6B) + phase2 (rewards 3×6B) + trailer 2B. reward 17=money / 18=exp / 255=unused. quest #0 EXP: q0=340 / q1=20830 / q2=36150 difficulty scaling 검증.)
+업데이트: 2026-05-17 (Round 41 — Save 파일 시스템 RE 시작. **8 save 파일 종류** (LOCAL/EX/ET/OP/M/H_%d/B_%d/SL_%d.sav) 식별 + SaveAll dispatch + 3 메인 save 함수 write event 자동 추출 (총 129 events). **DES 는 save 에 적용 안 됨 확정** (.text 전체 scan 0건 — DES 는 calc_*.dat 등 별도). H_%d.sav 의 +0xa..+0x19 = 8 u16 stat block + +0x45..+0x4b = 7 byte equip slot 추정. 상세 layout 정밀 매핑은 다음 라운드 (load 함수 cross-check).)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 40 시점)
+## 🎯 전체 진척 평가 (Round 41 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
-| **데이터 구조 RE** (csv/dat layout) | **~90%** | items/monster/drop/smith/mission/**quest** 모두 decoder 발행. 남은 것: save 파일 |
-| **.so 함수 분석** (game logic) | ~50-60% | Formula VM, Item, Refine/Drop/Mix/Quest mechanism 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| **데이터 구조 RE** (csv/dat layout) | **~93%** | items/monster/drop/smith/mission/quest decoder 완료. **save 8 파일 종류 + dispatch 식별, layout 개요 추출**, 정밀 byte 매핑은 다음 라운드 |
+| **.so 함수 분석** (game logic) | **~55-65%** | + Save dispatch 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **70-80%** (데이터 RE 거의 마무리 — 남은 큰 덩어리: save 파일)
+- **"원본 분석"** (RE+자산) 으로 보면 **72-82%** (save 정밀 layout 만 남음)
 - **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
@@ -35,10 +35,11 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 41 부터)**:
-- ~~Round 40 = quest_*.dat decoder~~ ✅ Round 40 완료 (3 difficulty × 151 quests, quests.json 발행)
+**선택 옵션 — 다음 중 하나로 시작 (Round 42 부터)**:
+- ~~Round 40 = quest_*.dat decoder~~ ✅ 완료
+- ~~Round 41 = Save 파일 시스템 RE 시작~~ ✅ 8 file 종류 + dispatch 식별 (정밀 byte mapping 은 다음 라운드 작업)
+- **(분석 track) Round 42 = Save load 함수 cross-check + byte layout 확정** (1-2 라운드, save RE 마무리)
 - **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — UI 다음으로 큰 덩어리)
-- **(분석 track) Save 파일 포맷 분석** (DES 키 0EP@KO91 + save record layout — 마지막 큰 데이터 RE)
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면 진입)
 
@@ -114,6 +115,10 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **Quest 시스템 식별 (Mission 과 별도)** | QuestMgr 22+ 함수, LoadQuestData (0xd40e8, 1188B) → /c/csv/quest_%d.dat. 3 files (각 22367B × 151 quests). Quest struct 368B (0x170)/entry. Mission(achievements) ↔ Quest(main story) 별도 시스템, Mission::CheckQuestComplete 가 link (R39) |
 | **quest_*.dat record 정밀 매핑 + 3 difficulty scaling 확정** | Quest_GetOffset 으로 u16 size prefix layout 확인. body = 3 header byte (h0/h1=obj_count/h2) + (strlen+name) + (strlen+desc) + (strlen+cat) + phase1 (3×6B objective: cond_type u8 + cond_sub u8 + target_value u32) + phase2 (3×6B reward, 17=money/18=exp/255=unused) + 2 byte trailer. body size = 44 + s0+s1+s2. **3 files = save slot 아닌 3 difficulty** (q0/q1/q2 의 reward value 단조 증가 — quest #0 EXP: 340/20830/36150, enemy_*.dat Round 34 와 동일 패턴). 151/151 record EOF 도달 (R40) |
 | **decode_h5_quest.py + quests.json 발행** | 기존 stub 교체 (mission_list 디코드 misnamed → 정상 quest decoder). 3 difficulty × 151 quests + compare table → quests.json 645KB (R40) |
+| **Save 파일 시스템 RE 시작 + DES 미적용 확정** | 8 save file 종류 (LOCAL/EX/ET/OP/M/H_%d/B_%d/SL_%d.sav) + .rodata string scan. HERO::SaveAll (0x8f924, 92B) dispatch = SlotInfo::SaveSlotData → SaveHeroData → SaveBagData → Mission::SaveData. MX_desEncrypt caller .text 전체 0건 → save 는 **plain bytes**, DES 키 (0EP@KO91) 는 calc_*.dat 등 별도 protected resource 전용 (R41) |
+| **자동 save write event 추출 도구** | tools/h5_extract_save_writes.py — ARM disasm + register propagation 으로 Int{8,16,32,64}ToByte / memcpy / strb/h/w 인수 추출. SlotInfo::SaveSlotData 91 events / SaveHeroData 23 events / Mission::SaveData 15 events 추출 (R41) |
+| **H_%d.sav (HeroData) 개요** | +0..3 u32 + 2×u8 flag + u32 + **8×u16 stat block** (+0xa..+0x19 = HP/MP/STR/DEX/CON/INT + 2) + **7×u8 equip slot** (+0x45..+0x4b = Round 14 의 EquipItem cat 0-6 일치 추정) + u32 + u8 + 2×u64 timestamp (R41) |
+| **SL_%d.sav (SlotInfo) 개요** | 가장 큰 save (malloc 0x2d9f byte buffer). +0..1 class+level / +2..9 GetX/Y / +0xa..0x11 u64 playtime / +0x12..0x15 scene_idx / +0x17 부터 3×256B 블록 (class_info inventory/stat/buff) / +0x31c..+0x489 secondary chunks. 상세 정밀 매핑은 다음 라운드 (R41) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump

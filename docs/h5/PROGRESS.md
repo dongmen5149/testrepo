@@ -3,23 +3,24 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 40 종료) — quest_*.dat record byte 정밀 매핑 +
-decoder 발행. 3 difficulty × 151 quests, 모든 record EOF 도달 검증. 3 파일은
-save slot 이 아닌 **3 difficulty scaling** (enemy_*.dat 와 동일 패턴) 으로 정정.
+업데이트: 2026-05-17 (Round 41 종료) — Save 파일 시스템 RE 시작. 8 파일 종류
++ SaveAll dispatch + 3 메인 save 함수 (SlotInfo/HERO/Mission) write event
+자동 추출 (총 129 events). **DES 는 save 에 적용되지 않음 확정** —
+.text 전체에서 MX_desEncrypt 호출 0건 (DES 는 calc_*.dat 등 별도 resource 전용).
 Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
 전투/퀘스트/상점/세이브/HUD/이펙트 골격 통합.
 
-## 🎯 전체 진척 평가 (Round 40 시점)
+## 🎯 전체 진척 평가 (Round 41 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~90%** | items/monster/drop/smith/mission/**quest** decoder 발행. 남은 것: save 파일 |
-| .so 함수 분석 | ~50-60% | Item/Refine/Drop/Mix/Quest 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | **~93%** | items/monster/drop/smith/mission/quest decoder 완료. **save 8 파일 종류 식별 + write event 추출**, byte layout 정밀 매핑은 다음 라운드 |
+| .so 함수 분석 | **~55-65%** | + Save dispatch 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **70-80%** (데이터 RE 마무리), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **72-82%**, 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -649,6 +650,41 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 41 — 2026-05-17 완료]** Save 파일 시스템 RE 시작 — 8 파일 종류 + dispatch + write event 자동 추출 (DES 미적용 확정)
+- ✅ **8 save 파일 종류 식별** (.rodata string scan):
+  - `LOCAL.sav` / `EX.sav` / `ET.sav` / `OP.sav` (게임 옵션/메타)
+  - `M.sav` (Mission 진척)
+  - `H_%d.sav` / `B_%d.sav` / `SL_%d.sav` (슬롯별: hero/bag/slot info)
+  - `DEBUG.sav` (debug only)
+- ✅ **HERO::SaveAll (0x8f924, 92B) dispatch 식별**:
+  ```
+  SaveAll(slot_idx) → SlotInfo::SaveSlotData → SaveHeroData → SaveBagData → Mission::SaveData
+  ```
+  LOCAL/EX/ET/OP 는 별도 흐름 (게임 옵션/슬롯 무관).
+- ✅ **DES 는 save 에 적용 안 됨 확정** (큰 발견):
+  - MX_desEncrypt/MX_desEncryptPKCS7/MX_desDecrypt 의 caller 를 .text 전체에서 capstone+symbol map 으로 스캔 → **0건**
+  - DES key `0EP@KO91` + S1[3][10]=2 변종은 calc_*.dat (Formula VM) 등 다른 protected resource 전용
+  - Save 파일 = **plain bytes** (SD container 안에 저장, _midas_funcSdMakeName 도 filename 15-char truncation 만)
+- ✅ **자동 write event 추출 도구 작성** (`tools/h5_extract_save_writes.py`):
+  - ARM disasm + register propagation 으로 `Int{8,16,32,64}ToByte` / `memcpy` / `strb/h/(w)` 호출 인수 추출
+  - 출력: file_offset, write_size, src_register, instr_addr TSV
+- ✅ **3 메인 save 함수 write event 추출**:
+  - `SlotInfo::SaveSlotData` (2076B) → **91 events** (가장 큰 save, malloc 0x2d9f byte buffer)
+  - `HERO::SaveHeroData` (736B) → **23 events** (header + 8 u16 stat block + 7 byte equip slot + timestamp)
+  - `Mission::SaveData` (572B) → **15 events** (Mission flag/count 직렬화)
+- ✅ **H_%d.sav layout 개요** (HeroData):
+  - +0..3 u32, +4..5 u8 flags, +6..9 u32, +0xa..+0x19 = **8 × u16 stat block** (HP/MP/STR/DEX/CON/INT + 2 ?)
+  - +0x45..+0x4b = 7 × u8 (= EquipItem 7 slot, Round 14 의 cat 0-6 일치 추정)
+  - +0x4c u32, +0x60 u8, 2 × u64 timestamp
+- ✅ **SL_%d.sav layout 개요** (SlotInfo):
+  - +0..1 class+level encode, +2..9 GetX/GetY (2 × u32)
+  - +0xa..0x11 u64 playtime (MC_knlCurrentTime delta), +0x12..0x15 scene_idx
+  - +0x17 부터 3 × 256B 블록 (class_info+0x288/0x388/0x488 — inventory/stat snapshot/buff 추정)
+  - +0x31c..+0x489 secondary 영역 (다양한 5/12/28/200B chunk)
+- ✅ **상세 documentation**: `docs/h5/SAVE_FORMAT.md` (8 file 타입 + dispatch + layout 개요 + 다음 라운드 작업 목록)
+- 산출: `tools/h5_extract_save_writes.py`, 3 × *_writes.tsv, `docs/h5/SAVE_FORMAT.md`, `work/h5/analysis/saveslotdata_disasm.txt`
+- **다음 라운드**: load 함수 (SaveHero/SaveSlot/Mission load) cross-check 로 layout 확정 + register propagation 정밀화 + source struct field 의미 라벨링
 
 **[Round 40 — 2026-05-17 완료]** quest_*.dat record byte 정밀 매핑 + decoder 발행 + 3 difficulty scaling 확정 (Round 39 의 save slot 가설 정정)
 - ✅ **Quest_GetOffset (0xd40a0, 72B) 분석**:
