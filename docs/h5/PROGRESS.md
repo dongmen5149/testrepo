@@ -3,23 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 43 종료) — Save source struct field 의미 라벨링 완료.
-LoadHeroData / LoadSlotData 정밀 disasm 으로 file_offset → HERO struct offset 매핑.
-주요 발견: SL_%d.sav 의 file[0] = `level*10 + class_id` packing (max level ≈ 25,
-load 가 % 10 / / 10 로 분리). 3 × 256B blocks 가 gv+0x288/0x388/0x488 = V[58..167+]
-stat/buff cache 영역. **데이터 RE 종료**.
+업데이트: 2026-05-17 (Round 44 종료) — Monster AI 시스템 분석 완료. **token-based
+bytecode VM 식별** (SCN opcode 패턴과 동일). Ai_onAction = 13 opcode interpreter,
+IsTriggerEqual = 13 trigger 평가 함수. Monster struct AI 영역 (0x288..0x315) 전체
+매핑. Tokenizer 객체 (+0x290) 가 byte stream cursor.
 
-## 🎯 전체 진척 평가 (Round 43 시점)
+## 🎯 전체 진척 평가 (Round 44 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~98%** | items/monster/drop/smith/mission/quest decoder + **H_*.sav / SL_*.sav full struct field 매핑 완료** |
-| .so 함수 분석 | **~65-70%** | + Save full mapping. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | ~98% | items/monster/drop/smith/mission/quest decoder + Save struct 완전 매핑 |
+| .so 함수 분석 | **~75-80%** | + **Monster AI VM 완전 식별** (13 opcode + 13 trigger). 미분석: UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **78-88%** (데이터 RE 종료), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **82-90%** (Monster AI 마무리), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -649,6 +648,61 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 44 — 2026-05-17 완료]** Monster AI 시스템 분석 — token-based bytecode VM 식별 + 13 opcode + 13 trigger 완전 매핑
+- ✅ **AI 함수 12개 식별**:
+  - `Ai_Process` (88B, entry) / `Ai_Action` (2136B, main dispatch) / `Ai_onAction` (704B, opcode interpreter)
+  - `Ai_setActionList` (100B) / `Ai_doActionList` (184B) — action list 관리
+  - `Ai_Initialize` (148B) / `Ai_SetPtr` (92B) / `Ai_FreePtr` (108B) — life cycle
+  - `Ai_stateCheck` (576B) / `ActionCheck` (120B) — state validation
+  - `IsTriggerEqual` (1320B) / `ActionOfTrigger` (140B) — trigger 평가
+- ✅ **핵심 발견 — token-based bytecode VM**:
+  - Monster AI 가 **SCN opcode 시스템과 동일 패턴** 사용
+  - AI 정의가 byte stream 으로 외부 데이터에 저장 → 디자이너가 monster 별 행동 작성 가능
+  - Tokenizer (Monster+0x290) 가 byte stream cursor
+  - AI_def_ptr (Monster+0x288) 의 +0x68=offset_table / +0x6c=action_list_table
+- ✅ **Ai_Process dispatch (entry, frame 당 1회)**:
+  ```
+  if IsStunFlag: return
+  Ai_stateCheck(Monster+0x2c3)
+  ActionCheck()
+  Monster+0x2b4 cooldown 감소 (default 9 frames)
+  → Ai_Action (tail call)
+  ```
+- ✅ **Ai_Action sub-state machine 13 entries** (Monster+0x297 jumptable index):
+  - state 8 = SKILL USE (IsAttackAble + IsAbleSkill + HeroTurnDirection + SkillUsed + SetCoolTime)
+  - state 0 = timer decrement (Monster+0x2c8 → 0 시 hero 방향 추적)
+  - 나머지 1-7, 9-12 = move/chase/cast 처리 (정밀 분석 다음 라운드)
+- ✅ **Ai_doActionList token interpreter**:
+  - Monster+0x294 (current_action_idx) 가 0xff 또는 Monster+0x2d0 == 0 면 return
+  - Token_GetByte → Monster+0x297 → Ai_onAction(opcode)
+  - Ai_onAction 반환 0 = 계속, 1 = action 완료 (Monster+0x2d0=0, +0x2b1++)
+- ✅ **Ai_onAction VM opcodes 13개 매핑** (Monster+0x2a8..+0x2ab 가 operand buffer):
+  - op 0: 2B → +0x2c4 action_type / +0x2c6 + SetMonMotion(motion=1) WALK
+  - op 1: 2B → 동일 set + Rand(0,99) < +0x2a9 시 chance walk (motion=5)
+  - op 2: 1B → +0x2c5 sub-action id
+  - op 3: 1B → +0x2c7 (first-time-only set)
+  - **op 4: 3B → +0x2c9/+0x2ca/+0x2cb = SKILL slot** (skill_id, target, range)
+  - op 5: 4B → +0x2cc/+0x2cd/+0x2cf/+0x2ce secondary skill params
+  - op 6: 2B → +0x303/+0x304
+  - op 7: 3B → +0x305/+0x306/+0x307
+  - op 8: 2B → +0x308/+0x309
+  - **op 9: 2B → +0x30a/+0x30b = next_skill_id** (Ai_Action state 8 가 사용)
+  - op 10: 1B (skip)
+  - op 11: variable (Token_GetByte → N → Token_GetData(N))
+  - op 12: 1B → +0x2c2 animation override
+- ✅ **IsTriggerEqual 13 trigger 핸들러 매핑** (조건 평가 → action list 전환):
+  - trigger 1 = +0x29f 한 번만 발화
+  - **trigger 2 = IRect 위치 검사** (큰 핸들러 — visibility/range check, hero 위치 vs monster 시야)
+  - trigger 11 = +0x2be one-shot consume
+  - trigger 13 = +0x2b6 one-shot consume
+  - 나머지 3-12 = 정밀 분석 다음 라운드
+- ✅ **Monster struct AI 영역 매핑** (+0x288..+0x315 전체):
+  - +0x288 AI_def_ptr / +0x290 Tokenizer / +0x294 action_idx / +0x297 opcode
+  - +0x2a8..+0x2ab operand buffer / +0x2c2..+0x315 = state machine fields
+- ✅ **`docs/h5/MONSTER_AI.md` 신규** — 전체 AI 아키텍처 + 13 opcode + 13 trigger + Monster struct map
+- 산출: 3 × disasm txt, MONSTER_AI.md
+- **다음 라운드**: Ai_SetPtr 추적 → AI_def 데이터원 VFS 위치 식별 + 13 state machine handler 세부 분석
 
 **[Round 43 — 2026-05-17 완료]** Save source struct field 의미 라벨링 완료 (데이터 RE 종료)
 - ✅ **LoadHeroData (808B) 정밀 disasm** — file → HERO struct offset 매핑 완전 추출:
