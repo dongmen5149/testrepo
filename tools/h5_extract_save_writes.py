@@ -1,18 +1,20 @@
-"""Save 함수의 buffer write event 자동 추출.
+"""Save / Load 함수의 buffer access event 자동 추출.
 
-Save 함수들은 다음 패턴으로 buffer 에 데이터를 씁니다:
-  Int32ToByte(buf, value, offset)  →  buf[offset..offset+4] = value (LE)
-  Int64ToByte(buf, value, offset)  →  buf[offset..offset+8] = value
-  Int16ToByte(buf, value, offset)  →  buf[offset..offset+2]
-  Int8ToByte (or strb)             →  buf[offset] = byte
-  memcpy(buf+const, src, size)     →  bulk copy
+Save 패턴 (write):
+  Int{8,16,32,64}ToByte(buf, value, offset) → buf[offset..] = value (LE)
+  memcpy(dst, src, size)                     → bulk copy
+  strb/h/w [base, #offset]                    → direct mem store
+
+Load 패턴 (read):
+  ByteToInt{16,32,64}(buf, offset)           → return value at buf[offset..]
+  memcpy(dst, src, size)                     → bulk copy
 
 이 도구는 ARM disasm + register state propagation 으로 위 호출의 인수를
 추출하여 file_offset → source/size 매핑을 자동 생성합니다.
 
 사용: python tools/h5_extract_save_writes.py <symbol>
 
-산출: work/h5/analysis/<symbol>_writes.tsv
+산출: work/h5/analysis/<symbol>_writes.tsv (write + read events 합쳐서)
 """
 from __future__ import annotations
 import pathlib, sys, lief, capstone
@@ -27,6 +29,13 @@ TOBYTE_SIZE = {
     '_ZN10StaticUtil11Int16ToByteEsPhi': 2,
     '_ZN10StaticUtil11Int32ToByteEiPhi': 4,
     '_ZN10StaticUtil11Int64ToByteExPhi': 8,
+}
+
+# Load primitives
+BYTETOINT_SIZE = {
+    '_ZN10StaticUtil11ByteToInt16EPhi': 2,
+    '_ZN10StaticUtil11ByteToInt32EPhi': 4,
+    '_ZN10StaticUtil11ByteToInt64EPhi': 8,
 }
 
 MEMCPY = 0x3130c  # well-known memcpy address
@@ -63,9 +72,12 @@ def main():
 
     # Identify tobyte addresses
     tobyte_addr = {}
+    bytetoint_addr = {}
     for a, n in names.items():
         if n in TOBYTE_SIZE:
             tobyte_addr[a] = TOBYTE_SIZE[n]
+        if n in BYTETOINT_SIZE:
+            bytetoint_addr[a] = BYTETOINT_SIZE[n]
 
     md = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
     md.detail = True
@@ -125,19 +137,20 @@ def main():
             parts = op.split(', ')
             if parts[0] in regs:
                 regs[parts[0]] = ('?', 0)
-        elif m in ('strb', 'strh', 'str'):
-            # Direct write to [r4, #imm] etc — emit event
+        elif m in ('strb', 'strh', 'str', 'ldrb', 'ldrh', 'ldr', 'ldrsb', 'ldrsh'):
+            # Direct mem access [r4, #imm] etc — emit event
             parts = op.split(', ', 1)
             if len(parts) == 2:
                 src = parts[0]
                 tgt = parts[1].strip()
+                sz_map = {'strb': 1, 'strh': 2, 'str': 4,
+                          'ldrb': 1, 'ldrh': 2, 'ldr': 4, 'ldrsb': 1, 'ldrsh': 2}
                 if tgt.startswith('[') and ',' in tgt:
                     base, offrest = tgt[1:].split(',', 1)
                     offrest = offrest.strip().rstrip(']').strip()
                     if offrest.startswith('#'):
                         try:
                             off = int(offrest[1:], 0)
-                            sz_map = {'strb': 1, 'strh': 2, 'str': 4}
                             events.append({
                                 'addr': ins.address,
                                 'kind': m,
@@ -149,9 +162,7 @@ def main():
                         except ValueError:
                             pass
                 elif tgt.startswith('['):
-                    # [r4] no offset
                     base = tgt[1:].rstrip(']').strip()
-                    sz_map = {'strb': 1, 'strh': 2, 'str': 4}
                     events.append({
                         'addr': ins.address,
                         'kind': m,
@@ -177,6 +188,19 @@ def main():
                     'src_reg': f'r0(value), {names[t]}',
                 })
                 # r0 clobbered, etc.
+                for r in ('r0', 'r1', 'r2', 'r3', 'ip', 'lr'):
+                    regs[r] = ('?', 0)
+            elif t in bytetoint_addr:
+                sz = bytetoint_addr[t]
+                r1 = reg('r1')
+                events.append({
+                    'addr': ins.address,
+                    'kind': 'bytetoint',
+                    'buf_reg': 'r0',
+                    'offset': r1[1] if r1[0] == 'imm' else None,
+                    'size': sz,
+                    'src_reg': f'→r0, {names[t]}',
+                })
                 for r in ('r0', 'r1', 'r2', 'r3', 'ip', 'lr'):
                     regs[r] = ('?', 0)
             elif t == MEMCPY:

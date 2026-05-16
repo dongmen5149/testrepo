@@ -3,24 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 41 종료) — Save 파일 시스템 RE 시작. 8 파일 종류
-+ SaveAll dispatch + 3 메인 save 함수 (SlotInfo/HERO/Mission) write event
-자동 추출 (총 129 events). **DES 는 save 에 적용되지 않음 확정** —
-.text 전체에서 MX_desEncrypt 호출 0건 (DES 는 calc_*.dat 등 별도 resource 전용).
-Godot 프로젝트 (`apps/hero5-godot/`) 에 Title→ClassSelect→Demo 전체 흐름,
-전투/퀘스트/상점/세이브/HUD/이펙트 골격 통합.
+업데이트: 2026-05-17 (Round 42 종료) — Save load 함수 cross-check 로 layout 확정.
+**H_%d.sav: 21/21 offset 일치 (0 mismatch)** + load 측에서 2 × u64 timestamp 추가
+발견. **SL_%d.sav: 24 offset 정밀 일치 (0 mismatch)** + 13 in-memory writes 식별.
+Mission 은 변수 offset 이라 1 offset 만 정밀 매칭. h5_save_crosscheck.py 신규.
 
-## 🎯 전체 진척 평가 (Round 41 시점)
+## 🎯 전체 진척 평가 (Round 42 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | **~93%** | items/monster/drop/smith/mission/quest decoder 완료. **save 8 파일 종류 식별 + write event 추출**, byte layout 정밀 매핑은 다음 라운드 |
-| .so 함수 분석 | **~55-65%** | + Save dispatch 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | **~96%** | items/monster/drop/smith/mission/quest decoder 완료. **H_*.sav 21/21 + SL_*.sav 24 cross-check 완료**, source struct field 의미 라벨링만 남음 |
+| .so 함수 분석 | **~60-70%** | + Save layout confirmed. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **72-82%**, 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **75-85%** (데이터 RE 사실상 마무리), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -650,6 +648,39 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 42 — 2026-05-17 완료]** Save load 함수 cross-check 로 H_*.sav / SL_*.sav layout 확정 (21+24 offset 일치, 0 mismatch)
+- ✅ **h5_extract_save_writes.py 확장** (R41 작성 → R42 강화):
+  - load 측 `ByteToInt{16,32,64}` 호출 인수 추출 추가
+  - `ldr/ldrb/ldrh/ldrsb/ldrsh` direct memory read 추출 추가
+- ✅ **3 load 함수 read event 추출**:
+  - `HERO::LoadHeroData` (808B) → 33 events
+  - `SlotInfo::LoadSlotData` (968B) → 73 events
+  - `Mission::LoadData` (604B) → 33 events
+- ✅ **tools/h5_save_crosscheck.py 신규** — save / load write↔read 매칭으로 layout 확정:
+  - offset 별 save_size vs load_size 비교
+  - OK / MISS / save-only / load-only 분류
+- ✅ **H_%d.sav layout 확정** — **21/21 offset 정밀 일치 (0 mismatch)**:
+  - +0x0..3 u32 (HERO+0xf0)
+  - +0x4..5 = 2×u8 (HERO+0x22c class_id, HERO+0x22d) — Round 13 EquipItemInfo +0x14 와 일관
+  - +0x6..9 u32 (EXP/gold)
+  - +0xa..0x19 = **8×u16 stat block** confirmed
+  - +0x45..0x4b = **7×u8 equip slot** (EquipItem cat 0-6 Round 14 와 정확 일치)
+  - +0x4c..0x4f u32, +0x60 u8
+  - **+0x1fc..0x203 u64 timestamp #1, +0x204..0x20b u64 timestamp #2** (load 측에서 추가 발견)
+  - 총 사용 영역 ≈ 0x20c bytes (524 B)
+- ✅ **SL_%d.sav layout 확정** — 24 offset 정밀 일치 (0 mismatch):
+  - Header (+0x00..+0x15) 완전 확정: class+level encode / GetX u32 / GetY u32 / playtime u64 / scene_idx u32
+  - +0x321..+0x324 (4B item slot marker), +0x425..+0x426 (2B flag pair)
+  - **+0x433..+0x438 = 6 bytes sub-block 1** (강화/orb socket 후보)
+  - **+0x45d..+0x462 = 6 bytes sub-block 2** (sub-block 1 의 보조)
+  - +0x487..+0x489 trailer markers, +0x494..+0x496 in-memory only
+  - 13 save-only writes 는 r4=SlotInfo struct 의 in-memory cached fields (file 영역 아님)
+- ✅ **Mission save 부분 확인**: load +0x4 에서 ldrsh 2회 = u16 record_count 또는 size pair.
+  나머지는 105 mission iter 의 변수 offset (다음 라운드 disasm 분석 필요).
+- ✅ **SAVE_FORMAT.md 갱신**: 확정된 layout 표 + cross-check 도구 사용법 + 다음 라운드 작업.
+- 산출: tools/h5_save_crosscheck.py, 3 × *_writes.tsv (load), 갱신된 SAVE_FORMAT.md
+- **데이터 RE 사실상 마무리** — 남은 작업: source struct field 의미 라벨링 (의미 라벨만 안 붙은 상태)
 
 **[Round 41 — 2026-05-17 완료]** Save 파일 시스템 RE 시작 — 8 파일 종류 + dispatch + write event 자동 추출 (DES 미적용 확정)
 - ✅ **8 save 파일 종류 식별** (.rodata string scan):

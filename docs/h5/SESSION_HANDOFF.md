@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-17 (Round 41 — Save 파일 시스템 RE 시작. **8 save 파일 종류** (LOCAL/EX/ET/OP/M/H_%d/B_%d/SL_%d.sav) 식별 + SaveAll dispatch + 3 메인 save 함수 write event 자동 추출 (총 129 events). **DES 는 save 에 적용 안 됨 확정** (.text 전체 scan 0건 — DES 는 calc_*.dat 등 별도). H_%d.sav 의 +0xa..+0x19 = 8 u16 stat block + +0x45..+0x4b = 7 byte equip slot 추정. 상세 layout 정밀 매핑은 다음 라운드 (load 함수 cross-check).)
+업데이트: 2026-05-17 (Round 42 — Save load 함수 cross-check 로 layout **확정**. **H_%d.sav: 21/21 offset 정밀 일치 (0 mismatch)** + load 측에서 2 × u64 timestamp (+0x1fc/+0x204) 추가 발견. **SL_%d.sav: 24 offset 정밀 일치 (0 mismatch)** + header (+0x00..+0x15) 완전 확정 (class+level / X / Y / playtime u64 / scene_idx). tools/h5_save_crosscheck.py 신규 도구. 남은 작업: source struct field 의미 라벨링.)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 41 시점)
+## 🎯 전체 진척 평가 (Round 42 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
-| **데이터 구조 RE** (csv/dat layout) | **~93%** | items/monster/drop/smith/mission/quest decoder 완료. **save 8 파일 종류 + dispatch 식별, layout 개요 추출**, 정밀 byte 매핑은 다음 라운드 |
-| **.so 함수 분석** (game logic) | **~55-65%** | + Save dispatch 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| **데이터 구조 RE** (csv/dat layout) | **~96%** | items/monster/drop/smith/mission/quest decoder + **H_*.sav 21/21 + SL_*.sav 24 cross-check 완료**. 남은 것: source struct field 의미 라벨링만 |
+| **.so 함수 분석** (game logic) | **~60-70%** | + Save layout 확정. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **72-82%** (save 정밀 layout 만 남음)
+- **"원본 분석"** (RE+자산) 으로 보면 **75-85%** (데이터 RE 사실상 마무리)
 - **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
@@ -35,10 +35,11 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 42 부터)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 43 부터)**:
 - ~~Round 40 = quest_*.dat decoder~~ ✅ 완료
-- ~~Round 41 = Save 파일 시스템 RE 시작~~ ✅ 8 file 종류 + dispatch 식별 (정밀 byte mapping 은 다음 라운드 작업)
-- **(분석 track) Round 42 = Save load 함수 cross-check + byte layout 확정** (1-2 라운드, save RE 마무리)
+- ~~Round 41 = Save 파일 시스템 RE 시작~~ ✅ 완료
+- ~~Round 42 = Save load cross-check + byte layout 확정~~ ✅ H_*.sav 21/21 + SL_*.sav 24 offset 일치 (0 mismatch)
+- **(분석 track) Round 43 = Save source struct field 의미 라벨링** (마무리 라운드, 데이터 RE 종료)
 - **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — UI 다음으로 큰 덩어리)
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면 진입)
@@ -119,6 +120,8 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **자동 save write event 추출 도구** | tools/h5_extract_save_writes.py — ARM disasm + register propagation 으로 Int{8,16,32,64}ToByte / memcpy / strb/h/w 인수 추출. SlotInfo::SaveSlotData 91 events / SaveHeroData 23 events / Mission::SaveData 15 events 추출 (R41) |
 | **H_%d.sav (HeroData) 개요** | +0..3 u32 + 2×u8 flag + u32 + **8×u16 stat block** (+0xa..+0x19 = HP/MP/STR/DEX/CON/INT + 2) + **7×u8 equip slot** (+0x45..+0x4b = Round 14 의 EquipItem cat 0-6 일치 추정) + u32 + u8 + 2×u64 timestamp (R41) |
 | **SL_%d.sav (SlotInfo) 개요** | 가장 큰 save (malloc 0x2d9f byte buffer). +0..1 class+level / +2..9 GetX/Y / +0xa..0x11 u64 playtime / +0x12..0x15 scene_idx / +0x17 부터 3×256B 블록 (class_info inventory/stat/buff) / +0x31c..+0x489 secondary chunks. 상세 정밀 매핑은 다음 라운드 (R41) |
+| **Save load cross-check 도구 + layout 확정** | h5_extract_save_writes.py 확장 (ByteToInt + ldr 추가). h5_save_crosscheck.py 신규 — offset 별 save/load size 매칭 → OK/MISS/save-only/load-only 분류. **H_%d.sav: 21/21 offset 정밀 일치 (0 mismatch)** + load 측에서 +0x1fc/+0x204 u64 timestamp 추가 발견. 총 사용 영역 ≈ 524B. **SL_%d.sav: 24 offset 일치 (0 mismatch)** + header (+0..+0x15) 완전 확정 + sub-block 1/2 (+0x433..+0x438, +0x45d..+0x462 = 6 bytes 각각 — 강화/orb socket 후보) 식별 (R42) |
+| **Mission save 부분 확인** | load +0x4 ldrsh 2회 = u16 record_count 또는 size pair. 105 mission iter body 의 변수 offset 정밀 매핑은 다음 라운드 (R42) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
