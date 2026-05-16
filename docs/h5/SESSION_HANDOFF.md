@@ -2,11 +2,11 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-17 (Round 47 — Monster AI **Ai_Action 13 sub-state 완전 매핑**. state 0=CHASE_TIMER (Fast_Distance vs +0x2c6 시야 비교) / 1=TURN_DIR (4 mode + face hero) / 2=COUNTDOWN / 3=SKILL_USE (IRect 충돌 검사 + cast) / 4=SET_ATTACK_MOTION (+0x2cc → motion lookup) / 5-8=4 skill cast path (+0x304/+0x305/+0x308/+0x30a source) / 9=SKILL_END / 10-12=exit. 5 opcode → 6 state skill dispatch matrix 완전. **Monster AI 분석 완전 종료** — VM (action+trigger) + state machine 모두 매핑.)
+업데이트: 2026-05-17 (Round 48 — **Monster AI Godot 통합 시작**. apps/hero5-godot/scripts/core/monster_ai.gd 신규 (autoload) — MonsterAIState class + 13 opcode interpreter + 13 trigger handler + ActionOfTrigger walker 모두 GDScript 로 구현. project.godot 에 7번째 autoload (`MonsterAI`) 등록. battle_system.gd 에 `_ai_runtime` field + `_ai_pick_skill()` hook 추가. verify_godot_project.py 0 errors / 0 warnings. 분석 → 구현 트랙 전환, Godot 실 구현 25-30% → 30-35%.)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 47 시점)
+## 🎯 전체 진척 평가 (Round 48 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -14,13 +14,13 @@
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| **.so 함수 분석** (game logic) | **~85-88%** | + **Monster AI sub-state 13 완전 식별**. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
+| **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
+| **Godot 실 구현** | **~30-35%** | + **Monster AI VM autoload + battle 통합**. 미구현: 인벤토리/강화/합성/Quest UI |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **90-95%** (Monster AI 완전 마무리)
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
+- **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **27-37%** (Monster AI Godot 통합 시작)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -35,11 +35,12 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 48 부터, **Monster AI 분석 완전 종료** — 구현/검증 위주)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 49 부터)**:
 - ~~Round 40-43 = 데이터 RE 트랙~~ ✅
-- ~~Round 44-47 = Monster AI 전체 (VM + 데이터원 + trigger + sub-state)~~ ✅
+- ~~Round 44-47 = Monster AI 전체 분석~~ ✅
+- ~~Round 48 = Monster AI Godot 통합 시작 (VM autoload + battle hook)~~ ✅
+- **(구현 track) AI Action sub-state 1-7/9/12 정밀 구현** + host method (CHAR interface) 채우기 (이 라운드 후 Godot Editor 실 컴파일 검증)
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
-- **(구현 track) Monster AI Godot 통합** — 48 AI defs + 13 opcode VM + 13 trigger + 13 sub-state → GDScript battle loop
 - **(구현 track) Save/Load Godot 통합** — layout 완전 매핑 → GDScript 직접 구현
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
 - **(분석 track) 잔여 — UI 함수 / NPC 대화 / Battle motion 분석** (분석 트랙은 95% 도달 시 종료점)
@@ -127,6 +128,7 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **Monster AI 데이터원 식별 + decoder** | Map::MonsterAdd → EnemyAI* alloc (120B) → EnemyAI::LoadData (700B) 가 `/c/mon/%d_ai` 로드. VFS 에 **48 AI 파일** 발견 (`c/mon/0_ai` ~ `63_ai`, 31-305B, DES 미적용). 파일 layout 완전 파악: trigger codes/handlers + sum(handlers) data + 3 action lookups (n_a + n_a + n_a*2) + trigger byte stream (Tokenizer #1) + 3 action_list lookups (action_list_offset_table 포함) + action byte stream (Tokenizer #2, 13 opcode VM). EnemyAI struct (120B) 매핑: +0x24/+0x44/+0x60 size headers, +0x58/+0x5c trigger stream ptr, +0x70/+0x74 action stream ptr. tools/converter/decode_h5_monsterai.py 신규 — 48/48 perfect parse. monster_ai.json (48 AI defs) 발행. opcode 통계: WALK + CHANCE_WALK = 286/524 (55%) (R45) |
 | **Monster AI trigger stream layout 확정** | ActionOfTrigger (0xbd7a0, 140B) driver + IsTriggerEqual 13 handler operand 매핑. Entry layout = `[trigger_code u8][operand 0-1B][action_id u8]`. trigger 1 (VISIBILITY_RECT, operand=IRect index ×40) / 6 (TUTORIAL_FLAG, operand vs gv+0x130..0x132) 만 1B operand. trigger 5 (ALWAYS_GOTO) 는 ActionOfTrigger 가 special path 처리 (IsTriggerEqual 안 부름, 즉시 action_id 처리). 나머지 11 trigger 0B operand (one-shot flag check/consume on Monster+0x2b6/0x2b7/0x29f/etc). decode_h5_monsterai.py 의 disasm_tokens(kind='trigger') 모드 추가. **543 trigger entries 100% perfect parse** (0 unknown, 0 incomplete). 분포: VISIBILITY_RECT 36% + ALWAYS_GOTO 36% (= 72% "idle→combat 시야진입 전환" 패턴). 데이터 RE 100% 종료 (R46) |
 | **Monster AI Ai_Action 13 sub-state 완전 매핑** | state 0=CHASE_TIMER (Fast_Distance(hero) vs Monster+0x2c6 시야범위 비교 → ImmadiatelyCheck(8)) / 1=TURN_DIR (4 mode jumptable + default=HeroTurnDirection) / 2=COUNTDOWN (timer + state 0 재진입) / 3=SKILL_USE (IRect 충돌 검사 + cast) / 4=SET_ATTACK_MOTION (Monster+0x2cc 에서 motion lookup) / 5-8=4 skill cast path (각각 Monster+0x304/+0x305/+0x308/+0x30a source) / 9=SKILL_END / 10-11=no-op / 12=GET_MOTION_EXIT. 5 opcode → 6 state skill dispatch matrix 완전 (opcode 4→state 3, opcode 5→state 4, opcode 6→state 5, opcode 7→state 6, opcode 8→state 7, opcode 9→state 8). 공통 gate: GetMotion==0 + IsAttackAble==1 + Monster+0x315==0 (skill_disable). cast 후 Monster+0x297=-1 reset. **Monster AI 분석 완전 종료** (R47) |
+| **Monster AI Godot 통합 시작** | apps/hero5-godot/scripts/core/monster_ai.gd 신규 (270 line autoload) — `MonsterAIState` class (Monster struct +0x288..+0x315 영역 매핑: action_idx/opcode/operand/cooldown/state/skill source 5 + flag 11) + `_load_ai_defs` (monster_ai.json 234KB res:// loader) + `create_runtime(host, ai_type_id)` + `process(s)` (frame entry: cooldown + Ai_Action) + `step_action_list(s)` (Ai_doActionList) + `_on_action` (13 opcode interpreter w/ operand size table) + `step_trigger_list(s)` (ActionOfTrigger walker) + `_is_trigger_equal` (13 trigger handler: one-shot flag + host method 위임). project.godot 7th autoload `MonsterAI` 등록. battle_system.gd 에 `_ai_runtime` field + start_battle hook (create_runtime 호출) + `_ai_pick_skill()` helper (트리거+action stream step + skill_id 추천). verify_godot_project.py 0 errors / 0 warnings. Godot 실 구현 25-30% → 30-35% (R48) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump

@@ -22,6 +22,9 @@ var enemy_max_hp: int = 0
 var enemy_attack: int = 10
 var enemy_def: int = 0
 
+# Round 48: Monster AI VM runtime. enemy 가 AI def 가 있는 경우만 활성.
+var _ai_runtime = null   # MonsterAI.MonsterAIState | null
+
 
 ## 65535 = sentinel (게임이 사용 안 함). 그 외 0 < v < 65535 면 사용, 아니면 default.
 func _stat_or(stats: Dictionary, key: String, default: int) -> int:
@@ -59,8 +62,30 @@ func start_battle(monster_id: int = 0) -> void:
 	enemy_hp = enemy_max_hp
 	# Player class 의 skill list 로드 (class_id 0 = 워리어)
 	skill_names = GameData.skills_for_class(0)
+	# Monster AI runtime 초기화 (Round 48). monster_id 가 ai_type_id 와 다르면
+	# enemy_*.dat 의 Monster+0x22e 를 GameData 에서 가져와야 하지만 임시로
+	# monster_id 자체를 ai_type_id 로 사용.
+	_ai_runtime = MonsterAI.create_runtime(self, monster_id) if MonsterAI else null
 	battle_started.emit(enemy_name)
 	log_message.emit("%s 와의 전투 시작! (HP %d)" % [enemy_name, enemy_hp])
+
+
+## Monster AI 가 다음 turn 에 사용할 skill 추천. 없으면 -1.
+##
+## battle_system 은 turn-based 추상화라서 매 enemy turn 시작 시 AI VM 을
+## "한 action 진행" 시켜서 skill_src_30a 또는 skill_id 를 읽어 사용.
+func _ai_pick_skill() -> int:
+	if _ai_runtime == null: return -1
+	# 트리거 검사 → action 전환 시도
+	MonsterAI.step_trigger_list(_ai_runtime)
+	# action stream 1 step (필요 시 여러 step 까지 loop 가능)
+	for _i in range(8):
+		var alive = MonsterAI.step_action_list(_ai_runtime)
+		if not alive: break
+	# 우선순위: opcode 9 (NEXT_SKILL) > opcode 4 (SKILL_SET) > -1
+	if _ai_runtime.skill_src_30a > 0: return _ai_runtime.skill_src_30a
+	if _ai_runtime.skill_id > 0: return _ai_runtime.skill_id
+	return -1
 
 
 func player_action(action: Action, skill_id: int = 0) -> void:

@@ -3,22 +3,22 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 47 종료) — Monster AI **Ai_Action 13 sub-state 완전 식별**.
-state 0=CHASE_TIMER / 1=TURN_DIR / 2=COUNTDOWN / 3=SKILL_USE / 4=SET_ATTACK_MOTION /
-5-8=SKILL_CAST (4 source) / 9=SKILL_END / 10-12=exit. 5개 opcode → 6개 state path
-skill dispatch matrix 정밀 매핑. **Monster AI 분석 완전 종료**.
+업데이트: 2026-05-17 (Round 48 종료) — **Monster AI Godot 통합 시작**. monster_ai.gd
+신규 (autoload) — 13 opcode interpreter + 13 trigger handler + MonsterAIState class.
+battle_system.gd hook — start_battle 시 AI runtime 생성 + `_ai_pick_skill()` helper.
+verify_godot_project.py 0 errors / 0 warnings.
 
-## 🎯 전체 진척 평가 (Round 47 시점)
+## 🎯 전체 진척 평가 (Round 48 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| .so 함수 분석 | **~85-88%** | + **Monster AI sub-state 13 완전 식별**. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
+| .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
+| Godot 실 구현 | **~30-35%** | + **Monster AI VM autoload + battle 통합**. 미구현: 인벤토리/강화/합성/Quest UI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **90-95%** (Monster AI 완전 마무리), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **27-37%** (Monster AI Godot 통합 시작).
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -648,6 +648,31 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 48 — 2026-05-17 완료]** Monster AI Godot 통합 시작 — autoload + VM + battle hook
+- ✅ **apps/hero5-godot/scripts/core/monster_ai.gd 신규** — 약 270 line autoload:
+  - `monster_ai.json` (Round 45 산출) loader (`_ready` 가 by_id 파싱)
+  - `MonsterAIState` inner class — 원본 Monster struct +0x288..+0x315 영역 매핑
+    (action_idx / opcode / operand / action_cooldown / state / action_type / sub_action /
+     skill_id / skill_target / skill_range / skill_param / 5 skill source fields /
+     11 one-shot flag fields)
+  - `create_runtime(host, ai_type_id)` — runtime state 생성
+  - `process(s)` — 매 frame entry (cooldown decrement + Ai_Action dispatch)
+  - `_ai_action(s)` — Round 47 의 13 sub-state machine (state 0 CHASE_TIMER + state 8 SKILL_USE_30A 구현, 나머지 host method 위임)
+  - `step_action_list(s)` — Round 44 의 Ai_doActionList (action stream 1 step)
+  - `_on_action(s, op, stream)` — 13 opcode interpreter (operand size table 사용)
+  - `step_trigger_list(s)` — Round 46 의 ActionOfTrigger (trigger stream walker)
+  - `_is_trigger_equal(s, code, operand)` — 13 trigger handler (one-shot flag check/consume + host method 위임 for VISIBILITY/TUTORIAL)
+- ✅ **autoload 등록**: `project.godot` 의 [autoload] 섹션에 `MonsterAI="*res://scripts/core/monster_ai.gd"` 추가 (7th autoload)
+- ✅ **battle_system.gd hook 추가**:
+  - `_ai_runtime` 필드 (MonsterAI.MonsterAIState | null)
+  - `start_battle` 끝에 `MonsterAI.create_runtime(self, monster_id)` 호출
+  - `_ai_pick_skill()` 메서드 — 트리거 검사 + action stream 진행 후 skill_src_30a 또는 skill_id 반환 (없으면 -1)
+- ✅ **verify_godot_project.py: 0 errors / 0 warnings** — 모든 reference 해결
+- ✅ **monster_ai.json 234KB** = Godot assets/gamedata/ 에 위치, GDScript loader 가 res:// 경로로 access
+- 산출: monster_ai.gd, project.godot (autoload 추가), battle_system.gd (hook)
+- **Monster AI 분석 → 구현 트랙 전환** — Godot 실 구현 25-30% → 30-35%
+- 다음 라운드: AI VM 의 Ai_Action state 1-7/9/12 정밀 구현 + host method (CHAR interface) 채우기 + Godot Editor 에서 실 컴파일 검증
 
 **[Round 47 — 2026-05-17 완료]** Monster AI Ai_Action 13 sub-state 정밀 분석 (Monster AI 분석 완전 종료)
 - ✅ **Ai_Action 13 sub-state 의미 완전 매핑** (Monster+0x297 jumptable):
