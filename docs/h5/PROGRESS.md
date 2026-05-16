@@ -3,22 +3,21 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-업데이트: 2026-05-17 (Round 44 종료) — Monster AI 시스템 분석 완료. **token-based
-bytecode VM 식별** (SCN opcode 패턴과 동일). Ai_onAction = 13 opcode interpreter,
-IsTriggerEqual = 13 trigger 평가 함수. Monster struct AI 영역 (0x288..0x315) 전체
-매핑. Tokenizer 객체 (+0x290) 가 byte stream cursor.
+업데이트: 2026-05-17 (Round 45 종료) — Monster AI 데이터원 식별 완료. **`/c/mon/<id>_ai` 48 파일**
++ EnemyAI struct (120B) layout + `decode_h5_monsterai.py` decoder (48/48 100% parse).
+WALK + CHANCE_WALK opcode 합계 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 
-## 🎯 전체 진척 평가 (Round 44 시점)
+## 🎯 전체 진척 평가 (Round 45 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
-| 데이터 구조 RE | ~98% | items/monster/drop/smith/mission/quest decoder + Save struct 완전 매핑 |
-| .so 함수 분석 | **~75-80%** | + **Monster AI VM 완전 식별** (13 opcode + 13 trigger). 미분석: UI, NPC 대화, Battle motion |
+| 데이터 구조 RE | **~99%** | + **monster_ai.json 48 AI defs 발행**. 남은: trigger handler 의미 매핑만 |
+| .so 함수 분석 | **~78-82%** | + EnemyAI::LoadData 정밀 분석. 미분석: UI, NPC 대화, Battle motion |
 | Godot 실 구현 | ~25-30% | 골격 + Formula VM. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ **82-90%** (Monster AI 마무리), 리메이크 출시 ≈ 25-35%.
+**종합**: 원본 분석 ≈ **85-92%** (Monster AI 완전 마무리), 리메이크 출시 ≈ 25-35%.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -648,6 +647,43 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 45 — 2026-05-17 완료]** Monster AI 데이터원 식별 — `/c/mon/<id>_ai` 48 파일 + EnemyAI struct + decoder
+- ✅ **AI_def 데이터원 추적**: Map::MonsterAdd (0xb5814) → 메모리 할당 (0x78 = 120 byte) → EnemyAI::EnemyAI(ai_type_id) → str → Monster+0x288
+  - ai_type_id = Monster+0x22e (Round 34 setEnemyData 가 enemy_*.dat 에서 set)
+- ✅ **EnemyAI::LoadData (0x6a62c, 700B) 정밀 disasm**: filename format = `/c/mon/%d_ai` 추출
+- ✅ **VFS 에서 48 AI 파일 발견** (`c/mon/0_ai` ~ `c/mon/63_ai`, gap 있음, 크기 31~305B avg 110.5B)
+  - DES 미적용 (3/48 만 8의 배수)
+- ✅ **EnemyAI 파일 layout 정확 파악**:
+  ```
+  u8 n_t (trigger_count)
+  n_t × u8 trigger code list (IsTriggerEqual ids)
+  n_t × u8 handler size list
+  sum(handlers) × u8 trigger_data_block
+  u16 n_a (action_count, low byte 만 사용)
+  n_a × u8 action_lookup_1
+  n_a × u8 action_lookup_2
+  n_a × u16 action_lookup_3
+  u16 n_ts (trigger_stream_size, low byte)
+  n_ts × u8 trigger byte stream (Tokenizer #1)
+  u8 n_l (action_list_count)
+  n_l × u8 action_list_lookup_1
+  n_l × u8 action_list_offset_table (AI_setActionList 사용)
+  n_l × u8 action_list_lookup_3
+  u16 n_as (action_stream_size, s16)
+  n_as × u8 action byte stream (Tokenizer #2, 13 opcode VM)
+  ```
+- ✅ **EnemyAI struct (120B) layout 매핑**: +0x24 (n_t), +0x25..+0x2f..+0x39 (trigger 3 arrays), +0x44 (n_a), +0x48..+0x54 (action 3 lookups + trigger data), +0x58/+0x5c (trigger stream Tokenizer #1 source), +0x60 (n_l), +0x64..+0x6c (action_list 3 lookups), +0x70/+0x74 (action stream Tokenizer #2 source)
+- ✅ **decode_h5_monsterai.py 신규** — 48 AI 파일 일괄 파싱:
+  - 48/48 perfect parse (consumed == file_size 모두 일치, 0 errors)
+  - action stream 은 Round 44 의 13 opcode 로 disasm 시도 (operand 길이 미정 opcode 는 1 byte 만 소비)
+  - trigger stream 은 raw hex (trigger handler 정밀 매핑 다음 라운드)
+- ✅ **monster_ai.json 발행** (apps/hero5-godot/assets/gamedata/, 48 AI defs)
+- ✅ **524 action opcode 통계**:
+  - WALK (0): 176 / CHANCE_WALK (1): 110 / SET_SUB (2): 72 / SET_STATE_FIRST (3): 59
+  - SET_303 (6): 34 / SET_305 (7): 18 / SKILL_PARAM (5): 16 / SKILL_SET (4): 12 / SET_308 (8): 8
+  - WALK + CHANCE_WALK = 286/524 (55%) — monster 대부분이 walking 중심 AI
+- 산출: enemyai_loaddata_disasm.txt, tools/converter/decode_h5_monsterai.py, monster_ai.json, MONSTER_AI.md 갱신
 
 **[Round 44 — 2026-05-17 완료]** Monster AI 시스템 분석 — token-based bytecode VM 식별 + 13 opcode + 13 trigger 완전 매핑
 - ✅ **AI 함수 12개 식별**:

@@ -1,6 +1,7 @@
 # Hero5 Monster AI 시스템
 
 > Round 44 (2026-05-17) — Monster AI 12 함수 disasm + token-based bytecode VM 식별.
+> Round 45 (2026-05-17) — AI_def 데이터원 식별 (`/c/mon/<id>_ai` × **48 파일**) + EnemyAI struct layout + decoder.
 > Ai_onAction = 13 opcode interpreter, IsTriggerEqual = 13 trigger 평가 함수.
 
 ## 1. 핵심 발견: token-based bytecode VM
@@ -138,23 +139,111 @@ action def layout:
 
 각 token = opcode byte + N operand bytes (opcode 별 stride 표 § 3 참조).
 
-## 7. AI 정의 데이터 origin
+## 7. AI 정의 데이터 origin — **확정 (Round 45)**
 
-- `Monster::setEnemyData` (Round 34) 가 enemy_*.dat 에서 일부 fields load.
-- AI_def ptr 자체는 다른 데이터원 (Monster::Ai_SetPtr 92B 분석으로 추적 가능 — 다음 라운드).
-- Token stream 의 byte 값들이 enemy_*.dat 또는 별도 c/csv/ai_*.dat 에 저장되어 있을 가능성.
+`Map::MonsterAdd` (0xb5814) → `EnemyAI::EnemyAI(ai_type_id)` (0x6a8e8) →
+`EnemyAI::LoadData(ai_type_id)` (0x6a62c, 700B) 가 `/c/mon/<id>_ai` 파일 로드.
+
+VFS 에 **48 개 AI 파일** (`c/mon/0_ai` ~ `c/mon/63_ai`, gap 있음). 크기 31~305 byte
+(avg 110.5B). DES 미적용 (3/48 만 8의 배수 — plain).
+
+`Monster+0x288 = EnemyAI*` (120 byte heap alloc). EnemyAI 생성자가 ai_type_id 받음.
+ai_type_id 는 `Monster+0x22e` (Round 34 의 setEnemyData 로 enemy_*.dat 에서 set).
+
+### EnemyAI 파일 layout (확정)
+
+| offset | size | 의미 |
+|---:|---:|---|
+| +0 | u8 | trigger_count (n_t) |
+| +1..n_t | n_t × u8 | trigger code list (IsTriggerEqual 의 13 trigger id) |
+| ... | n_t × u8 | handler size list (각 trigger 의 trigger_data_block 내 size) |
+| ... | sum(handlers) | trigger_data_block (trigger 별 추가 데이터) |
+| ... | u16 (LE) | action_count (n_a, low byte 만 사용) |
+| ... | n_a × u8 | action_lookup_1 |
+| ... | n_a × u8 | action_lookup_2 |
+| ... | n_a × u16 | action_lookup_3 (u16 array) |
+| ... | u16 (LE) | trigger_stream_size (low byte 만 사용) |
+| ... | n_ts × u8 | **trigger byte stream** (Tokenizer #1 = Monster+0x28c) |
+| ... | u8 | action_list_count (n_l) |
+| ... | n_l × u8 | action_list_lookup_1 |
+| ... | n_l × u8 | **action_list_offset_table** (AI_setActionList 가 사용) |
+| ... | n_l × u8 | action_list_lookup_3 |
+| ... | u16 (LE, s16 사실은) | action_stream_size (n_as) |
+| ... | n_as × u8 | **action byte stream** (Tokenizer #2 = Monster+0x290, 13 opcode VM) |
+
+### EnemyAI struct (120B) layout
+
+| offset | 의미 |
+|---:|---|
+| +0x00..+0x07 | vtable + ? |
+| +0x24 | trigger_count |
+| +0x25..+0x25+n_t | trigger codes |
+| +0x2f..+0x2f+n_t | handler bytes |
+| +0x39..+0x39+n_t | handler offsets (계산된 cumulative sum) |
+| +0x43 | total trigger_data size |
+| +0x44 | action_count (n_a) |
+| +0x48 | action_lookup_1 ptr |
+| +0x4c | action_lookup_2 ptr |
+| +0x50 | action_lookup_3 ptr (u16 array, n_a*2 bytes) |
+| +0x54 | trigger_data_block ptr |
+| +0x58 | trigger_stream_size (u8) |
+| +0x5c | trigger_stream ptr — **Tokenizer #1 data** |
+| +0x60 | action_list_count (s8) |
+| +0x64 | action_list_lookup_1 ptr |
+| +0x68 | **action_list_offset_table ptr** — AI_setActionList 사용 |
+| +0x6c | action_list_lookup_3 ptr |
+| +0x70 | action_stream_size (s32) |
+| +0x74 | action_stream ptr — **Tokenizer #2 data** |
+
+### Tokenizer 매핑 (Ai_SetPtr 0xbdb3c)
+
+```
+TokenizerC1(size=AI_def+0x58, ptr=AI_def+0x5c) → Monster+0x28c  (trigger eval)
+TokenizerC1(size=AI_def+0x70, ptr=AI_def+0x74) → Monster+0x290  (action exec)
+```
+
+### Decoder
+
+`tools/converter/decode_h5_monsterai.py` (Round 45 신규):
+- 48 AI 파일 일괄 파싱 + 100% file 소비 검증
+- action stream 은 Round 44 의 13 opcode 로 disasm
+- trigger stream 은 raw hex (trigger handler 의미 매핑은 다음 라운드)
+- 산출: `apps/hero5-godot/assets/gamedata/monster_ai.json`
+
+### 통계 (48 AI 파일, 524 action opcodes 추출)
+
+| opcode | 출현 |
+|---|---:|
+| WALK (0) | 176 |
+| CHANCE_WALK (1) | 110 |
+| SET_SUB (2) | 72 |
+| SET_STATE_FIRST (3) | 59 |
+| SET_303 (6) | 34 |
+| SET_305 (7) | 18 |
+| SKILL_PARAM (5) | 16 |
+| SKILL_SET (4) | 12 |
+| SET_308 (8) | 8 |
+| ANIM_OVERRIDE (12) | 3 |
+| VAR_DATA (11) | 1 |
+| unknown (skipped, default handler returns 0) | ~17 |
+
+WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 
 ## 8. 다음 라운드 작업
 
-1. **Ai_SetPtr / Ai_Initialize 분석** — AI_def ptr 의 origin VFS 위치 식별.
-2. **state machine 핸들러 정밀 분석** — Ai_Action sub-state 1-9 각각의 동작 (move/chase/skill cast 등).
-3. **trigger 2 (IRect) 정밀 분석** — visibility/range check 의 정확한 거리/각도 공식.
-4. **trigger 3-12 각각 의미 식별**.
-5. **enemy_g 의 4 skill block** (Round 33) 과 AI opcode 4 (skill slot) 연동 검증.
+1. ~~**Ai_SetPtr / Ai_Initialize 분석** — AI_def 데이터원 식별~~ ✅ Round 45 완료 (`/c/mon/<id>_ai`)
+2. **trigger handler 의미 매핑** — trigger_stream 의 opcode + operand 디스어셈블 (현재 raw hex)
+3. **state machine 핸들러 정밀 분석** — Ai_Action sub-state 1-9 각각의 동작 (move/chase/skill cast)
+4. **trigger 2 (IRect) 정밀 분석** — visibility/range check 의 정확한 거리/각도 공식
+5. **trigger 3-12 각각 의미 식별**
+6. **enemy_g 의 4 skill block** (Round 33) 과 AI opcode 4 (skill slot) 연동 검증
 
 ## 9. 산출
 
-- `work/h5/analysis/ai_action_disasm.txt` (533 lines, Ai_Action 2136B)
-- `work/h5/analysis/ai_onaction_disasm.txt` (~180 lines, Ai_onAction 704B)
-- `work/h5/analysis/istriggerequal_disasm.txt` (~330 lines, IsTriggerEqual 1320B)
+- `work/h5/analysis/ai_action_disasm.txt` (533 lines, Ai_Action 2136B) [R44]
+- `work/h5/analysis/ai_onaction_disasm.txt` (~180 lines, Ai_onAction 704B) [R44]
+- `work/h5/analysis/istriggerequal_disasm.txt` (~330 lines, IsTriggerEqual 1320B) [R44]
+- `work/h5/analysis/enemyai_loaddata_disasm.txt` (~175 lines, EnemyAI::LoadData 700B) [R45]
+- `tools/converter/decode_h5_monsterai.py` [R45]
+- `apps/hero5-godot/assets/gamedata/monster_ai.json` (48 AI defs + disasm) [R45]
 - `docs/h5/MONSTER_AI.md` (이 문서)
