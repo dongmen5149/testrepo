@@ -3,7 +3,9 @@
 > Round 41 (2026-05-17) — 8개 save 파일 종류 식별 + dispatch + write event 자동 추출.
 > Round 42 (2026-05-17) — load 함수 cross-check 로 layout **확정**.
 > Round 43 (2026-05-17) — load 함수 disasm 으로 file offset → HERO struct offset 매핑 + **의미 라벨링**.
+> **Round 49 (2026-05-17) — GDScript binary serializer/deserializer 구현 + Python round-trip 검증**.
 > H_*.sav: **21/21 write↔read 매칭 (0 mismatch)**. SL_*.sav: 24 matched + 13 in-memory writes.
+> GDScript 구현: `apps/hero5-godot/scripts/core/save_manager.gd`. 테스트 도구: `tools/h5_test_save_layout.py`.
 
 ## 1. 핵심 발견
 
@@ -159,7 +161,34 @@ Round 38 의 구조와 유사 추정).
 
 각 함수 분석 미완 — 함수 크기 작음 (152~288B). 비슷한 도구로 추출 가능.
 
-## 4. Cross-check 도구 (Round 42 신규)
+## 4a. Godot 구현 (Round 49 신규)
+
+`apps/hero5-godot/scripts/core/save_manager.gd` — 위 layout 의 GDScript 구현:
+
+```gdscript
+# serialize: state dict → PackedByteArray (binary save)
+var bytes = H5SaveManager.serialize_hero_save({
+    "class_id": 0, "hero_22d": 1,
+    "stats": [50, 30, 15, 12, 18, 8, 0, 0],  # HP/MP/STR/DEX/CON/INT + 2
+    "equip": PackedByteArray([1, 0, 0, 0, 0, 0, 0]),
+    "timestamp_create": 1700000000,
+    "timestamp_update": 1700001000,
+})
+# bytes.size() == 0x20c (524)
+
+# deserialize: PackedByteArray → state dict
+var state = H5SaveManager.deserialize_hero_save(bytes)
+```
+
+`H5SaveManager.serialize_slot_save` / `deserialize_slot_save` 도 동일 패턴 —
+Round 43 의 `file[0] = level * 10 + class_id` packing 규칙 포함.
+
+byte helpers: `_put_u16_le` / `_put_u32_le` / `_put_u64_le` (LE encoding).
+
+검증: `tools/h5_test_save_layout.py` — Python equivalent 구현 + 4 sample
+round-trip + 8 critical offsets 자동 점검 (모두 통과).
+
+## 4b. Cross-check 도구 (Round 42 신규)
 
 `tools/h5_save_crosscheck.py` — save / load write↔read 매칭으로 layout 확정.
 

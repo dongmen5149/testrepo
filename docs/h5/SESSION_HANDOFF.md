@@ -4,6 +4,22 @@
 
 업데이트: 2026-05-17 (Round 49 — **Save/Load binary 직렬화 GDScript 구현**. save_manager.gd 에 H_*.sav (524B) + SL_*.sav (header 23B) writer/reader 추가. Round 43 의 `level*10+class_id` packing + Round 42 의 21/21 H + 24 SL cross-check 결과 layout 그대로 GDScript 화. tools/h5_test_save_layout.py 신규 — Python round-trip + LE byte order + 8 critical offsets 검증, 모두 통과. Godot 실 구현 30-35% → 33-38%, 출시 27-37% → 30-40%.)
 
+## 📜 Round 1-49 한 줄 요약
+
+| 라운드 | 한 줄 |
+|---|---|
+| R1-5 | VFS + 자산 이름 99.7% + DES 변종 + Formula VM 186 공식 + Godot 스캐폴드 |
+| R6-11 | gv+0x1474 111 fields + V[58..167] 매핑 + V[111..116] secondary stat (근접명중/장거리명중/회피/방패방어/크리티컬) |
+| R12-19 | Item 시스템 — buff slot + magic stat + EquipItemInfo struct + LoadItemTable csv layout + 19 카테고리 |
+| R20-28 | Item 메커닉 — SkillBook/Cash/Refine/Orb/Mix 정밀 매핑. 강화 stat 식 + 5 socket orb + NPC blacksmith |
+| R29-36 | Monster + Drop — droptable.dat 252 entries + enemy_g + enemy_*.dat 3 difficulty + 4 element + magic stat pair |
+| R37-40 | Mission 105 + Quest 151×3 difficulty + 모든 데이터 파일 종류 식별 |
+| R41-43 | Save 8 종류 + load cross-check (21/21 + 24, 0 mismatch) + `file[0] = level*10+class_id` packing |
+| R44-47 | Monster AI 분석 — 13 opcode + 13 trigger + 13 sub-state + 48 AI defs decoder |
+| **R48-49** | **Godot 통합 시작 — Monster AI VM (autoload) + Save binary 직렬화** |
+
+
+
 ---
 
 ## 🎯 전체 진척 평가 (Round 49 시점)

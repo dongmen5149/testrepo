@@ -3,6 +3,25 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
+## 📜 라운드 요약 (Round 1-49)
+
+| 라운드 그룹 | 주요 성과 |
+|---|---|
+| **R1-5: 인프라** | VFS 풀기 + 자산 이름 99.7% 복원 + sprite/palette/text 디코더 + DES 변종 해독 (`S1[3][10]=2`) + Formula VM 186 공식 디스어셈블 + Godot 4 스캐폴드 |
+| **R6-11: Formula VM + 캐릭터** | gv+0x1474 sub-struct 111 fields + V[58..167] 라벨 매핑 + 시각효과 + V[111..116] secondary stat (근접명중/장거리명중/회피/방패방어/크리티컬) + V[60..63] base STR/DEX/CON/INT 정정 |
+| **R12-19: Item 시스템** | V[122..126] buff slot + V[151..155] magic stat + ItemBase formula + EquipItemInfo struct + LoadItemTable csv layout + 19 카테고리 |
+| **R20-28: Item 메커닉** | SkillBook/CashItem/Refine/Orb/Mix 시스템 정밀 매핑. 강화 stat 식 (id=35/36) + 5 socket orb mechanism + mix_book recipe + NPC blacksmith |
+| **R29-36: Monster + Drop** | droptable.dat (252 entries) + enemy_g (Map HP/skills) + enemy_*.dat 3 difficulty × 166 records + 4 element 시스템 + V[151]/V[152] magic stat pair |
+| **R37-40: Mission + Quest** | Mission 105 + 13 Check* 함수 + mission_list.dat 매핑. Quest 151 × 3 difficulty (save slot 가설 정정 → difficulty scaling) + 모든 게임 데이터 파일 종류 식별 |
+| **R41-43: Save 시스템** | 8 save 파일 종류 + SaveAll dispatch + load cross-check (H_*.sav 21/21 + SL_*.sav 24 offset 일치, 0 mismatch) + source struct field 라벨링. **`file[0] = level*10+class_id` packing 발견** |
+| **R44-47: Monster AI (분석)** | 12 AI 함수 + token-based bytecode VM 식별. 13 action opcode + 13 trigger + Ai_Action 13 sub-state 완전 매핑. **48 AI defs (`/c/mon/<id>_ai`) decoder**. 543 trigger entries 100% parse |
+| **R48-49: Godot 통합 (구현 시작)** | Monster AI Godot VM (`monster_ai.gd` autoload + battle_system hook) + Save binary 직렬화 (524B HERO + SL header) + Python round-trip 검증 |
+
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 33-38%.
+원본 분석 90-95%, 리메이크 출시 30-40%.
+
+
+
 업데이트: 2026-05-17 (Round 49 종료) — **Save/Load binary 직렬화 GDScript 구현**.
 save_manager.gd 에 `serialize_hero_save` / `deserialize_hero_save` (H_*.sav 524B
 layout) + `serialize_slot_save` / `deserialize_slot_save` (SL_*.sav header) 추가.

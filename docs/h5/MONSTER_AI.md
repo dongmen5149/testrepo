@@ -3,6 +3,8 @@
 > Round 44 (2026-05-17) — Monster AI 12 함수 disasm + token-based bytecode VM 식별.
 > Round 45 (2026-05-17) — AI_def 데이터원 식별 (`/c/mon/<id>_ai` × **48 파일**) + EnemyAI struct layout + decoder.
 > Round 46 (2026-05-17) — Trigger stream layout 식별 + 13 trigger operand 매핑 + decoder 확장. 543 trigger entry **100% parse (0 unknown)**.
+> Round 47 (2026-05-17) — Ai_Action 13 sub-state 정밀 분석 + 5 opcode → 6 state skill dispatch matrix.
+> **Round 48 (2026-05-17) — Godot GDScript VM 구현** (`monster_ai.gd` autoload + battle_system hook).
 > Ai_onAction = 13 opcode interpreter, IsTriggerEqual = 13 trigger 평가 함수, ActionOfTrigger = stream driver.
 
 ## 1. 핵심 발견: token-based bytecode VM
@@ -318,7 +320,38 @@ WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 7. **Monster AI Godot 통합** — 48 AI defs JSON + 13 opcode VM → GDScript battle loop
 
 **Monster AI 분석 완전 종료** — 데이터원 / VM (action+trigger opcode) / 상태 머신
-모두 매핑. Godot 구현으로 이전 가능 상태.
+모두 매핑. Godot 구현으로 이전 완료 (Round 48).
+
+## 10. Godot 구현 (Round 48 신규)
+
+`apps/hero5-godot/scripts/core/monster_ai.gd` (autoload, 약 270 line):
+
+```gdscript
+# create runtime for monster
+var ai_state = MonsterAI.create_runtime(monster_node, ai_type_id)
+
+# per-frame entry
+MonsterAI.process(ai_state)   # cooldown + Ai_Action
+
+# trigger evaluation (action 전환 시도)
+MonsterAI.step_trigger_list(ai_state)
+
+# action stream 1 step
+MonsterAI.step_action_list(ai_state)
+```
+
+**구성**:
+- `MonsterAIState` class — Monster 구조체 +0x288..+0x315 영역 매핑
+- `_load_ai_defs()` — `monster_ai.json` 234KB res:// loader
+- `create_runtime(host, ai_type_id)` — 48 AI defs 중 선택
+- `process(s)` — 매 frame entry (stun → cooldown → Ai_Action)
+- `step_action_list(s)` — Ai_doActionList (action stream 1 step)
+- `_on_action(s, op, stream)` — 13 opcode interpreter (operand size table)
+- `step_trigger_list(s)` — ActionOfTrigger (trigger stream walker)
+- `_is_trigger_equal(s, code, operand)` — 13 trigger handler
+
+`battle_system.gd` hook: `_ai_runtime` field + `start_battle` 에서 create_runtime
+호출 + `_ai_pick_skill()` helper (트리거 검사 + action stream 진행 후 skill_id 추천).
 
 ## 9. 산출
 
