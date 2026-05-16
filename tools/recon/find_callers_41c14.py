@@ -42,6 +42,9 @@ def main() -> None:
         ("FUN_00041c6e | even", 0x41C6E & ~1),
         ("FUN_00041c14 | thumb", 0x41C14 | 1),
         ("FUN_00041c6e | thumb", 0x41C6E | 1),
+        ("FUN_00040fb0 (parent state runner)", 0x40FB0),
+        ("FUN_00040fb0 | even", 0x40FB0 & ~1),
+        ("FUN_00098904 (op12 dispatcher)", 0x98904),
     ]:
         callers = targets.get(addr, [])
         print(f"{label_name} @ 0x{addr:08x}: {len(callers)} BL caller(s)")

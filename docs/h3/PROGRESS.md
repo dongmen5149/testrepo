@@ -5,7 +5,7 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-17 PM (Round 37) — **2DP + 2DR + 2DS + 2DQ + FUN_00040fb0 신규 + paired state machine 발견**. (1) ⭐⭐⭐ **SCN common handler 0x8ec26 = text output 확정** (1258B, 3× draw_text_sprite + 3× screen_ptr + 3× helper_9fd64 + 2× sound_trigger + 1× ctx(0xff)) — Round 36 가설 본문 검증. (2) ⭐⭐⭐ **NPC dispatcher JT @ 0xabaa8 = SCN과 1:1 미러** (19→7, case 0..12 → 0x8c242 common). **0x8c242 NPC common handler = 0x8ec26 SCN common 의 4-batch 변형** (동일 BL 패턴, 동일 cmp 분포) → **Hero3 = 통합 19-opcode scripting engine**. (3) ⭐⭐⭐ **opcode 0x12 = 11.4KB Korean dialogue sub-interpreter** (47 cmp arms, EUC-KR 0x89/0x8f + ASCII ';'/'I'/'2', 41× ctx → task_struct[0x9e28/0x9c70/0x18ed]). (4) ⭐⭐ **FUN_00041c14 cluster #1 state machine 본문** (2884B, 45 cmp arms, **BL=16 ctx + 1 memset_like only**, NO graphics/sound → pure gameplay state). 0x9b14 dominant (11x). (5) ⭐⭐ **FUN_00040fb0 신규 함수 발견** (3.1KB parent state runner, FUN_00041c14 unique caller). 상세는 [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md).
+**최신 커밋 시점**: 2026-05-17 PM-2 (Round 38) — **2EA + 2EC + opcode 0x12 inner JT 디코드 + 6th indirect entry 발견**. (1) ⭐⭐⭐ **opcode 0x12 47 arms 정밀 분류** — small state 35 / sentinel 0xff 6 / EUC-KR 0x89~0x8f 4 / ASCII ';'/'I'/'2' 2 = token-driven multi-byte text parser. (2) ⭐⭐⭐ **opcode 0x12 inner JT @ 0xabcb4 디코드** — SL-relative 74-entry JT (Round 36 outer JT와 동일 모델), 7 destinations 모두 **FUN_00098904 안의 8 entry labels** (computed-goto 패턴) — 66/74 default = Round 30 sparse 74-JT 패턴 재확인. (3) ⭐⭐⭐ **6번째 indirect entry function 발견** — **FUN_000245fc** (388B, 0 BL caller, cluster #1 state machine GVM-side 진입점). Round 30 의 5 known entries + 1 신규 = **6 indirect entries**. (4) ⭐⭐ **cluster #1 state machine 완전 체인**: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e. (5) ⭐⭐ **FUN_00098904 = 43 callers system-wide popular helper** (1524B) — opcode 0x12 전용이 아니라 일반 목적. 상세는 [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md).
 
 **이전 라운드 종합**: Round 18~36 의 진척 요약은 **§"Round 18~37 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -26,29 +26,30 @@
 - **Round 35** — ⭐⭐ **도구 immediate construction** (0x274 0→2) + **3 entity-bridge caller chain 확정** (sister/main entry + UI invocation wrapper) + **FUN_0008e89e = 16.3KB SCN bytecode interpreter** (62 cmp arms, 0xff/0x89/0x8f patterns)
 - **Round 36** — ⭐⭐⭐ **0x9b00 cluster direct wide-scan = 51 sites** (1 → 51, FUN_00041c6e 21+ dominant) + **FUN_0008e89e JT @ 0xabc68 디코드 완료** (19→7 dest, opcode 0x00~0x0c 공통 + 0x0d~0x12 unique = PROGRESS 가설 검증) + FUN_00082f4c UI wrapper (1.6KB)
 - **Round 37** — ⭐⭐⭐ **SCN common handler 0x8ec26 = text output 확정** (3× draw_text + 3× screen_ptr + 3× helper + 2× sound) + **NPC dispatcher JT @ 0xabaa8 = SCN과 1:1 미러** (Hero3 통합 19-opcode engine) + **opcode 0x12 = 11.4KB Korean dialogue sub-interpreter** (47 arms, EUC-KR 0x89/0x8f + ASCII ';'/'I'/'2') + **cluster #1 paired state machine 발견** (FUN_00040fb0 신규 3.1KB parent → FUN_00041c14 2.8KB child, pure state, no graphics)
+- **Round 38** — ⭐⭐⭐ **opcode 0x12 inner JT @ 0xabcb4 디코드** (SL-relative 74-entry, 7 dests → FUN_00098904 8 entry labels, 66/74 sparse default) + **47 arms 정밀 분류** (state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 = token parser) + ⭐⭐⭐ **6번째 indirect entry function FUN_000245fc 발견** (388B, 0 BL caller, cluster #1 GVM-side 진입점) + **cluster #1 state machine 완전 체인**: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e
 
-### 전체 진척률 추정 (Round 37 시점, 2026-05-17)
+### 전체 진척률 추정 (Round 38 시점, 2026-05-17 PM-2)
 
-> **결론**: "Android 리메이크 완성" 기준 약 **18~28% 완료**. 자산 변환은 거의 다 됐지만 **게임 로직** 이 핵심 미해결. Round 37로 SCN/NPC scripting engine 통합 아키텍처가 확정되어 ~3~5%p 진척.
+> **결론**: "Android 리메이크 완성" 기준 약 **22~32% 완료**. Round 38로 6 indirect entries 완성 + opcode 0x12 inner JT 디코드 + cluster #1 완전 체인 = ~4~5%p 진척.
 
 | 영역 | 진척 추정 | 근거 |
 |---|---|---|
 | 자산 포맷 분석/변환 | **~80%** | _bm/_pa/_txt/_cif/_mp/_scn 모두 1차 해독. 미해결: tile 0x0c 압축, _mp extras (NPC/exit placement), SMAF→OGG |
-| 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 (사용자 ANTHROPIC_API_KEY 필요) |
-| Ghidra 게임 로직 리버싱 | **~15~25%** ⬆ | 1,470 함수 중 ~50개 본문 분석. GVM architecture + 5 indirect entries + **2 dispatcher JT 디코드** (NPC + SCN, 19→7 dest, 통합 아키텍처) + **opcode 0x00~0x0c text output handler 확정** + **opcode 0x12 = 11.4KB Korean dialogue sub-interpreter** + **cluster #1 paired state machine 발견**. **미해결: opcode 0x12 의 47 arms 정밀 풀이 / 전투 시스템 / 메뉴 / save 포맷 / FUN_0009a008 의 두 JT / NPC 6 special opcodes** |
-| task_struct 모델 | **~30%** | 44KB+ 의 일부 — 39 known fields 매핑, substructure A (0x9bb4) + 38B entity state record (0xac78) + **cluster #1 (0x9afc~0x9b3c) state machine 의미 확정** (0x9b14 main state byte / 0x9b01 step counter / 0x9b1c sub-state / 0x9afc start flag). sound state cluster, 진짜 dispatch state 등 다수 미해독 |
+| 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 |
+| Ghidra 게임 로직 리버싱 | **~20~30%** ⬆ | 1,470 함수 중 ~55개 본문 분석. GVM architecture + **6 indirect entries** (Round 38 신규 FUN_000245fc) + **3 dispatcher JT 디코드** (NPC + SCN + op12 inner, 통합 아키텍처) + opcode 0x00~0x0c text output 확정 + opcode 0x12 token parser 구조 확정 + **cluster #1 state machine 완전 체인** (GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e). **미해결: 전투 시스템 / 메뉴 / save 포맷 / FUN_0009a008 의 두 JT / NPC 6 special opcodes / FUN_00098904 본문 / opcode 0x12 의 EUC-KR 처리 path 정밀** |
+| task_struct 모델 | **~30%** | 44KB+ 의 일부 — 39 known fields 매핑, cluster #1 (0x9afc~0x9b3c) state machine 의미 확정 |
 | Android 엔진 재구현 | **~5~10%** | 8 씬 골격 + NPC 4 hardcoded + i18n 인프라 + save slot. **진짜 게임 로직 (전투/스킬/이벤트/진행) 없음** |
 | i18n | UI 100% / 대사 0% | UI 어휘 196개 100% 영문, 9,741 unique 대사 번역 미진행 |
 
 **가장 큰 블로커** (진행 시 가장 큰 진척):
-1. **opcode 0x12 (11.4KB Korean dialogue sub-interpreter) 의 47 arms 정밀 분류** — EUC-KR (0x89/0x8f) + ASCII (';','I','2') + sentinel (0xff) + state (0x00~0x0c) 4 카테고리로 풀면 dialogue rendering 핵심 완성 (Round 38 의 2EA)
-2. **전투 시스템 발견** — 38B entity state record 가 전투에서 어떻게 작동하는지 미확인 (FUN_0009a008 의 8.6KB super function 안에 숨어있을 가능성)
-3. **FUN_00040fb0 의 caller 추적** — cluster #1 state machine 의 시스템 진입점 (Round 38 의 2EC) → entity update loop 의심
-4. **NPC 6 special opcodes (0x8c79c/0x8c990/0x8cbb0/0x8ceac/0x8d0f6/0x8d2e2) 본문** — SCN과 차이 식별 (Round 38 의 2ED)
+1. **FUN_000245fc 본문 정밀 분석** — 6번째 indirect entry 의 의미 = cluster #1 state machine 의 게임 시스템적 역할 (cutscene? event? menu? Round 39 의 2FA)
+2. **FUN_00098904 의 8 entry labels 본문** — opcode 0x12 inner JT 의 7 dispatch destinations 의 의미 (Round 39 의 2FB)
+3. **전투 시스템 발견** — 38B entity state record 가 전투에서 어떻게 작동하는지 미확인 (FUN_0009a008 의 8.6KB super function 안에 숨어있을 가능성)
+4. **NPC 6 special opcodes (0x8c79c/0x8c990/0x8cbb0/0x8ceac/0x8d0f6/0x8d2e2) 본문** — SCN과 차이 식별 (Round 39 의 2FD)
 
 ### 한 줄 요약 (현재 상태)
 
-영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 37 통합 19-opcode scripting engine 확정 + cluster #1 paired state machine** (2026-05-17 PM / Round 37). **SCN common handler 0x8ec26 (1258B)** = text output 본문 검증 (3× draw_text + 3× screen_ptr + 3× helper_9fd64 + 2× sound_trigger). **NPC dispatcher JT @ 0xabaa8 = SCN과 1:1 미러** (19→7 dest, case 0..12 → 0x8c242, NPC common = SCN common 4-batch 변형) → **Hero3 = 통일 scripting engine**. **opcode 0x12 (11.4KB / 47 arms)** = Korean dialogue sub-interpreter (EUC-KR 0x89/0x8f + ASCII ';'/'I'/'2' + 41× ctx → 0x9e28/0x9c70/0x18ed). **FUN_00041c14 cluster #1 state machine** (2884B, BL=16 ctx + 1 memset only, NO graphics/sound, 0x9b14 main state 11x). **FUN_00040fb0 신규** (3.1KB parent runner, FUN_00041c14 unique caller). 다음 진척은 **(1) opcode 0x12 의 47 arms 정밀 분류 (EUC-KR/ASCII/sentinel/state 4 카테고리), (2) FUN_00040fb0 의 caller 추적 (entity update loop 진입 의심), (3) NPC 6 special opcodes 본문, (4) FUN_0009a008 의 두 JT 디코드, (5) 전투 시스템 발견**.
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 38 6 indirect entries 완성 + opcode 0x12 inner JT + cluster #1 완전 체인** (2026-05-17 PM-2 / Round 38). **47 arms 정밀 분류**: state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 = token-driven multi-byte text parser. **opcode 0x12 inner JT @ 0xabcb4** = SL-relative 74-entry, 7 dests → **FUN_00098904 (1524B, 43 system-wide callers) 안의 8 entry labels** (computed-goto, 66/74 sparse default = Round 30 패턴 재확인). **6번째 indirect entry FUN_000245fc 발견** (388B, 0 BL caller, GVM-side cluster #1 진입점). 완성된 chain: **GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e**. 다음 진척은 **(1) FUN_000245fc 본문 정밀 (cluster #1 게임 시스템 역할), (2) FUN_00098904 의 8 entry labels 의미, (3) FUN_0002ae44 callers 추적, (4) NPC 6 special opcodes, (5) 전투 시스템 발견**.
 
 ### 게임 update flow (2026-05-10 정정 + Round 29 신규 entry)
 
@@ -60,20 +61,30 @@
   │    ├ page 1 → FUN_0005e6ac → FUN_0005f948 (jt 0xa9d70, record 0x14)
   │    └ page 2 → FUN_00060ab4 (9KB, page 2 UI + 데이터 테이블)
   ├ FUN_00070f34  (key handler) — 키 입력 시 호출. param_2=0x31('1')/0x33('3') 으로 page--/page++
-  ├ FUN_0008b2e8  (sister entry, record 0x3c4)
-  │  └ inline @ 0x8c19c → FUN_0008d5e4 (jt 0xabaa8)
-  ├ FUN_0008dcd8  (main entry, record 0x3c4)
-  │  └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68)
-  └ FUN_000241dc  ⭐ system event dispatcher, 74-entry JT (GOT 0xb2c40 / JT 0xa6710)
-     ├ 62/74 (84%) → 0x24246 epilogue (no-op)
-     ├ 12 진짜 events → 7 distinct handlers:
-     │  ├ 0x24300 (5 events: 35/48/49/51/57) ⭐ most popular
-     │  ├ 0x242c0 (4 events: -4..-1)
-     │  ├ 0x242d0 (3 events: -5/53/55)
-     │  ├ 0x24264 (event -10) → task[+0xf2] short + helper 0x2c6a4
-     │  └ 0x2427a (event -16), 0x242c8 (event 42), 0x24300 등
-     └ case "single-entity update" → FUN_000818f0 (5.6KB single-entity handler)
-        └ task_struct[0xac78~0xac9d] = 38B entity state record (200+ access)
+  ├ FUN_0008b2e8  (sister entry / NPC, record 0x3c4)
+  │  └ inline @ 0x8c19c → FUN_0008d5e4 (jt 0xabaa8, NPC dispatcher 19→7, case 0..12 → 0x8c242 common)
+  ├ FUN_0008dcd8  (main entry / scene, record 0x3c4)
+  │  └ inline @ 0x8eb80 → FUN_0008ff18 (jt 0xabc68, SCN dispatcher 19→7, case 0..12 → 0x8ec26 common)
+  ├ FUN_000241dc  ⭐ system event dispatcher, 74-entry JT (GOT 0xb2c40 / JT 0xa6710)
+  │  ├ 62/74 (84%) → 0x24246 epilogue (no-op)
+  │  ├ 12 진짜 events → 7 distinct handlers:
+  │  │  ├ 0x24300 (5 events: 35/48/49/51/57) ⭐ most popular → bl FUN_00042758 (entity init)
+  │  │  ├ 0x242c0 (4 events: -4..-1)
+  │  │  ├ 0x242d0 (3 events: -5/53/55)
+  │  │  ├ 0x24264 (event -10) → task[+0xf2] short + helper 0x2c6a4
+  │  │  └ 0x2427a (event -16), 0x242c8 (event 42), 0x24300 등
+  │  └ case "single-entity update" → FUN_000818f0 (5.6KB single-entity handler)
+  │     └ task_struct[0xac78~0xac9d] = 38B entity state record (200+ access)
+  └ FUN_000245fc  ⭐⭐⭐ NEW (Round 38) — 6번째 indirect entry, 388B / 13 arms / BL=7 ctx
+      └ BL +0x30 → FUN_00040fb0  (parent state runner, 3.1KB / 35 arms / 18 ctx)
+          └ BL +0x4e → FUN_00041c14  (cluster #1 state machine, 2.8KB / 45 arms / BL=16 ctx + 1 memset)
+              └ BL +0xb30 → FUN_00041c6e  (internal self-loop sub-label)
+
+scene script opcode 0x12 (FUN_0008e89e의 internal) — Korean dialogue sub-interpreter:
+  cmp r1, #0x49 bls 0x90206 → inner JT @ 0xabcb4 (SL-relative 74-entry, code base 0xb43ec)
+   ├ 66/74 (89%) → FUN_00098904 +0x3b0 (default, no-op-style)
+   └ 8 distinct cases → FUN_00098904 의 entry labels (+0x54 / +0x60 / +0x16a / +0x1c4 / +0x224 / +0x2ea / +0x35c)
+     (FUN_00098904 = 1524B, system-wide popular helper, 43 BL callers)
 ```
 
 각 dispatcher: **19 entries (opcode 0~0x12) → 7 distinct handlers** (0x00~0x0c 공통 + 0x0d~0x12 각 unique).
@@ -83,15 +94,15 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 
 ### 다음 세션 첫 5분 — 무조건 봐야 할 곳
 
-1. **이 섹션 + 위 game update flow (2026-05-10 정정판)** 읽기
+1. **이 섹션 + 위 game update flow (2026-05-17 정정판, 6 indirect entries)** 읽기
 2. `git log --oneline -8` — 최신 커밋 확인
 3. `git status --short` — 미커밋 잔여 확인
-4. **[ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 37 / PM** (SCN common 본문 + NPC dispatcher JT + opcode 0x12 11.4KB + cluster #1 paired state machine + FUN_00040fb0 신규)
-5. (참고) [ghidra-cluster-and-scn-jt-2026-05-11.md](ghidra-cluster-and-scn-jt-2026-05-11.md) — Round 36 / PM-26 (0x9b00 cluster 51 sites + FUN_0008e89e JT 디코드 + FUN_00082f4c UI wrapper)
-6. (참고) [ghidra-immediate-construction-and-bridges-2026-05-10.md](ghidra-immediate-construction-and-bridges-2026-05-10.md) — Round 35 / PM-25 (도구 immediate construction + 3 entity-bridge caller chain + SCN interpreter)
+4. **[ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md)** ⭐⭐⭐ — **최신 Round 38 / PM-2** (op12 inner JT 디코드 + 6th indirect entry + cluster #1 완전 체인)
+5. (참고) [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md) — Round 37 (SCN/NPC common 본문 + 통합 scripting engine + opcode 0x12 11.4KB + cluster #1 paired)
+6. (참고) [ghidra-cluster-and-scn-jt-2026-05-11.md](ghidra-cluster-and-scn-jt-2026-05-11.md) — Round 36 (0x9b00 cluster 51 sites + FUN_0008e89e JT 디코드 + UI wrapper)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~37 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~38 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -115,6 +126,7 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **35** (PM-25) | ⭐⭐ **도구 immediate construction** (`movs Rd, #N; lsls Rd, Rd, #s` 추적, 0x274 0→2 sites). **3 entity-bridge caller chain 확정** — FUN_00030018 ← FUN_00082f4c (UI invocation wrapper), FUN_0008beba ← **FUN_0008b2e8 sister entry**, FUN_0008e89e ← **FUN_0008dcd8 main entry**. **FUN_0008e89e = 16.3KB 초거대 SCN bytecode interpreter** (7969 instr, 62 cmp arms, cmp #0xff 6x + 0x89/0x8f EUC-KR + 0x3b/0x49 ASCII) | [ghidra-immediate-construction-and-bridges-2026-05-10.md](ghidra-immediate-construction-and-bridges-2026-05-10.md) |
 | **36** (PM-26) | ⭐⭐⭐ **0x9b00 cluster direct wide-scan = 51 sites** (Round 35 1 → 51, 50배 증가, R0 propagation 무시). **FUN_00041c6e = cluster #1 dominant reader** (21+ access). **FUN_0008e89e JT @ 0xabc68 디코드 완료** — 19→7 dest, case 0..12 (13 공통) → 0x8ec26 text output + case 13..18 (6 special opcodes) unique = PROGRESS 가설 정확히 검증. FUN_00082f4c (1.6KB) UI invocation wrapper 본문 | [ghidra-cluster-and-scn-jt-2026-05-11.md](ghidra-cluster-and-scn-jt-2026-05-11.md) |
 | **37** (2026-05-17 PM) | ⭐⭐⭐ **SCN common handler 0x8ec26 = text output 본문 검증** (1258B, 3× draw_text + 3× screen_ptr + 3× helper + 2× sound + 1× ctx(0xff)). ⭐⭐⭐ **NPC dispatcher JT @ 0xabaa8 = SCN과 1:1 미러** (19→7, case 0..12 → 0x8c242). **0x8c242 NPC common = 0x8ec26 SCN common 4-batch 변형** → Hero3 = **통합 19-opcode scripting engine**. ⭐⭐⭐ **opcode 0x12 = 11.4KB Korean dialogue sub-interpreter** (47 arms, EUC-KR 0x89/0x8f + ASCII ';'/'I'/'2', 41× ctx). ⭐⭐ **FUN_00041c14 cluster #1 state machine 본문** (2884B, 45 arms, BL=16 ctx + 1 memset only, NO graphics/sound, 0x9b14 main state 11x). ⭐⭐ **FUN_00040fb0 신규 함수 발견** (3.1KB parent runner, FUN_00041c14 unique caller, pure state pattern) | [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md) |
+| **38** (2026-05-17 PM-2) | ⭐⭐⭐ **opcode 0x12 inner JT @ 0xabcb4 디코드** — SL-relative 74-entry (Round 36 outer JT 와 동일 모델, code base 0xb43ec), 7 dests → **FUN_00098904 안의 8 entry labels** (computed-goto). 66/74 sparse default = Round 30 패턴 재확인. **47 arms 정밀 분류**: state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 = token-driven multi-byte text parser. ⭐⭐⭐ **6번째 indirect entry function 발견** — **FUN_000245fc** (388B, 0 BL caller, cluster #1 state machine GVM-side 진입점). **완성된 cluster #1 chain**: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e. ⭐⭐ **FUN_00098904 = 43 system-wide callers** (1524B popular helper, NOT op12 전용) | [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md) |
 
 ### 현재 게임 시스템 모델 (Round 37 시점, 검증 vs 가설)
 
@@ -281,58 +293,48 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 38 즉시 시작 명령 (복사-붙여넣기)
+### Round 39 즉시 시작 명령 (복사-붙여넣기)
 
-> **참고**: Round 37 에서 SCN/NPC dispatcher의 19-opcode 통합 아키텍처가 확정되었고, opcode 0x00~0x0c (text output common) + 0x0d~0x12 (6 special) 모든 본문이 디스어셈블 됨. 다음 라운드는 **opcode 0x12 의 11.4KB sub-interpreter 정밀 분류** + **FUN_00040fb0 caller 추적** + **NPC 6 special opcodes 본문**.
+> **참고**: Round 38 에서 6 indirect entries 가 완성되고 (FUN_000245fc 신규) opcode 0x12 의 inner 74-entry JT 디코드 됨. 다음 라운드는 **FUN_000245fc 본문 정밀 분석** + **FUN_00098904 의 8 entry labels** + **NPC 6 special opcodes**.
 
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
 
-# ⭐⭐⭐ 2EA: opcode 0x12 의 47 arms 정밀 분류 (EUC-KR/ASCII/sentinel/state)
-# (이미 work/h3/scn_op12_8fc20_disasm.json 존재 — JSON 직접 파싱)
+# ⭐⭐⭐ 2FA: FUN_000245fc 본문 정밀 분석 (6번째 indirect entry, cluster #1 진입점)
+# (이미 work/h3/fb0_caller1_245fc_disasm.json 존재)
 python -c "
 import json
-d = json.load(open('work/h3/scn_op12_8fc20_disasm.json'))
-arms = d['arms']
-buckets = {'EUC-KR (0x80~)': [], 'ASCII (;/I/2)': [], 'sentinel (0xff)': [], 'small state (0~0x12)': [], 'other': []}
-for a in arms:
-    imm = a.get('imm', -1)
-    if imm in (0x89, 0x8f): buckets['EUC-KR (0x80~)'].append(a)
-    elif imm in (0x3b, 0x49, 0x32): buckets['ASCII (;/I/2)'].append(a)
-    elif imm == 0xff: buckets['sentinel (0xff)'].append(a)
-    elif 0 <= imm <= 0x12: buckets['small state (0~0x12)'].append(a)
-    else: buckets['other'].append(a)
-for k, v in buckets.items(): print(f'{k}: {len(v)}'); [print(f'  {a}') for a in v[:3]]
+d = json.load(open('work/h3/fb0_caller1_245fc_disasm.json'))
+print(f'size: {d[\"size_bytes\"]}B, instr: {d[\"instr_count\"]}, arms: {len(d[\"arms\"])}')
+print(f'arm imm dist: {d[\"arm_imm_dist\"]}')
+print(f'BL summary: {d[\"interesting_bl_summary\"]}')
+print(f'literals categories: {d[\"pcrel_literals_categories\"]}')
+print('all pcrel literals:')
+for l in d['pcrel_literals']: print(f'  {l[\"site\"]} -> {l[\"value\"]} ({l.get(\"category\",\"?\")})')
 "
 
-# ⭐⭐ 2EC: FUN_00040fb0 의 BL caller 추적 (cluster #1 state machine 의 시스템 진입점)
-python tools/recon/find_callers_41c14.py
-# (스크립트에 0x40fb0 추가하려면 코드 수정)
+# ⭐⭐ 2FB: FUN_00098904 본문 (1524B, 8 JT entry labels 의미)
+python tools/recon/disasm_subsystem_func.py 0x98904 0x98ef8 --label op12_dispatcher_98904_v2
 
-# ⭐ 2ED: NPC 6 special opcodes 본문 디스어셈블 (SCN 6 special과 차이 식별)
+# ⭐⭐ 2FC: FUN_0002ae44 의 callers (0x248ce, 0x24fd0) 추적
+python tools/recon/find_callers_generic.py 0x2ae44 0x245fc
+python tools/recon/find_function_containing.py 0x248ce 0x24fd0
+
+# ⭐ 2FD: NPC 6 special opcodes 본문 디스어셈블 (SCN 6 special과 차이 식별)
 python tools/recon/disasm_subsystem_func.py 0x8c79c 0x8c990 --label npc_op0d_8c79c
 python tools/recon/disasm_subsystem_func.py 0x8c990 0x8cbb0 --label npc_op0e_8c990
 python tools/recon/disasm_subsystem_func.py 0x8cbb0 0x8ceac --label npc_op0f_8cbb0
 python tools/recon/disasm_subsystem_func.py 0x8ceac 0x8d0f6 --label npc_op10_8ceac
 python tools/recon/disasm_subsystem_func.py 0x8d0f6 0x8d2e2 --label npc_op11_8d0f6
-# 0x8d2e2 끝 주소: FUN_0008b2e8 영역 끝 (다음 push prologue 찾기 필요)
 
-# ⭐ 2EB: FUN_00040fb0 의 18 context_getter 사이트 + 35 arms 본문 정밀 분석
-# (이미 work/h3/state_runner_40fb0_disasm.json 존재)
-python -c "
-import json
-d = json.load(open('work/h3/state_runner_40fb0_disasm.json'))
-print(f'BLs: {d[\"interesting_bl_summary\"]}')
-print(f'arms imm dist: {d[\"arm_imm_dist\"]}')
-print('first 10 BL r0 args:')
-for b in d['interesting_bls'][:10]: print(f'  {b}')
-"
+# ⭐ 2FE: opcode 0x12 의 0xc-stride record array gate 분석 (0x90e38, 0x9131c)
+python tools/recon/disasm_op12_window.py
 ```
 
-**Round 38 작업 후 (마무리 절차)**:
+**Round 39 작업 후 (마무리 절차)**:
 1. 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 2. PROGRESS.md 우선순위 표에 ✅ + 새로운 ⭐ 추가
-3. 메모리 파일 (`project_hero3_remake.md`) 에 **Round 38 항목** 추가
+3. 메모리 파일 (`project_hero3_remake.md`) 에 **Round 39 항목** 추가
 4. Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 
@@ -341,30 +343,34 @@ for b in d['interesting_bls'][:10]: print(f'  {b}')
 다음 세션에서 사용자가 "영웅서기3 이어서 진행" 같은 짧은 지시만 줬을 때, 다음 흐름으로 자동 진행:
 
 **1) 컨텍스트 복구** (1분):
-- `git log --oneline -8` 로 최근 작업 파악 (Round 37 까지 완료 — SCN/NPC common 본문 + 통합 scripting engine + opcode 0x12 + cluster #1 paired state machine + FUN_00040fb0 신규)
-- 위 Round 37 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
+- `git log --oneline -8` 로 최근 작업 파악 (Round 38 까지 완료 — op12 inner JT 디코드 + 6번째 indirect entry FUN_000245fc + cluster #1 완전 체인)
+- 위 Round 38 핸드오프 문서 + 이 우선순위 표의 ⭐ 항목 확인
 
-**2) 권장 다음 작업 (Round 38 후보, 우선순위 순)**:
+**2) 권장 다음 작업 (Round 39 후보, 우선순위 순)**:
 
 | # | 작업 | 명령 | 기대 산출물 |
 |---|---|---|---|
-| ⭐⭐⭐ **2EA** | **opcode 0x12 의 47 arms 정밀 분류** (EUC-KR 0x89/0x8f + ASCII ';'/'I'/'2' + sentinel 0xff + state 0~0x12) | JSON 분석 (이미 디스어셈블 됨) | Korean dialogue interpreter 의 case 풀이 |
-| ⭐⭐ **2EC** | **FUN_00040fb0 의 caller 추적** (cluster #1 state machine 시스템 진입점) | `find_callers_41c14.py` 확장 | entity update loop 진입점 |
-| ⭐ **2ED** | NPC 6 special opcodes (0x8c79c~0x8d2e2) 본문 디스어셈블 — SCN 6 special과 차이 식별 | inline disasm | NPC 전용 opcode 의미 |
-| ⭐ **2EB** | FUN_00040fb0 의 18 ctx_getter + 35 arms 정밀 분석 — task_struct 필드 의존성 추출 | JSON 분석 | parent runner state 의미 |
+| ⭐⭐⭐ **2FA** | **FUN_000245fc 본문 정밀 분석** (6번째 indirect entry, cluster #1 GVM-side 진입점) | JSON 분석 (이미 disasm 됨) | cluster #1 state machine 의 게임 시스템 역할 (cutscene? event? menu?) |
+| ⭐⭐ **2FB** | FUN_00098904 본문 (1524B, 41 arms, 8 JT entry labels) — 각 entry label 의 의미 | `disasm_subsystem_func.py 0x98904 0x98ef8` | op12 inner JT 의 dispatch destinations 의미 |
+| ⭐⭐ **2FC** | FUN_0002ae44 callers (0x248ce, 0x24fd0) 추적 — FUN_000241dc 74-entry JT 와 관계 | `find_callers_generic.py` | secondary state path 의 시스템 위치 |
+| ⭐ **2FD** | NPC 6 special opcodes (0x8c79c~0x8d2e2) 본문 — SCN 6 special과 차이 식별 | inline disasm | NPC 전용 opcode 의미 |
+| ⭐ **2FE** | opcode 0x12 의 0xc-stride record array gate (0x90e38, 0x9131c) — 12-byte record 의 구조 | window disasm | record 구조 |
+| ⭐ **2FF** | EUC-KR pair 두 클러스터 (0x920c0, 0x92590) — 한글 문자 처리 path 풀이 | disasm + decode | CP949 디코드 path |
 | ⭐ 2DT | 도구 추가 강화 — direct wide-scan 통합 (raw ldr pcrel + post-pattern classification) | 도구 코드 수정 | 통합 도구 |
 | ⭐ 2CD | 0x9c70 stack-load 패턴 추가 lenient 화 (Round 27 92% miss) | 도구 추가 확장 | 0x9c70 의 진짜 reader 분포 |
-| ~~2DP~~ | ~~FUN_0008e89e 의 0x8ec26 common handler 본문~~ | ✅ Round 37. 1258B, 3× draw_text + 3× screen_ptr + 3× helper + 2× sound + 1× ctx(0xff) = **text output 확정** |
-| ~~2DQ~~ | ~~FUN_00041c6e cluster #1 reader 본문~~ | ✅ Round 37. FUN_00041c14 2884B / 45 arms / BL=16 ctx+1 memset (no graphics/sound) = **pure state machine**. 0x9b14 main state (11x). FUN_00040fb0 unique caller |
-| ~~2DR~~ | ~~6 special SCN opcodes 본문~~ | ✅ Round 37. 0x0d~0x11 = text output 변형 (0x0f/0x10 = ';' 구분자). **0x12 = 11.4KB Korean dialogue sub-interpreter** (47 arms, EUC-KR + ASCII) |
-| ~~2DS~~ | ~~NPC dispatcher JT @ 0xabaa8 디코드~~ | ✅ Round 37. 19→7, case 0..12 → 0x8c242 = SCN 0x8ec26 의 4-batch 변형. **Hero3 = 통합 19-opcode scripting engine 확정** |
+| ~~2DP~~ | ~~FUN_0008e89e 의 0x8ec26 common handler 본문~~ | ✅ Round 37. text output 확정 |
+| ~~2DQ~~ | ~~FUN_00041c6e cluster #1 reader 본문~~ | ✅ Round 37. pure state machine, 0x9b14 main state |
+| ~~2DR~~ | ~~6 special SCN opcodes 본문~~ | ✅ Round 37. 0x12 = 11.4KB Korean dialogue sub-interpreter |
+| ~~2DS~~ | ~~NPC dispatcher JT @ 0xabaa8 디코드~~ | ✅ Round 37. Hero3 = 통합 19-opcode scripting engine |
+| ~~2EA~~ | ~~opcode 0x12 의 47 arms 정밀 분류~~ | ✅ Round 38. state 35 / sentinel 6 / EUC-KR 4 / ASCII 2 + **inner JT @ 0xabcb4 디코드** (74 entries → FUN_00098904 8 labels, 66/74 sparse) |
+| ~~2EC~~ | ~~FUN_00040fb0 의 caller 추적~~ | ✅ Round 38. **FUN_000245fc 신규 6번째 indirect entry** (388B, 0 BL caller). 완성된 chain: GVM → FUN_000245fc → FUN_00040fb0 → FUN_00041c14 |
 | 2BM | FUN_0009a008 의 1st-stage JT @ 0xacf58 디코드 (7 entries) | binary 직접 read | 7 dispatch entries 의 destination |
 | 2BN | FUN_0009a008 의 2nd-stage JT (sub-label "FUN_0009b252") 디코드 (14 entries) | binary 직접 read | 14 dispatch entries 의 destination |
 
-**3) Round 38 작업 후 마무리**:
+**3) Round 39 작업 후 마무리**:
 - 분석 결과 → 신규 문서 `docs/h3/ghidra-<주제>-2026-05-XX.md` 작성
 - PROGRESS.md 우선순위 표에 ✅ 추가 + 새로운 권장 작업 ⭐ 추가
-- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 38 항목** 추가
+- 메모리 파일 (`project_hero3_remake.md`) 에 **Round 39 항목** 추가
 - Python 회귀 (`python -m unittest discover -s tools/recon -p 'test_*.py'`) 통과 확인 후 커밋
 
 **4) 사용자 블로커 작업이 더 가치 있으면 우선순위 변경**:
@@ -459,7 +465,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 핵심 진입 문서
 
-- [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md) — **⭐⭐⭐ 최신 Round 37** (SCN/NPC common 본문 + 통합 scripting engine + opcode 0x12 11.4KB + cluster #1 paired state machine + FUN_00040fb0 신규)
+- [ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md](ghidra-op12-inner-jt-and-6th-entry-2026-05-17.md) — **⭐⭐⭐ 최신 Round 38** (op12 inner JT 디코드 + 6번째 indirect entry FUN_000245fc + cluster #1 완전 체인)
+- [ghidra-scn-handlers-and-state-machines-2026-05-17.md](ghidra-scn-handlers-and-state-machines-2026-05-17.md) — Round 37 (SCN/NPC common 본문 + 통합 scripting engine + opcode 0x12 11.4KB + cluster #1 paired state machine + FUN_00040fb0 신규)
 - [ghidra-cluster-and-scn-jt-2026-05-11.md](ghidra-cluster-and-scn-jt-2026-05-11.md) — Round 36 (0x9b00 cluster 51 sites + FUN_0008e89e JT 디코드 + UI wrapper)
 - [ghidra-task-struct-layout-2026-05-10.md](ghidra-task-struct-layout-2026-05-10.md) — Round 24 (task_struct field layout 매핑 + context_getter 정정 + dynamic sound id)
 - [ghidra-task-struct-fields-2026-05-10.md](ghidra-task-struct-fields-2026-05-10.md) — Round 23 / PM-13 (GOT slot vs task_struct field 분류 정정)
