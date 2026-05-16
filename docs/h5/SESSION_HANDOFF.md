@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-11 (Round 39 — Quest 시스템 식별. **QuestMgr 22+ 함수 + 3 quest_*.dat × 151 quests** (모두 동일 내용 → save slot 별 추정). Quest struct 368B/entry. Mission(achievements 105) ↔ Quest(main 151) 별도 시스템.)
+업데이트: 2026-05-17 (Round 40 — quest_*.dat record byte 정밀 매핑 + decoder 발행. 3 difficulty × 151 quests, **save slot 가설 정정 → 3 difficulty scaling** (enemy_*.dat Round 34 와 동일). body = 44 + strlen0 + strlen1 + strlen2, phase1 (objectives 3×6B) + phase2 (rewards 3×6B) + trailer 2B. reward 17=money / 18=exp / 255=unused. quest #0 EXP: q0=340 / q1=20830 / q2=36150 difficulty scaling 검증.)
 
 ---
 
-## 🎯 전체 진척 평가 (Round 39 시점)
+## 🎯 전체 진척 평가 (Round 40 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
-| **데이터 구조 RE** (csv/dat layout) | ~85% | items/monster/drop/smith/mission/quest 모두 식별. 남은 것: quest_*.dat 정밀 decoder, save 파일 |
-| **.so 함수 분석** (game logic) | ~50-60% | Formula VM, Item, Refine/Drop/Mix mechanism 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
+| **데이터 구조 RE** (csv/dat layout) | **~90%** | items/monster/drop/smith/mission/**quest** 모두 decoder 발행. 남은 것: save 파일 |
+| **.so 함수 분석** (game logic) | ~50-60% | Formula VM, Item, Refine/Drop/Mix/Quest mechanism 식별. 미분석: Monster AI, UI, NPC 대화, Battle motion |
 | **Godot 실 구현** | ~25-30% | 골격 + Formula VM 통합. 미구현: 인벤토리/강화/합성/Quest UI, 실 battle loop, AI, save |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 **65-75%**
+- **"원본 분석"** (RE+자산) 으로 보면 **70-80%** (데이터 RE 거의 마무리 — 남은 큰 덩어리: save 파일)
 - **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **25-35%**
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
@@ -35,10 +35,10 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작**:
-- **(분석 track) Round 40 = quest_*.dat record 정밀 매핑 + decoder** (1 라운드, 151 quests JSON)
+**선택 옵션 — 다음 중 하나로 시작 (Round 41 부터)**:
+- ~~Round 40 = quest_*.dat decoder~~ ✅ Round 40 완료 (3 difficulty × 151 quests, quests.json 발행)
 - **(분석 track) Monster AI 시스템 분석** (Ai_Action 2136B 등 — UI 다음으로 큰 덩어리)
-- **(분석 track) Save 파일 포맷 분석** (DES 키 0EP@KO91 + save record layout)
+- **(분석 track) Save 파일 포맷 분석** (DES 키 0EP@KO91 + save record layout — 마지막 큰 데이터 RE)
 - **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면 진입)
 
@@ -111,7 +111,9 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 | **모든 게임 시스템 데이터원 5종** | enemy_g (Map enemy), enemy_*.dat (Monster ×3), droptable.dat (drop pool), smith_*.dat (craft ×3), mission_list.dat (105 missions) — Round 33-37 으로 모든 시스템 데이터 파이프라인 매핑 완료 (R37) |
 | **mission_list.dat record format** | u16 size + u8 strlen + name + (mission_type, sub_type, target_count) + 5×(slot u8, flag u8, value u32) + final_flag = strlen+39 byte. mission_type 0-5 (20/5/22/47/5/5) + 255 metadata. Slot 5..8 = helmet/boots/accessory cat (R38) |
 | **Mission decoder + 105 missions JSON** | 105 missions 모두 정확 parse. type 분포가 Round 37 의 13 Check* 함수에 매핑 (collection/rank/quest/mix 등) (R38) |
-| **Quest 시스템 식별 (Mission 과 별도)** | QuestMgr 22+ 함수, LoadQuestData (0xd40e8, 1188B) → /c/csv/quest_%d.dat. 3 files (각 22367B × 151 quests, 모두 동일 내용 → save slot 별 추정). Quest struct 368B (0x170)/entry. Mission(achievements) ↔ Quest(main story) 별도 시스템, Mission::CheckQuestComplete 가 link (R39) |
+| **Quest 시스템 식별 (Mission 과 별도)** | QuestMgr 22+ 함수, LoadQuestData (0xd40e8, 1188B) → /c/csv/quest_%d.dat. 3 files (각 22367B × 151 quests). Quest struct 368B (0x170)/entry. Mission(achievements) ↔ Quest(main story) 별도 시스템, Mission::CheckQuestComplete 가 link (R39) |
+| **quest_*.dat record 정밀 매핑 + 3 difficulty scaling 확정** | Quest_GetOffset 으로 u16 size prefix layout 확인. body = 3 header byte (h0/h1=obj_count/h2) + (strlen+name) + (strlen+desc) + (strlen+cat) + phase1 (3×6B objective: cond_type u8 + cond_sub u8 + target_value u32) + phase2 (3×6B reward, 17=money/18=exp/255=unused) + 2 byte trailer. body size = 44 + s0+s1+s2. **3 files = save slot 아닌 3 difficulty** (q0/q1/q2 의 reward value 단조 증가 — quest #0 EXP: 340/20830/36150, enemy_*.dat Round 34 와 동일 패턴). 151/151 record EOF 도달 (R40) |
+| **decode_h5_quest.py + quests.json 발행** | 기존 stub 교체 (mission_list 디코드 misnamed → 정상 quest decoder). 3 difficulty × 151 quests + compare table → quests.json 645KB (R40) |
 
 ### Phase 2/3 인프라 완료
 - ✅ DES 변종 해독 (S1[3][10]=2), calc_*.dat MD5 검증 평문 dump
@@ -121,10 +123,11 @@ Title → ClassSelect → Demo 흐름 동작하는 Godot 4 프로젝트 (`apps/h
 - ✅ items.json 에 named fields 부여 (subtype, class_mask, class_label, level_limit, item_id, sub_record, val_150..val_160, refine fields)
 
 ### 직전 작업 (이어서 진행 시 시작점)
-- Round 39 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
-- 가장 직접적 옵션: **quest_*.dat record 정밀 매핑 + decoder** — LoadQuestData
-  1188B 의 ByteToInt16/strb 시퀀스 추적으로 record format 확정. 151 quests JSON
-  발행 (이름/타입/조건/보상/대화 등 fields).
+- Round 40 종료. 다음 라운드 시작점은 아래 "다음 세션 시작점" 섹션 참조.
+- 가장 직접적 옵션 (남은 데이터 RE 마무리): **Save 파일 포맷 분석** — HERO::SaveAll
+  (0x8f924) 분석 + DES (key 0EP@KO91, S1[3][10]=2 변종) 복호 + record layout.
+- 큰 임팩트 옵션: **Monster AI 시스템** — Ai_Action 2136B 등 미분석 함수 RE.
+- 출시 % 끌어올림: **Godot UI 구현** (인벤토리/강화/합성/Quest 패널).
 - 또는: scn opcode 실제 game scene 동작 검증, 한글 폰트 매핑 (LOW PRIORITY).
 - ✅ **Round 6**: gv_sub 핵심 필드 정확화 (writer 분석으로 V[58]=level, V[60..63]=base_str/dex/int/con,
   V[69]=SP, V[70]=CP, V[118..121]=bonus_str/dex/int/con 확정)
