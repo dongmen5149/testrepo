@@ -208,71 +208,136 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **46** (2026-05-17 PM-10) | ⭐⭐⭐ **letter keyboard input subsystem 발견**: FUN_00053e08 (cmp 'c' 4x) + **FUN_0003c920 (cmp 'd'/'f'/'g'/'h'/'i', 33 arms)** = 피처폰 ABC keypad mapping (키 #2 abc + #3 def + #4 ghi) = **사용자 텍스트 입력 시스템**. ⭐⭐⭐ **HIGH ENCAPSULATION pattern**: FUN_00085578c (24B) = `&task[0xa848]` getter, **34 BL callers system-wide** 모두 wrapper 경유 (task[0xa848] literal 1 site only). C/C++ accessor pattern 흔적. ⭐⭐ **FUN_00092bd0** = (int8)task[0xa280] byte reader (40B, 15 callers). **FUN_00092cc0** = '2'/'8' digit + -1/-2 sentinel dispatcher (112B, 5 callers). **FUN_00085aa8** = event 3 heavy init (112B, 4 sub-helpers + memset + 글로벌 obj.vtable[+0x60] indirect call). task[0xa848]/0xa280 신규 (encapsulated state fields) | [ghidra-input-subsystem-and-helpers-2026-05-17.md](ghidra-input-subsystem-and-helpers-2026-05-17.md) |
 | **47** (2026-05-17 PM-11) | ⭐⭐⭐ **vtable[+0x60] = ObjectB.method0x60 신규 슬롯** (FUN_85aa8가 GOT[+0x18]=ObjectB의 vtable[+0x60] indirect call). ObjectB known methods 8 → 9개. ⭐⭐⭐ **task[0xa848] = "current screen/menu state" 중앙 필드 확정** — 34 callers 분포: save/load (FUN_56f3c) + render command buffer (FUN_57394) + 7th indirect entry FUN_86058 cluster (15+ functions 0x85xxx-0x86xxx HEAVY) + sister entry sub-handler (FUN_8d87c Round 28). 모든 핵심 subsystems access. ⭐⭐ **FUN_0003a86c = letter input subsystem 진입점** (388B, cmp #0xf range guard + 13 ctx, 4 callers including **FUN_000818f0 entity update loop** → entity가 letter input trigger). FUN_85aa8 state clear = task[0x9c71] + memset 1060B. 4 sub-helpers (FUN_3d434/85e88/2cc94/862d4) 모두 lightweight state ops | [ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md](ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md) |
 
-### 현재 게임 시스템 모델 (Round 40 시점, 검증 vs 가설)
+### 현재 게임 시스템 모델 (Round 47 시점, 검증 vs 가설)
 
-**✅ 검증된 사실** (실측 disassembly + reader 통계):
+**✅ 검증된 사실** (실측 disassembly + reader 통계, Round 18~47 종합):
 
 ```
-GVM Firmware (외부 주입)
-  └─ 9 GOT slots @ binary 0xb2c40 base (Round 25 0xd1c 추가)
-       ├─ slot 0x18  → ObjectB ptr (240 reader functions, vtable methods)
-       │                ⭐ Round 33 최종 confirmed: **static GVM-injected master interface**
-       │                  - 909 LDR / 876 add+sl / 876 read / 0 write
-       │                  - 17 사이트 = ObjectB.method(entity_record_ptr) 호출
-       │                  - Round 31 의 'dynamic proxy' 가설 완전 폐기
-       ├─ slot 0x16c → alternate task struct ptr (147 readers)
-       ├─ slot 0x29e → small flag
+GVM Firmware (외부 주입, PIC indirect)
+  └─ 14 known GOT slots @ binary 0xb2c40 base (sl-trampoline 으로 PIC 검증, Round 42)
+       │
+       │ === Object slots (4 known objects) ===
+       ├─ slot 0x18  → **ObjectB ptr** (240 reader functions, **9 known vtable methods**)
+       │                ⭐ Round 33 최종 confirmed: static GVM-injected master interface
+       │                - 909 LDR / 876 read / 0 write (write 0건 확정)
+       │                - 17 사이트 = ObjectB.method(entity_record_ptr) 호출
+       │                - vtable: +0x10/0x20/0x44/0x54/**0x58** (Round 42 event)/**0x60** (Round 47 NEW)/0x68/0x7c/0x80
+       ├─ slot 0x44c → ObjectA ptr (resource manager, acquire-use-release, 8 readers)
+       │                vtable 12 methods @ 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80
+       ├─ slot 0x78  ⭐ Round 42 NEW = **ObjectE ptr** (46 sites, **0xDxxx 영역 집중** = FUN_00006334)
+       │                vtable: +0x0c (event handler) / **+0x10 (graphics method (0xb0, 0xa0))**
+       │                ⭐⭐ Round 44: event 3 = ObjectE.method0x10 graphics call
+       │                ⭐⭐⭐ Round 44: entity record (task[0xac78]) ↔ ObjectE = KEY LINK
+       └─ slot 0xd00 → StorageCell ptr (current resource holder)
+       │
+       │ === Task/state pointer slots ===
+       ├─ slot 0x444 → task_ptr (= context_getter FUN_0004ad10 의 source)
+       ├─ slot 0x16c → alternate task_struct ptr (147 readers, double indirection)
        ├─ slot 0x128 → secondary state ptr (state 0xf write target)
-       ├─ slot 0x444 → task_ptr (= context_getter 가 read)
-       ├─ slot 0x44c → ObjectA ptr (resource manager, 8 readers)
-       ├─ slot 0xd00 → StorageCell ptr (current resource holder)
-       ├─ slot 0xd04, 0xd08 → ObjectA helper data ptrs
-       ├─ slot 0xd1c (Round 25, ObjectA helper cluster 인접)
-       ├─ slot 0x74  ⭐ NEW Round 42 (ObjectE 인접)
-       ├─ slot 0x78  ⭐ NEW Round 42 = **ObjectE ptr** (46 sites, 0xDxxx 영역 집중)
-       ├─ slot 0x140 ⭐ NEW Round 42 = ObjectE pending flag ptr (9 sites)
-       ├─ slot 0x144 ⭐ NEW Round 42 (ObjectE pending 인접)
-       └─ slot 0x160 ⭐ NEW Round 42 = **ObjectB pending flag ptr** (114 sites system-wide)
+       ├─ slot 0x29e → small flag (3 sites)
+       │
+       │ === Pending flag slots (event 시스템) ===
+       ├─ slot 0x140 ⭐ Round 42 NEW = ObjectE pending flag ptr (9 sites)
+       ├─ slot 0x144 ⭐ Round 42 NEW (ObjectE pending 인접)
+       ├─ slot 0x160 ⭐ Round 42 NEW = **ObjectB pending flag ptr** (**114 sites system-wide**)
+       ├─ slot 0x74  ⭐ Round 42 NEW (ObjectE 인접)
+       │
+       └─ slot 0xd04/0xd08/0xd1c (ObjectA helper data ptrs / cluster, Round 22+25)
+
+** GVM 가 호출하는 7 indirect entry functions** (= 0 BL caller + 0 literal pool, Round 18~45 누적):
+  1. FUN_0006619c   paint/tick callback           — 매 프레임
+  2. FUN_00070f34   key handler                   — 키 입력 (page--/page++)
+  3. FUN_0008b2e8   sister entry / NPC dispatcher — JT @ 0xabaa8 (19→7 dest)
+  4. FUN_0008dcd8   main entry / scene dispatcher — JT @ 0xabc68 (19→7 dest)
+  5. FUN_000241dc   system event dispatcher       — 74-entry JT @ 0xa6710 (Round 29)
+  6. FUN_000245fc   NPC dialog/quest subsystem    — task[0xa0c0] mode 0/3/4/7 (Round 38)
+  7. FUN_00086058 ⭐ Round 45 NEW = command processor — input → bl FUN_85578c → -5/-16/-2/-1 분기
 
 context_getter (FUN_0004ad10, single deref)
   └─ returns r0 = *(slot 0x444) = task_ptr
 
 task_struct (44KB+ 거대 평면 구조체, *(task_ptr) 으로 진입)
   ├─ 0x6     signed byte (small enum field, 0x16c-deref readers)
+  ├─ 0x7c    secondary gate (FUN_000245fc mode 3 조건: task[0x7c]==4, Round 39)
   ├─ 0xb4    byte (record array byte offset, FUN_0009a008 의 saved register)
+  ├─ 0x274   event registration field (FUN_00040cec writer, Round 33)
+  ├─ 0x290   ⭐ last_event_id (Round 41) — FUN_0002c6a4 모든 path tail 에서 write
+  ├─ 0x2b8   callback queue gate 2 (Round 40, FUN_000245fc only)
   ├─ 0x29e   small flag (3 sites, 2 funcs)
-  ├─ 0x9afc~0x9b3c ⭐⭐ byte field cluster #1 (Round 37 state machine 확정):
+  ├─ 0x0a5d  ⭐ callback queue gate (FUN_00041a68 reader, 4 distinct subsystems, Round 40)
+  │
+  │ === Cluster #1 paired state machine (Round 36~37) ===
+  ├─ 0x9afc~0x9b3c byte field cluster #1:
   │     ├─ +0  (0x9afc) start/init flag (1 site)
   │     ├─ +5  (0x9b01) step counter or sub-state (6 sites)
-  │     ├─ +18 (0x9b14) ⭐ main state byte (11 sites = dominant)
+  │     ├─ +18 (0x9b14) ⭐ main state byte (11 sites)
   │     └─ +20 (0x9b1c) sub-state byte (4 sites)
-  │   FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e 2단 paired state machine 처리
-  │   BL=16 ctx + 1 memset only → pure gameplay state (NO graphics, NO sound)
-  ├─ 0x9bb4~0x9bd0 ⭐ 32B substructure A (NEW Round 26 — same struct):
+  │   처리 chain: FUN_00040fb0 → FUN_00041c14 → FUN_00041c6e (Round 38)
+  │   BL=16 ctx + 1 memset only → pure gameplay state (NO graphics/sound)
+  │
+  │ === Substructure A (Round 26) ===
+  ├─ 0x9bb4~0x9bd0 ⭐ 32B substructure (same C struct):
   │    ├─ +0    (0x9bb4) bit flags (FUN_0007d31c 8-bit unrolled scan)
   │    ├─ +0x02 (0x9bb6) byte field
   │    ├─ +0x14 (0x9bc8) field
   │    └─ +0x1c (0x9bd0) ptr-to-object (14 unique funcs, system-wide 핵심 객체)
-  ├─ 0x9c70/71/84/85 ⭐ 4개 인접 byte fields:
-  │    - 0x9c70: 9+ caught (112 raw, under-caught)
-  │    - 0x9c71: 97 sites, 37 funcs (top FUN_000818f0 13x) ⭐ Round 27
-  │    - 0x9c84: 34 sites, 18 funcs (top FUN_0003be34 5x)
-  │    - 0x9c85: 31 sites, 11 funcs
-  ├─ 0x9cb8/9cbc/9cc0/9cfe  record array slots
-  ├─ 0x9e28  ⭐⭐ sound state #1 (101 sites, 83 unique funcs, system-wide most active) — 정정 Round 27
-  ├─ 0x9e78  per-context flag (11 sites, 7 funcs)
-  ├─ 0xa220 (12), 0xa244 (5), 0xa245 (4), 0xa254 (6) sound state cluster
-  └─ 0xac78~0xac9d ⭐⭐⭐ 38B entity state record (Round 28~30):
+  │
+  │ === Byte cluster (Round 27+45) ===
+  ├─ 0x9c70/71/72/73/74/75/76/84/85 ⭐⭐ 연속 byte fields (Round 45 = 6-byte 확장):
+  │    - 0x9c70 (9+ caught, 112 raw), 0x9c71 (97 sites, system-wide TOP),
+  │    - 0x9c72~0x9c76 (Round 45, FUN_00086058 가 일괄 클리어 = "party member" 후보)
+  │    - 0x9c84 (34 sites), 0x9c85 (31 sites)
+  │
+  │ === Callback queue cluster (Round 40, 2-stage frame callback queue) ===
+  ├─ 0x9cb8 ⭐ callback queue base ptr (31 system-wide sites)
+  ├─ 0x9cbc cursor source ptr (29 sites, advances 8B/frame → 0x9cd4)
+  ├─ 0x9cc0 stage 1 record count (int16, stride 0x158 records)
+  ├─ 0x9ccc stage 2 record count (int16, stride 0x1c records)
+  ├─ 0x9cd4 stage 1 cursor (stream-style consumption)
+  ├─ 0x9cd8 stage 2 base ptr (28B records, callback @+0x18)
+  │   Stage 1 callback @+0x154 fires when 3-level gate clears
+  │
+  │ === Sound state cluster (Round 23+27) ===
+  ├─ 0x9e28 ⭐⭐ sound state #1 (101 sites, 83 funcs, system-wide most active)
+  ├─ 0x9e78 per-context flag (11 sites)
+  ├─ 0xa220/0xa244/0xa245/0xa254 sound state cluster (Round 22)
+  ├─ 0xa22c sound state +0x0c (32 sites in opcode 0x12 sub-interpreter, Round 38)
+  │
+  │ === NPC dialog/quest subsystem (Round 39~40) ===
+  ├─ 0xa0c0 ⭐ subsystem mode byte (14 sites, FUN_000245fc dispatch key)
+  │           Modes: 0=idle, 3=active callback queue, 4=ObjectA cleanup, 7=event trigger
+  ├─ 0xa0cc NPC mode adjacent (Round 40)
+  ├─ 0xa1f6 mode 7 gate (4 sites)
+  ├─ 0xa288/0xa289 NPC index pair (FUN_00025f30 query results)
+  ├─ 0xa280 ⭐ encapsulated byte (15 callers via FUN_00092bd0 wrapper, Round 46)
+  │
+  │ === ⭐⭐⭐ Encapsulated state (Round 46 - HIGH ENCAPSULATION) ===
+  ├─ 0xa848 ⭐⭐ "current screen/menu state" 중앙 필드 (Round 47 가설)
+  │           literal in binary = 1 site only (FUN_00085578c getter), 34 BL callers via wrapper
+  │           = MenuState/ScreenContext struct base pointer
+  │           access from: save/load + render + 7th indirect entry cluster + sister entry
+  │
+  │ === Entity state record (Round 28~30) ===
+  └─ 0xac78~0xac9d ⭐⭐⭐ 38B entity state record (single-entity, FUN_000818f0 전용):
        - 13 distinct fields (byte/word mix), 200+ hits in FUN_000818f0
-       - 0xac78(43, 4 funcs) / 0xac79(8) / 0xac7a(42 ⭐top) / 0xac7c(2) / 0xac80(5) / 0xac84(7, peer)
-       - 0xac90(3) / 0xac92(1) / 0xac94 ⭐ pointer field (57 sites, 4 funcs — 정정 Round 30)
+       - 0xac78(43, 4 funcs) / 0xac79(8) / 0xac7a(42 ⭐top) / 0xac80(5) / 0xac84(7)
+       - 0xac90(3) / 0xac94 ⭐ pointer field (57 sites, 4 funcs)
        - 0xac98(22) / 0xac9c(2) / 0xac9d(6)
+       - ⭐⭐⭐ Round 44: task[0xac78] ↔ ObjectE = KEY LINK (event 3 path)
        - 10/12 fields = FUN_000818f0 전용 (single-entity 확정 Round 29)
 
-Object types (Round 27 종합):
-  ObjectA  (slot 0x44c): vtable 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80
-  ObjectB  (slot 0x18) : vtable 0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80
-  0x9bd0-Object ⭐    : vtable +0x08 dominant (71%) + 0x39/0x54/0x5a/0x8c/0x94/0xb4/0xb9 (별개 type)
+Object types (Round 47 종합, 4 known objects):
+  ObjectA       (slot 0x44c): vtable 0/0xc/0x10/0x1c/0x20/0x2c/0x44/0x54/0x58/0x68/0x7c/0x80 (12 methods)
+                             = resource manager, acquire-use-release lifecycle
+  ObjectB       (slot 0x18) : vtable 0/0x10/0x20/0x44/0x54/0x58/**0x60** (Round 47 NEW)/0x68/0x7c/0x80 (9 methods)
+                             = static GVM-injected master interface (240 readers, 909 LDR, 0 write)
+                             vtable[+0x58] = event handler invoker (FUN_0002cdb4, Round 41)
+                             vtable[+0x60] = FUN_00085aa8 event 3 heavy init handler (Round 47)
+  ObjectE       (slot 0x78) : vtable +0x0c (event handler) / **+0x10 (graphics method)** (Round 42~44 NEW)
+                             = screen transition / entity overlay renderer (0xDxxx 영역 집중)
+                             vtable[+0x10](0xb0, 0xa0) = event 3 의 graphics call
+  0x9bd0-Object             : vtable +0x08 dominant (71%) + 0x39/0x54/0x5a/0x8c/0x94/0xb4/0xb9
+                             (별개 type, 14 unique reader funcs, sub-struct of 0x9bb4)
 
 Top entity-handling funcs (Round 28 본문 분석):
   FUN_000818f0  ⭐⭐⭐ single-entity state handler + renderer (5.6KB, 2559 instr, 212 ctx_getter)
@@ -316,16 +381,85 @@ acquire-use-release 라이프사이클:
   → FUN_00098244 (use vtable RPC)
   → FUN_00098364 (release/destructor)
 
-ObjectB vtable methods (slot 0x18, 9 known offsets):
-  0/0x10/0x20/0x44/0x54/0x58/0x68/0x7c/0x80
+ObjectB vtable methods (slot 0x18, 9 known offsets, Round 22+42+47):
+  +0x10/0x20/0x44/0x54/**+0x58** (event handler, Round 42)/**+0x60** (event 3 init, Round 47)/0x68/0x7c/0x80
 
 veneer 14 (0xa4294 ~ 0xa42cc):
   bx r0/r1/r2/r3/r4/r5/r6/r7/r8/sb/sl/fp/ip/sp/lr (interleaved with mov r8,r8 NOP)
 
-Sound subsystem (FUN_0003d5d0, 4332B, 37 cmp arms):
-  - 21 sound_trigger calls (r0=ctx, r1=sound_id)
-  - 11 immediate IDs: 0x83/84/87/8d/8e/9b/a4/a5 (= 131~165, 페어 4쌍)
+Sound subsystem (FUN_0003d5d0, 4332B, 22 cmp arms — Round 22+45):
+  - 입력 정규화: internal_id = sound_id - 4 (Round 45)
+  - Valid sound_id range: [4..195], 22 arms sparse dispatch (192 가능 값 중 22 specific)
+  - task[offset] = sound_id (last_sound_id, FUN_0002c6a4 의 task[0x290]과 유사 패턴)
+  - 13 known immediate sound IDs: 0x07/0x20 (Round 43 신규) + 0x83/0x84/0x87/0x8d/0x8e/0x9b/0xa4/0xa5 (Round 23, 페어 4쌍)
   - 10 dynamic IDs: stack frame 변수 ([r7-0x18])
+  - 33 sound assets: 19 BGM (bgm0..18) + 14 SFX (sd000..013)
+
+=== 신규 subsystems (Round 38~47) ===
+
+SCN/NPC 통합 19-opcode scripting engine (Round 36~37):
+  - sister entry (FUN_0008b2e8) → JT @ 0xabaa8 → 0x8c242 NPC common (1370B)
+  - main entry (FUN_0008dcd8) → JT @ 0xabc68 → 0x8ec26 SCN common (1258B)
+  - 두 dispatcher 모두 19→7 dispatch (case 0..12 = 공통 text output, 13..18 = unique)
+  - SCN opcode 0x12 = 11.4KB Korean dialogue sub-interpreter (47 arms, EUC-KR 0x89/0x8f)
+    · inner JT @ 0xabcb4 (74-entry, SL-relative) → FUN_00098904 의 8 entry labels
+  - NPC opcode 0x12 = 1434B short-message stripped-down (no EUC-KR, no inner JT)
+  - 공통 text output: 3× draw_text_sprite + 3× screen_ptr + 3× helper_9fd64 + 2× sound
+
+Cluster #1 paired state machine (Round 36~38):
+  - GVM → FUN_000245fc (6th indirect entry, 388B)
+       → bl FUN_00040fb0 (parent runner, 3.1KB)
+            → bl FUN_00041c14 (state machine, 2.8KB, cluster #1 fields)
+                 → bl FUN_00041c6e (internal self-loop)
+  - Trigger: task[0xa0c0]==3 AND task[0x7c]==4
+  - main state: task[0x9b14] (11 reads, dominant)
+
+2-stage Frame Callback Queue (Round 40, task[0x9cb8 cluster]):
+  Stage 1 (heavy, 344B records, 3-level gating):
+    - record[+0] = sub_struct_ptr; sub_struct[+0x11] = flag
+    - 게이트: per-record flag + task[0x0a5d]==0 + task[0x02b8]==0
+    - record[+0x154] = callback function pointer → bl veneer 0xa42a0 (bx r3)
+  Stage 2 (light, 28B records):
+    - record[+0x18] = callback function pointer
+  Cursor: task[0x9cbc] → +8B/frame → task[0x9cd4] (stream-style)
+  Cleanup: FUN_00046de0 매 frame 큐 상태 정리
+
+Event Dispatcher (FUN_0002c6a4, Round 41, 17 callers system-wide):
+  - 정규화: internal_key = event_id - 3, valid range [3..18]
+  - event_id 매핑 (9 distinct ids):
+    · 3 (8 callers, 47% dominant) → specific path 0x2c848 = screen transition handler
+       Sound 0x20 + 0x7 + ObjectE.method0x10(0xb0, 0xa0) graphics + state 2→0→1
+    · 4/7/12/13/14 → (log-only, task[0x290] = event_id 기록만)
+    · 17 (FUN_000245fc mode 7) + 18 → 공통 handler 0x2c9ca = ObjectB.method58 + ObjectE.method0c
+       (= double dispatch on 2 pending flags GOT[+0x160] / GOT[+0x140])
+  - 모든 path tail: task[0x290] = last_event_id
+
+NPC Table Query (FUN_00025f30, Round 40):
+  - 0x3c4 × 0x3c grid (NPC record stride × inner stride, Round 14 layout 일치)
+  - +0x3b3 flag byte 검사 = NPC condition match
+  - FUN_000245fc mode 7 path: NPC 조건 만족 시 event 17 trigger
+
+Letter Keyboard Input Subsystem (Round 46, 피처폰 ABC keypad):
+  - FUN_00053e08 (2112B, 21 arms, cmp 'c' 4x) = 키 #2 'abc' letter handler + dynamic event source (NPC arg+7)
+  - FUN_0003c920 (2836B, 33 arms, cmp 'd'/'f'/'g'/'h'/'i') = 키 #3 'def' + 키 #4 'ghi' letter handler
+  - FUN_0003a86c (388B, range guard #0xf, 4 callers including FUN_000818f0) = letter input 진입점
+  - 7번째 indirect entry FUN_00086058 + FUN_00092cc0 = '2'/'8' digit + -1/-2 sentinel dispatcher
+
+HIGH ENCAPSULATION pattern (Round 46~47):
+  - FUN_00085578c (24B) = `&task[0xa848]` getter (returns ADDRESS, not value)
+  - **34 BL callers system-wide** 모두 wrapper 경유 (task[0xa848] literal 1 site only)
+  - C/C++ accessor pattern 흔적 (private member + getter)
+  - task[0xa848] usage: save/load + render + 7th indirect entry cluster + sister entry
+  - 가설: task[0xa848] = "current screen/menu state" sub-struct base (MenuState/ScreenContext)
+
+Top entity-handling funcs (Round 28+):
+  FUN_000818f0 ⭐⭐⭐ single-entity state handler + renderer (5.6KB, 2559 instr, 212 ctx)
+                 - NOT iteration loop (0 backward branches) → caller-driven
+                 - task[0xac78~0xac9d] = 38B entity state record (200+ access)
+                 - JT dispatch 직후 event 3 fire (Round 43)
+                 - Round 47: +0x6c 에서 FUN_0003a86c letter input subsystem 호출
+  FUN_0008d87c sister entry record 0x3c4 inline sub-handler (1.1KB)
+  FUN_0009b252 type-tag dispatcher sub-label (0x9bb4 39x in FUN_0009a008)
 
 JT @ 0xa8370 (FUN_000439a0 내부, type 4..10):
   type 4 → fall-through (dominant)
@@ -334,18 +468,29 @@ JT @ 0xa8370 (FUN_000439a0 내부, type 4..10):
   type 7 → unique 0x44214
 ```
 
-**🔬 가설 단계** (다음 round 검증 필요):
+**🔬 가설 단계 (Round 47 시점)**:
 
-- ~~task_struct[0x9bb4] = state machine state~~ → Round 25 검증: **bit flag field**
-- ~~0x9c70 = byte array base~~ → Round 25 검증: **단순 byte field**
-- ~~FUN_0007d31c = bit op helper~~ → Round 26 검증: **8-bit unrolled scanner + 0x9bd0 deref**
-- ~~FUN_0007cd58 = vtable invoker~~ → Round 26 검증: **leaf 산술 helper, GOT 미사용**
-- **ObjectA = audio/asset resource manager** — POSIX errors + acquire-use-release 패턴 + vtable[0x7c]=acquire / [0x80]=write 가 강력한 시사
-- **0x9bd0-object = system-wide 핵심 객체** (14 unique funcs reader, ObjectA/B 외 신규) — vtable layout 매핑 필요 (Round 27)
-- **`find_task_struct_field_readers.py` undercount** → 도구 lenient 화 후 재실행 시 통계 대거 변화 가능 (Round 27)
-- **FUN_0009a008 2-stage JT entries 의미** — JT 디코드 + 각 entry 의 처리 매핑
-- **FUN_00044a38/0x482c8 sibling 관계** — template-instantiated 또는 source-copy, caller chain 추적 필요
-- **3 entry indirect main_loop** — Ghidra Script 필요 (정적 ceiling)
+✅ **검증 완료**:
+- ~~task_struct[0x9bb4] = state machine state~~ → Round 25: bit flag field
+- ~~0x9c70 = byte array base~~ → Round 25: 단순 byte field
+- ~~FUN_0007d31c = bit op helper~~ → Round 26: 8-bit unrolled scanner
+- ~~FUN_0007cd58 = vtable invoker~~ → Round 26: leaf 산술 helper
+- ~~`find_task_struct_field_readers.py` undercount~~ → Round 27: lenient 화 완료
+- ~~3 indirect entry 후보 (0x28ada/0x28de8/0x424c2)~~ → Round 43: 모두 부정 (기존 함수 내부)
+- ~~FUN_00086058 indirect entry 후보~~ → Round 45: **CONFIRMED** (0 literal pool, ALL 6 known과 동일 pattern)
+- ~~event 3 specific path 의 graphics obj~~ → Round 44: **ObjectE.method0x10(0xb0, 0xa0) 확정**
+- ~~task[0xa0c0] subsystem = cutscene?~~ → Round 40 정정: **NPC dialog/quest 시스템**
+
+🔬 **현재 미검증 가설**:
+- **ObjectA = audio/asset resource manager** — POSIX errors + acquire-use-release + vtable[0x7c]=acquire / [0x80]=write
+- **ObjectE = "screen transition / entity overlay renderer"** — 46 sites in 0xDxxx (FUN_00006334 area) + event 3 graphics call
+- **0x9bd0-object** = system-wide 핵심 객체 (14 unique funcs reader, sub-struct of 0x9bb4)
+- **task[0xa848] = "current screen/menu state" struct base** — 34 callers via wrapper, HIGH ENCAPSULATION
+- **task[0x9c71..0x9c76] 6-byte cluster = "party member" slot** (Round 45, 6 = 표준 1주차 RPG party 크기)
+- **FUN_0009a008 두 JT entries 의미** — 1st stage 7 entries + 2nd stage 14 entries (미해독)
+- **전투 시스템** — 38B entity state record 가 전투에서 어떻게 작동하는지 미확인 (FUN_0009a008 8.6KB 안에 가능성)
+- **callback queue records 의 destination 함수들** — Stage 1 record[+0x154] / Stage 2 record[+0x18] 실제 callback (런타임 결정)
+- **sound dispatcher 22 arms → sound_id mapping** — internal_id (sound_id - 4) → 33 sound files 정확한 매핑
 
 ### Round 27 즉시 시작 명령 (복사-붙여넣기)
 
