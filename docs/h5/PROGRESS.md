@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-52)
+## 📜 라운드 요약 (Round 1-53)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -19,29 +19,30 @@
 | **R50: AI Action sub-state 완성** | `_ai_action` 13 sub-state 모두 정밀 dispatch (state 0-12) + host CHAR interface stub (battle_system 13 method) + `h5_test_monster_ai.py` Python simulator. **48/48 AI VM round-trip 통과** (674 action steps + 19 cast). operand 부족 시 graceful stop |
 | **R51: 인벤토리 items.json 정확 통합** | game_data.gd 에 `item_lookup` / `item_matches_filter` / `class_mask_allows` / `equip_slot_for_kind` 추가 (1360 records unique-name index). status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확 분류 + tooltip 풍부 (tier/class_label/level_limit/refine_count/skill info/potion effect). class_mask + level_limit 장비 검증. `h5_test_items_lookup.py` — tier 분포 (170/248/9/362) 검증 통과 |
 | **R52: 강화(Refine) UI** | `refine_panel.gd` + `.tscn` 신규 — Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) + `refined_stat = base + sub_count` Godot 구현. GameState 에 `refine_state` dict + `equipment_bonus` refine 보너스 합산. demo.gd R 키 toggle. `h5_test_refine.py` — prob 합 1000 / 단조성 / 10000회 시뮬 (max 2.5% / locked 65.1% / destroyed 32.5%) 검증 |
+| **R53: 합성(Mix) UI** | `mix_panel.gd` + `.tscn` 신규 — Round 25/28 의 ApplySpecialMix mechanism. `GameData.mix_recipes()` (116 entries) + `parse_recipe()` (ing×3 + result + success_rate). GameState `inventory_count(name)` / `consume_inventory(name, n)` helper (장착된 슬롯 보호 + refine_state 동기 정리). 제작가능 필터 + 재료 부족 시 disabled. demo.gd K 키. `h5_test_mix.py` — 116 recipe 100% parse / 한국어 이름 0 miss / success_rate 평균 60.6% / 카테고리 분포 검증 |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 42-47%.
-원본 분석 90-95%, 리메이크 출시 39-49%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 45-50%.
+원본 분석 90-95%, 리메이크 출시 42-52%.
 
 
 
-업데이트: 2026-05-18 (Round 52 종료) — **강화(Refine) UI 구현**.
-Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) +
-`refined_stat = base + sub_count` 식 GDScript 구현. `refine_panel.gd/.tscn` 신규,
-GameState 에 refine_state dict + equipment_bonus refine 합산. `h5_test_refine.py`
-10000회 시뮬레이션 — +10 도달 2.5% / locked 65.1% / destroyed 32.5%.
+업데이트: 2026-05-18 (Round 53 종료) — **합성(Mix) UI 구현**.
+Round 25/28 의 ApplySpecialMix mechanism — items.json slot_15 의 116 recipe 활용.
+mix_panel.gd/.tscn 신규 + `GameData.mix_recipes()` / `parse_recipe()` +
+GameState `inventory_count` / `consume_inventory`. 제작가능 필터. demo.gd K 키.
+`h5_test_mix.py` — 116 recipe 100% parse / 한국어 이름 0 miss / avg 60.6% 검증.
 
-## 🎯 전체 진척 평가 (Round 52 시점)
+## 🎯 전체 진척 평가 (Round 53 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~42-47%** | + **강화 UI + refine 보너스 합산**. 미구현: 합성/Quest UI, Save device import |
+| Godot 실 구현 | **~45-50%** | + **합성 UI + 116 recipe**. 미구현: Quest 패널 강화/Orb UI, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **39-49%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **42-52%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -671,6 +672,35 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 53 — 2026-05-18 완료]** 합성(Mix) UI 구현 — Round 25/28 의 ApplySpecialMix + 116 recipe
+- ✅ **GameData 3 신규 helper**:
+  - `item_name_at(cat, idx)` — (slot, idx) → name lookup (recipe 의 ingredient/result 가 cat/idx 형식)
+  - `mix_recipes()` — items.json slot_15 의 116 entry 반환
+  - `parse_recipe(rec)` — recipe dict 를 `{ingredients: [{name, count, cat, idx}], result: {name, cat, idx}, success_rate}` 로 해석
+- ✅ **GameState 2 신규 helper**:
+  - `inventory_count(name)` — 동일 이름 item 갯수 (mix 의 재료 보유량 검사)
+  - `consume_inventory(name, n)` — n 개 소비 (장착된 슬롯 보호 + index shift + refine_state 동기 정리)
+- ✅ **mix_panel.gd 신규** (~170 line):
+  - 116 recipe 리스트 + 제작가능 (✓ prefix) / 불가능 (회색) 시각 구분
+  - 필터 버튼 — "전체" / "제작가능만" 토글
+  - 선택된 recipe 의 재료 (✓/✗ × 필요/보유) + 결과 + 성공률 preview
+  - 재료 부족 시 mix_btn disabled
+  - 실행: success_rate 로 100 분의 N roll, 성공 → 결과 inventory 추가, 실패 → 재료만 소비 (Round 28 동작)
+- ✅ **mix_panel.tscn 신규** — 480×440 layout (RecipeList 좌측 + 우측 Result/Ingredients/Success/MixBtn + 하단 Log + FilterBtn 우상)
+- ✅ **demo.gd 통합** — `_mix` 필드 + K 키 = mix 패널 toggle (M 은 map_id 충돌 회피)
+- ✅ **tools/h5_test_mix.py 신규** — Python 검증:
+  - 116 recipe 100% parse (ingredient name miss 0 / result name miss 0)
+  - success_rate ∈ [0,100] 검증 (out-of-range 0)
+  - ingredient 갯수 분포: 1개=11 / 2개=5 / 3개=100 (대부분 3-재료)
+  - ingredient 카테고리: slot_13 (mix material) 316 / slot_11 (포션) 5
+  - result 카테고리: 무기 4종 ×10=40, helmet 14, boots 10, accessory 16, accessory_2 10, shield 10, 포션 5, 재료 합성 10, 재료 정제 1
+  - success_rate 평균 60.6%, ≥90% 26개 / ≤30% 22개, min 20 / max 100
+  - 샘플 검증: "살코기×5 + 황혼버섯×5 → 황혼수프가루 (100%)" / "장갑판×47 + 상급마력 금속×19 + 부서진 수호부×3 → 그랜디쉬실드 (20%)"
+- ✅ **verify_godot_project.py 0 errors / 0 warnings**
+- 산출: mix_panel.gd (신규 ~170 line), mix_panel.tscn (신규), game_data.gd (+50 line, 3 helper), game_state.gd (+30 line, 2 helper), demo.gd (K-key bind), tools/h5_test_mix.py
+- Godot 실 구현 42-47% → 45-50%. 출시 39-49% → 42-52%
+- 다음 라운드: Quest 패널 강화 / Orb socket UI / scn 검증 / character.gd host 실 구현
 
 **[Round 52 — 2026-05-18 완료]** 강화(Refine) UI 구현 — Round 17/26 의 ApplyItemRefine mechanism
 - ✅ **GameState refine_state 추가**:

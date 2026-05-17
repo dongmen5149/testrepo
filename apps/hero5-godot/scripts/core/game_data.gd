@@ -303,6 +303,53 @@ func item_matches_filter(name: String, filter_key: String) -> bool:
 	return false
 
 
+## (cat, idx) → item name lookup (Round 53). recipe ingredient/result 가 cat/idx 형태로
+## 저장돼있어 mix_panel 이 이름 조회용으로 사용.
+##
+## cat = items.json 의 slot_N 인덱스, idx = 그 slot 의 record idx.
+func item_name_at(cat: int, idx: int) -> String:
+	var data = _load_items()
+	var arr: Array = data.get("slot_%d" % cat, [])
+	if idx < 0 or idx >= arr.size(): return ""
+	return str(arr[idx].get("name", ""))
+
+
+## slot_15 mix_book recipe 전체 리스트 (Round 25, 116 entries) — 각 entry 는
+## items.json 의 record dict (recipe 필드 포함). mix_panel 의 ItemList 소스.
+func mix_recipes() -> Array:
+	var data = _load_items()
+	return data.get("slot_15", [])
+
+
+## recipe entry 의 ingredient/result 를 이름 + 갯수 로 풀어서 반환.
+## {"ingredients": [{"name", "count", "cat", "idx"}, ...], "result": {"name", "cat", "idx"}, "success_rate"}.
+func parse_recipe(rec: Dictionary) -> Dictionary:
+	var recipe: Dictionary = rec.get("recipe", {})
+	if recipe.is_empty(): return {}
+	var ings: Array = []
+	for key in ["ing1", "ing2", "ing3"]:
+		var ing = recipe.get(key)
+		if ing == null: continue
+		if not (ing is Dictionary): continue
+		var c = int(ing.get("cat", 0))
+		var i = int(ing.get("idx", 0))
+		ings.append({
+			"cat": c, "idx": i,
+			"count": int(ing.get("count", 1)),
+			"name": item_name_at(c, i),
+		})
+	var result_cat = int(recipe.get("result_cat", 0))
+	var result_idx = int(recipe.get("result_idx", 0))
+	return {
+		"ingredients": ings,
+		"result": {
+			"cat": result_cat, "idx": result_idx,
+			"name": item_name_at(result_cat, result_idx),
+		},
+		"success_rate": int(recipe.get("success_rate", 100)),
+	}
+
+
 ## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
 ##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
 ##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"

@@ -24,6 +24,7 @@ var _hud: CanvasLayer
 var _settings: CanvasLayer
 var _help: CanvasLayer
 var _refine: CanvasLayer
+var _mix: CanvasLayer
 
 
 func _ready() -> void:
@@ -99,6 +100,9 @@ func _ready() -> void:
 	# Round 52: 강화 패널
 	_refine = preload("res://scenes/refine_panel.tscn").instantiate()
 	add_child(_refine)
+	# Round 53: 합성 패널
+	_mix = preload("res://scenes/mix_panel.tscn").instantiate()
+	add_child(_mix)
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode (.so disasm 검증):
 	#   0x35 (53) Event_SituateBallon       (2B)
@@ -361,6 +365,9 @@ func _input(event: InputEvent) -> void:
 			KEY_R:
 				# R: 강화 패널 토글 (Round 52)
 				_refine.toggle()
+			KEY_K:
+				# K: 합성 패널 토글 (Round 53)
+				_mix.toggle()
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})

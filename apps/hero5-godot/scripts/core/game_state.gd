@@ -94,6 +94,47 @@ func unequip(slot: int) -> void:
 	state_changed.emit()
 
 
+## 인벤토리 내 동일 이름 item 갯수 — mix_panel 의 재료 보유량 검사용 (Round 53).
+##
+## 현재 inventory 가 단순 String 배열이라 동일 item 중복 = 여러 entry. 이 카운트로
+## "재료 5개 필요" check 수행.
+func inventory_count(name: String) -> int:
+	var n := 0
+	for item in inventory:
+		if str(item) == name: n += 1
+	return n
+
+
+## 인벤토리에서 동일 이름 item 을 n 개 소비 (앞에서부터). 실제 제거 갯수 반환.
+## refine_state 가 있는 슬롯도 함께 erase.
+func consume_inventory(name: String, n: int) -> int:
+	var removed := 0
+	var i := 0
+	while i < inventory.size() and removed < n:
+		if str(inventory[i]) == name:
+			# equipment 에 장착된 슬롯은 건드리지 않음
+			var is_equipped := false
+			for slot in SLOT_COUNT:
+				if equipment[slot] == i:
+					is_equipped = true
+					break
+			if is_equipped:
+				i += 1
+				continue
+			inventory.remove_at(i)
+			clear_refine(i)
+			# i 이후 equipment 인덱스 shift
+			for slot in SLOT_COUNT:
+				if equipment[slot] > i:
+					equipment[slot] -= 1
+			removed += 1
+		else:
+			i += 1
+	if removed > 0:
+		state_changed.emit()
+	return removed
+
+
 func equipped_item(slot: int) -> Variant:
 	if slot < 0 or slot >= SLOT_COUNT: return null
 	var idx = equipment[slot]

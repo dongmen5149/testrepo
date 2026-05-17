@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 52 — **강화(Refine) UI 구현**. Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) + `refined_stat = base + sub_count` Godot 구현. `refine_panel.gd/.tscn` 신규 (~150 line) + GameState refine_state dict + equipment_bonus refine 보너스 합산. demo.gd R 키 toggle. `h5_test_refine.py` — prob row sum 1000/10, 단조성, 10000회 시뮬 (+10 도달 2.5% / locked 65.1% / destroyed 32.5% / 평균 10.5 시도) 모두 통과. Godot 실 구현 39-44% → 42-47%, 출시 36-46% → 39-49%.)
+업데이트: 2026-05-18 (Round 53 — **합성(Mix) UI 구현**. Round 25/28 의 ApplySpecialMix + items.json slot_15 의 116 recipe. mix_panel.gd/.tscn 신규 (~170 line) + GameData `mix_recipes()` / `parse_recipe()` + GameState `inventory_count` / `consume_inventory` (장착 보호 + refine_state 동기). 제작가능 필터 + 재료 부족 시 disabled. demo.gd K 키. `h5_test_mix.py` — 116 recipe 100% parse / 한국어 이름 0 miss / success_rate avg 60.6% / 카테고리 분포 검증. Godot 실 구현 42-47% → 45-50%, 출시 39-49% → 42-52%.)
 
-## 📜 Round 1-52 한 줄 요약
+## 📜 Round 1-53 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -19,13 +19,14 @@
 | R48-49 | Godot 통합 시작 — Monster AI VM (autoload) + Save binary 직렬화 |
 | R50 | AI Action 13 sub-state 정밀 구현 (state 1-7/9/12 채움) + host CHAR interface 13 method + 48/48 VM round-trip |
 | R51 | 인벤토리 items.json 정확 통합 (1360 records unique index) — kind 기반 filter + class_mask/level_limit 검증 + tooltip 풍부 |
-| **R52** | **강화(Refine) UI 구현 — Round 17/26 의 5-case + `refined_stat = base+sub_count` + 10000회 시뮬 (+10 2.5%/lock 65%/destroy 33%)** |
+| R52 | 강화(Refine) UI 구현 — Round 17/26 의 5-case + `refined_stat = base+sub_count` + 10000회 시뮬 (+10 2.5%/lock 65%/destroy 33%) |
+| **R53** | **합성(Mix) UI 구현 — Round 25/28 ApplySpecialMix + 116 recipe parse (ing×3 + result + sr) + 제작가능 필터 + 재료 보호 소비** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 52 시점)
+## 🎯 전체 진척 평가 (Round 53 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -34,12 +35,12 @@
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~42-47%** | + **강화 UI + refine 보너스**. 미구현: 합성/Quest UI, Save device import |
+| **Godot 실 구현** | **~45-50%** | + **합성 UI + 116 recipe**. 미구현: Quest 패널 강화/Orb UI, Save device import |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **39-49%** (강화 UI 완성)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **42-52%** (합성 UI 완성)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -54,12 +55,12 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 53 부터)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 54 부터)**:
 - ~~Round 40-43 = 데이터 RE~~ ✅ / ~~Round 44-47 = Monster AI 분석~~ ✅
 - ~~Round 48 = Monster AI Godot 통합~~ ✅ / ~~Round 49 = Save Godot 통합~~ ✅
 - ~~Round 50 = AI Action sub-state 1-7/9/12 정밀 구현~~ ✅ / ~~Round 51 = 인벤토리 items.json 정확 통합~~ ✅
-- ~~Round 52 = 강화(Refine) UI~~ ✅
-- **(구현 track) 합성(Mix) UI** — Round 25/28/32 의 mix_book recipe (slot_15, 116 entries) + smith_table NPC blacksmith (smith_0/1/2.dat, 288 recipes)
+- ~~Round 52 = 강화(Refine) UI~~ ✅ / ~~Round 53 = 합성(Mix) UI~~ ✅
+- **(구현 track) NPC blacksmith 합성 UI** — smith_0/1/2.dat (288 recipes, Round 32) MixSmithTableInfo 와 mix_book 분리 (75% sr)
 - **(구현 track) Quest 패널 강화** — quests.json (151 × 3 difficulty) 의 phase1 objective + phase2 reward 표시
 - **(구현 track) Orb socket UI** — Round 17/26 의 6-socket orb_count + socket bytes (+0x168..+0x16d, 39 orb 종류)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
