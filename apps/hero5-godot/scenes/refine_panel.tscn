@@ -1,0 +1,78 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_refine"]
+
+[ext_resource type="Script" path="res://scripts/ui/refine_panel.gd" id="1_refine"]
+
+[node name="RefinePanel" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_refine")
+
+[node name="BG" type="ColorRect" parent="."]
+offset_left = 80.0
+offset_top = 30.0
+offset_right = 460.0
+offset_bottom = 470.0
+color = Color(0.06, 0.06, 0.14, 0.95)
+
+[node name="Title" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 370.0
+offset_bottom = 24.0
+text = "강화"
+theme_override_font_sizes/font_size = 16
+
+[node name="ItemSelect" type="ItemList" parent="BG"]
+offset_left = 8.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 380.0
+allow_reselect = true
+
+[node name="Current" type="Label" parent="BG"]
+offset_left = 210.0
+offset_top = 30.0
+offset_right = 370.0
+offset_bottom = 90.0
+text = "(아이템 선택)"
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="Preview" type="Label" parent="BG"]
+offset_left = 210.0
+offset_top = 100.0
+offset_right = 370.0
+offset_bottom = 220.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="GoldCost" type="Label" parent="BG"]
+offset_left = 210.0
+offset_top = 230.0
+offset_right = 370.0
+offset_bottom = 260.0
+text = ""
+theme_override_font_sizes/font_size = 12
+
+[node name="RefineBtn" type="Button" parent="BG"]
+offset_left = 210.0
+offset_top = 270.0
+offset_right = 320.0
+offset_bottom = 300.0
+text = "강화 실행"
+
+[node name="ResultLog" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 390.0
+offset_right = 370.0
+offset_bottom = 430.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="CloseBtn" type="Button" parent="BG"]
+offset_left = 325.0
+offset_top = 270.0
+offset_right = 372.0
+offset_bottom = 300.0
+text = "닫기"

@@ -46,6 +46,38 @@ const SLOT_ACC2 := 5
 const SLOT_COUNT := 6
 var equipment: Array[int] = [-1, -1, -1, -1, -1, -1]
 
+## 강화 상태 (Round 52). inventory 인덱스 → {refine_count, sub_count, locked}.
+##
+## 원본 EquipItemInfo +0x165/+0x166/+0x167 (Round 17/26) 매핑:
+##   refine_count: 강화 단계 (0..10), ApplyItemRefine 성공/큰성공 시 +1
+##   sub_count:    누적 강화 합산값 (V[187], refined_stat = base + sub_count)
+##   locked:       lock 상태 (+0x167=1 이면 더 이상 강화 불가)
+##
+## 새 인벤토리 슬롯에는 entry 없음 = (0,0,false). items.json 의 record refine_count
+## 와 별개 (csv 시점 값 vs runtime 값).
+var refine_state: Dictionary = {}
+
+
+## inv_idx 의 강화 상태 반환. 미설정 시 빈 dict default.
+func get_refine(inv_idx: int) -> Dictionary:
+	return refine_state.get(inv_idx, {"refine_count": 0, "sub_count": 0, "locked": false})
+
+
+## inv_idx 의 강화 상태 갱신.
+func set_refine(inv_idx: int, refine_count: int, sub_count: int, locked: bool = false) -> void:
+	if inv_idx < 0 or inv_idx >= inventory.size(): return
+	refine_state[inv_idx] = {
+		"refine_count": clamp(refine_count, 0, 10),
+		"sub_count": max(0, sub_count),
+		"locked": locked,
+	}
+	state_changed.emit()
+
+
+## inv_idx 의 강화 상태 제거 (인벤 아이템 제거 시 호출).
+func clear_refine(inv_idx: int) -> void:
+	refine_state.erase(inv_idx)
+
 
 ## 아이템을 슬롯에 장착. inventory 인덱스 사용.
 func equip(slot: int, inv_idx: int) -> bool:
@@ -70,24 +102,35 @@ func equipped_item(slot: int) -> Variant:
 
 
 ## 장비 stat 합산. inventory 의 아이템명 → items.json 의 slot_N 에서
-## 검색 → stats[7] (atk/def) 추출.
+## 검색 → stats[7] (atk/def) 추출 + Round 52 강화 보너스 (sub_count).
+##
+## refined_stat = base_stat + sub_count (Round 26 의 Formula VM id=35/36 결과).
+## weapon slot 은 ATK, 그 외 equip slot 은 DEF 로 누적.
 func equipment_bonus() -> Dictionary:
 	var bonus := {"attack": 0, "defense": 0}
 	for slot in SLOT_COUNT:
 		var item = equipped_item(slot)
 		if item == null: continue
+		var inv_idx: int = equipment[slot]
 		var item_name := str(item)
-		# 모든 무기/방어구 슬롯 검색
-		for item_slot in range(10):
-			var arr = GameData.items_in_slot(item_slot)
-			var idx = arr.find(item_name)
-			if idx >= 0:
-				var data = GameData.item_stat(item_slot, idx)
-				if slot == SLOT_WEAPON:
-					bonus["attack"] += int(data.get("attack", 0))
-				else:
-					bonus["defense"] += int(data.get("attack", 0))  # 방어구도 stats[7]
-				break
+		var info = GameData.item_lookup(item_name)
+		# items.json 의 stat_a 를 우선 사용 (Round 26 의 의미 있는 stat) — 없으면 fallback to stats[7]
+		var base_stat: int = int(info.get("stat_a", 0))
+		if base_stat == 0:
+			for item_slot in range(10):
+				var arr = GameData.items_in_slot(item_slot)
+				var idx = arr.find(item_name)
+				if idx >= 0:
+					var data = GameData.item_stat(item_slot, idx)
+					base_stat = int(data.get("attack", 0))
+					break
+		# Round 52 강화 보너스
+		var refine = get_refine(inv_idx)
+		var refined = base_stat + int(refine.get("sub_count", 0))
+		if slot == SLOT_WEAPON:
+			bonus["attack"] += refined
+		else:
+			bonus["defense"] += refined
 	return bonus
 
 

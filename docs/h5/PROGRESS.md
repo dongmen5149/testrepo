@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-51)
+## 📜 라운드 요약 (Round 1-52)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -18,29 +18,30 @@
 | **R48-49: Godot 통합 (구현 시작)** | Monster AI Godot VM (`monster_ai.gd` autoload + battle_system hook) + Save binary 직렬화 (524B HERO + SL header) + Python round-trip 검증 |
 | **R50: AI Action sub-state 완성** | `_ai_action` 13 sub-state 모두 정밀 dispatch (state 0-12) + host CHAR interface stub (battle_system 13 method) + `h5_test_monster_ai.py` Python simulator. **48/48 AI VM round-trip 통과** (674 action steps + 19 cast). operand 부족 시 graceful stop |
 | **R51: 인벤토리 items.json 정확 통합** | game_data.gd 에 `item_lookup` / `item_matches_filter` / `class_mask_allows` / `equip_slot_for_kind` 추가 (1360 records unique-name index). status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확 분류 + tooltip 풍부 (tier/class_label/level_limit/refine_count/skill info/potion effect). class_mask + level_limit 장비 검증. `h5_test_items_lookup.py` — tier 분포 (170/248/9/362) 검증 통과 |
+| **R52: 강화(Refine) UI** | `refine_panel.gd` + `.tscn` 신규 — Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) + `refined_stat = base + sub_count` Godot 구현. GameState 에 `refine_state` dict + `equipment_bonus` refine 보너스 합산. demo.gd R 키 toggle. `h5_test_refine.py` — prob 합 1000 / 단조성 / 10000회 시뮬 (max 2.5% / locked 65.1% / destroyed 32.5%) 검증 |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 39-44%.
-원본 분석 90-95%, 리메이크 출시 36-46%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 42-47%.
+원본 분석 90-95%, 리메이크 출시 39-49%.
 
 
 
-업데이트: 2026-05-18 (Round 51 종료) — **인벤토리 items.json 정확 통합**.
-game_data.gd 에 unique-name index (1360 records) + class_mask/level_limit 검증
-helper. status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확
-분류. tooltip 에 tier/class/level/refine/skill_book/potion 정밀 정보 표시.
-tier 분포 검증 (legendary 170/rare 248/gem 9/common 362) Round 24 와 일치.
+업데이트: 2026-05-18 (Round 52 종료) — **강화(Refine) UI 구현**.
+Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) +
+`refined_stat = base + sub_count` 식 GDScript 구현. `refine_panel.gd/.tscn` 신규,
+GameState 에 refine_state dict + equipment_bonus refine 합산. `h5_test_refine.py`
+10000회 시뮬레이션 — +10 도달 2.5% / locked 65.1% / destroyed 32.5%.
 
-## 🎯 전체 진척 평가 (Round 51 시점)
+## 🎯 전체 진척 평가 (Round 52 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~39-44%** | + **인벤토리 정확 분류**. 미구현: 강화/합성/Quest UI, Save device import |
+| Godot 실 구현 | **~42-47%** | + **강화 UI + refine 보너스 합산**. 미구현: 합성/Quest UI, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **36-46%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **39-49%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -670,6 +671,40 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 52 — 2026-05-18 완료]** 강화(Refine) UI 구현 — Round 17/26 의 ApplyItemRefine mechanism
+- ✅ **GameState refine_state 추가**:
+  - `refine_state: Dictionary` (inv_idx → {refine_count, sub_count, locked})
+  - `get_refine(inv_idx)` / `set_refine(inv_idx, rc, sub, locked)` / `clear_refine(inv_idx)` helper
+  - 원본 EquipItemInfo +0x165/+0x166/+0x167 매핑 (Round 17/26)
+  - cap: refine_count 0..10, locked = +0x167 영구 잠금
+- ✅ **equipment_bonus refine 보너스 합산**:
+  - `refined_stat = base_stat + sub_count` (Round 26 Formula VM id=35/36)
+  - items.json 의 stat_a (Round 26 의 의미있는 weapon ATK / armor DEF) 우선 사용
+  - weapon slot 은 attack, 그 외 equip slot 은 defense 누적
+- ✅ **refine_panel.gd 신규** (~150 line):
+  - 5-case Round 17/26 mechanism Godot 구현
+  - REFINE_PROB 10 row × 5 case (큰성공/성공/재료소비/lock/destroy) 각 row sum = 1000
+  - 안전 단계 (+0..+2) destroy/lock 0, 위험 단계 (+7..+9) fail 70-85%
+  - REFINE_COST 10 row 등비 (50 → 25000 G)
+  - inventory 의 equip 카테고리 item 만 리스트 + 강화 단계 표시 (🔒 lock)
+  - 다음 단계 prob preview + 골드 비용 + 보유 골드 검증
+  - destroy 시 inventory 제거 + equipment[slot] -1 처리 + index shift
+- ✅ **refine_panel.tscn 신규** — 380×440 layout (ItemList / Current / Preview / GoldCost / RefineBtn / ResultLog / CloseBtn)
+- ✅ **demo.gd 통합**:
+  - `_refine` 필드 + 패널 instantiate
+  - R 키 = refine 패널 toggle
+- ✅ **tools/h5_test_refine.py 신규** — Python 검증:
+  - prob row sum = 1000 (10/10 ✓)
+  - 안전 단계 destroy/lock 0 ✓
+  - 성공률 단조 감소 (900 → 150) + destroy% 단조 증가 (0 → 200) ✓
+  - 10000회 시뮬레이션: +10 도달 246 (2.5%), locked 6507 (65.1%), destroyed 3247 (32.5%), timeout 0
+  - 평균 시도 횟수 10.5
+  - refined_stat = base + sub 산술 검증 4/4 ✓
+- ✅ **verify_godot_project.py 0 errors / 0 warnings**
+- 산출: refine_panel.gd (신규 ~150 line), refine_panel.tscn (신규), game_state.gd (refine_state +30 line), demo.gd (refine R-key bind), tools/h5_test_refine.py
+- Godot 실 구현 39-44% → 42-47%. 출시 36-46% → 39-49%
+- 다음 라운드: 합성(Mix) UI / Quest 패널 / scn 검증 / character.gd host 실 구현
 
 **[Round 51 — 2026-05-18 완료]** 인벤토리 패널 items.json 정확 통합 — substring 매칭 → kind 기반
 - ✅ **game_data.gd 새 helper 5종**:
