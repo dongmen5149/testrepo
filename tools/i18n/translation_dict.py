@@ -34,12 +34,69 @@ CHARACTERS = CHARACTERS_H3
 # ─────────────────────────────────────────────────
 # Hero4 캐릭터 이름
 #
-# 주의: 2026-05-07 시점 Hero4 SCN 이 DES 암호화 되어 corpus 가 깨져 있음.
-# Phase B 에서 DES key 발굴 후 corpus 재생성하면 추가/검증 필요.
-# 아래 항목은 binary 정찰 + 일반적 한빛 RPG 인물 후보로 prefill.
+# Source: e0185_scn (348/350 SCN 이 DES 암호화됐으나 2개는 plaintext —
+# 이 중 e0185 가 글로벌 entity catalog 역할). 한국어→영문 transliterate.
+# 켈트 신화 Tuatha Dé Danann 의 인물명 다수 (Nuada, Nodens, Deirdre 등).
+# 영문은 한국어 발음 + 켈트 신화 표기 우선.
 # ─────────────────────────────────────────────────
 CHARACTERS_H4: dict[str, str] = {
-    # corpus 풀린 후 채울 예정. 현재는 비어있음.
+    # 주인공 / 핵심 NPC (켈트 신화 인물명 우선)
+    '앨리스':       'Alice',
+    '브리안':       'Brian',
+    '크래드':       'Crad',
+    '디어드리':     'Deirdre',     # 켈트 비극 영웅
+    '엘렌':         'Ellen',
+    '엔리코':       'Enrico',
+    '에리나':       'Erina',
+    '그라함':       'Graham',
+    '이자벨':       'Isabel',
+    '케프네스':     'Kephness',
+    '래비':         'Rabbie',
+    '루칸':         'Lucan',
+    '루레인':       'Lorraine',
+    '노덴스':       'Nodens',      # 켈트 신화 신
+    '누아다':       'Nuada',       # Tuatha Dé Danann 첫째 왕
+    '정상팔':       'Jung Sangpal',
+    '티르':         'Tyr',         # 켈트 신 (북유럽과 어원 공유)
+    '찌질이':       'Loser',       # 별명 캐릭터
+    '브레스':       'Bres',        # 켈트 신화 인물
+
+    # NPC 분류 (역할 라벨, dialogue 에 자주 등장)
+    '인간':         'Human',
+    '선주':         'Sailor',      # 선주 = 배 소유주 / 선원
+    '꼬마':         'Kid',
+    '여자':         'Woman',
+    '남자':         'Man',
+    '병사':         'Soldier',
+    '선장':         'Captain',
+    '엔지니어':     'Engineer',
+    '노인':         'Elder',
+    '상점':         'Merchant',
+    '대장장이':     'Blacksmith',
+    '연금술사':     'Alchemist',
+    '소환술사':     'Summoner',
+    '연구원':       'Researcher',
+    '도둑':         'Thief',
+    '괴물':         'Monster',
+    '소환수':       'Summon',
+    '시체':         'Corpse',
+    '여관':         'Inn',
+    '매니져':       'Manager',
+
+    # 게임 객체 / 상태 (이벤트 트리거)
+    '출구':         'Exit',
+    '결계':         'Barrier',
+    '블라인드':     'Blind',
+    '빠이아':       'Faia',
+    '나뭇잎':       'Leaf',
+    '바위':         'Rock',
+    '햇빛':         'Sunlight',
+    '게이트':       'Gate',
+    '대미지':       'Damage',
+    '죽음':         'Death',
+    '넉백':         'Knockback',
+    '스트레이츠':   'Straits',
+    '정체불명의':   'Mysterious',
 }
 
 # ─────────────────────────────────────────────────

@@ -4,35 +4,83 @@
 
 ## 그룹 분류
 
-### Group A: random-look 큰 파일 (저장 템플릿 / 암호화 시드 추정)
+### Group A: SCN 과 동일 DES 키로 암호화된 파일 (2026-05-18 확정)
 
-| 파일 | size | 첫 16 byte |
-|---|---|---|
-| `_H_BH` | 168 | `a8 20 86 97 89 85 61 60 d8 2a 78 37 ff 65 26 e6` |
-| `_H_BS` | 136 | `b4 fb 29 43 29 52 87 2e 87 cf 88 ca e6 5f 0b 1b` |
-| `_H_SA` | 960 | `d6 88 89 5a d1 58 8f 09 e4 d3 87 c0 39 a8 d5 eb` |
-| `_H_SS` | 1624 | `fc 62 5b 25 d6 cc 5e 57 e8 35 0c 9d 89 78 45 13` |
-| `_H_S000` | 1232 | `00 37 d8 65 1d b7 70 d5 62 51 e3 7b 1b 55 71 a3` |
-| `_H_S001` | 1176 | `6f d8 f0 c8 ba 5a 00 40 f3 9a 77 c4 d2 ff e1 bd` |
-| `_H_S002` | 1184 | `00 37 d8 65 1d b7 70 d5 62 51 e3 7b 1b 55 71 a3` |
-| `_H_S003` | 1240 | `56 75 45 58 c1 f0 c2 2b b3 cd e1 d4 21 13 e0 48` |
+| 파일 | size | 첫 16 byte | 마지막 8 byte |
+|---|---|---|---|
+| `_H_BH` | 168 | `a8 20 86 97 89 85 61 60 d8 2a 78 37 ff 65 26 e6` | `83dff219dcc9f35a` |
+| `_H_BS` | 136 | `b4 fb 29 43 29 52 87 2e 87 cf 88 ca e6 5f 0b 1b` | `39e9584b1712bfeb` |
+| `_H_SA` | 960 | `d6 88 89 5a d1 58 8f 09 e4 d3 87 c0 39 a8 d5 eb` | **`3b7af9a427907dac`** |
+| `_H_SS` | 1624 | `fc 62 5b 25 d6 cc 5e 57 e8 35 0c 9d 89 78 45 13` | `396f68546fede600` |
+| `_H_S000` | 1232 | `00 37 d8 65 1d b7 70 d5 62 51 e3 7b 1b 55 71 a3` | `762c70a60e2c74e8` |
+| `_H_S001` | 1176 | `6f d8 f0 c8 ba 5a 00 40 f3 9a 77 c4 d2 ff e1 bd` | `096ad10bdc06a2a8` |
+| `_H_S002` | 1184 | `00 37 d8 65 1d b7 70 d5 62 51 e3 7b 1b 55 71 a3` | `ef84db78eeffa299` |
+| `_H_S003` | 1240 | `56 75 45 58 c1 f0 c2 2b b3 cd e1 d4 21 13 e0 48` | `49d7199144ed8908` |
 
-`_H_S000` 와 `_H_S002` 의 첫 16 byte 동일 — 같은 시드로 만든 변형 가능성.
+**모두 8-byte aligned, entropy 6.3~7.8 (high) → DES ECB 암호화 확정**.
 
-`_H_BH` (Boss Hero?), `_H_BS` (Boss Stat?), `_H_SA/SS` (?). `_H_S???` 는 Save 템플릿 0~3 슬롯 추정.
+**결정적 증거** — SCN 의 가장 흔한 last cipher block `3b7af9a427907dac` (348 SCN 중 38회 = sentinel) 가 Group A 에서도 **92회 반복 등장** (sliding window):
+- `_H_SA`: 37회 (마지막 8 byte 가 정확히 이 sentinel)
+- `_H_SS`: 23회
+- `_H_S001`: 9회, `_H_S003`: 8회, `_H_S000`: 7회, `_H_S002`: 5회, `_H_BS`: 3회
 
-### Group B: progression / exp_table (uint8/16/32 LE values)
+→ **SCN + HDAT Group A 가 동일 DES 키 사용**. Phase B 에서 키 발견 시 자동 파이프라인에 **Group A 8 파일도 포함**:
 
-| 파일 | size | 첫 12 byte |
-|---|---|---|
-| `_H_P000` | 53 | `00 00 00 14 00 90 01 00 00 58 02 00` |
-| `_H_P001` | 103 | `03 00 00 0a 00 2c 01 00 00 90 01 00` |
-| `_H_P002` | 103 | `03 00 00 0a 00 58 02 00 00 e8 03 00` |
-| `_H_P003` | 103 | `03 00 00 0f 00 f4 01 00 00 20 03 00` |
-| `_H_P004` | 153 | `02 00 00 0a 00 e8 03 00 00 d0 07 00` |
-| `_H_P005` | 103 | `01 00 00 05 00 e8 03 00 00 d0 07 00` |
+```bash
+# decrypt_h4_scn.py 확장 또는 별도:
+python tools/converter/decrypt_h4_scn.py --key <KEY> work/h4/extracted/HDAT/_H_SA decoded.bin
+```
 
-uint16/32 값들의 패턴 (`0x190=400`, `0x258=600`, `0xc8=200`, `0xd007=2000`) → exp / HP / level cap 같은 progression value table 추정.
+**파일 간 cipher block sharing** (같은 plaintext patterns 시사):
+- `_H_S000` ↔ `_H_S002`: 9 shared blocks (첫 16 byte 동일 + 9 blocks common → save template 변형)
+- `_H_S002` ↔ `_H_S003`: 7 shared
+- `_H_S001` ↔ `_H_S002`: 6 shared
+- `_H_S001` ↔ `_H_S003`: 4 shared
+
+추정 의미 (Ghidra 후 확정):
+- `_H_BH` (168B = 21 blocks) — Boss Hero data
+- `_H_BS` (136B = 17 blocks) — Boss Stat data  
+- `_H_SA` (960B) — Save template A (Hardcore?)
+- `_H_SS` (1624B) — Save template SS (?)
+- `_H_S000~S003` — Save game default slot templates 4종
+
+### Group B: progression / cost table — **2026-05-18 풀림**
+
+`_H_P000` ~ `_H_P005` 6개 파일. **`3B header + N × 50B entries`** 일관된 layout.
+
+```
+Header (3 bytes):
+   byte 0  : group_type (P000=0, P005=1, P004=2, P001/P002/P003=3)
+   byte 1  : 0x00
+   byte 2  : 0x00
+
+Entry (50 bytes):
+   offset 0..15 (16B) : 8 × uint16 LE — main progression values
+      val[0] : 5/10/15/20/50            ← level / rank / count
+      val[1] : 300~1000                  ← HP / cost / stat1
+      val[2] : 0 always                  ← reserved
+      val[3] : 400~2000                  ← stat2
+      val[4] : 0 always                  ← reserved
+      val[5] : 100~20000                 ← gold / EXP / large value
+      val[6] : 800~1500                  ← atk / def
+      val[7] : 1000~2000                 ← hp_max / cap
+   offset 16 (1B)     : marker (0xff in 11/13 entries, 0x00 for P004 entry[0])
+   offset 17..21 (5B) : param block (0xb4 0xf4 0xc8 ... 식, 의미 미정)
+   offset 22..49 (28B): 14 × uint16 LE — nested sub-records (대부분 0, 일부 stat pair)
+```
+
+| 파일 | size | group | N | 대표 entry main_values |
+|---|---|---|---|---|
+| `_H_P000` | 53 | 0 | 1 | [20, 400, 0, 600, 0, 200, 1400, 2000] |
+| `_H_P001` | 103 | 3 | 2 | [10, 300, 0, 400, 0, 100, 1500, 2000] |
+| `_H_P002` | 103 | 3 | 2 | [10, 600, 0, 1000, 0, 200, 800, 1200] |
+| `_H_P003` | 103 | 3 | 2 | [15, 500, 0, 800, 0, 200, 900, 1400] |
+| `_H_P004` | 153 | 2 | 3 | [10, 1000, 0, 2000, 0, **20000**, 1000, 2000] ← entry[0] mk=0x00 outlier |
+| `_H_P005` | 103 | 1 | 2 | [5, 1000, 0, 2000, 0, 200, 1000, 2000] |
+
+해석 가설: 각 entry = 1 tier/grade 의 stat threshold (level cap, hp_max, gold reward 등). group 별로 다른 카테고리 (P000=intro tutorial, P004=boss/special, P005=basic tier). 정확한 field 매핑은 Phase B Ghidra 후.
+
+파서: [tools/converter/parse_h4_hdat_p.py](../../tools/converter/parse_h4_hdat_p.py), 출력 JSON: `work/h4/converted/hdat_p_parsed.json`.
 
 ### Group C: 캐릭터 클래스 progression (70-byte, 공통 prefix) — **2026-05-14 entry layout 추론 완료**
 
@@ -83,12 +131,39 @@ Header (10 bytes, offset 0..9):
 
 원본 분석 데이터: [`work/h4/converted/hdat_ps_analysis.json`](../../work/h4/converted/hdat_ps_analysis.json)
 
-### Group D: 게임 시작 / UI 메타
+### Group D: 게임 시작 / UI 메타 — **2026-05-18 부분 풀림**
 
-| 파일 | size | 첫 12 byte | 추정 |
+#### `_H_SG` (170B) — Save Game 슬롯 헤더
+
+**10 슬롯 × 17B** (170 / 17 = 10) 구조 확정.
+
+```
+17B slot layout:
+  byte 0..11 (12B): 고정 prefix
+     slots 0..4: 0f 00 13 13 ff ff 0c ff ff ff 05 ff   (group "13 13")
+     slots 5..9: 0f 00 12 12 ff 13 0c 0e ff ff 05 ff   (group "12 12")
+  byte 12..16 (5B): variable
+     slot 0,5: ff ff ff ff ff   (empty)
+     slot 1,6: 8b ff ff ff 8f
+     slot 2,7: 8c ff ff ff 90
+     slot 3,8: 8d ff ff ff 91
+     slot 4,9: 8e ff ff ff 92
+```
+
+해석 가설: **2 모드 × 5 기본 캐릭터** = 10 슬롯. var byte 0 (8b~8e) = starting character CIF id, var byte 4 (8f~92) = starting zone id. 2 모드 = (Normal, Hardcore?) 또는 (Story, Free?).
+
+#### `_H_PDAT` (86B) — Player initial data, 17 records (variable-length)
+
+records terminated by `0xff` byte. 첫 record `0e 00 00 00 00 00` (byte 0 = 14, count?), 이후 16 records.
+
+| rec | size | hex | 추정 |
 |---|---|---|---|
-| `_H_PDAT` | 86 | `0e 00 00 00 00 00 ff ff 01 03 00 00` | Player Data 초기값 |
-| `_H_SG` | 170 | `0f 00 13 13 ff ff 0c ff ff ff 05 ff` | Save Game 메타 / 슬롯 헤더 |
+| 0 | 6B | `0e 00 00 00 00 00` | 헤더 (14 = total record count?) |
+| 1-3 | 5B | `01 03 00 00 00`, `00 01 01 01 02`, `01 03 01 01 02` | character/skill init triples |
+| 4-10 | 4-5B | `00 00 02 05`, ... 7개 | quest/event triggers |
+| 11-16 | 2-3B | `00 05`, `08 01`, ... | inventory/shortcut slots |
+
+정확한 field 명명은 Phase B Ghidra 후. 0xff 가 record separator 임은 SCN bytecode 와 같은 패턴.
 
 ## 변환 결과
 

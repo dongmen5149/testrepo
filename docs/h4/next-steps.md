@@ -8,7 +8,7 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 
 ## ⏭ "영웅서기4 이어서 진행해줘" 라고 했을 때 — 빠른 셀렉터
 
-> **2026-05-14 갱신**: A1/A3/A4/A5 종결 + DES brute-force v2 (전체 binary + descriptor + hash 가설) 종결 + ECB 100% 단정 + Ghidra 검증용 known-ciphertext 확립. **자동 영역 완전 종결** — Ghidra GUI 필수.
+> **2026-05-18 갱신 (16건 누적 종결)**: plaintext SCN + CHARACTERS_H4 prefill + `_DAT_DES` S1[58] 변형 + custom DES + v3/v4 brute-force (0 hit) + `_PAL` 통계 + `_EXD` box layout + `_MAP_M_` multi-section + HDAT Group B layout + e0184 bytecode + **HDAT Group A 8 파일 SCN 동일키** + HDAT Group D + OBJ 분포 + e0185 body 통계. **자동 영역 완전 종결**. DES key 발견 시 SCN 348 + HDAT Group A 8 = 356 파일 동시 복호화.
 
 다음 세션에서 사용자가 별다른 지시 없이 "Hero4 이어서" 라고만 말하면 **이 순서로 판단**:
 
@@ -39,6 +39,20 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 - ~~DES key 자동 brute-force v2~~ ✅ 2026-05-14 — 전체 binary (511,006) + descriptor (736) + AID 파생 (24) + hash 가설 (MD5/SHA1) + sequential bytes + `JIWONLEE` 가설 + 흔한 weak keys — Phase 1 sentinel match 0건
 - ~~ECB vs CBC 단정~~ ✅ 2026-05-14 — last-block ciphertext `3b7af9a427907dac` 가 350 중 38회 반복. CBC 라면 unique 해야 → ECB 100%
 - ~~HDAT/_H_PS\* entry layout 추론~~ ✅ 2026-05-14 — PS000-007 = 10-byte 헤더 + 6×10-byte 레코드. [`convert_h4_hdat_ps.py`](../../tools/converter/convert_h4_hdat_ps.py) 작성, `work/h4/converted/HDAT/ps.json` 생성
+- ~~Hero4 SCN plaintext signature 발굴~~ ✅ 2026-05-18 — e0184/e0185 plaintext SCN 발견 → `01 ?? 01 53 00 01 ?? ??` 5-byte known-plaintext signature 확립
+- ~~CHARACTERS_H4 사전 prefill~~ ✅ 2026-05-18 — e0185 글로벌 catalog 87 string → 52 캐릭터/객체 prefill, system prompt 통합 검증
+- ~~`_DAT_DES` 정밀 검증~~ ✅ 2026-05-18 — 824 byte 중 823 표준 DES 일치, **S1[58] 1 byte 만 다름** (`std=3 → got=2`). [verify_h4_dat_des.py](../../tools/recon/verify_h4_dat_des.py)
+- ~~Hero4 custom DES 구현~~ ✅ 2026-05-18 — [custom_des_h4.py](../../tools/converter/custom_des_h4.py) (pure Python, 5,876 blk/s, roundtrip OK)
+- ~~DES brute-force v3 (signature) + v4 (custom DES)~~ ✅ 2026-05-18 — v3 (표준 DES + Hero4 signature) Phase 2 0건, v4 (custom DES + 513,941 candidates × 5 ciphers) Phase 1 0건 → 키는 binary literal 아님
+- ~~`_PAL` secondary RGB 통계~~ ✅ 2026-05-18 — A1/A2 = 0 padding (alpha 아님), identical 0%, scale-darken 11% 만. 가설 좁힘 (color cycling / two-tone / display profile). [analyze_h4_pal.py](../../tools/recon/analyze_h4_pal.py)
+- ~~_EXD payload struct (count=1 케이스)~~ ✅ 2026-05-18 — subtype=2/3 의 4B head + 8B box(es) layout 확정. box = LE int16 dx,dy,w,h. 117 file 모두 파싱. [parse_h4_exd.py](../../tools/converter/parse_h4_exd.py) + `work/h4/converted/exd_parsed.json`
+- ~~_MAP_M_ extras 영역 multi-section~~ ✅ 2026-05-18 — 4-8 sections × (1B count + N×8B record), 8B record = type+sub3+x+y. 97 file 모두 파싱, 13/97 완전 소비. [parse_h4_map_extras.py](../../tools/converter/parse_h4_map_extras.py)
+- ~~v4 brute-force (custom DES, S1[58]=2)~~ ✅ 2026-05-18 — 513,941 candidates × 5 ciphers × 438s, **0 survivors** → 키는 binary literal 아님 100% 확정
+- ~~HDAT Group B (P000-P005) layout~~ ✅ 2026-05-18 — `3B header + N×50B entries`, entry = 8 u16 LE + marker + 5B param + 14 nested u16. 6/6 파일 파싱. [parse_h4_hdat_p.py](../../tools/converter/parse_h4_hdat_p.py)
+- ~~e0184_scn 완전 분해 + SCN bytecode 구조 추론~~ ✅ 2026-05-18 — 12B 헤더 + record-based bytecode (opcode 0x01 = string, 0x0c = immediate, 0xff = sep). [docs/h4/formats/scn.md](formats/scn.md)
+- ~~HDAT Group A 암호화 키 공유 확인~~ ✅ 2026-05-18 — SCN sentinel block `3b7af9a427907dac` 가 Group A 에서 92회 반복 → SCN + HDAT Group A 8개 같은 DES 키. 키 발견 시 356 파일 동시 복호화
+- ~~HDAT Group D (PDAT, SG)~~ ✅ 2026-05-18 — `_H_SG` = 10 슬롯 × 17B (2 모드 × 5 캐릭터), `_H_PDAT` = 17 var-length records (player init data)
+- ~~OBJ/{000,001,002}/ 그룹 분포~~ ✅ 2026-05-18 — 000=100 16×16 icons / 001=100 variable 캐릭터 / 002=47 variable 아이템. 게임 매핑은 _MAP_M_ extras sub[3] cross-ref 후
 
 ### 🎯 "Hero4 다음 작업" 즉시 실행 체크리스트 (다음 세션 진입 시)
 
@@ -73,16 +87,39 @@ Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Cl
 
 ```bash
 # 0. 키 검증 — 키 = 8 bytes (16 hex / 8 ASCII / colon-sep)
-KEY="<KEY_HERE>"   # 예: "0xa1b2c3d4e5f60718" 또는 "Hanbit01" 또는 a1:b2:c3:...
+KEY="<KEY_HERE>"   # 예: "0xa1b2c3d4e5f60718" 또는 "Hanbit01"
+
+# 0.5. 1초 검증 (표준 DES + Hero4 custom DES 둘 다 시도)
+python -c "
+from Crypto.Cipher import DES
+import sys; sys.path.insert(0, 'tools')
+from converter.custom_des_h4 import decrypt as h4d
+
+k = bytes.fromhex('$KEY')   # 또는 b'$KEY' if ASCII
+
+# Test 1: 표준 DES, 가장 흔한 last block (38회 sentinel)
+print('std-DES last:', DES.new(k, DES.MODE_ECB).decrypt(bytes.fromhex('3b7af9a427907dac')).hex())
+
+# Test 2: Hero4 custom DES (S1[58]=2), 가장 흔한 first block (8회)
+p = h4d(k, bytes.fromhex('4655b8f39c0fe0b2'))
+sig_ok = p[0]==0x01 and p[2]==0x01 and p[3]==0x53 and p[4]==0x00 and p[5]==0x01
+print('h4-DES first:', p.hex(), '  signature OK:', sig_ok)
+"
+# → low-entropy plaintext (예: 00*8) 이거나 signature OK 면 키 정답
 
 # 1. SCN 일괄 복호화 → work/h4/decrypted/SC/*_scn (350 file)
 HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key "$KEY" --batch
 
+# 1b. (NEW 2026-05-18) HDAT Group A 8 파일도 같은 키 → 복호화
+#     SCN sentinel 3b7af9a427907dac 가 HDAT-A 8 파일에서 92회 반복 → 동일 DES 키 확정
+for f in _H_BH _H_BS _H_SA _H_SS _H_S000 _H_S001 _H_S002 _H_S003; do
+    python tools/converter/decrypt_h4_scn.py --key "$KEY" \
+        work/h4/extracted/HDAT/$f work/h4/decrypted/HDAT/$f
+done
+
 # 2. 단일 파일로 1차 검증 — EUC-KR 한글이 보이면 성공
-python tools/converter/decrypt_h4_scn.py --key "$KEY" \
-    work/h4/extracted/MAP/SC/e0001_scn /tmp/scn_check.bin
-xxd /tmp/scn_check.bin | head -10
-#    Hero3 SCN 처럼 "00 00 00 ff ff ff ..." 또는 한국어 EUC-KR (0xa1-0xfe) 시퀀스가 보여야 함
+xxd work/h4/decrypted/SC/e0001_scn | head -10
+#    또는 첫 8 byte 가 plaintext signature `01 ?? 01 53 00 01 ?? ??` 매치하는지
 
 # 3. decrypted 를 extracted 로 백업-치환 (convert_all.py 가 extracted 만 봄)
 cp -r work/h4/extracted/MAP/SC work/h4/extracted/MAP/SC.encrypted_backup
@@ -94,11 +131,15 @@ HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py
 HERO_GAME=h4 python tools/converter/prepare_android_assets.py work/h4/converted apps/hero4-android/app/src/main/assets
 
 # 5. A1 — 영어 번역 (~30분, ~$0.30)
+#     translate_dialogues.py 의 system prompt 는 이미 CHARACTERS_H4 52 entries prefill 됨 (2026-05-18)
 export ANTHROPIC_API_KEY="..."
 HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 
-# 6. (선택) Hero4 캐릭터명 사전 갱신 — corpus dialogue_top_texts.json 에서 Top 등장 인명 식별 후
-#    tools/i18n/translation_dict.py 의 CHARACTERS_H4 dict 채우기 → translate 다시 실행
+# 6. (선택) corpus top characters 보강 — translation_dict.py 의 CHARACTERS_H4 dict 추가
+#    이미 52 entries 있음. Top 텍스트로 누락 인명 보강 시 dialogue_top_texts.json 참조
+
+# 7. (NEW) e0184/e0185 의 plaintext 와 decrypt 결과 일치 검증
+#    → SCN bytecode 파서 작성 가능 (docs/h4/formats/scn.md 의 opcode 0x01/0x0c 가설로 시작)
 ```
 
 ### A1. ~~대사 영어 번역~~ ⛔ **DES key 발굴 후 가능**
@@ -259,28 +300,71 @@ Hero3 도 동일 보류 상태. 두 게임 동시 진행하면 효율적.
 
 ---
 
-## 📋 권장 진행 순서 (2026-05-14 갱신)
+## 📋 권장 진행 순서 (2026-05-18 갱신)
 
 | # | 작업 | 자동/수동 | 시간 | 상태 |
 |---|---|---|---|---|
-| 1 | **A4** (recon game-aware) | 자동 | 30분 | ✅ 완료 |
-| 2 | **A5** (`_TILE_030`) | 자동 | 30분 | ✅ 완료 |
-| 3 | **A3** (translation_dict game-aware + Hero4 prefill) | 자동 | 15분 | ✅ 완료 |
-| 4 | **DES 진단 + brute-force 도구화 v1** | 자동 | 1시간 | ✅ 완료 (키 미발견) |
-| 4b | **DES brute-force v2 (전체 binary + descriptor + hash)** | 자동 | 1시간 | ✅ 완료 2026-05-14 (키 미발견, ECB 100% 단정) |
-| 5 | **A2** (Hero4 Ghidra 프로젝트 셋업) | 사용자 GUI | 30분 | ⏳ **현재 1순위** |
-| 6 | **B-1** (DES key 발굴 = `/DAT/_DAT_DES` + `J@IWO8N7L0E7E` xref 추적) | 사용자 + Claude | 1~3시간 | ⏳ A2 다음 |
-| 7 | **B-2** (`_PAL` / `_EXD` / `_MAP_M_` extras 등) | 사용자 + Claude | 1~2주 | ⏳ B-1 후 |
+| 1 | A4 (recon game-aware) | 자동 | 30분 | ✅ 완료 (2026-05-07) |
+| 2 | A5 (`_TILE_030`) | 자동 | 30분 | ✅ 완료 (2026-05-07) |
+| 3 | A3 (translation_dict game-aware + Hero4 prefill) | 자동 | 15분 | ✅ 완료 (2026-05-07) |
+| 4 | DES brute-force v1 | 자동 | 1시간 | ✅ 완료 (키 미발견) |
+| 4b | DES brute-force v2 | 자동 | 1시간 | ✅ 완료 (2026-05-14, 미발견) |
+| 4c | DES brute-force v3 (Hero4 signature) | 자동 | 1시간 | ✅ 완료 (2026-05-18, 0 hit) |
+| 4d | DES brute-force v4 (custom DES, 513k cand) | 자동 | 8분 | ✅ 완료 (2026-05-18, 0 hit) |
+| 4e | `_DAT_DES` 정밀 검증 (S1[58]=2 발견) | 자동 | 30분 | ✅ 완료 (2026-05-18) |
+| 4f | plaintext SCN 분석 (e0184/e0185 + CHARACTERS_H4 prefill) | 자동 | 2시간 | ✅ 완료 (2026-05-18) |
+| 4g | _EXD/MAP_M_/HDAT_B 파서 | 자동 | 2시간 | ✅ 완료 (2026-05-18) |
+| 4h | HDAT Group A 키 공유 확인 + Group D + OBJ 분포 | 자동 | 1시간 | ✅ 완료 (2026-05-18) |
+| 5 | **A2** (Hero4 Ghidra 프로젝트 셋업) | 사용자 GUI | 30분 | ⏳ **현재 1순위 차단** |
+| 6 | **B-1** (DES key 발굴) | 사용자 + Claude | 1~3시간 | ⏳ A2 다음 |
+| 7 | B-2 (`_PAL` secondary / `_EXD` count>1 / `_MAP_M_` section labeling 등) | 사용자 + Claude | 1~2주 | ⏳ B-1 후 |
 | 8 | **A1** (대사 번역) | 자동 (API 키) | 30분 | ⏳ B-1 (DES key) 후 자동 |
-| 9 | **C+D 결정** (Mac/KMM 시점) | 사용자 결정 | — | ⏳ 대기 |
-| 10 | **C** (KMM 리팩터) | Claude | 2~4주 | ⏳ Hero3 와 묶임 |
-| 11 | **D** (iOS 출시) | 사용자 + Claude | 1주 | ⏳ 출시 인프라 |
-| 12 | **E** (SMAF→OGG 변환) | 외부 도구 | — | ⏳ Phase D 전까지 |
+| 9 | C+D 결정 (Mac/KMM 시점) | 사용자 결정 | — | ⏳ 대기 |
+| 10 | C (KMM 리팩터) | Claude | 2~4주 | ⏳ Hero3 와 묶임 |
+| 11 | D (iOS 출시) | 사용자 + Claude | 1주 | ⏳ 출시 인프라 |
+| 12 | E (SMAF→OGG 변환) | 외부 도구 | — | ⏳ Phase D 전까지 |
 
 ### Quick start — 다음 세션에서 가장 먼저
 
-사용자: **A2 → B-1 (Ghidra)** 또는 키 발견 후 자동 파이프라인.
-Claude (자동만): Hero4 자동 항목 완전 종결. **Hero3 잔여 / Hero5 트랙** 으로 전환하거나 사용자 결정 (C/D) 대기.
+사용자 트리거: **A2 → B-1 (Ghidra)** 또는 키 발견 후 자동 파이프라인 (위 §⚡ 카피-페이스트).
+Claude (자동만): **Hero4 자동 항목 완전 종결 — 더 자동으로 진행할 게 없음**. Hero3 잔여 / Hero5 트랙 / 사용자 결정 대기.
+
+---
+
+## 📦 다음 세션에서 참조할 신규 산출물 (2026-05-18 세션)
+
+### 신규 도구 (tools/)
+
+| 도구 | 용도 | 입력 → 출력 |
+|---|---|---|
+| [tools/converter/custom_des_h4.py](../../tools/converter/custom_des_h4.py) | Hero4 custom DES (S1[58]=2) | key, plaintext/ciphertext (8B blocks) |
+| [tools/converter/parse_h4_exd.py](../../tools/converter/parse_h4_exd.py) | _EXD 117 파일 box layout 파싱 | EXD files → exd_parsed.json |
+| [tools/converter/parse_h4_map_extras.py](../../tools/converter/parse_h4_map_extras.py) | _MAP_M_ 97 파일 multi-section parsing | MAP files → map_extras_parsed.json |
+| [tools/converter/parse_h4_hdat_p.py](../../tools/converter/parse_h4_hdat_p.py) | HDAT P000-P005 progression table 파싱 | P files → hdat_p_parsed.json |
+| [tools/recon/verify_h4_dat_des.py](../../tools/recon/verify_h4_dat_des.py) | _DAT_DES 표준 DES 테이블 byte-by-byte 검증 | _DAT_DES → S1[58] deviation report |
+| [tools/recon/analyze_h4_pal.py](../../tools/recon/analyze_h4_pal.py) | _PAL secondary RGB 의미 통계 | PAL files → pal_secondary_stats.json |
+| [tools/recon/find_h4_des_key_v3.py](../../tools/recon/find_h4_des_key_v3.py) | brute-force with Hero4 plaintext signature | binary + sources → survivors |
+| [tools/recon/find_h4_des_key_v4.py](../../tools/recon/find_h4_des_key_v4.py) | brute-force with custom DES | binary (513k cand) → 0 hit |
+
+### 신규 JSON / 데이터 (work/h4/converted/)
+
+| 파일 | 내용 |
+|---|---|
+| `e0185_name_table.json` | e0185 글로벌 entity catalog 87 strings |
+| `exd_parsed.json` | _EXD 117 파일 파싱 (box dx/dy/w/h) |
+| `map_extras_parsed.json` | _MAP_M_ 97 파일 extras (sections × records) |
+| `hdat_p_parsed.json` | HDAT P000-P005 6 파일 (entries × main_values) |
+| `pal_secondary_stats.json` | _PAL 5,724 entries 통계 |
+
+### 신규 문서
+
+| 문서 | 내용 |
+|---|---|
+| [docs/h4/formats/scn.md](formats/scn.md) | SCN bytecode 구조 추론 (e0184/e0185 plaintext 기반) |
+| `formats/exd.md` (갱신) | _EXD box layout count=1 케이스 완전 풀이 |
+| `formats/map.md` (갱신) | extras multi-section 구조 |
+| `formats/hdat.md` (갱신) | Group A 키 공유 + Group B layout + Group D 풀림 |
+| `formats/bm-tile-obj.md` (갱신) | OBJ 그룹 분포 |
 
 ---
 

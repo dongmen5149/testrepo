@@ -65,6 +65,16 @@ for i in range(width * height):
 | Hero4 `_TILE_000` (16×432) | 43% nonempty, 16 colors — 배경/UI |
 | Hero4 `_OBJ_000` (16×16) | 90.6% nonempty, 12 colors — 작은 오브젝트 |
 
+### OBJ 그룹 분포 (2026-05-18 측정)
+
+| 그룹 | 파일 수 | size 범위 | size 평균 | 분류 추정 |
+|---|---|---|---|---|
+| `OBJ/000/` | 100 | 41~200 B | 771 B | **모두 16×16 균일** → small icons / UI 아이콘 / 작은 객체 |
+| `OBJ/001/` | 100 | 53~5,947 B | 989 B | **variable 12~60×13~92** → 캐릭터 sprite / 큰 객체 |
+| `OBJ/002/` | 47 | 51~3,969 B | 500 B | **variable 8~36×11~35** → 아이템 / 중형 객체 |
+
+총 247 single-frame BM. `OBJ/000/` 은 단순 icon, `OBJ/001/` 은 큰 캐릭터, `OBJ/002/` 는 중간 sized 아이템. 정확한 게임 내 매핑 (어느 OBJ id 가 어느 NPC/아이템 인지) 는 _MAP_M_ extras section 의 `sub[3]` 데이터 와 cross-reference 후 확정 (Phase B 또는 게임 wiring 단계).
+
 ## Hero3 91 BM unblocking
 
 이번 Hero4 분석으로 Hero3 의 미해독 0x0c 프레임들 (`map/theme_*_bm` 47 + `map/obj_*_bm` 44 = **91 파일**) 도 자동으로 디코딩 됨. `tools/converter/convert_bm_v2.py` 한 번의 패치로 양쪽 게임 unblocking.

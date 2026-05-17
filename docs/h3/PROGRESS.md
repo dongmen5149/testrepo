@@ -5,9 +5,15 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-**최신 커밋 시점**: 2026-05-17 PM-11 (Round 47) — **2NA + 2NC + 2ND + 2NE + ObjectB.method0x60 신규 + task[0xa848] central state 가설**. (1) ⭐⭐⭐ **vtable[+0x60] = ObjectB.method0x60 신규 슬롯 발견** — FUN_85aa8가 GOT[+0x18]=ObjectB의 vtable[+0x60] indirect call. ObjectB known methods 8 → 9개. (2) ⭐⭐⭐ **task[0xa848] = "current screen/menu state" 중앙 필드 확정** — 34 callers 분포: save/load (FUN_56f3c) + render command buffer (FUN_57394) + 7th indirect entry FUN_86058 cluster (15+ functions 0x85xxx-0x86xxx HEAVY) + sister entry sub-handler (FUN_8d87c Round 28). 모든 핵심 subsystems에서 access. (3) ⭐⭐ **FUN_0003a86c = letter input subsystem 진입점** (388B, cmp #0xf range guard + 13 ctx + bl FUN_3c920, 4 callers including **FUN_000818f0 entity update loop** → entity → letter input trigger). (4) **FUN_85aa8 state clear field = task[0x9c71] + memset 1060 bytes** (Round 27 byte cluster reset). (5) 4 sub-helpers 본문 (FUN_3d434/85e88/2cc94/862d4 모두 lightweight state ops). 상세는 [ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md](ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md).
+> **⚠ 현재 git 상태 (2026-05-18 종료 시점)**:
+> - 마지막 commit = Round 47 (`b83f0552 feat:영웅서기3 Round 47 — ObjectB.vtable[+0x60] 신규...`)
+> - **Round 48 / 49 / 50 산출물은 모두 uncommitted** — 3 신규 docs + 23 신규 recon scripts + `PROGRESS.md` modified
+> - 다음 세션에서 가장 먼저 할 일: (1) `git status` 확인 (2) Round 48-50 산출물 검토 (3) commit 의사 결정 (한 번에 또는 라운드 별)
+> - 산출물 인덱스 — **§ "Round 48-50 uncommitted 산출물" 섹션** 참조 (아래)
 
-**이전 라운드 종합**: Round 18~36 의 진척 요약은 **§"Round 18~37 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
+**최신 진행 라운드**: 2026-05-18 (Round 50, uncommitted) — **2QA + 2QB + 2QC + 2QD + 2QE + 2QF = FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance @ +0x08 + FUN_818f0 정정 + ObjectB vtable[+0x58] destructor 확정**. (1) ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers** (self-relative JT @ 0xa745c): **-1/-2 = cursor DEC (UP)** + **-3/-4 = cursor INC (DOWN)** + **-5 = letter input via FUN_3c920** + **-16 = ctx_byte -1 (clear)** + **-15..-6 (10 entries) = NO-OP/epilogue**. (2) ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT keypad** (FUN_92cc0 '2'/'8' UP/DOWN 의 짝꿍) → 완전한 4방향 phone keypad 체계 확립. (3) ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스** (60-byte) — vtable[+0x54] = allocator (NEW) + **vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). lifecycle: free → alloc → store. ObjectB known methods 9 → **10개** (Round 47의 9 + Round 50의 +0x54). (4) ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` 범위 검사 = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. (5) ⭐⭐ **FUN_75b98 = render flush** (256-byte buffer @ ctx+lit+0xa0 의 dirty flag → memset(0) → indirect render call). (6) FUN_82df4 (44B) = 공유 epilogue trampoline. 상세는 [ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md).
+
+**이전 라운드 종합**: Round 18~50 의 진척 요약은 **§"Round 18~50 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
 - **Round 20~21** — ObjectA cluster 식별 + ObjectB master interface (860 readers) 발견
 - **Round 22** — veneer 14 완전 매핑 + sound/page2 UI 본문
@@ -36,29 +42,44 @@
 - **Round 45** — ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry CONFIRMED** (high confidence, 0 literal pool match with ALL 6 known indirect entries). 시스템 진입점 6 → 7개 확장 확정. Function = command processor (input r0 → bl FUN_00085578c → sub-command 분기 = -5/-16/-2/-1). ⭐⭐⭐ **Sound dispatcher 입력 정규화 풀이**: `internal_id = sound_id - 4`, range [4..195], 22 arms sparse dispatch. task[offset] = sound_id (last_sound_id). ⭐⭐ **task[0x9c71..0x9c76] 6 byte cluster** 신규 (party member 후보). 4 신규 helper 함수 + state inspector/setter 본문 분석
 - **Round 46** — ⭐⭐⭐ **letter keyboard input subsystem 발견** (FUN_00053e08 cmp 'c' + FUN_0003c920 cmp 'd'/'f'/'g'/'h'/'i' = 피처폰 ABC keypad mapping, text input 시스템). ⭐⭐⭐ **HIGH ENCAPSULATION pattern** (FUN_00085578c = `&task[0xa848]` getter, 34 BL callers system-wide, task[0xa848] literal 1 site only = C/C++ accessor pattern). ⭐⭐ FUN_00092bd0 = (int8)task[0xa280] byte reader (40B, 15 callers). FUN_00092cc0 = '2'/'8' + -1/-2 dispatcher. FUN_00085aa8 = event 3 heavy init (vtable[+0x60] indirect call). task[0xa848]/0xa280 신규
 - **Round 47** — ⭐⭐⭐ **vtable[+0x60] = ObjectB.method0x60 신규 슬롯** (ObjectB known methods 8 → 9). ⭐⭐⭐ **task[0xa848] = "current screen/menu state" 중앙 필드 확정** (34 callers 분포: save/load + render command buffer + 7th indirect entry cluster + sister entry sub-handler = 모든 핵심 subsystems). ⭐⭐ **FUN_0003a86c = letter input subsystem 진입점** (388B, 4 callers including FUN_000818f0 entity update loop → entity가 letter input trigger). FUN_85aa8 state clear = task[0x9c71] + memset 1060B. 4 sub-helpers 본문 (lightweight state ops)
+- **Round 48** — ⭐⭐⭐ **task[0xa848] sub-struct field layout 추출** (+0x00 primary state / +0x01,+0x02 sub-state byte indices / +0x04 secondary ptr / +0x0c **save+render 공유 sub-state** / +0x58 sub-struct member, 총 ≥0x5c bytes). Round 47의 18 STR sites 정정 = stack store (HIGH ENCAPSULATION + LOCAL CACHING). ⭐⭐⭐ **4 function pointer tables (GVM-injected at 0xc1f60/c1fa0/c1fc0/c1fe0)** — `FP_table[task[0xa848].sub_byte * 4](r0, r1)` via veneer 0xa429c. FUN_85edc (2-단 sequential) + FUN_85fc8 (조건부). ⭐⭐⭐ **FUN_000818f0 = 74-entity iteration loop** (stride 0x10, counter cmp #0x49). Letter input trigger: context flag byte 비제로 → BL FUN_3a86c (r0=#2, r1=entity). JT @ 0x8198c sister dispatch. ⭐⭐ **FUN_3d5d0 sound dispatcher 37 cmp arms** (Round 22의 22-arm shallow scan 정정), 19 unique sound IDs. ⭐⭐ **FUN_57394 render: byte_append pair (0x5, opcode)** display list 2-byte encoding
+- **Round 49** — ⭐⭐⭐ **task[0xa848] 신규 sub-field 발견 (stack reload tracking)**: **+0x03 (byte, FUN_86058 only)** + **+0x08 (word, 7R+3W = DOMINANT new field)** + **+0x01의 11 STRB writes** (state transition setter). ⭐⭐⭐ **+0x0c 정정 = "render dirty flag"** (NOT render target value): R/W=1/0 boolean + +0x10 = render sub-struct pointer (FUN_75b98(&+0x10, 7, 1, 1) flush). ⭐⭐⭐ **FUN_3a86c = 16-entry JT dispatcher** (entity_arg signed [-0x10..-1], NOT pointer). entity_arg==-5 path → BL FUN_3c920(sub_mode, ctx_byte). **r0=#2 = FUN_3c920 keypad mode selector**. ⭐⭐ **FUN_000818f0 정정** — entity_arg = signed int, "74-entity iteration loop" 가설 정정 필요 (Round 50 후속). 6 reload sites 모두 sub-handler 인자 pass-through
+- **Round 50** — ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers**: -1/-2 = cursor DEC (UP) + -3/-4 = cursor INC (DOWN) + -5 = letter input + -16 = clear + -15..-6 = NO-OP. ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT** (FUN_92cc0 '2'/'8' UP/DOWN의 짝꿍) → 완전한 4방향 phone keypad 체계. ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스 포인터** (60-byte object, lifecycle: free → alloc → store). **vtable[+0x54] = allocator + vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). ObjectB known methods 9 → **10개**. ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. ⭐⭐ **FUN_75b98 = render flush** (256B buffer dirty check → memset → indirect render). FUN_82df4 = 공유 epilogue trampoline
 
-### 전체 진척률 추정 (Round 47 시점, 2026-05-17 PM-11)
+### 전체 진척률 추정 (Round 50 시점, 2026-05-18)
 
-> **결론**: "Android 리메이크 완성" 기준 약 **45~55% 완료**. Round 47로 ObjectB.method0x60 신규 + task[0xa848] central state 가설 확정 + letter input 진입점 = ~3%p 진척.
+> **결론**: "Android 리메이크 완성" 기준 약 **55~65% 완료**. Round 50로 FUN_3a86c JT 완전 풀이 + 4방향 keypad 체계 + ObjectB instance lifecycle + FUN_818f0 정정 + ObjectB 10 vtable methods = ~3%p 진척.
 
 | 영역 | 진척 추정 | 근거 |
 |---|---|---|
 | 자산 포맷 분석/변환 | **~80%** | _bm/_pa/_txt/_cif/_mp/_scn 모두 1차 해독. 미해결: tile 0x0c 압축, _mp extras (NPC/exit placement), SMAF→OGG |
 | 자산 변환 산출 | **~95%** | 704 자산 + 3,131 sprite frames + 134 maps + HD 4× 업스케일. 9,741 unique 대사 영문 번역만 남음 |
-| Ghidra 게임 로직 리버싱 | **~47~52%** ⬆ | 1,470 함수 중 ~103개 본문 분석. GVM architecture + 7 indirect entries + 3 dispatcher JT + 14 known GOT slots + **9 ObjectB vtable methods** + letter keyboard input subsystem + HIGH ENCAPSULATION pattern + **task[0xa848] = central screen state field** + entity update → letter input trigger (FUN_000818f0). **미해결: sound dispatcher 22 arms / FUN_00085edc/85fc8/57394 task[0xa848] 사용 패턴 / 전투 시스템 / FUN_0009a008 두 JT** |
-| task_struct 모델 | **~40%** ⬆ | task[0xa848] (encapsulated getter target, 34 callers) + task[0xa280] (encapsulated byte reader, 15 callers) + task[0x9c71..0x9c76] + 기존 fields |
-| task_struct 모델 | **~38%** ⬆ | task[0xa0c0/0xa0cc/0xa1f6/0xa288/0xa289] (NPC subsystem) + task[0x290] = last_event_id + 0x9cb8 cluster + cluster #1 완전 체인 + task[0x0a5d/0x02b8] (callback gates) |
+| Ghidra 게임 로직 리버싱 | **~55~62%** ⬆ | 1,470 함수 중 ~120개 본문 분석. GVM architecture + 7 indirect entries + 3 dispatcher JT + 14 known GOT slots + **10 ObjectB vtable methods** (Round 50 +0x54 allocator + +0x58 destructor) + **task[0xa848] sub-struct (+0x00..+0x58)** + **FUN_3a86c 16-JT → 4 handlers (메뉴 nav)** + **FUN_92d30 LEFT/RIGHT + FUN_92cc0 UP/DOWN (4방향 keypad 완성)** + **task[0xa848]+0x08 = ObjectB 인스턴스 (60B, lifecycle)** + **FUN_818f0 = 74-entry JT 입력 디스패처** + sound dispatcher 37 arms. **미해결: FUN_818f0 74 JT entries / FUN_92bf8 mode 1-4 / 전투 시스템 / FUN_0009a008 두 JT** |
+| task_struct 모델 | **~50%** ⬆ | task[0xa848] sub-struct (+0x00, +0x01, +0x02, +0x03, +0x04, **+0x08 = ObjectB instance ptr**, +0x0c dirty, +0x10 subrec, +0x58, ≥0x5c B) + task[0xa280] (15 callers) + task[0x9c71..0x9c76] + 기존 fields |
 | Android 엔진 재구현 | **~5~10%** | 8 씬 골격 + NPC 4 hardcoded + i18n 인프라 + save slot. **진짜 게임 로직 (전투/스킬/이벤트/진행) 없음** |
 | i18n | UI 100% / 대사 0% | UI 어휘 196개 100% 영문, 9,741 unique 대사 번역 미진행 |
 
-**가장 큰 블로커** (진행 시 가장 큰 진척):
-1. **task[0xa848] sub-struct 구조 분석** — 34 callers의 offset 사용 패턴 추출 = MenuState/ScreenContext struct layout 식별 (Round 48 의 2OA)
-2. **FUN_0003d5d0 sound dispatcher 22 arms 정밀** — Round 45/47 미완, 2OB
-3. **FUN_000818f0 +0x6c (0x8195c) → FUN_3a86c 호출 context** — entity가 letter input trigger 조건 (2OC)
-4. **전투 시스템 발견** — 38B entity state record (FUN_0009a008 8.6KB super function)
-5. **FUN_00085edc/FUN_00085fc8/FUN_00057394 의 task[0xa848] 사용 패턴** (2OD/2OE)
+**가장 큰 블로커** (Round 50 이후 진척 순):
+1. **FUN_818f0 의 74 JT entries 전체 디코드** — JT @ 0x8198c 의 74 target 함수 매핑 (Round 51 의 2RA)
+2. **FUN_92bf8 본문 분석** — mode 1/2/3/4 (UP/DOWN/LEFT/RIGHT) 별 처리 (2RB)
+3. **FUN_3c920 본문 정밀** — 33-arm cmp 'd'/'f'/'g'/'h'/'i' phone keypad letter mapping (2RC)
+4. **vtable[+0x54] allocator 본문 + 새 할당 객체 lifecycle 추적** (2RD)
+5. **FUN_75b98 mode=7 분기** — partial 분석 정밀 (2RE)
+6. **전투 시스템 발견** — FUN_0009a008 8.6KB super function
 
 ### 한 줄 요약 (현재 상태)
+
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 50 FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance + FUN_818f0 정정** (2026-05-18 / Round 50). **FUN_3a86c 16 JT entries → 4 handlers** (cursor UP/DOWN + letter input + clear + NO-OP). **FUN_92d30 = '4'/'6' LEFT/RIGHT** + FUN_92cc0 = '2'/'8' UP/DOWN → **완전한 4방향 phone keypad 체계** (FUN_92bf8 mode 1-4). **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스** (60-byte) + **vtable[+0x54] allocator + vtable[+0x58] destructor 확정** (Round 47 의 method0x58 정체 풀림) → ObjectB 10 methods. **FUN_818f0 정정 — 74-entry JT 입력 디스패처** (Round 48의 "iteration loop" 가설 정정). **FUN_75b98 = render flush** (256B buffer memset + indirect render). 다음 진척은 **(1) FUN_818f0 74 JT entries, (2) FUN_92bf8 본문, (3) FUN_3c920 정밀, (4) vtable[+0x54] allocator, (5) 전투 시스템**.
+
+### 이전 라운드 요약 (Round 49 시점, 2026-05-18)
+
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 49 task[0xa848] +0x03/+0x08 신규 + +0x0c dirty flag 정정 + FUN_3a86c 16-JT 풀이** (2026-05-18 / Round 49). task[0xa848] = ≥0x5c byte 구조체. FUN_3a86c = 16-entry JT dispatcher (entity_arg signed [-0x10..-1]). 다음 진척은 **(1) FUN_3a86c 16 JT entries, (2) FUN_92d30 sub-handler, (3) FUN_818f0 실 구조, (4) +0x08 의미, (5) 전투 시스템**.
+
+### 이전 라운드 요약 (Round 48 시점, 2026-05-18)
+
+영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 48 task[0xa848] sub-struct field layout + 4 GVM FP tables + 74-entity iteration loop** (2026-05-18 / Round 48). task[0xa848] = ≥0x5c byte 구조체 (+0x00 primary state / +0x01,+0x02 sub-state byte indices / +0x04 secondary ptr / **+0x0c save+render 공유 sub-state** / +0x58 sub-struct member). FUN_85edc/85fc8 = task[0xa848] byte 인덱스로 4개 function pointer tables (GVM-injected at 0xc1f60/c1fa0/c1fc0/c1fe0) dispatch. FUN_000818f0 = 74-entity iteration loop (stride 0x10), letter input trigger 조건 = context flag byte 비제로 → BL FUN_3a86c(r0=#2, r1=entity). FUN_3d5d0 sound dispatcher 정밀 37 cmp arms (19 unique sound IDs). FUN_57394 render byte_append pair (0x5, opcode) display list 2-byte encoding.
+
+### 이전 라운드 요약 (Round 47 시점, 2026-05-17 PM-11)
 
 영웅서기3는 **1주차 콘텐츠 완성도 높은 플레이 가능 게임** + **§4.4 95% 해독** + **Round 47 ObjectB.method0x60 신규 + task[0xa848] central state 가설** (2026-05-17 PM-11 / Round 47). vtable[+0x60] = ObjectB.method0x60 (ObjectB known 8→9 methods). task[0xa848] 34 callers 분포 = save/load + render + 7th indirect entry cluster + sister entry → **"current screen/menu state" 중앙 필드 확정**. FUN_0003a86c (388B) = letter input subsystem 진입점 (4 callers including FUN_000818f0 entity update loop = entity가 letter input trigger). FUN_85aa8의 state clear = task[0x9c71] + memset 1060 bytes. 4 sub-helpers 모두 lightweight state ops. 다음 진척은 **(1) task[0xa848] sub-struct 구조, (2) sound dispatcher 22 arms, (3) FUN_818f0 letter input trigger context, (4) 전투 시스템**.
 
@@ -173,7 +194,7 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 6. (참고) [ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md) — Round 45 (FUN_00086058 = 7번째 indirect entry CONFIRMED)
 7. (선택) 빌드 검증 — 아래 §"재현 명령"
 
-### Round 18~47 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
+### Round 18~50 한눈 요약 (다음 세션 빠른 컨텍스트 복구용)
 
 | Round | 핵심 발견 | 산출 문서 |
 |---|---|---|
@@ -207,6 +228,9 @@ NPC slot record: stride `0x3c4`, `+0x3b3` flag, `+0x3b6` opcode short, `+0x3b8` 
 | **45** (2026-05-17 PM-9) | ⭐⭐⭐ **FUN_00086058 = 7번째 indirect entry CONFIRMED** (high confidence): **0 literal pool occurrences = ALL 6 known indirect entries 와 동일 pattern**. 시스템 진입점 6 → 7개 확장 확정. Function = command processor: input r0 → bl FUN_00085578c → sub-command 분기 (-5/-16/-2/-1) → state machine on task[+3] + task[+1]. ⭐⭐⭐ **Sound dispatcher (FUN_0003d5d0) 입력 정규화 풀이**: `internal_id = sound_id - 4`, range guard [4..195], 22 arms sparse dispatch (event dispatcher 와 유사). task[offset] = sound_id (last_sound_id 패턴). ⭐⭐ **task[0x9c71..0x9c76] 6 byte cluster 신규** (Round 27 byte field 영역 확장, "party member" 후보). **4 신규 helper 함수**: FUN_00085578c/85aa8/92bd0/92cc0. FUN_00024a6c = state inspector (788B, 1 ctx only). FUN_0002cb78 = linear setter (284B, 0 cmp). FUN_00053e08 main caller = FUN_0003c920 (≥1.3KB) | [ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md](ghidra-7th-indirect-entry-and-sound-norm-2026-05-17.md) |
 | **46** (2026-05-17 PM-10) | ⭐⭐⭐ **letter keyboard input subsystem 발견**: FUN_00053e08 (cmp 'c' 4x) + **FUN_0003c920 (cmp 'd'/'f'/'g'/'h'/'i', 33 arms)** = 피처폰 ABC keypad mapping (키 #2 abc + #3 def + #4 ghi) = **사용자 텍스트 입력 시스템**. ⭐⭐⭐ **HIGH ENCAPSULATION pattern**: FUN_00085578c (24B) = `&task[0xa848]` getter, **34 BL callers system-wide** 모두 wrapper 경유 (task[0xa848] literal 1 site only). C/C++ accessor pattern 흔적. ⭐⭐ **FUN_00092bd0** = (int8)task[0xa280] byte reader (40B, 15 callers). **FUN_00092cc0** = '2'/'8' digit + -1/-2 sentinel dispatcher (112B, 5 callers). **FUN_00085aa8** = event 3 heavy init (112B, 4 sub-helpers + memset + 글로벌 obj.vtable[+0x60] indirect call). task[0xa848]/0xa280 신규 (encapsulated state fields) | [ghidra-input-subsystem-and-helpers-2026-05-17.md](ghidra-input-subsystem-and-helpers-2026-05-17.md) |
 | **47** (2026-05-17 PM-11) | ⭐⭐⭐ **vtable[+0x60] = ObjectB.method0x60 신규 슬롯** (FUN_85aa8가 GOT[+0x18]=ObjectB의 vtable[+0x60] indirect call). ObjectB known methods 8 → 9개. ⭐⭐⭐ **task[0xa848] = "current screen/menu state" 중앙 필드 확정** — 34 callers 분포: save/load (FUN_56f3c) + render command buffer (FUN_57394) + 7th indirect entry FUN_86058 cluster (15+ functions 0x85xxx-0x86xxx HEAVY) + sister entry sub-handler (FUN_8d87c Round 28). 모든 핵심 subsystems access. ⭐⭐ **FUN_0003a86c = letter input subsystem 진입점** (388B, cmp #0xf range guard + 13 ctx, 4 callers including **FUN_000818f0 entity update loop** → entity가 letter input trigger). FUN_85aa8 state clear = task[0x9c71] + memset 1060B. 4 sub-helpers (FUN_3d434/85e88/2cc94/862d4) 모두 lightweight state ops | [ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md](ghidra-objectB-method60-and-task-a848-distribution-2026-05-17.md) |
+| **48** (2026-05-18, **uncommitted**) | ⭐⭐⭐ **task[0xa848] sub-struct field layout 추출** (≥0x5c bytes, +0x00 primary state / +0x01,+0x02 sub-state byte indices / +0x04 secondary ptr / +0x0c "save+render 공유" (R49 정정 → dirty flag) / +0x58 sub-struct member). Round 47의 18 STR sites 정정 = stack store (HIGH ENCAPSULATION + LOCAL CACHING pattern). ⭐⭐⭐ **4 function pointer tables (GVM-injected at 0xc1f60/c1fa0/c1fc0/c1fe0)** — `FP_table[task[0xa848].sub_byte * 4](r0, r1)` via veneer 0xa429c. FUN_85edc (2-단 sequential) + FUN_85fc8 (조건부). ⭐⭐⭐ **FUN_000818f0 "74-entity iteration loop" 가설** (Round 50 정정됨 → 74-entry 입력 디스패처). ⭐⭐ **FUN_3d5d0 sound dispatcher 37 cmp arms** (Round 22의 22-arm shallow scan 정정), 19 unique sound IDs. ⭐⭐ **FUN_57394 render: byte_append pair (0x5, opcode)** display list 2-byte encoding | [ghidra-a848-substruct-and-fp-tables-2026-05-18.md](ghidra-a848-substruct-and-fp-tables-2026-05-18.md) |
+| **49** (2026-05-18, **uncommitted**) | ⭐⭐⭐ **task[0xa848] 신규 sub-field 발견 (stack reload tracking)**: **+0x03 (byte, FUN_86058 only)** + **+0x08 (word, 4 functions에 분산 7R+3W = DOMINANT new field)** + **+0x01의 11 STRB writes** (state transition setter). ⭐⭐⭐ **+0x0c 정정 = "render dirty flag"** (NOT render target value): R/W=1/0 boolean + +0x10 = render sub-struct pointer (FUN_75b98(&+0x10, 7, 1, 1) flush). ⭐⭐⭐ **FUN_3a86c = 16-entry JT dispatcher** (entity_arg signed [-0x10..-1], NOT pointer). entity_arg==-5 path → BL FUN_3c920(sub_mode, ctx_byte). **r0=#2 sub-mode = FUN_3c920 keypad mode selector**. ⭐⭐ **FUN_000818f0 정정** — entity_arg = signed int → "iteration loop" 가설 정정 필요 (Round 50 완료). 6 reload sites 모두 sub-handler 인자 pass-through (FUN_3a86c/92d30/92cc0/82df4) | [ghidra-a848-deferred-fields-and-letter-input-jt-2026-05-18.md](ghidra-a848-deferred-fields-and-letter-input-jt-2026-05-18.md) |
+| **50** (2026-05-18, **uncommitted**) | ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers** (self-relative JT @ 0xa745c): -1/-2 = cursor DEC (UP, decrement-and-wrap) + -3/-4 = cursor INC (DOWN, increment-and-clamp) + -5 = letter input via FUN_3c920 + -16 = ctx_byte = -1 (clear sentinel) + -15..-6 (10 entries) = NO-OP/epilogue. ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT keypad** (FUN_92cc0 '2'/'8' UP/DOWN의 짝꿍) → 완전한 4방향 phone keypad 체계 + FUN_92bf8(mode 1-4) 핵심 cursor handler. ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스 포인터** (60-byte). lifecycle: free → alloc → store. **vtable[+0x54] = allocator (NEW) + vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). ObjectB known methods 9 → **10개**. ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` 범위 검사 = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. ⭐⭐ **FUN_75b98 = render flush** (256B buffer @ ctx+lit+0xa0 의 dirty flag → memset(0) → indirect render call). FUN_82df4 (44B) = 공유 epilogue trampoline | [ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md) |
 
 ### 현재 게임 시스템 모델 (Round 47 시점, 검증 vs 가설)
 
@@ -523,7 +547,168 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 48 즉시 시작 명령 (복사-붙여넣기)
+### Round 48-50 uncommitted 산출물 (인덱스)
+
+> 마지막 commit (Round 47) 이후 3 라운드분 산출물이 모두 uncommitted. 다음 세션에서 commit 전에 검토.
+
+**Round 48 (2026-05-18)** — task[0xa848] sub-struct layout + 4 GVM FP tables + 74-entity loop 가설 (이후 Round 50에서 정정):
+- 신규 doc: [`ghidra-a848-substruct-and-fp-tables-2026-05-18.md`](ghidra-a848-substruct-and-fp-tables-2026-05-18.md)
+- 신규 scripts (10): `analyze_a848_substruct.py`, `analyze_a848_state_values.py`, `analyze_a848_litpool_states.py`, `check_a848_litpool_targets.py`, `analyze_a848_call_context.py`, `analyze_a848_proper_writes.py`, `analyze_818f0_letter_trigger.py`, `disasm_85edc_85fc8.py`, `extract_a848_fp_tables.py`, `find_a848_caller_funcs.py`
+
+**Round 49 (2026-05-18)** — task[0xa848] +0x03/+0x08 신규 + +0x0c dirty flag 정정 + FUN_3a86c 16-JT:
+- 신규 doc: [`ghidra-a848-deferred-fields-and-letter-input-jt-2026-05-18.md`](ghidra-a848-deferred-fields-and-letter-input-jt-2026-05-18.md)
+- 신규 scripts (5): `analyze_a848_stack_reload.py`, `analyze_a848_stack_reload_v3.py`, `trace_a848_0c_to_gfx.py`, `analyze_818f0_entity_v2.py` (+ `analyze_818f0_entity_record.py`), `disasm_3a86c_with_r0_trace.py`
+
+**Round 50 (2026-05-18)** — FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance + FUN_818f0 정정:
+- 신규 doc: [`ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md`](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md)
+- 신규 scripts (7): `decode_3a86c_jt.py`, `disasm_3a86c_handlers.py`, `disasm_92d30_full.py`, `disasm_82df4_full.py`, `disasm_75b98_full.py`, `trace_a848_08_context.py`, `disasm_818f0_prologue.py`
+
+**기타**: `PROGRESS.md` modified (Round 48/49/50 진척 반영).
+
+**Commit 전 검토 권장 사항**:
+1. 각 라운드 별로 commit 분리 (3 commits) — 또는 단일 합본 commit
+2. h4 관련 untracked scripts (`analyze_h4_pal.py`, `find_h4_des_key_v3/v4.py`, `verify_h4_dat_des.py`) 와 분리 (Hero4 commit 따로)
+3. 추천 commit 메시지 패턴: `feat:영웅서기3 Round N — <핵심 finding 한 줄>`
+
+---
+
+### Round 51 즉시 시작 명령 (복사-붙여넣기)
+
+> **참고**: Round 50 에서 FUN_3a86c JT 4 handlers 풀이 + 4방향 keypad 체계 (FUN_92d30/cc0) + task[0xa848]+0x08 = ObjectB 인스턴스 + FUN_818f0 = 74-entry 입력 디스패처 정정 + ObjectB vtable[+0x54]/+0x58 = alloc/destructor 확정 완료. 다음 라운드는 **FUN_818f0 의 74 JT entries 전체 디코드** + **FUN_92bf8 본문 (mode 1-4)** + **FUN_3c920 정밀** + **vtable[+0x54] allocator 본문**.
+
+```powershell
+$env:PYTHONIOENCODING = 'utf-8'
+
+# ⭐⭐⭐ 2RA: FUN_818f0 의 74 JT entries 전체 디코드
+# JT 위치: 0x8198c 에서 r3 = sl + literal(pc+?); r2 = JT[idx]
+# FUN_3a86c 와 유사한 self-relative pattern 가능성 검증
+python -c @'
+import struct
+from pathlib import Path
+data = Path("work/h3/extracted/client.bin64000").read_bytes()
+# 0x8198c: ldr r3, [pc, #0x330]
+lit1_addr = ((0x8198c + 4) & ~3) + 0x330
+lit1 = struct.unpack("<I", data[lit1_addr:lit1_addr+4])[0]
+print(f"JT base literal @0x{lit1_addr:05x} = 0x{lit1:08x}")
+# 0x81994: ldr r3, [pc, #0x328]
+lit2_addr = ((0x81994 + 4) & ~3) + 0x328
+lit2 = struct.unpack("<I", data[lit2_addr:lit2_addr+4])[0]
+print(f"target base literal @0x{lit2_addr:05x} = 0x{lit2:08x}")
+sl_base = 0xb2c40
+print(f"JT_base = sl + LIT1 = 0x{sl_base:05x} + 0x{lit1:x} = 0x{(sl_base + lit1) & 0xFFFFFFFF:08x}")
+print(f"target_base = sl + LIT2 = 0x{(sl_base + lit2) & 0xFFFFFFFF:08x}")
+'@
+# 결과로 JT base 주소 식별 후 74 entries dump
+
+# ⭐⭐⭐ 2RB: FUN_92bf8 본문 (mode 1/2/3/4 = UP/DOWN/LEFT/RIGHT 사실상 핵심 cursor handler)
+python tools/recon/find_next_function.py 0x92bf8
+python tools/recon/disasm_subsystem_func.py 0x92bf8 <end> --label fun_92bf8_keypad_core
+
+# ⭐⭐⭐ 2RC: FUN_3c920 본문 정밀 (33-arm cmp 'd'/'f'/'g'/'h'/'i' phone keypad letter)
+python tools/recon/find_next_function.py 0x3c920
+python tools/recon/disasm_subsystem_func.py 0x3c920 <end> --label fun_3c920_letter_full
+
+# ⭐⭐ 2RD: ObjectB vtable[+0x54] = allocator 본문 추적
+# 0x85bc8 의 bl 0xa42a0 (veneer) 가 호출하는 실 target 함수 = vtable[+0x54]
+# Round 47 의 sl-rel literal extraction 패턴 재사용
+
+# ⭐⭐ 2RE: FUN_75b98 mode=7 분기 정밀 (Round 50 partial)
+python tools/recon/disasm_subsystem_func.py 0x75b98 0x75cdc --label fun_75b98_full_v2
+# 0x75c70 부근 cmp #1 등 분기 추적
+
+# ⭐ 2RF: FUN_0009a008 super function 발견 (8.6KB) — 전투 시스템 후보
+python tools/recon/find_next_function.py 0x9a008
+python tools/recon/disasm_subsystem_func.py 0x9a008 <end> --label fun_9a008_super
+```
+
+### Round 50 즉시 시작 명령 (복사-붙여넣기, ※ 완료)
+
+> **참고**: Round 49 에서 task[0xa848] +0x03/+0x08 신규 발견 + +0x0c dirty flag 정정 + FUN_3a86c 16-JT 풀이 완료. 다음 라운드는 **FUN_3a86c 16 JT entries 디코드** + **FUN_92d30 sub-handler 본문** + **FUN_818f0 실제 loop 구조 재분석**.
+
+```powershell
+$env:PYTHONIOENCODING = 'utf-8'
+
+# ⭐⭐⭐ 2QA: FUN_3a86c 의 16 JT entries 전체 디코드
+# JT 위치: 0x3a8b2 에서 r3 = sl + literal(pc+0x128); r2 = JT[idx] = sl_relative offset
+# Round 42 의 trace_2c9ca_sl_global.py 패턴으로 sl-rel 풀이
+python -c @'
+import struct
+from pathlib import Path
+data = Path("work/h3/extracted/client.bin64000").read_bytes()
+# Literal 1: 0x3a8ae ldr r3, [pc, #0x128]
+lit1_addr = ((0x3a8ae + 4) & ~3) + 0x128
+lit1 = struct.unpack("<I", data[lit1_addr:lit1_addr+4])[0]
+print(f"JT base literal @0x{lit1_addr:05x} = 0x{lit1:08x}")
+# Literal 2: 0x3a8b6 ldr r3, [pc, #0x120]
+lit2_addr = ((0x3a8b6 + 4) & ~3) + 0x120
+lit2 = struct.unpack("<I", data[lit2_addr:lit2_addr+4])[0]
+print(f"target base literal @0x{lit2_addr:05x} = 0x{lit2:08x}")
+sl_base = 0xb2c40
+got_slot1 = sl_base + lit1
+got_slot2 = sl_base + lit2
+print(f"JT GOT slot @0x{got_slot1:05x} = 0x{struct.unpack(\"<I\", data[got_slot1:got_slot1+4])[0]:08x}")
+print(f"target GOT slot @0x{got_slot2:05x} = 0x{struct.unpack(\"<I\", data[got_slot2:got_slot2+4])[0]:08x}")
+'@
+
+# ⭐⭐⭐ 2QB: FUN_92d30 본문 (FUN_818f0 sub-handler, 2 callers)
+python tools/recon/find_next_function.py 0x92d30
+python tools/recon/disasm_subsystem_func.py 0x92d30 <end> --label fun_92d30
+
+# ⭐⭐⭐ 2QC: FUN_818f0 전체 구조 재분석 (entity_arg signed int 기반)
+# local[-4] 의 진짜 의미 + cmp #0x49 의 진짜 의미 + adds #0x10 의 진짜 의미 파악
+python tools/recon/disasm_subsystem_func.py 0x818f0 0x82e20 --label fun_818f0_full_v2
+
+# ⭐⭐ 2QD: task[0xa848]+0x08 (active selection?) 4 함수의 read/write 컨텍스트
+# FUN_85b18, FUN_85e88, FUN_88eb0, FUN_89b18 의 +0x08 access 컨텍스트 dump
+python tools/recon/trace_a848_0c_to_gfx.py  # 변형: +0x08 사이트로 변경
+
+# ⭐⭐ 2QE: FUN_75b98 본문 (render flush, mode=7,1,1 인자)
+python tools/recon/find_next_function.py 0x75b98
+python tools/recon/disasm_subsystem_func.py 0x75b98 <end> --label fun_75b98_render_flush
+
+# ⭐ 2QF: FUN_82df4 본문 (FUN_818f0 의 post-call cleanup)
+python tools/recon/find_next_function.py 0x82df4
+python tools/recon/disasm_subsystem_func.py 0x82df4 <end> --label fun_82df4
+```
+
+### Round 49 즉시 시작 명령 (복사-붙여넣기, ※ 완료)
+
+> **참고**: Round 48 에서 task[0xa848] sub-struct field layout 추출 + 4 GVM FP tables (0xc1f60-c1fe0) + FUN_818f0 74-entity loop + letter input trigger 조건 + sound dispatcher 37 arms 완료. 다음 라운드는 **4 FP table entries 매핑** + **+0x0c render target 의미 확정** + **deferred stack-cached 추가 sub-field**.
+
+```powershell
+$env:PYTHONIOENCODING = 'utf-8'
+
+# ⭐⭐⭐ 2PA: 4개 FP table entries dump (GVM-injected runtime resolved)
+# 0xc1f60, 0xc1fa0, 0xc1fc0, 0xc1fe0 모두 binary 외부 (file 끝 0xb39d0). GVM 의 setup 시점 모니터링 또는 emulator 디버깅 필요.
+# 차선책: byte index 의 실제 사용 범위 추적 → table size 추정
+# FUN_85edc/85fc8 외 다른 사이트에서 task[0xa848]+0x01/+0x02 의 max value 식별
+python tools/recon/find_task_struct_field_readers.py --field 0xa849
+python tools/recon/find_task_struct_field_readers.py --field 0xa84a
+
+# ⭐⭐⭐ 2PB: task[0xa848]+0x0c (render+save 공유 sub-state) 의 graphics_primitive 호출 인자 흐름 추적
+# FUN_57394 의 0x575fc/0x57602/0x579a8/0x57bcc 에서 +0x0c 의 값이 어디로 흘러가는지 = render target 의미 확정
+python tools/recon/disasm_subsystem_func.py 0x57394 0x581a8 --label fun_57394_a848c_trace
+
+# ⭐⭐⭐ 2PC: deferred stack-cached 18 사이트 추가 sub-field 추출
+# `ldr Rx, [r7-N]; ldr Ry, [Rx, #M]` 패턴 (M = task[0xa848] sub-field offset)
+# Round 48 의 analyze_a848_proper_writes.py 를 확장하여 stack reload pattern 까지 추적
+# 각 함수 본문 길이만큼 윈도우 확장
+
+# ⭐⭐ 2PD: FUN_3a86c letter input 본문 + r0=#2 sub-mode 의미
+# Round 47 에서 388B 함수 확인. cmp #0xf range guard 후 13 ctx + bl FUN_3c920. 4 callers (FUN_818f0 포함).
+python tools/recon/disasm_subsystem_func.py 0x3a86c 0x3a9f0 --label fun_3a86c_letter_input
+
+# ⭐⭐ 2PE: FUN_000818f0 entity stride 0x10 entity record 구조
+# 74-entity x 0x10 = 1168 bytes 영역. context_getter(여기) + literal_offset 의 literal 값들이 entity record offset
+# FUN_818f0 의 모든 ldrb/ldr [Rx, #imm] 패턴 수집
+python tools/recon/disasm_subsystem_func.py 0x818f0 0x82690 --label fun_818f0_entity_record
+
+# ⭐ 2PF: sound dispatcher 21 leaf cases — 각 sound_id 별 sound_trigger BL 매핑
+# BST 흐름 따라가서 leaf 도달 시 호출하는 sound_trigger 의 r0 (sound_id) 추적
+python tools/recon/disasm_subsystem_func.py 0x3d5d0 0x3e6bc --label sound_dispatcher_leaves
+```
+
+### Round 48 즉시 시작 명령 (복사-붙여넣기, ※ 완료)
 
 > **참고**: Round 47 에서 ObjectB.method0x60 + task[0xa848] central state 가설 + letter input 진입점 완료. 다음 라운드는 **task[0xa848] sub-struct 구조 분석** + **sound dispatcher 22 arms** + **FUN_818f0 letter input trigger context**.
 

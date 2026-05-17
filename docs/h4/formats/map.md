@@ -59,9 +59,61 @@ layer0/layer1: 400 cells each
 extras: 1,261 byte (NPC/exit/event 미해독)
 ```
 
-## 미해독: extras 영역
+## extras 영역 — multi-section 구조 풀림 (2026-05-18)
 
-Hero3 `_mp` 와 같이 NPC/exit/event placement 추정. 7-byte record + flag bytes (0x00/0x40/0x80/0xc0) 패턴 관찰됨. 정확한 포맷은 Ghidra 의 `/MAP/M/_MAP_M_%03d` 로더 함수 추적 후 확정.
+```
+section 0: [count: uint8] [N₀ × 8-byte records]
+section 1: [count: uint8] [N₁ × 8-byte records]
+...
+section K-1: [variable-length tail]   # 84/97 파일에서 1~40B trailing
+```
+
+각 8-byte record:
+```
+type    : uint8       (0x00 / 0x40 / 0x80 / 0xc0 — 상위 2비트 grouping)
+sub[3]  : 3 byte      (sub-type / id / flags — 정확한 의미 미정)
+x       : uint16 LE   (맵 픽셀 좌표, 보통 0~640)
+y       : uint16 LE   (맵 픽셀 좌표, 보통 0~960)
+```
+
+### 검증 통계 (97 파일)
+
+| section 수 | 파일 수 |
+|---|---|
+| 4 sections | 28 |
+| 5 sections | 48 |
+| 6 sections | 15 |
+| 7 sections | 4 |
+| 8 sections | 2 |
+
+- **13 / 97** 파일은 모든 section 이 깔끔히 소비 (tail = 0B)
+- **84 / 97** 파일은 1~40B trailing (variable-length 마지막 section 또는 padding)
+- 모든 파일에서 적어도 첫 4 sections 정상 파싱 → 핵심 구조 확정
+
+### Section 별 의미 추정 (Ghidra 후 확정 필요)
+
+| section | typical count | 추정 |
+|---|---|---|
+| 0 | 50~200 | tile decoration / NPC spawn 위치 |
+| 1 | 20~50 | exit / zone transition (sub data 가 다른 zone id) |
+| 2 | 10~30 | event trigger / interactive object |
+| 3+ | 0~20 | item/treasure / quest marker |
+
+### 샘플 (`_MAP_M_000`, 수레바퀴섬/선착장, 20×20)
+
+```
+extras = 850B, 4 sections, tail=6B
+  sec[0]: 55 records → e.g. type=0 sub=[40,255,47] pos=(232,224)
+  sec[1]: 26 records → e.g. type=0 sub=[0,255,58]  pos=(200,224)
+  sec[2]: 24 records → e.g. type=0 sub=[0,255,53]  pos=(40,32)
+  sec[3]: 0 records  (마커 / 종료자)
+```
+
+### 파서 + JSON
+
+[tools/converter/parse_h4_map_extras.py](../../tools/converter/parse_h4_map_extras.py) 97 파일 모두 파싱. `work/h4/converted/map_extras_parsed.json` 출력. 각 record 의 `type` / `sub` / `x` / `y` 포함.
+
+정확한 각 section 의 명명 (NPC vs exit vs event) + sub[3] 의 의미 (특히 type 의 상위 2비트가 무엇을 표시하는지) 는 Phase B Ghidra 분석으로 확정.
 
 ## Layer0/Layer1 의미
 

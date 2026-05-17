@@ -7,10 +7,11 @@
 | 문서 | 포맷 | 변환기 | 결과 (errors=0) |
 |---|---|---|---|
 | [pal.md](pal.md) | `_PAL` 8byte/color | [`tools/converter/convert_palette.py`](../../../tools/converter/convert_palette.py) | 196/196 |
-| [map.md](map.md) | `_MAP_M_NNN` 헤더 v1/v2/v3 + body | [`tools/converter/convert_h4_map.py`](../../../tools/converter/convert_h4_map.py) | 97/97 |
-| [exd.md](exd.md) | `_EXD` 캐릭터 확장 데이터 | [`tools/converter/convert_exd.py`](../../../tools/converter/convert_exd.py) | 117/117 (헤더만) |
+| [map.md](map.md) | `_MAP_M_NNN` 헤더 v1/v2/v3 + body + **multi-section extras (2026-05-18)** | [`tools/converter/convert_h4_map.py`](../../../tools/converter/convert_h4_map.py) + [`parse_h4_map_extras.py`](../../../tools/converter/parse_h4_map_extras.py) | 97/97 |
+| [exd.md](exd.md) | `_EXD` 캐릭터 확장 데이터 + **box layout (2026-05-18)** | [`tools/converter/convert_exd.py`](../../../tools/converter/convert_exd.py) + [`parse_h4_exd.py`](../../../tools/converter/parse_h4_exd.py) | 117/117 |
 | [bm-tile-obj.md](bm-tile-obj.md) | `_BM` (멀티/싱글), `TILE`, `OBJ` 0x0b/0x0c | [`tools/converter/convert_bm_v2.py`](../../../tools/converter/convert_bm_v2.py), [`convert_h4_tile.py`](../../../tools/converter/convert_h4_tile.py) | 200 + 30 + 246 frames |
-| [hdat.md](hdat.md) | `HDAT/` 25개 그룹 | (정찰만, 파서 없음) | 분류 완료 |
+| [hdat.md](hdat.md) | `HDAT/` 25개 그룹 + **Group B P000-P005 layout (2026-05-18)** + Group C PS000-007 | [`parse_h4_hdat_p.py`](../../../tools/converter/parse_h4_hdat_p.py), [`convert_h4_hdat_ps.py`](../../../tools/converter/convert_h4_hdat_ps.py) | Group B/C 풀림, A/D 보류 |
+| [scn.md](scn.md) | `_SCN` plaintext bytecode (e0184/e0185) | (파서 보류, DES 후) | 2/350 plaintext decoded |
 
 ## Hero3 와 공유
 
