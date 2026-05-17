@@ -145,33 +145,199 @@ func process(s: MonsterAIState) -> void:
 	_ai_action(s)
 
 
-# === Ai_Action 등가 — 13 sub-state dispatch ===
+# === Ai_Action 등가 — 13 sub-state dispatch (Round 47/50) ===
+##
+## sub-state index = s.opcode (Monster+0x297). 0..12 jumptable.
+## Round 47 의 disasm 결과 정밀 매핑:
+##   0=CHASE_TIMER  1=TURN_DIR        2=COUNTDOWN
+##   3=SKILL_USE    4=SET_ATK_MOTION  5=SKILL_CAST_304
+##   6=READY_ATK_305 7=READY_ATK_308  8=SKILL_USE_30A
+##   9=SKILL_END    10/11=no-op       12=GET_MOTION_EXIT
+##
+## host CHAR 가 노출해야 하는 interface (battle_system.gd 의 wrapper 가 turn-based
+## 추상화에 맞춰 구현):
+##   is_die()->bool, get_motion()->int, is_attack_able()->bool,
+##   is_able_skill(id)->bool, get_dir()->int, set_dir(d), hero_turn_direction(),
+##   fast_distance_to_hero()->int, set_attack_motion(skill_id), ai_cast_skill(id),
+##   set_cool_time(id), skill_end(), ai_check_irect_hit(range)->bool,
+##   ai_check_visibility(idx)->bool, ai_all_dead()->bool, ai_tutorial_flag(idx)->bool
+## 미제공 시 합리적 default (return 0 / false 등).
 func _ai_action(s: MonsterAIState) -> void:
-	if s.host and s.host.has_method("is_die") and s.host.is_die():
+	if _host_call_bool(s, "is_die", false):
 		return
 	if s.action_type == 0:
-		# SetTargetPoint(0) — host 가 제공 (선택)
 		if s.host and s.host.has_method("set_target_point"):
 			s.host.set_target_point(0)
 		return
-	# sub-state index = s.opcode (Monster+0x297)
-	# 0..12 jumptable. 실 동작은 host method 로 위임 — 정밀 구현은 battle_system 통합 시
-	# (이 라운드는 framework + opcode/trigger interpreter 만)
 	match s.opcode:
-		0:
-			# CHASE_TIMER
-			if s.action_timer > 0:
-				s.action_timer -= 1
-			elif s.action_type == 1:
-				if s.host and s.host.has_method("ai_chase_check"):
-					s.host.ai_chase_check(s.sub_action_data)
-		8:
-			# SKILL_USE_30A — most common cast path
-			if s.host and s.host.has_method("ai_cast_skill"):
-				s.host.ai_cast_skill(s.skill_src_30a)
-			s.opcode = -1
+		0: _state_chase_timer(s)
+		1: _state_turn_direction(s)
+		2: _state_countdown(s)
+		3: _state_skill_use_targeting(s)
+		4: _state_set_attack_motion(s, int(s.skill_param[0]))
+		5: _state_skill_cast(s, s.skill_src_304)
+		6: _state_set_attack_motion(s, s.skill_src_305)
+		7: _state_skill_cast(s, s.skill_src_308)
+		8: _state_skill_cast(s, s.skill_src_30a)
+		9: _state_skill_end(s)
+		10, 11: pass
+		12: _state_get_motion_exit(s)
+		_: pass
+
+
+## state 0 = CHASE_TIMER (Round 47, handler 0xc11ac)
+## Monster+0x2c8 timer decrement. 0 도달 + action_type==1 시
+## Fast_Distance(hero) < Monster+0x2c6 시야범위 → ImmadiatelyCheck(8) (SKILL_USE_30A 진입).
+func _state_chase_timer(s: MonsterAIState) -> void:
+	if s.action_timer > 0:
+		s.action_timer -= 1
+		return
+	if s.action_type != 1: return
+	var dist: int = _host_call_int(s, "fast_distance_to_hero", 9999)
+	var sight: int = s.sub_action_data
+	if dist < sight or sight == 0:
+		_immadiately_check(s, 8)
+	elif s.host and s.host.has_method("ai_chase_check"):
+		s.host.ai_chase_check(sight)
+
+
+## state 1 = TURN_DIRECTION (Round 47, handler 0xc1254)
+## Monster+0x2c5 (sub_action) 의 mode 별 분기:
+##   0/2 = lookup table → host.ai_turn_dir_lookup(mode)
+##   1   = 다른 lookup → host.ai_turn_dir_lookup2()
+##   3   = flip 180° → set_dir((cur+2) & 3)
+##   default = HeroTurnDirection (face hero)
+func _state_turn_direction(s: MonsterAIState) -> void:
+	var mode: int = s.sub_action
+	match mode:
+		0, 2:
+			if s.host and s.host.has_method("ai_turn_dir_lookup"):
+				s.host.ai_turn_dir_lookup(mode)
+		1:
+			if s.host and s.host.has_method("ai_turn_dir_lookup2"):
+				s.host.ai_turn_dir_lookup2()
+		3:
+			if s.host and s.host.has_method("get_dir") and s.host.has_method("set_dir"):
+				var d: int = int(s.host.get_dir())
+				s.host.set_dir((d + 2) & 3)
 		_:
-			pass
+			if s.host and s.host.has_method("hero_turn_direction"):
+				s.host.hero_turn_direction()
+	s.opcode = -1
+
+
+## state 2 = STATE_COUNTDOWN (Round 47, handler 0xc1288)
+## Monster+0x2c7 countdown timer 감소. 0 도달 + motion==1 시 state 0 (CHASE_TIMER) 재진입.
+func _state_countdown(s: MonsterAIState) -> void:
+	if s.first_set_flag > 0:
+		s.first_set_flag -= 1
+	if s.first_set_flag == 0:
+		var motion: int = _host_call_int(s, "get_motion", 0)
+		if motion == 1:
+			s.opcode = 0
+
+
+## state 3 = SKILL_USE_WITH_TARGETING (Round 47, handler 0xc1470)
+## Monster+0x2c9 (skill_id) 사용. Monster+0x2ca (skill_target) 0-4 jumptable 로 dir 제어.
+## IRect 충돌 검사 (skill_range) 후 cast.
+func _state_skill_use_targeting(s: MonsterAIState) -> void:
+	if not _can_cast_skill(s, s.skill_id): return
+	var dir_mode: int = s.skill_target
+	match dir_mode:
+		0: pass
+		1:
+			if s.host and s.host.has_method("hero_turn_direction"):
+				s.host.hero_turn_direction()
+		2, 3:
+			if s.host and s.host.has_method("set_dir"):
+				s.host.set_dir(dir_mode)
+		4:
+			if s.host and s.host.has_method("set_dir"):
+				s.host.set_dir(0)
+	if s.host and s.host.has_method("ai_check_irect_hit"):
+		if not s.host.ai_check_irect_hit(s.skill_range):
+			return
+	_do_cast(s, s.skill_id)
+
+
+## state 4/6 = SET_ATTACK_MOTION (Round 47, handler 0xc1338)
+## skill_id 가 Monster+0x2cc (param[0]) 또는 +0x305. motion+dir lookup → SetAttackMotion → cast.
+func _state_set_attack_motion(s: MonsterAIState, skill_id: int) -> void:
+	if not _can_cast_skill(s, skill_id): return
+	if s.host and s.host.has_method("set_attack_motion"):
+		s.host.set_attack_motion(skill_id)
+	_do_cast(s, skill_id)
+
+
+## state 5/7/8 = SKILL_CAST (Round 47, handlers 0xc13d8/0xc12e0/0xc10e4)
+## skill_id source = Monster+0x304 / +0x308 / +0x30a. HeroTurnDirection → cast.
+func _state_skill_cast(s: MonsterAIState, skill_id: int) -> void:
+	if not _can_cast_skill(s, skill_id): return
+	if s.host and s.host.has_method("hero_turn_direction"):
+		s.host.hero_turn_direction()
+	_do_cast(s, skill_id)
+
+
+## state 9 = SKILL_END (Round 47, handler 0xc1324)
+## Monster+0x2c3 = 1, SkillEnd() 호출.
+func _state_skill_end(s: MonsterAIState) -> void:
+	s.state = 1
+	if s.host and s.host.has_method("skill_end"):
+		s.host.skill_end()
+	s.opcode = -1
+
+
+## state 12 = GET_MOTION_EXIT (Round 47, handler 0xc11a0)
+## GetMotion 호출 후 exit — motion 상태 갱신만.
+func _state_get_motion_exit(s: MonsterAIState) -> void:
+	if s.host and s.host.has_method("get_motion"):
+		s.host.get_motion()
+	s.opcode = -1
+
+
+## skill cast 공통 gate (모든 state 3-8 공유).
+##
+## 원본 조건: GetMotion==0 (idle) + IsAttackAble==1 + IsAbleSkill(id)==true +
+## Monster+0x315 (skill_disable) == 0.
+func _can_cast_skill(s: MonsterAIState, skill_id: int) -> bool:
+	if skill_id <= 0: return false
+	if s.skill_disable != 0: return false
+	var motion: int = _host_call_int(s, "get_motion", 0)
+	if motion != 0: return false
+	if s.host and s.host.has_method("is_attack_able"):
+		if not s.host.is_attack_able(): return false
+	if s.host and s.host.has_method("is_able_skill"):
+		if not s.host.is_able_skill(skill_id): return false
+	return true
+
+
+## skill cast 실 호출 + cooldown set + sub-state reset.
+##
+## 원본: SkillUsed + SetCoolTime, Monster+0x297 = -1, Monster+0x2b8 = 0.
+func _do_cast(s: MonsterAIState, skill_id: int) -> void:
+	if s.host and s.host.has_method("ai_cast_skill"):
+		s.host.ai_cast_skill(skill_id)
+	if s.host and s.host.has_method("set_cool_time"):
+		s.host.set_cool_time(skill_id)
+	s.opcode = -1
+
+
+## ImmadiatelyCheck 등가 — 새 sub-state 진입 + timer reset.
+func _immadiately_check(s: MonsterAIState, new_state: int) -> void:
+	s.opcode = new_state
+	s.action_timer = 0
+
+
+func _host_call_int(s: MonsterAIState, m: String, default_val: int) -> int:
+	if s.host and s.host.has_method(m):
+		return int(s.host.call(m))
+	return default_val
+
+
+func _host_call_bool(s: MonsterAIState, m: String, default_val: bool) -> bool:
+	if s.host and s.host.has_method(m):
+		return bool(s.host.call(m))
+	return default_val
 
 
 # === Ai_doActionList 등가 — action stream interpreter ===
@@ -206,18 +372,19 @@ func _on_action(s: MonsterAIState, op: int, stream: PackedByteArray) -> int:
 		return 0
 	if op == 11:
 		# variable
-		if s.action_offset >= stream.size(): return 0
+		if s.action_offset >= stream.size(): return 1
 		var n := stream[s.action_offset]
 		s.action_offset += 1
-		if s.action_offset + n > stream.size(): return 0
+		if s.action_offset + n > stream.size(): return 1
 		for i in range(min(n, 4)):
 			s.operand[i] = stream[s.action_offset + i]
 		s.action_offset += n
 		return 0
-	# load operand bytes
+	# operand 가 stream 끝을 넘지 않을 때만 advance (decoder Round 45 와 일치)
+	if s.action_offset + sz > stream.size():
+		return 1
 	for i in range(min(sz, 4)):
-		if s.action_offset + i < stream.size():
-			s.operand[i] = stream[s.action_offset + i]
+		s.operand[i] = stream[s.action_offset + i]
 	s.action_offset += sz
 	match op:
 		0:

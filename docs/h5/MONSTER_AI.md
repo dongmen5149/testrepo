@@ -322,9 +322,9 @@ WALK + CHANCE_WALK = 286/524 (55%) — 대부분 monster 가 walking 중심 AI.
 **Monster AI 분석 완전 종료** — 데이터원 / VM (action+trigger opcode) / 상태 머신
 모두 매핑. Godot 구현으로 이전 완료 (Round 48).
 
-## 10. Godot 구현 (Round 48 신규)
+## 10. Godot 구현 (Round 48-50)
 
-`apps/hero5-godot/scripts/core/monster_ai.gd` (autoload, 약 270 line):
+`apps/hero5-godot/scripts/core/monster_ai.gd` (autoload, 약 440 line):
 
 ```gdscript
 # create runtime for monster
@@ -345,13 +345,73 @@ MonsterAI.step_action_list(ai_state)
 - `_load_ai_defs()` — `monster_ai.json` 234KB res:// loader
 - `create_runtime(host, ai_type_id)` — 48 AI defs 중 선택
 - `process(s)` — 매 frame entry (stun → cooldown → Ai_Action)
-- `step_action_list(s)` — Ai_doActionList (action stream 1 step)
+- `step_action_list(s)` — Ai_doActionList (action stream 1 step), operand 부족 시 graceful stop
 - `_on_action(s, op, stream)` — 13 opcode interpreter (operand size table)
 - `step_trigger_list(s)` — ActionOfTrigger (trigger stream walker)
 - `_is_trigger_equal(s, code, operand)` — 13 trigger handler
+- `_ai_action(s)` — **Round 47 의 13 sub-state machine 완전 dispatch (Round 50)**
 
-`battle_system.gd` hook: `_ai_runtime` field + `start_battle` 에서 create_runtime
-호출 + `_ai_pick_skill()` helper (트리거 검사 + action stream 진행 후 skill_id 추천).
+### Round 50: Ai_Action 13 sub-state 정밀 구현
+
+state 0/8 stub (R48) → 13 sub-state 모두 채움:
+
+| state | helper | 정밀도 |
+|---:|---|---|
+| 0 | `_state_chase_timer` | Fast_Distance(hero) vs sight, sight 안이면 ImmadiatelyCheck(8) |
+| 1 | `_state_turn_direction` | mode 0/2 lookup / 1 lookup2 / 3 flip180° / default face hero |
+| 2 | `_state_countdown` | first_set_flag decrement + motion==1 시 state 0 재진입 |
+| 3 | `_state_skill_use_targeting` | +0x2c9 skill, dir mode 0-4, IRect 충돌 검사 후 cast |
+| 4 | `_state_set_attack_motion(s, skill_param[0])` | motion+dir lookup → cast |
+| 5 | `_state_skill_cast(s, skill_src_304)` | HeroTurnDirection → cast |
+| 6 | `_state_set_attack_motion(s, skill_src_305)` | state 4 path fallthrough |
+| 7 | `_state_skill_cast(s, skill_src_308)` | HeroTurnDirection → cast |
+| 8 | `_state_skill_cast(s, skill_src_30a)` | next_skill_id (opcode 9) cast |
+| 9 | `_state_skill_end` | state=1, host.skill_end() |
+| 10,11 | (no-op) | default fall-through |
+| 12 | `_state_get_motion_exit` | host.get_motion() 호출만 |
+
+**공통 helper**:
+- `_can_cast_skill(s, skill_id)` — 5-gate (skill_id>0 + skill_disable==0 + motion==0 + is_attack_able + is_able_skill)
+- `_do_cast(s, skill_id)` — host.ai_cast_skill + set_cool_time + opcode=-1
+- `_immadiately_check(s, new_state)` — sub-state 전환 + timer reset
+
+### host CHAR interface (Round 50)
+
+`battle_system.gd` 가 turn-based 추상화에 맞춰 13 method stub 구현:
+
+```
+is_die() -> bool                       # enemy_hp <= 0
+get_motion() -> int                    # always 0 (idle)
+is_attack_able() -> bool               # enemy_hp > 0
+is_able_skill(id) -> bool              # id > 0
+get_dir() -> int                       # 0
+set_dir(d) -> void
+hero_turn_direction() -> void
+fast_distance_to_hero() -> int         # 0 (always in sight)
+set_attack_motion(skill_id) -> void    # _ai_pending_skill_id = skill_id
+ai_cast_skill(skill_id) -> void        # _ai_pending_skill_id = skill_id
+set_cool_time(skill_id) -> void
+skill_end() -> void
+ai_check_irect_hit(range) -> bool      # always true (turn-based)
+ai_check_visibility(idx) -> bool       # always true
+ai_all_dead() -> bool
+ai_tutorial_flag(idx) -> bool          # false
+```
+
+`battle_system._ai_pick_skill()` 우선순위:
+1. `_ai_pending_skill_id` (state 3-8 의 _do_cast 가 ai_cast_skill 통해 기록)
+2. `skill_src_30a` (opcode 9 NEXT_SKILL)
+3. `skill_id` (opcode 4 SKILL_SET)
+4. -1 (no skill 가능)
+
+### Python simulator (Round 50)
+
+`tools/h5_test_monster_ai.py` — GDScript 로직을 Python 으로 1:1 재구현:
+- 48 AI defs 의 trigger + action stream 전체 walk (overrun 검출)
+- 매 step 후 `ai_action(s)` 호출, cast event 카운트
+- Ai_Action 13 sub-state 모두 dispatch + cast 발생 검증
+- **48/48 AI VM round-trip 통과** (62 trigger steps + 674 action steps + 19 cast 발생)
+- operand 부족 시 graceful stop (decoder Round 45 와 매칭)
 
 ## 9. 산출
 

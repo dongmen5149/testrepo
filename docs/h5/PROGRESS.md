@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-49)
+## 📜 라운드 요약 (Round 1-50)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -16,28 +16,29 @@
 | **R41-43: Save 시스템** | 8 save 파일 종류 + SaveAll dispatch + load cross-check (H_*.sav 21/21 + SL_*.sav 24 offset 일치, 0 mismatch) + source struct field 라벨링. **`file[0] = level*10+class_id` packing 발견** |
 | **R44-47: Monster AI (분석)** | 12 AI 함수 + token-based bytecode VM 식별. 13 action opcode + 13 trigger + Ai_Action 13 sub-state 완전 매핑. **48 AI defs (`/c/mon/<id>_ai`) decoder**. 543 trigger entries 100% parse |
 | **R48-49: Godot 통합 (구현 시작)** | Monster AI Godot VM (`monster_ai.gd` autoload + battle_system hook) + Save binary 직렬화 (524B HERO + SL header) + Python round-trip 검증 |
+| **R50: AI Action sub-state 완성** | `_ai_action` 13 sub-state 모두 정밀 dispatch (state 0-12) + host CHAR interface stub (battle_system 13 method) + `h5_test_monster_ai.py` Python simulator. **48/48 AI VM round-trip 통과** (674 action steps + 19 cast). operand 부족 시 graceful stop |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 33-38%.
-원본 분석 90-95%, 리메이크 출시 30-40%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 36-41%.
+원본 분석 90-95%, 리메이크 출시 33-43%.
 
 
 
-업데이트: 2026-05-17 (Round 49 종료) — **Save/Load binary 직렬화 GDScript 구현**.
-save_manager.gd 에 `serialize_hero_save` / `deserialize_hero_save` (H_*.sav 524B
-layout) + `serialize_slot_save` / `deserialize_slot_save` (SL_*.sav header) 추가.
-Python round-trip test 도구 — 4 samples + 8 critical offsets 모두 통과.
+업데이트: 2026-05-18 (Round 50 종료) — **Monster AI Action sub-state 정밀 구현**.
+`_ai_action` 의 13 sub-state 모두 dispatch (state 1-7/9/12 추가) + battle_system
+에 host CHAR interface 13 method stub + `h5_test_monster_ai.py` 신규
+(48/48 AI VM round-trip 통과, 674 action steps + 19 cast).
 
-## 🎯 전체 진척 평가 (Round 49 시점)
+## 🎯 전체 진척 평가 (Round 50 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~33-38%** | + **Save/Load binary 호환 직렬화**. 미구현: 인벤토리/강화/합성/Quest UI, AI sub-state 정밀 |
+| Godot 실 구현 | **~36-41%** | + **AI Action 13 sub-state 정밀**. 미구현: 인벤토리/강화/합성/Quest UI, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **30-40%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **33-43%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -667,6 +668,38 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 50 — 2026-05-18 완료]** Monster AI Action sub-state 1-7/9/12 정밀 구현 + host CHAR interface
+- ✅ **monster_ai.gd `_ai_action` 13 sub-state 모두 dispatch** (Round 48 의 state 0/8 stub → 모두 채움):
+  - state 0 = `_state_chase_timer` — Fast_Distance vs sight + ImmadiatelyCheck(8)
+  - state 1 = `_state_turn_direction` — mode 0/2 lookup / 1 lookup2 / 3 flip180 / default face hero
+  - state 2 = `_state_countdown` — first_set_flag decrement + motion==1 시 state 0 재진입
+  - state 3 = `_state_skill_use_targeting` — Monster+0x2c9 skill, dir mode 0-4, IRect 충돌 검사
+  - state 4/6 = `_state_set_attack_motion(s, skill_id)` — Monster+0x2cc/+0x305 source, motion+dir lookup → cast
+  - state 5/7/8 = `_state_skill_cast(s, skill_id)` — Monster+0x304/+0x308/+0x30a source, HeroTurnDirection → cast
+  - state 9 = `_state_skill_end` — Monster+0x2c3 = 1, skill_end()
+  - state 12 = `_state_get_motion_exit` — GetMotion() 호출만
+- ✅ **공통 helper 추가**:
+  - `_can_cast_skill(s, skill_id)` — skill_id > 0 + skill_disable==0 + GetMotion==0 + is_attack_able + is_able_skill 5-gate
+  - `_do_cast(s, skill_id)` — host.ai_cast_skill + set_cool_time + opcode reset
+  - `_immadiately_check(s, new_state)` — 새 sub-state 진입 + timer reset
+  - `_host_call_int/_host_call_bool` — host method optional dispatch wrapper
+- ✅ **battle_system.gd 에 host CHAR interface 13 method** (turn-based 추상화에 맞춘 stub):
+  - `is_die / get_motion / is_attack_able / is_able_skill / get_dir / set_dir / hero_turn_direction`
+  - `fast_distance_to_hero / set_attack_motion / ai_cast_skill / set_cool_time / skill_end`
+  - `ai_check_irect_hit / ai_check_visibility / ai_all_dead / ai_tutorial_flag`
+  - `_ai_pending_skill_id` 필드 + `_ai_pick_skill()` 가 pending → fallback 우선순위로 반환
+- ✅ **operand 부족 시 graceful stop** — `_on_action` 의 advance 가 stream 끝을 넘으면 return 1 (action 종료).
+  decoder Round 45 의 "trailing bytes 부족 시 break" 동작과 매칭.
+- ✅ **tools/h5_test_monster_ai.py 신규** — monster_ai.gd 의 GDScript 로직을 Python 으로 1:1 재구현:
+  - 48 AI defs 의 trigger + action stream 전체 walk (overrun 검출)
+  - `simulate_ai()` 가 매 step 후 `ai_action(s)` 호출하여 cast event 카운트
+  - Ai_Action 13 sub-state 모두 dispatch + cast 발생 검증
+  - **48/48 AI round-trip 통과** (62 trigger steps + 674 action steps + 19 cast 발생)
+- ✅ **verify_godot_project.py 0 errors / 0 warnings**
+- 산출: monster_ai.gd (+170 line, _ai_action 확장 + 12 helper), battle_system.gd (+60 line, host interface), tools/h5_test_monster_ai.py
+- Godot 실 구현 33-38% → 36-41%. 출시 30-40% → 33-43%
+- 다음 라운드: Godot UI (인벤토리 패널) 또는 scn opcode 실 game scene 검증 또는 Save device import
 
 **[Round 49 — 2026-05-17 완료]** Save/Load binary 직렬화 GDScript 구현 + Python round-trip test
 - ✅ **save_manager.gd 확장** (Round 41-43 의 SAVE_FORMAT.md layout 을 GDScript 로 구현):

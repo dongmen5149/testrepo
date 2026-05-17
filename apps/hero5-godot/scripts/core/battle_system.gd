@@ -74,18 +74,88 @@ func start_battle(monster_id: int = 0) -> void:
 ##
 ## battle_system 은 turn-based 추상화라서 매 enemy turn 시작 시 AI VM 을
 ## "한 action 진행" 시켜서 skill_src_30a 또는 skill_id 를 읽어 사용.
+##
+## Round 50: Ai_Action 13 sub-state precise dispatch 가 통합되면서 cast 가 발생할 때
+## host.ai_cast_skill() 가 호출되어 `_ai_pending_skill_id` 에 기록됨. 이를 우선 반환.
 func _ai_pick_skill() -> int:
 	if _ai_runtime == null: return -1
+	_ai_pending_skill_id = -1
 	# 트리거 검사 → action 전환 시도
 	MonsterAI.step_trigger_list(_ai_runtime)
 	# action stream 1 step (필요 시 여러 step 까지 loop 가능)
 	for _i in range(8):
 		var alive = MonsterAI.step_action_list(_ai_runtime)
 		if not alive: break
-	# 우선순위: opcode 9 (NEXT_SKILL) > opcode 4 (SKILL_SET) > -1
+	# Ai_Action sub-state 가 cast → host.ai_cast_skill 통해 기록한 값 우선
+	MonsterAI.process(_ai_runtime)
+	if _ai_pending_skill_id > 0: return _ai_pending_skill_id
+	# fallback: opcode 9 (NEXT_SKILL) > opcode 4 (SKILL_SET) > -1
 	if _ai_runtime.skill_src_30a > 0: return _ai_runtime.skill_src_30a
 	if _ai_runtime.skill_id > 0: return _ai_runtime.skill_id
 	return -1
+
+
+# === MonsterAI host CHAR interface (Round 50) ===
+##
+## monster_ai.gd 의 Ai_Action 13 sub-state 가 호출하는 CHAR 인터페이스. battle_system
+## 은 turn-based 추상화라서 위치/방향/모션 개념이 약함 — 합리적 default 로 stub 채움.
+## 실 게임에서 monster 가 map 위에 있을 때 character.gd 등 노드가 더 정확한 값을 제공.
+
+## Ai_Action 의 _do_cast 가 호출. 다음 enemy turn 에 쓸 skill_id 기록.
+var _ai_pending_skill_id: int = -1
+
+func ai_cast_skill(skill_id: int) -> void:
+	_ai_pending_skill_id = skill_id
+
+func is_die() -> bool:
+	return enemy_hp <= 0
+
+## turn-based: idle 만 (motion 0 = idle, 1 = walk, 5 = run, etc.)
+func get_motion() -> int:
+	return 0
+
+func is_attack_able() -> bool:
+	return enemy_hp > 0
+
+func is_able_skill(skill_id: int) -> bool:
+	return skill_id > 0
+
+func get_dir() -> int:
+	return 0
+
+func set_dir(_d: int) -> void:
+	pass
+
+func hero_turn_direction() -> void:
+	pass
+
+## turn-based: monster 는 항상 hero 와 같은 cell 에 있다고 가정 (시야 안).
+func fast_distance_to_hero() -> int:
+	return 0
+
+func set_attack_motion(skill_id: int) -> void:
+	# state 4/6 = motion+dir lookup 후 cast. ai_cast_skill 가 후속으로 호출됨.
+	_ai_pending_skill_id = skill_id
+
+func set_cool_time(_skill_id: int) -> void:
+	pass
+
+func skill_end() -> void:
+	pass
+
+func ai_check_irect_hit(_range_val: int) -> bool:
+	# turn-based: 항상 hit (range 검사 생략)
+	return true
+
+func ai_check_visibility(_irect_idx: int) -> bool:
+	# turn-based: 항상 hero 가시 (시야 진입 1회 trigger 만)
+	return true
+
+func ai_all_dead() -> bool:
+	return enemy_hp <= 0
+
+func ai_tutorial_flag(_idx: int) -> bool:
+	return false
 
 
 func player_action(action: Action, skill_id: int = 0) -> void:
