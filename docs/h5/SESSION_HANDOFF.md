@@ -54,23 +54,95 @@
 
 ---
 
-## 🚀 다음 세션 빠른 시작 (한 줄)
+## 🚀 다음 세션 즉시 시작 (Round 55)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 55 부터)**:
-- ~~Round 40-43 = 데이터 RE~~ ✅ / ~~Round 44-47 = Monster AI 분석~~ ✅
-- ~~Round 48 = Monster AI Godot 통합~~ ✅ / ~~Round 49 = Save Godot 통합~~ ✅
-- ~~Round 50 = AI Action sub-state 1-7/9/12 정밀 구현~~ ✅ / ~~Round 51 = 인벤토리 items.json 정확 통합~~ ✅
-- ~~Round 52 = 강화(Refine) UI~~ ✅ / ~~Round 53 = 합성(Mix) UI~~ ✅ / ~~Round 54 = Orb socket UI~~ ✅
-- **(구현 track) NPC blacksmith UI** — smith_0/1/2.dat (288 recipes, Round 32) MixSmithTableInfo 와 mix_book 분리 (75% sr)
-- **(구현 track) Quest 패널 강화** — quests.json (151 × 3 difficulty) 의 phase1 objective + phase2 reward 표시
-- **(구현 track) Skill book / 학습 UI** — slot_16/17 (95+98 books) Round 21 의 4 byte (class_id/skill_index/skill_level/required_level)
-- **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
-- **(검증 track) Save binary import/export** — 실제 H_*.sav / SL_*.sav 디바이스에서 추출 → Godot 로드 → 보존성 검증
-- **(분석 track) 잔여 — UI 함수 / NPC 대화 / Battle motion 분석** (분석 트랙은 95% 도달 시 종료점)
-- **(통합 track) character.gd 에 실제 host CHAR method 구현** — 위치/방향 추적, IRect 충돌, motion lookup (현재는 battle_system 의 turn-based stub)
+### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
-새 클론 환경이라면 먼저 [§ 빠른 재개](#빠른-재개-1-커맨드--환경-복원) 의 단일 커맨드로
-환경 복원 (`python tools/h5_extract_pipeline.py`).
+```bash
+python tools/h5_extract_pipeline.py    # APK 가 있을 때 ~6s, incremental
+```
+
+### B. 현재 상태 한 줄 검증
+
+```bash
+# UTF-8 출력 필수 (cp949 콘솔이면 PYTHONIOENCODING=utf-8 prefix)
+PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py
+# → ✓ all references resolve (0 warnings)
+
+python tools/h5_test_monster_ai.py     # 48/48 AI VM round-trip
+python tools/h5_test_save_layout.py    # H/SL .sav round-trip
+python tools/h5_test_items_lookup.py   # 1360 items unique-name index
+python tools/h5_test_refine.py         # Refine prob + 10000회 시뮬
+python tools/h5_test_mix.py            # 116 recipe parse
+python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
+```
+
+### C. Godot Editor 에서 게임 실행
+
+`apps/hero5-godot/` 를 Godot 4.2+ Editor 로 열고 F5. 게임 화면에서 키바인딩:
+
+| 키 | 동작 | 도입 라운드 |
+|:---:|---|:---:|
+| **ESC / I** | 상태창/인벤토리 토글 (status_panel) | R7 (R51 강화) |
+| **R** | 강화(Refine) 패널 토글 | **R52** |
+| **K** | 합성(Mix) 패널 토글 | **R53** |
+| **O** | Orb socket 패널 토글 | **R54** |
+| Q | 퀘스트 패널 토글 | R20 |
+| S | 상점 열기 | R8 |
+| H | 도움말 토글 | R10 |
+| X | 설정 토글 | R10 |
+| F5 / F9 | 빠른 저장 / 로드 | R6 |
+| 1-8 / Shift+1-8 | 슬롯 저장 / 로드 | R7 |
+| B | 랜덤 전투 | R3 |
+| E | NPC 대화 | R8 |
+| M / N | map_id / scene 다음 | R3 |
+| P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
+| T | dialog 테스트 | R5 |
+
+### D. Round 55 추천 작업 (자율 가능, 임팩트 순)
+
+**1순위 — NPC blacksmith UI** (1-2 라운드, Round 53 mix_panel pattern 재활용)
+- 데이터: `c/csv/smith_0/1/2.dat` (각 96 entries × 300B = 288 recipes, Round 32 검증)
+- mix_book (slot_15, 116 recipes) 와 데이터 source 다름 — MixSmithTableInfo struct
+- 모두 success_rate 75% (mix_book 의 90-100% / 20-22% 와 다른 밸런스)
+- 시작점: `tools/converter/decode_h5_smithtable.py` 산출 `smithtable.json` 확인 →
+  `mix_panel.gd` 복제 + 데이터 source 만 교체 + NPC 대화 흐름 (Round 8 의 npc_table) 연결
+- 새 키 = `J` (rJ = blacksmith Job 어울림)
+
+**2순위 — Quest 패널 강화** (1 라운드)
+- 현재 quest_panel.tscn = 기본 list 표시만. quests.json (151 × 3 difficulty, 645KB) 미활용
+- Round 40 의 phase1 objective (3×6B: cond_type/cond_sub/target_value) + phase2 reward
+  (17=money / 18=exp / 255=unused) 표시
+- 진행 상태 (Quest.gd singleton) 와 연동
+
+**3순위 — Skill book 학습 UI** (1 라운드)
+- slot_16/17 (Warrior+Rogue / Gunslinger+Knight, 95+98 = 193 books)
+- Round 21 의 4 byte ext: class_id / skill_index / skill_level / required_level
+- HERO::IfLearnSkill 의 `(class_id/2) + 16` 공식 — class 별 슬롯 dispatch
+
+**4순위 — character.gd 실제 host CHAR method** (1 라운드)
+- 현재 battle_system 의 turn-based stub 만 — Monster AI 가 실제 위치/방향 정보 받지 못함
+- character.gd 에 `fast_distance_to_hero / get_motion / get_dir` 등 실 구현 추가
+- 맵 위 monster spawn 시 AI runtime 이 character 와 직접 상호작용
+
+### E. Round 51-54 UI 시스템 통합 상태 (참고)
+
+| 패널 | 데이터 source | 핵심 mechanic | helper 함수 |
+|---|---|---|---|
+| status_panel (R51) | items.json 1360 records | kind/class_mask/level_limit 검증 | GameData.item_lookup |
+| refine_panel (R52) | EquipItemInfo +0x165..+0x167 | 5-case prob + base+sub stat | GameState.refine_state |
+| mix_panel (R53) | slot_15 의 116 recipe | success_rate roll + 재료 소비 | GameData.parse_recipe |
+| orb_panel (R54) | slot_12 의 53 orb + +0x168..+0x16d | 5 socket encoding + 2x rule | GameState.orb_state |
+
+모두 GameState 의 단일 inventory 배열을 공유. `consume_inventory` 가 refine_state + orb_state 동기 정리.
+
+### F. 미구현 / 향후 옵션
+
+- **(검증)** scn opcode 실 game scene 동작 (Title/ClassSelect/Demo 외 화면 진입)
+- **(검증)** Save binary device import/export — 실 디바이스 H_*.sav 추출 → Godot 로드
+- **(분석)** 잔여 .so 함수 (UI / NPC 대화 / Battle motion, ~12-15% 남음)
+- **(통합)** character.gd 에 host CHAR method 실 구현
+- **(USER)** P6 Android APK 실 빌드 — Godot Export Template + JDK 17 + Android SDK 필요
 
 ---
 

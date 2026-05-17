@@ -47,27 +47,56 @@ equipment_bonus orb bonus 합산 + 5-socket fill 시 2x. demo.gd O 키.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
-1. UI 시스템 전반 (인벤토리/강화/합성/Quest/Mission 패널)
-2. Monster AI (Ai_Action 2136B 등 미분석)
-3. Battle 실행 흐름 (Formula VM 통합 후 turn order/animation/VFX)
-4. Save 파일 포맷 (DES 키만 알려져 있음)
-5. Quest/Mission tracking (데이터 식별만, Godot 미구현)
+1. **잔여 UI 시스템** — NPC blacksmith / Quest 패널 강화 / Skill book 학습 UI (인벤토리/강화/합성/Orb 완료 R51-54)
+2. **Battle 실행 흐름** — Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
+3. **character.gd host CHAR 실 구현** — 현재 battle_system 의 turn-based stub 만 (R50)
+4. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트
+5. **Save device import/export** — 실 H_*.sav / SL_*.sav 디바이스 추출 → Godot 로드 검증
 
-## 🚀 이어서 진행 한 마디로 시작할 때
+## 🚀 Round 55 즉시 시작 명령
 
-> **다음 세션 시작 시 이 한 줄만 보면 됨**
+> **다음 세션은 이 섹션만 보면 됨**
 
-다음 라운드는 4 track 중 선택 (A 는 Round 40 에서 완료):
-- ~~**(분석 A) Round 40 = quest_*.dat decoder**~~ ✅ Round 40 완료 (3 difficulty × 151 quests)
-- **(분석 B) Monster AI 시스템** — 2~3 라운드, 큰 임팩트
-- **(분석 C) Save 파일 포맷** — 1~2 라운드 (마지막 큰 데이터 RE)
-- **(구현 D) Godot UI 구현** — 5~10 라운드, 출시 % 가장 크게 끌어올림
-- **(검증 E) scn opcode 실 동작 검증** — 2~3 라운드
+### 1. 환경 검증 한 줄
+```bash
+PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py   # 0 errors / 0 warnings 기대
+python tools/h5_test_monster_ai.py    # AI VM 48/48
+python tools/h5_test_items_lookup.py  # 1360 items
+python tools/h5_test_refine.py        # Refine prob/시뮬
+python tools/h5_test_mix.py           # 116 recipe
+python tools/h5_test_orb.py           # 53 orb / 5-socket / 2x rule
+```
 
-한 페이지 인수인계는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md). 우선순위 후보
-전체는 [§ 6.2.1 다음 우선순위](#621-다음-우선순위-남은-작업) 참조.
+### 2. Round 55 추천 = **NPC blacksmith UI** (D3b)
 
-새 클론 환경이라면 환경 복원 한 줄: `python tools/h5_extract_pipeline.py`.
+R53 mix_panel pattern 재활용 가능 — 데이터 source 만 교체.
+
+- 데이터: `c/csv/smith_0/1/2.dat` (각 96 × 300B = 288 recipes, R32 검증)
+- decoder 산출물: `apps/hero5-godot/assets/gamedata/smithtable.json`
+- mix_book (slot_15, 116 recipes, 90-100% sr) 와 분리 — 모두 75% sr
+- 시작점:
+  ```bash
+  cp apps/hero5-godot/scripts/ui/mix_panel.gd apps/hero5-godot/scripts/ui/smith_panel.gd
+  cp apps/hero5-godot/scenes/mix_panel.tscn apps/hero5-godot/scenes/smith_panel.tscn
+  # 다음을 교체:
+  #   class_name MixPanel → SmithPanel
+  #   GameData.mix_recipes → GameData.smith_recipes_v2 (신규: smithtable.json 로더)
+  #   uid://hero5_mix → uid://hero5_smith
+  # demo.gd 에 KEY_J 바인딩 추가
+  # Python: tools/h5_test_smith.py (288 recipe sweep, R32 의 col-major struct 검증)
+  ```
+
+### 3. 대안 옵션
+
+- **Quest 패널 강화** (1 라운드) — quests.json 의 phase1/phase2 표시
+- **Skill book 학습 UI** (1 라운드) — slot_16/17, Round 21 의 4 byte
+- **character.gd host 실 구현** (1 라운드) — Monster AI 가 실 위치 받음
+- **scn opcode 검증** (2-3 라운드) — UI 정합성 확인
+- **잔여 .so 분석** — UI/NPC/Battle motion (~12-15%, 분석 트랙)
+
+한 페이지 인수인계는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
+
+새 클론 환경이라면 환경 복원: `python tools/h5_extract_pipeline.py`.
 
 ---
 
