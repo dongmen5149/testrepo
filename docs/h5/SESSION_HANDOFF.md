@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 50 — **Monster AI Action sub-state 1-7/9/12 정밀 구현**. monster_ai.gd 의 `_ai_action` 이 13 sub-state 모두 dispatch (Round 48 의 state 0/8 stub → 전체 채움) + battle_system 에 host CHAR interface 13 method stub. `h5_test_monster_ai.py` 신규 — GDScript 로직의 Python 1:1 simulator, 48/48 AI VM round-trip 통과 (62 trigger + 674 action steps + 19 cast 발생). operand 부족 시 graceful stop (decoder Round 45 와 매칭). Godot 실 구현 33-38% → 36-41%, 출시 30-40% → 33-43%.)
+업데이트: 2026-05-18 (Round 51 — **인벤토리 패널 items.json 정확 통합**. game_data.gd 에 unique-name index (1360 records → 1333 entries) + `item_lookup` (kind/category/level_limit/class_mask/tier/refine/skill/potion 모든 fields) + `class_mask_allows` (R16 5-bit) + `equip_slot_for_kind`. status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확 분류 + tooltip 풍부 정보 + 장비 시 class_mask + level_limit 검증. `h5_test_items_lookup.py` 신규 — tier 분포 (170/248/9/362) Round 24 정확 일치 + 5/5 class_mask 검증 통과. Godot 실 구현 36-41% → 39-44%, 출시 33-43% → 36-46%.)
 
-## 📜 Round 1-50 한 줄 요약
+## 📜 Round 1-51 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -17,13 +17,14 @@
 | R41-43 | Save 8 종류 + load cross-check (21/21 + 24, 0 mismatch) + `file[0] = level*10+class_id` packing |
 | R44-47 | Monster AI 분석 — 13 opcode + 13 trigger + 13 sub-state + 48 AI defs decoder |
 | R48-49 | Godot 통합 시작 — Monster AI VM (autoload) + Save binary 직렬화 |
-| **R50** | **AI Action 13 sub-state 정밀 구현 (state 1-7/9/12 채움) + host CHAR interface 13 method + 48/48 VM round-trip** |
+| R50 | AI Action 13 sub-state 정밀 구현 (state 1-7/9/12 채움) + host CHAR interface 13 method + 48/48 VM round-trip |
+| **R51** | **인벤토리 items.json 정확 통합 (1360 records unique index) — kind 기반 filter + class_mask/level_limit 검증 + tooltip 풍부 (tier/refine/skill/potion)** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 50 시점)
+## 🎯 전체 진척 평가 (Round 51 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -32,12 +33,12 @@
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~36-41%** | + **AI Action 13 sub-state 정밀**. 미구현: 인벤토리/강화/합성/Quest UI, Save device import |
+| **Godot 실 구현** | **~39-44%** | + **인벤토리 정확 분류**. 미구현: 강화/합성/Quest UI, Save device import |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **33-43%** (AI Action sub-state 완성)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **36-46%** (인벤토리 정확 매핑 완성)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -52,11 +53,13 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 51 부터)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 52 부터)**:
 - ~~Round 40-43 = 데이터 RE~~ ✅ / ~~Round 44-47 = Monster AI 분석~~ ✅
 - ~~Round 48 = Monster AI Godot 통합~~ ✅ / ~~Round 49 = Save Godot 통합~~ ✅
-- ~~Round 50 = AI Action sub-state 1-7/9/12 정밀 구현~~ ✅
-- **(구현 track) Godot UI 구현 시작** — 인벤토리 패널부터 (items.json 1360 records 활용)
+- ~~Round 50 = AI Action sub-state 1-7/9/12 정밀 구현~~ ✅ / ~~Round 51 = 인벤토리 items.json 정확 통합~~ ✅
+- **(구현 track) 강화(Refine) UI** — Round 17/26 의 ApplyItemRefine 5-case + refine_stat = base + sub_count 식 (V[184]/V[185]/V[187])
+- **(구현 track) 합성(Mix) UI** — Round 25/28/32 의 mix_book recipe + smith_table NPC blacksmith
+- **(구현 track) Quest 패널** — quests.json (151 × 3 difficulty) 활용, Mission 105 와 분리 표시
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
 - **(검증 track) Save binary import/export** — 실제 H_*.sav / SL_*.sav 디바이스에서 추출 → Godot 로드 → 보존성 검증
 - **(분석 track) 잔여 — UI 함수 / NPC 대화 / Battle motion 분석** (분석 트랙은 95% 도달 시 종료점)

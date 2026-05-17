@@ -65,62 +65,110 @@ func _set_filter(f: String) -> void:
 	_apply()
 
 
+## items.json 의 kind (Round 51) 기반 정확한 filter 분류.
+## 한국어 substring 매칭 (Round 50 이전) → items.json `slot`/`kind` 직접 사용.
 func _matches_filter(name: String) -> bool:
-	if _filter == "all": return true
-	if _filter == "weapon":
-		return ("검" in name or "소드" in name or "액스" in name or "총" in name or "창" in name)
-	if _filter == "armor":
-		return ("갑옷" in name or "투구" in name or "장화" in name or "방패" in name)
-	if _filter == "potion":
-		return ("포션" in name or "수프가루" in name)
-	if _filter == "misc":
-		# 위 카테고리에 속하지 않으면 misc
-		var is_w = ("검" in name or "소드" in name or "액스" in name)
-		var is_a = ("갑옷" in name or "투구" in name or "장화" in name)
-		var is_p = ("포션" in name or "수프가루" in name)
-		return not (is_w or is_a or is_p)
-	return true
+	return GameData.item_matches_filter(name, _filter)
 
 
-## 단일 클릭 = hover → 툴팁 + stat 비교.
+## 단일 클릭 = hover → 툴팁 + items.json 기반 풍부 정보.
+##
+## Round 51 신규 정보:
+##   - tier_label (legendary/rare/gem/common) — Round 24 의 val_15f upper 3 bit
+##   - class_label (W/R/G/K/S) — Round 16 의 val_15f lower 5 bit 5-class mask
+##   - level_limit — Round 13 +0x15d
+##   - refine_count + sub_count — Round 17/26 강화 mechanism
+##   - skill_book: class_id/skill_index/skill_level/required_level — Round 21
+##   - potion: effect_type/success_rate/duration — Round 23
 func _on_item_hover(idx: int) -> void:
 	var inv: Array = _state["inventory"]
 	var equipment: Array = _state.get("equipment", [])
 	var inv_idx = idx - equipment.size() - 1
 	if inv_idx < 0 or inv_idx >= inv.size(): return
 	var item_name := str(inv[inv_idx])
-	var kind = _item_kind(item_name)
-	if kind == "potion":
-		stat_points_label.tooltip_text = "%s\n사용 시 HP +30" % item_name
-		return
-	if kind == "weapon" or kind == "armor":
-		var item_stat = _find_item_attack(item_name)
-		if item_stat < 0:
-			stat_points_label.tooltip_text = item_name
-			return
-		var slot = _slot_for_kind(kind, item_name)
-		var cur = GameState.equipped_item(slot)
-		var cur_stat = _find_item_attack(str(cur)) if cur else 0
-		if cur_stat < 0: cur_stat = 0
-		var diff = item_stat - cur_stat
-		var sign_s = "+" if diff >= 0 else ""
-		var label = "ATK" if kind == "weapon" else "DEF"
-		stat_points_label.tooltip_text = "%s\n%s %d (%s%d vs 현재)" % [
-			item_name, label, item_stat, sign_s, diff]
-		return
-	stat_points_label.tooltip_text = item_name
+	stat_points_label.tooltip_text = _format_item_tooltip(item_name)
 
 
+## item 의 모든 의미 있는 fields 를 multi-line tooltip 으로 포매팅.
+func _format_item_tooltip(item_name: String) -> String:
+	var info: Dictionary = GameData.item_lookup(item_name)
+	if info.is_empty(): return item_name
+	var lines: Array = [item_name]
+	var category: String = info.get("category", "?")
+	var kind: String = info.get("kind", "?")
+	if category == "equip":
+		var stat_a: int = info.get("stat_a", 0)
+		var stat_b: int = info.get("stat_b", 0)
+		var stat_label = "ATK" if kind.begins_with("weapon") else "DEF"
+		if stat_b > 0 and stat_b != stat_a:
+			lines.append("%s %d~%d" % [stat_label, stat_a, stat_b])
+		elif stat_a > 0:
+			lines.append("%s %d" % [stat_label, stat_a])
+		var lvl: int = info.get("level_limit", 0)
+		if lvl > 0:
+			lines.append("필요 Lv %d" % lvl)
+		var cls: String = info.get("class_label", "")
+		if not cls.is_empty():
+			lines.append("클래스 %s" % cls)
+		var tier: String = info.get("tier_label", "")
+		if not tier.is_empty():
+			lines.append("등급 %s" % tier)
+		var ref_n: int = info.get("refine_count", 0)
+		var sub_n: int = info.get("sub_count", 0)
+		if ref_n > 0 or sub_n > 0:
+			lines.append("강화 +%d (sub %d)" % [ref_n, sub_n])
+		# 장착 시 stat 비교
+		var slot = GameData.equip_slot_for_kind(kind)
+		if slot >= 0:
+			var cur = GameState.equipped_item(slot)
+			if cur != null and str(cur) != item_name:
+				var cur_info = GameData.item_lookup(str(cur))
+				var cur_a: int = cur_info.get("stat_a", 0)
+				var diff = stat_a - cur_a
+				var sign_s = "+" if diff >= 0 else ""
+				lines.append("현재 %s%d" % [sign_s, diff])
+	elif kind == "potion":
+		var et: int = info.get("effect_type", 0)
+		var ev: int = info.get("effect_value", 0)
+		var sr: int = info.get("success_rate", 100)
+		var et_str = {91: "HP", 90: "SP", 87: "buff", 92: "마석"}.get(et, "효과 %d" % et)
+		lines.append("%s +%d (%d%%)" % [et_str, ev, sr])
+		var dur: int = info.get("duration", 0)
+		if dur > 0:
+			lines.append("지속 %d 턴" % dur)
+	elif kind in ["skill_book_wr", "skill_book_gk"]:
+		var cid: int = info.get("class_id", 0)
+		var sidx: int = info.get("skill_index", 0)
+		var slvl: int = info.get("skill_level", 1)
+		var rlvl: int = info.get("required_level", 0)
+		var class_arr = GameData.class_names()
+		var class_str = class_arr[cid] if cid < class_arr.size() else "?"
+		lines.append("%s 스킬 #%d Lv%d" % [class_str, sidx, slvl])
+		if rlvl > 0:
+			lines.append("필요 Lv %d" % rlvl)
+	if info.get("price", 0) > 0:
+		lines.append("가격 %d G" % info["price"])
+	return "\n".join(lines)
+
+
+## items.json 의 정확한 kind 반환. 한국어 substring 매칭 (Round 50 이전) 정정.
 func _item_kind(name: String) -> String:
-	if "포션" in name or "수프가루" in name: return "potion"
-	if "검" in name or "소드" in name or "액스" in name or "총" in name or "창" in name:
-		return "weapon"
-	if "갑옷" in name or "투구" in name or "장화" in name or "방패" in name:
+	var info = GameData.item_lookup(name)
+	if info.is_empty(): return "misc"
+	var kind: String = info.get("kind", "misc")
+	if kind.begins_with("weapon"): return "weapon"
+	if kind in ["armor", "helmet", "boots", "shield", "accessory", "accessory_2", "spirit"]:
 		return "armor"
+	if kind == "potion": return "potion"
 	return "misc"
 
 
+## items.json 기반 정확한 equip slot 매핑. 폴백 = ARMOR.
 func _slot_for_kind(kind: String, name: String) -> int:
+	var info = GameData.item_lookup(name)
+	var slot = GameData.equip_slot_for_kind(info.get("kind", ""))
+	if slot >= 0: return slot
+	# fallback (items.json 미발견 시 한국어 substring)
 	if kind == "weapon": return GameState.SLOT_WEAPON
 	if "투구" in name: return GameState.SLOT_HELMET
 	if "장화" in name: return GameState.SLOT_BOOTS
@@ -155,27 +203,44 @@ func _on_item_activated(idx: int) -> void:
 	_use_item(item_name, inv_idx)
 
 
+## items.json 기반 정확한 use logic + class_mask/level_limit 검증 (Round 51).
+##
+## 검증 실패 메시지는 stat_points_label tooltip 으로 일시 표시 (UI toast 가 정식
+## 통로 — 후속 라운드에서 SceneFader/Toast 통합).
 func _use_item(item_name: String, inv_idx: int) -> void:
-	# 포션류 자동 식별 (이름에 "포션" 또는 "수프가루")
-	if "포션" in item_name or "수프가루" in item_name:
-		var heal := 30
-		GameState.hp = min(GameState.max_hp, GameState.hp + heal)
-		# 인벤에서 1개 제거
+	var info: Dictionary = GameData.item_lookup(item_name)
+	var category: String = info.get("category", "")
+	var kind: String = info.get("kind", "")
+	if category == "battle_use" or kind == "potion":
+		# Round 23 의 effect_type/effect_value 사용. fallback = HP +30
+		var et: int = info.get("effect_type", 91)
+		var ev: int = max(30, info.get("effect_value", 0))
+		if et == 91:
+			GameState.hp = min(GameState.max_hp, GameState.hp + ev)
+		elif et == 90:
+			GameState.sp = min(GameState.max_sp, GameState.sp + ev)
 		GameState.inventory.remove_at(inv_idx)
 		GameState.state_changed.emit()
 		item_used.emit(item_name)
 		return
-	# 무기/방어구 자동 장착 (이름에 "검" / "소드" 등)
-	if "검" in item_name or "소드" in item_name or "액스" in item_name:
-		GameState.inventory.append(item_name)  # keep
-		GameState.equip(GameState.SLOT_WEAPON, GameState.inventory.size() - 1)
-		return
-	if "갑옷" in item_name or "투구" in item_name or "장화" in item_name:
-		var slot = GameState.SLOT_ARMOR
-		if "투구" in item_name: slot = GameState.SLOT_HELMET
-		elif "장화" in item_name: slot = GameState.SLOT_BOOTS
+	if category == "equip":
+		# class_mask / level_limit 검증 (Round 16/13)
+		var class_mask: int = info.get("class_mask", 0)
+		var class_id: int = GameState.class_id if "class_id" in GameState else 0
+		if not GameData.class_mask_allows(class_mask, class_id):
+			stat_points_label.tooltip_text = "%s\n클래스 제한 (%s 만)" % [
+				item_name, info.get("class_label", "?")]
+			return
+		var lvl_lim: int = info.get("level_limit", 0)
+		if lvl_lim > GameState.level:
+			stat_points_label.tooltip_text = "%s\n레벨 부족 (필요 Lv %d)" % [item_name, lvl_lim]
+			return
+		var slot = GameData.equip_slot_for_kind(kind)
+		if slot < 0:
+			return
 		GameState.equip(slot, inv_idx)
 		return
+	# 기타 (orb/material/recipe/skill_book/cash) — 후속 라운드 (refine UI 등)
 
 
 func toggle() -> void:
@@ -237,14 +302,9 @@ func _apply() -> void:
 		inv_list.add_item(name)
 
 
+## items.json 의 모든 slot 통합 lookup (Round 51). 한국어 substring 매칭 X.
 func _find_item_price(name: String) -> int:
-	for slot in range(19):
-		var arr = GameData.items_in_slot(slot)
-		var idx = arr.find(name)
-		if idx >= 0:
-			var data = GameData.item_stat(slot, idx)
-			return int(data.get("price", 0))
-	return 0
+	return int(GameData.item_lookup(name).get("price", 0))
 
 
 ## 필터 버튼이 정렬 cycle 도 겸함 (Misc 길게 = price 정렬 등 단축)

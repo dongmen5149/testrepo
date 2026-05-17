@@ -185,6 +185,124 @@ func item_stat(slot: int, idx: int) -> Dictionary:
 	return info
 
 
+## items.json 의 모든 slot 을 순회하여 name → (slot, idx, record) 매핑 캐시 구축.
+##
+## status_panel/refine_panel 의 분류·tooltip·equip validation 이 모두
+## 이 lookup 으로 정확한 record fields (subtype/class_mask/level_limit/tier_flags/
+## refine_count/...) 에 접근. 한국어 substring 매칭 (Round 50 이전) 을 대체.
+var _item_name_index: Dictionary = {}
+
+func _build_item_index() -> void:
+	if not _item_name_index.is_empty(): return
+	var data = _load_items()
+	for slot in range(19):
+		var arr: Array = data.get("slot_%d" % slot, [])
+		for i in arr.size():
+			var rec: Dictionary = arr[i]
+			var nm: String = str(rec.get("name", ""))
+			if nm.is_empty(): continue
+			# 중복 시 첫 등장 우선 (slot 낮은 쪽 = 무기 → 방어구 순)
+			if not _item_name_index.has(nm):
+				_item_name_index[nm] = {"slot": slot, "idx": i, "record": rec}
+
+
+## item 이름 → {slot, idx, kind, category, level_limit, class_mask, class_label,
+## tier_flags, tier_label, refine_count, stat_a, stat_b, ...}. 미발견 시 빈 dict.
+##
+## kind/category 는 _meta.category_dispatch (decode_h5_item.py SLOT_META) 매핑.
+## tier_label = Round 24 의 val_15f upper 3 bit 라벨 (legendary/rare/gem/common).
+## class_mask = Round 16 의 val_15f lower 5 bit (1=W,2=R,4=G,8=K,16=S).
+func item_lookup(name: String) -> Dictionary:
+	_build_item_index()
+	var hit: Dictionary = _item_name_index.get(name, {})
+	if hit.is_empty(): return {}
+	var slot: int = hit["slot"]
+	var rec: Dictionary = hit["record"]
+	var meta: Dictionary = item_slot_meta(slot)
+	var info := {
+		"slot": slot,
+		"idx": hit["idx"],
+		"name": name,
+		"category": meta.get("category", "?"),
+		"kind": meta.get("kind", "?"),
+	}
+	# equip 카테고리 (slot 0-10) 전용 fields
+	if meta.get("category") == "equip":
+		info["level_limit"] = int(rec.get("level_limit", 0))
+		info["class_mask"] = int(rec.get("class_mask", 0))
+		info["class_label"] = str(rec.get("class_label", ""))
+		info["tier_flags"] = int(rec.get("tier_flags", 0))
+		info["tier_label"] = str(rec.get("tier_label", ""))
+		info["refine_count"] = int(rec.get("refine_count", 0))
+		info["stat_a"] = int(rec.get("stat_a", 0))
+		info["stat_b"] = int(rec.get("stat_b", 0))
+		info["sub_count"] = int(rec.get("sub_count", 0))
+		info["price"] = int(rec.get("price", 0))
+		info["sockets"] = rec.get("sockets", [])
+		info["subtype"] = int(rec.get("subtype", 0))
+		info["price"] = int(rec.get("price", 0))
+	elif meta.get("category") == "battle_use":
+		# slot_11 포션류: Round 23 의 4 byte ext (effect_type/success_rate/value/duration)
+		info["effect_type"] = int(rec.get("effect_type", 0))
+		info["success_rate"] = int(rec.get("success_rate", 100))
+		info["effect_value"] = int(rec.get("effect_value", 0))
+		info["duration"] = int(rec.get("duration", 0))
+	elif meta.get("category") == "skill_book":
+		# slot_16/17: Round 21 의 4 byte (class_id/skill_index/skill_level/required_level)
+		info["class_id"] = int(rec.get("class_id", 0))
+		info["skill_index"] = int(rec.get("skill_index", 0))
+		info["skill_level"] = int(rec.get("skill_level", 1))
+		info["required_level"] = int(rec.get("required_level", 0))
+		info["price"] = int(rec.get("price", 0))
+	else:
+		info["price"] = int(rec.get("price", 0))
+	return info
+
+
+## 5-class mask (Round 16: W=1/R=2/G=4/K=8/S=16) 가 class_id 를 허용하는지.
+## class_mask == 0 = "모두 가능" (소비/소재 등 non-equip).
+func class_mask_allows(class_mask: int, class_id: int) -> bool:
+	if class_mask == 0: return true
+	return (class_mask & (1 << class_id)) != 0
+
+
+## kind → equipment slot index (GameState.SLOT_*). 미매칭 시 -1.
+## status_panel._slot_for_kind 가 한국어 substring 매칭 (Round 50 이전) 대신 사용.
+## 현재 GameState 는 6 슬롯 (Weapon/Armor/Helmet/Boots/Acc1/Acc2). shield/spirit 은
+## Acc 슬롯에 임시 매핑 (실제 EquipItem cat 0-6 7 슬롯과 1 슬롯 차이 — TODO).
+func equip_slot_for_kind(kind: String) -> int:
+	match kind:
+		"weapon", "weapon_2", "weapon_3", "weapon_4": return GameState.SLOT_WEAPON
+		"armor": return GameState.SLOT_ARMOR
+		"helmet": return GameState.SLOT_HELMET
+		"boots": return GameState.SLOT_BOOTS
+		"accessory": return GameState.SLOT_ACC1
+		"accessory_2": return GameState.SLOT_ACC2
+		"shield", "spirit": return GameState.SLOT_ACC2
+	return -1
+
+
+## filter 카테고리 ("weapon"/"armor"/"potion"/"misc") 에 매칭되는지.
+## items.json 의 정확한 kind 사용 (Round 50 이전의 substring 매칭 정정).
+func item_matches_filter(name: String, filter_key: String) -> bool:
+	if filter_key == "all": return true
+	var info = item_lookup(name)
+	if info.is_empty():
+		# items.json 에 없으면 fallback to substring
+		return true if filter_key == "misc" else false
+	var kind: String = info.get("kind", "")
+	match filter_key:
+		"weapon":
+			return kind in ["weapon", "weapon_2", "weapon_3", "weapon_4"]
+		"armor":
+			return kind in ["armor", "helmet", "boots", "shield", "accessory", "accessory_2", "spirit"]
+		"potion":
+			return kind == "potion"
+		"misc":
+			return kind in ["orb", "material", "material_2", "recipe", "skill_book_wr", "skill_book_gk", "cash_item"]
+	return false
+
+
 ## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
 ##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
 ##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"

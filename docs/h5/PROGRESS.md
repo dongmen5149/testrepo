@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-50)
+## 📜 라운드 요약 (Round 1-51)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -17,28 +17,30 @@
 | **R44-47: Monster AI (분석)** | 12 AI 함수 + token-based bytecode VM 식별. 13 action opcode + 13 trigger + Ai_Action 13 sub-state 완전 매핑. **48 AI defs (`/c/mon/<id>_ai`) decoder**. 543 trigger entries 100% parse |
 | **R48-49: Godot 통합 (구현 시작)** | Monster AI Godot VM (`monster_ai.gd` autoload + battle_system hook) + Save binary 직렬화 (524B HERO + SL header) + Python round-trip 검증 |
 | **R50: AI Action sub-state 완성** | `_ai_action` 13 sub-state 모두 정밀 dispatch (state 0-12) + host CHAR interface stub (battle_system 13 method) + `h5_test_monster_ai.py` Python simulator. **48/48 AI VM round-trip 통과** (674 action steps + 19 cast). operand 부족 시 graceful stop |
+| **R51: 인벤토리 items.json 정확 통합** | game_data.gd 에 `item_lookup` / `item_matches_filter` / `class_mask_allows` / `equip_slot_for_kind` 추가 (1360 records unique-name index). status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확 분류 + tooltip 풍부 (tier/class_label/level_limit/refine_count/skill info/potion effect). class_mask + level_limit 장비 검증. `h5_test_items_lookup.py` — tier 분포 (170/248/9/362) 검증 통과 |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 36-41%.
-원본 분석 90-95%, 리메이크 출시 33-43%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 39-44%.
+원본 분석 90-95%, 리메이크 출시 36-46%.
 
 
 
-업데이트: 2026-05-18 (Round 50 종료) — **Monster AI Action sub-state 정밀 구현**.
-`_ai_action` 의 13 sub-state 모두 dispatch (state 1-7/9/12 추가) + battle_system
-에 host CHAR interface 13 method stub + `h5_test_monster_ai.py` 신규
-(48/48 AI VM round-trip 통과, 674 action steps + 19 cast).
+업데이트: 2026-05-18 (Round 51 종료) — **인벤토리 items.json 정확 통합**.
+game_data.gd 에 unique-name index (1360 records) + class_mask/level_limit 검증
+helper. status_panel.gd 의 한국어 substring 매칭 → items.json kind 기반 정확
+분류. tooltip 에 tier/class/level/refine/skill_book/potion 정밀 정보 표시.
+tier 분포 검증 (legendary 170/rare 248/gem 9/common 362) Round 24 와 일치.
 
-## 🎯 전체 진척 평가 (Round 50 시점)
+## 🎯 전체 진척 평가 (Round 51 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~36-41%** | + **AI Action 13 sub-state 정밀**. 미구현: 인벤토리/강화/합성/Quest UI, Save device import |
+| Godot 실 구현 | **~39-44%** | + **인벤토리 정확 분류**. 미구현: 강화/합성/Quest UI, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **33-43%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **36-46%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -668,6 +670,40 @@ isolated bins. 후속 작업으로 보류.
 빠른 시작은 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) "다음 세션 시작점" 1번 참조.
 
 ---
+
+**[Round 51 — 2026-05-18 완료]** 인벤토리 패널 items.json 정확 통합 — substring 매칭 → kind 기반
+- ✅ **game_data.gd 새 helper 5종**:
+  - `_build_item_index()` — 19 slot × 1360 records → unique-name dict (1333 entries, 27 중복 시 slot 낮은 쪽 우선)
+  - `item_lookup(name)` — name → {slot, idx, kind, category, level_limit, class_mask, class_label, tier_flags, tier_label, refine_count, sub_count, stat_a/b, price, sockets, subtype} 카테고리별 fields. equip = R13-26, potion = R23 (effect_type/value/duration), skill_book = R21 (class_id/skill_index/skill_level/required_level)
+  - `class_mask_allows(class_mask, class_id)` — Round 16 의 5-bit 비트마스크 (W=1/R=2/G=4/K=8/S=16) 검증, 0 = 제약 없음
+  - `equip_slot_for_kind(kind)` — kind → GameState.SLOT_* (weapon→SLOT_WEAPON, helmet→SLOT_HELMET, accessory→SLOT_ACC1, accessory_2/shield/spirit→SLOT_ACC2)
+  - `item_matches_filter(name, filter_key)` — filter 분류 (weapon/armor/potion/misc) items.json kind 기반
+- ✅ **status_panel.gd 정확 분류**:
+  - `_matches_filter` → GameData.item_matches_filter (한국어 substring 제거)
+  - `_item_kind(name)` → items.json kind (Round 50 이전 의 "검/소드/액스" substring 매칭 정정)
+  - `_slot_for_kind(kind, name)` → GameData.equip_slot_for_kind (정확한 slot)
+  - `_find_item_price(name)` → 19 slot 순회 → 단일 lookup (성능 + 정확도)
+- ✅ **풍부 tooltip** (Round 51 신규 정보):
+  - equip: stat_a~stat_b (무기 atk range) / 필요 Lv / 클래스 라벨 / 등급 (legendary/rare/gem/common) / 강화 +N (sub M) / 장착 비교 diff
+  - potion: effect_type 라벨 (HP/SP/buff/마석) + value (%) + 지속 턴
+  - skill_book: 클래스 이름 + 스킬 번호 + Lv + 필요 Lv
+  - 모두: 가격
+- ✅ **장비 검증** (`_use_item`):
+  - class_mask 검사 → 실패 시 "클래스 제한 (X 만)" 메시지
+  - level_limit 검사 → 실패 시 "레벨 부족 (필요 Lv N)" 메시지
+  - 통과 시 자동 slot 매핑 + equip
+- ✅ **tools/h5_test_items_lookup.py 신규** — Python 검증 도구:
+  - 19 slot × 1360 records sweep
+  - unique-name index (1333 entries + 27 중복 검증)
+  - equip class_mask out-of-range 0 검증
+  - tier_flags 분포: 170 (legendary) + 248 (rare) + 9 (gem) + 362 (common) — Round 24 와 정확 일치
+  - filter coverage: weapon 344 / armor 445 / potion 16 / misc 555 (sum = 1360, 0 unknown)
+  - class_mask_allows 5/5 통과
+  - 샘플 lookup: 롱소드 / 나이트롱소드 / 버클러 / 포션 모두 정확
+- ✅ **verify_godot_project.py 0 errors / 0 warnings**
+- 산출: game_data.gd (+90 line, 5 helper), status_panel.gd (+90 line, _format_item_tooltip + class/level 검증), tools/h5_test_items_lookup.py
+- Godot 실 구현 36-41% → 39-44%. 출시 33-43% → 36-46%
+- 다음 라운드: 강화(Refine) UI / 합성(Mix) UI / scn 검증 / character.gd host 실 구현
 
 **[Round 50 — 2026-05-18 완료]** Monster AI Action sub-state 1-7/9/12 정밀 구현 + host CHAR interface
 - ✅ **monster_ai.gd `_ai_action` 13 sub-state 모두 dispatch** (Round 48 의 state 0/8 stub → 모두 채움):
