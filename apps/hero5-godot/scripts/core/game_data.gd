@@ -350,6 +350,41 @@ func parse_recipe(rec: Dictionary) -> Dictionary:
 	}
 
 
+## items.json slot_12 의 53 orb record 반환 (Round 54).
+##
+## orb 1개 = item record. orb_idx (0..52) 가 record idx + 1 - 1 = idx 그 자체.
+## socket 에 저장될 때는 (orb_idx + 1) 로 encode (0 = 빈 슬롯 의미).
+func orb_records() -> Array:
+	var data = _load_items()
+	return data.get("slot_12", [])
+
+
+## orb_idx → 이름. orb_panel 의 socket 표시용.
+func orb_name(orb_idx: int) -> String:
+	var orbs = orb_records()
+	if orb_idx < 0 or orb_idx >= orbs.size(): return ""
+	return str(orbs[orb_idx].get("name", ""))
+
+
+## orb_idx 의 stat bonus (equipment_bonus 에 합산). Round 26 의 ApplyOrbCombine
+## 정확한 stat 식은 별도 RE 필요 — 합리적 단순화 (Round 54):
+##   - orb price 가 강도 proxy (price 0 = test orb / price > 0 = real orb)
+##   - price 100 → +1, price 200 → +2, ...  (단순 / 100 stepping)
+func orb_bonus_for(orb_idx: int) -> int:
+	var orbs = orb_records()
+	if orb_idx < 0 or orb_idx >= orbs.size(): return 0
+	var price = int(orbs[orb_idx].get("price", 0))
+	if price <= 0: return 0
+	# 등비 단순화: price 의 자릿수 - 1 (100→1, 1000→2, ...)
+	# 실제로는 prefix/val_134/val_135 의 combination 일 가능성
+	return max(1, int(round(log(max(1, price)) / log(10))))
+
+
+## orb idx → 그룹 (Round 26: 3 그룹 × 13). 단순 매핑: idx / 13.
+func orb_group(orb_idx: int) -> int:
+	return orb_idx / 13
+
+
 ## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
 ##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
 ##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"

@@ -79,6 +79,55 @@ func clear_refine(inv_idx: int) -> void:
 	refine_state.erase(inv_idx)
 
 
+## Orb socket 상태 (Round 54). inventory 인덱스 → {sockets: [u8 ×5]}.
+##
+## 원본 EquipItemInfo +0x168 = orb_count (count of populated sockets),
+## +0x169..+0x16d = 5 socket bytes (각 byte = orb_idx + 1, 0 = 빈 슬롯).
+## Round 26 ApplyOrbCombine mechanism. sub_orbs=9 (동일 그룹 9 byte) → 강도 2x.
+##
+## 빈 슬롯은 0, 보유 슬롯은 slot_12 의 orb idx + 1.
+var orb_state: Dictionary = {}
+
+
+## inv_idx 의 socket 배열 반환 (always 5 entries).
+func get_orb_sockets(inv_idx: int) -> Array:
+	var st = orb_state.get(inv_idx, {})
+	var s: Array = st.get("sockets", [0, 0, 0, 0, 0])
+	# 안전 보장 — 정확히 5 entries
+	while s.size() < 5: s.append(0)
+	return s.slice(0, 5)
+
+
+## 빈 socket 에 orb 장착 (slot_idx ∈ [0..4], orb_idx = slot_12 의 record idx).
+## 빈 슬롯 없으면 false 반환.
+func add_orb_to_socket(inv_idx: int, orb_idx: int) -> int:
+	var sockets = get_orb_sockets(inv_idx)
+	for i in 5:
+		if sockets[i] == 0:
+			sockets[i] = orb_idx + 1
+			orb_state[inv_idx] = {"sockets": sockets}
+			state_changed.emit()
+			return i
+	return -1
+
+
+## 특정 socket 의 orb 제거. 제거된 orb idx 반환 (없으면 -1).
+func remove_orb_from_socket(inv_idx: int, slot_idx: int) -> int:
+	if slot_idx < 0 or slot_idx >= 5: return -1
+	var sockets = get_orb_sockets(inv_idx)
+	var encoded: int = sockets[slot_idx]
+	if encoded == 0: return -1
+	sockets[slot_idx] = 0
+	orb_state[inv_idx] = {"sockets": sockets}
+	state_changed.emit()
+	return encoded - 1
+
+
+## 모든 socket 의 orb 일괄 제거 (아이템 제거 시).
+func clear_orbs(inv_idx: int) -> void:
+	orb_state.erase(inv_idx)
+
+
 ## 아이템을 슬롯에 장착. inventory 인덱스 사용.
 func equip(slot: int, inv_idx: int) -> bool:
 	if slot < 0 or slot >= SLOT_COUNT: return false
@@ -123,6 +172,7 @@ func consume_inventory(name: String, n: int) -> int:
 				continue
 			inventory.remove_at(i)
 			clear_refine(i)
+			clear_orbs(i)
 			# i 이후 equipment 인덱스 shift
 			for slot in SLOT_COUNT:
 				if equipment[slot] > i:
@@ -168,10 +218,21 @@ func equipment_bonus() -> Dictionary:
 		# Round 52 강화 보너스
 		var refine = get_refine(inv_idx)
 		var refined = base_stat + int(refine.get("sub_count", 0))
+		# Round 54 orb 보너스 — 각 socket 당 GameData.orb_bonus_for(orb_idx) 합산
+		var orb_bonus := 0
+		for encoded in get_orb_sockets(inv_idx):
+			if encoded == 0: continue
+			orb_bonus += GameData.orb_bonus_for(encoded - 1)
+		# Round 26: sub_orbs=9 (동일 그룹 9 byte) 시 강도 2x — 단순 동치: 9개 다 채우면 2배
+		var populated: int = 0
+		for encoded in get_orb_sockets(inv_idx):
+			if encoded != 0: populated += 1
+		if populated >= 5:
+			orb_bonus *= 2
 		if slot == SLOT_WEAPON:
-			bonus["attack"] += refined
+			bonus["attack"] += refined + orb_bonus
 		else:
-			bonus["defense"] += refined
+			bonus["defense"] += refined + orb_bonus
 	return bonus
 
 

@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 53 — **합성(Mix) UI 구현**. Round 25/28 의 ApplySpecialMix + items.json slot_15 의 116 recipe. mix_panel.gd/.tscn 신규 (~170 line) + GameData `mix_recipes()` / `parse_recipe()` + GameState `inventory_count` / `consume_inventory` (장착 보호 + refine_state 동기). 제작가능 필터 + 재료 부족 시 disabled. demo.gd K 키. `h5_test_mix.py` — 116 recipe 100% parse / 한국어 이름 0 miss / success_rate avg 60.6% / 카테고리 분포 검증. Godot 실 구현 42-47% → 45-50%, 출시 39-49% → 42-52%.)
+업데이트: 2026-05-18 (Round 54 — **Orb socket UI 구현**. Round 17/26 의 ApplyOrbCombine + items.json slot_12 의 53 orb. orb_panel.gd/.tscn 신규 (~170 line, 3-column layout) + GameState orb_state dict (4 helper) + equipment_bonus orb 합산 + 5-socket 2x rule. demo.gd O 키. `h5_test_orb.py` — 53 orb 0 name miss / encoding 5/5 fill / remove 3/3 케이스 / 5-socket 2x (12→32) 검증. Godot 실 구현 45-50% → 48-53%, 출시 42-52% → 45-55%.)
 
-## 📜 Round 1-53 한 줄 요약
+## 📜 Round 1-54 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -20,13 +20,14 @@
 | R50 | AI Action 13 sub-state 정밀 구현 (state 1-7/9/12 채움) + host CHAR interface 13 method + 48/48 VM round-trip |
 | R51 | 인벤토리 items.json 정확 통합 (1360 records unique index) — kind 기반 filter + class_mask/level_limit 검증 + tooltip 풍부 |
 | R52 | 강화(Refine) UI 구현 — Round 17/26 의 5-case + `refined_stat = base+sub_count` + 10000회 시뮬 (+10 2.5%/lock 65%/destroy 33%) |
-| **R53** | **합성(Mix) UI 구현 — Round 25/28 ApplySpecialMix + 116 recipe parse (ing×3 + result + sr) + 제작가능 필터 + 재료 보호 소비** |
+| R53 | 합성(Mix) UI 구현 — Round 25/28 ApplySpecialMix + 116 recipe parse (ing×3 + result + sr) + 제작가능 필터 + 재료 보호 소비 |
+| **R54** | **Orb socket UI 구현 — Round 17/26 ApplyOrbCombine + 53 orb + 5-socket encoding + 2x rule + add/remove 검증** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 53 시점)
+## 🎯 전체 진척 평가 (Round 54 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -35,12 +36,12 @@
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~45-50%** | + **합성 UI + 116 recipe**. 미구현: Quest 패널 강화/Orb UI, Save device import |
+| **Godot 실 구현** | **~48-53%** | + **Orb socket UI + 53 orb**. 미구현: NPC blacksmith/Quest 강화, Save device import |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **42-52%** (합성 UI 완성)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **45-55%** (Orb socket UI 완성)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -55,14 +56,14 @@
 
 ## 🚀 다음 세션 빠른 시작 (한 줄)
 
-**선택 옵션 — 다음 중 하나로 시작 (Round 54 부터)**:
+**선택 옵션 — 다음 중 하나로 시작 (Round 55 부터)**:
 - ~~Round 40-43 = 데이터 RE~~ ✅ / ~~Round 44-47 = Monster AI 분석~~ ✅
 - ~~Round 48 = Monster AI Godot 통합~~ ✅ / ~~Round 49 = Save Godot 통합~~ ✅
 - ~~Round 50 = AI Action sub-state 1-7/9/12 정밀 구현~~ ✅ / ~~Round 51 = 인벤토리 items.json 정확 통합~~ ✅
-- ~~Round 52 = 강화(Refine) UI~~ ✅ / ~~Round 53 = 합성(Mix) UI~~ ✅
-- **(구현 track) NPC blacksmith 합성 UI** — smith_0/1/2.dat (288 recipes, Round 32) MixSmithTableInfo 와 mix_book 분리 (75% sr)
+- ~~Round 52 = 강화(Refine) UI~~ ✅ / ~~Round 53 = 합성(Mix) UI~~ ✅ / ~~Round 54 = Orb socket UI~~ ✅
+- **(구현 track) NPC blacksmith UI** — smith_0/1/2.dat (288 recipes, Round 32) MixSmithTableInfo 와 mix_book 분리 (75% sr)
 - **(구현 track) Quest 패널 강화** — quests.json (151 × 3 difficulty) 의 phase1 objective + phase2 reward 표시
-- **(구현 track) Orb socket UI** — Round 17/26 의 6-socket orb_count + socket bytes (+0x168..+0x16d, 39 orb 종류)
+- **(구현 track) Skill book / 학습 UI** — slot_16/17 (95+98 books) Round 21 의 4 byte (class_id/skill_index/skill_level/required_level)
 - **(검증 track) scn opcode 실 game scene 동작 검증** (Title → ClassSelect → Demo 외 화면)
 - **(검증 track) Save binary import/export** — 실제 H_*.sav / SL_*.sav 디바이스에서 추출 → Godot 로드 → 보존성 검증
 - **(분석 track) 잔여 — UI 함수 / NPC 대화 / Battle motion 분석** (분석 트랙은 95% 도달 시 종료점)

@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://hero5_orb"]
+
+[ext_resource type="Script" path="res://scripts/ui/orb_panel.gd" id="1_orb"]
+
+[node name="OrbPanel" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_orb")
+
+[node name="BG" type="ColorRect" parent="."]
+offset_left = 40.0
+offset_top = 30.0
+offset_right = 600.0
+offset_bottom = 470.0
+color = Color(0.06, 0.06, 0.14, 0.95)
+
+[node name="Title" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 550.0
+offset_bottom = 24.0
+text = "Orb Socket (강화석 결합)"
+theme_override_font_sizes/font_size = 16
+
+[node name="EquipLabel" type="Label" parent="BG"]
+offset_left = 8.0
+offset_top = 30.0
+offset_right = 180.0
+offset_bottom = 50.0
+text = "장비"
+theme_override_font_sizes/font_size = 12
+
+[node name="EquipList" type="ItemList" parent="BG"]
+offset_left = 8.0
+offset_top = 52.0
+offset_right = 180.0
+offset_bottom = 400.0
+allow_reselect = true
+
+[node name="SocketLabel" type="Label" parent="BG"]
+offset_left = 190.0
+offset_top = 30.0
+offset_right = 370.0
+offset_bottom = 50.0
+text = "Socket (5)"
+theme_override_font_sizes/font_size = 12
+
+[node name="SocketList" type="ItemList" parent="BG"]
+offset_left = 190.0
+offset_top = 52.0
+offset_right = 370.0
+offset_bottom = 250.0
+allow_reselect = true
+
+[node name="Info" type="Label" parent="BG"]
+offset_left = 190.0
+offset_top = 260.0
+offset_right = 370.0
+offset_bottom = 350.0
+text = "(아이템 선택)"
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="RemoveBtn" type="Button" parent="BG"]
+offset_left = 190.0
+offset_top = 360.0
+offset_right = 290.0
+offset_bottom = 390.0
+text = "Socket 제거"
+
+[node name="OrbLabel" type="Label" parent="BG"]
+offset_left = 380.0
+offset_top = 30.0
+offset_right = 552.0
+offset_bottom = 50.0
+text = "보유 Orb (더블클릭 장착)"
+theme_override_font_sizes/font_size = 12
+
+[node name="OrbList" type="ItemList" parent="BG"]
+offset_left = 380.0
+offset_top = 52.0
+offset_right = 552.0
+offset_bottom = 400.0
+allow_reselect = true
+
+[node name="CloseBtn" type="Button" parent="BG"]
+offset_left = 480.0
+offset_top = 410.0
+offset_right = 552.0
+offset_bottom = 432.0
+text = "닫기"
