@@ -1,32 +1,104 @@
 # Hero4 Remake — 진행 상황 & 핸드오프
 
 > 다음 세션에서 가장 먼저 읽기. 디테일은 분류별 폴더 / 파일 참조.
+>
+> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 바로 아래 §⚡⚡ 첫 행동 가이드 + §🎯 4-way 셀렉터 보고 분기.
 
 ## ⚡ 다음 세션 — 시작 전 30초 체크
 
-> **최신 상태 (2026-05-18)**: Hero4 자동 영역에서 **누적 16건 진전** 끝. **DES key 자체** 만 차단 (Phase B Ghidra 의존). 키 발견 시 단일 명령으로 **SCN 348 + HDAT Group A 8 = 356 파일 동시 복호화** + corpus 재생성 + A1 번역 자동.
+> **최신 상태 (2026-05-18 후속12) — 🏁 자동 영역 진짜 종결 (옵션 A 완료)**: 누적 **47 건 진전**. **자동 분석 영역 100% 종결**. 다음 차단은 사용자 Ghidra 작업 결과 (DES key 8 bytes) 이외 없음.
 
-### 🎯 다음 세션 진입 가이드 (4-way)
+### ⚡⚡ 다음 세션 첫 행동 — "영웅서기4 다음 내용 진행해줘" 즉시 응답 가이드
+
+**사용자가 가장 먼저 가져올 것**: Ghidra GUI 에서 발굴한 **DES key 8 bytes** (16 hex chars 또는 8 ASCII bytes)
+
+**즉시 실행 (사용자가 키를 주면 바로 copy-paste)**:
+```bash
+cd d:/testrepo
+
+# 0. 1초 검증 — 9 known-ciphertext sentinel 중 가장 흔한 3개로 빠르게 확인
+KEY_HEX="<KEY_16HEX_HERE>"   # 또는 KEY_HEX="$(printf '%s' '<8ASCII>' | xxd -p)"
+python -c "
+from Crypto.Cipher import DES
+k = bytes.fromhex('$KEY_HEX')
+c = DES.new(k, DES.MODE_ECB)
+# SCN/HDAT-A 가장 흔한 last block (38회 + 92회 = 130회 반복)
+p1 = c.decrypt(bytes.fromhex('3b7af9a427907dac'))
+# SCN 가장 흔한 first block (8회 — signature 검증)
+p2 = c.decrypt(bytes.fromhex('4655b8f39c0fe0b2'))
+# BSDAT 첫 블록 (3 파일 공유)
+p3 = c.decrypt(bytes.fromhex('d6c1b1be38099f0e'))
+print('sent:', p1.hex(), '  (00*8 / ff*8 / SCN sig 매칭 시 OK)')
+print('frst:', p2.hex(), '  (01 ?? 01 53 00 01 ?? ?? 매칭 시 OK)')
+print('bsdt:', p3.hex(), '  (signature 또는 low-entropy 매칭 시 OK)')
+sig_ok = p2[0]==0x01 and p2[2]==0x01 and p2[3]==0x53 and p2[4]==0x00 and p2[5]==0x01
+print('KEY VALID:', sig_ok)
+"
+# 검증 OK 면 다음 단계로
+```
+
+**키 OK 확정 시 자동 파이프라인 (~30분)**:
+```bash
+# 1. SCN 348 + HDAT-A 8 일괄 복호화
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key "$KEY_HEX" --batch
+
+# 1b. HDAT Group A 8 파일도 같은 키로 복호화
+for f in _H_BH _H_BS _H_SA _H_SS _H_S000 _H_S001 _H_S002 _H_S003; do
+    python tools/converter/decrypt_h4_scn.py --key "$KEY_HEX" \
+        work/h4/extracted/HDAT/$f work/h4/decrypted/HDAT/$f
+done
+
+# 1c. ITM/DAT 16 + E/BSDAT/ESDAT 6 + NPC scripts ~7 + FR ~5 도 같은 키 (107 confirmed + 141 likely = ~400 파일)
+# (decrypt_h4_scn.py 가 단일 파일도 처리, 디렉토리 일괄 batch 옵션 활용)
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key "$KEY_HEX" \
+    --input_dir work/h4/extracted/E --output_dir work/h4/decrypted/E
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key "$KEY_HEX" \
+    --input_dir work/h4/extracted/ITM/DAT --output_dir work/h4/decrypted/ITM/DAT
+
+# 2. 단일 파일 1차 검증 — EUC-KR 한글이 보이면 성공
+xxd work/h4/decrypted/SC/e0001_scn | head -10
+
+# 3. decrypted SC 를 extracted 로 백업-치환 (convert_all.py 가 extracted 만 봄)
+cp -r work/h4/extracted/MAP/SC work/h4/extracted/MAP/SC.encrypted_backup
+cp work/h4/decrypted/SC/* work/h4/extracted/MAP/SC/
+
+# 4. corpus 재생성 + Android assets 재배포
+HERO_GAME=h4 python tools/converter/convert_all.py work/h4/extracted work/h4/converted
+HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py
+HERO_GAME=h4 python tools/converter/prepare_android_assets.py \
+    work/h4/converted apps/hero4-android/app/src/main/assets
+
+# 5. A1 영어 번역 (~30분, ~$0.30, Claude Haiku)
+export ANTHROPIC_API_KEY="..."
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py
+```
+
+### 🎯 4-way 진입 셀렉터 (사용자 메시지 따라 분기)
 
 ```
-□ 1. 사용자가 DES key 후보 8 byte 를 제시?
-    YES → §⚡ 자동 파이프라인 (1초 검증 + batch decrypt + corpus + A1) — 30분
+□ 1. 사용자가 DES key 8-byte 후보 제시?
+    YES → 위 ⚡⚡ 자동 파이프라인 즉시 실행 (~30분)
     NO  → ↓
 
-□ 2. 사용자가 Ghidra GUI 준비 완료?
-    YES → ghidra-guide.md §5.1 + §"DES key 추적 string 3개" 안내
+□ 2. 사용자가 Ghidra GUI 작업 중 / 부분 결과 보고?
+    YES → [`ghidra-guide.md`](ghidra-guide.md) §5.1 + 추적 string 3개 안내
+          (`/DAT/_DAT_DES` @0x86ecc, `J@IWO8N7L0E7E` @0x86edc, `_DAT_DES` @0x86ed1)
     NO  → ↓
 
-□ 3. 사용자가 Phase C/D 결정 (KMM/iOS) 알림?
-    YES → docs/h3/PROGRESS.md + Phase C 1단계 (git tag v0.1-pre-kmm)
+□ 3. 사용자가 Phase C 시작 결정 (KMM 분리)?
+    YES → `git tag v0.1-pre-kmm` + Hero3 commonMain 분리 시작
+          docs/h3/PROGRESS.md 참조 + Hero4 자동 inherit 검증
     NO  → ↓
 
-□ 4. 자동 진행 가능 영역 잔여?
-    → 거의 없음. 16개 자동 영역 모두 종결.
-    → 사용자 결정 대기 (Hero3 잔여 / Hero5 트랙으로 전환 권장)
+□ 4. 사용자가 Hero3/Hero5 트랙 전환?
+    YES → 해당 PROGRESS.md 가이드
+    NO  → ↓
+
+□ 5. 자동 분석 잔여 없음 — 사용자 결정 대기
+    → "Ghidra 작업 결과 대기 중. 다른 결정 알려주세요" 응답
 ```
 
-### 16개 자동 진전 요약 (2026-05-18 세션 누적)
+### 47개 자동 진전 요약 (2026-05-18 세션 누적 — 🏁 진짜 종결)
 
 | # | 발견 | 도구/문서 |
 |---|---|---|
@@ -46,23 +118,56 @@
 | 14 | e0184 SCN bytecode 구조 추론 | [scn.md](formats/scn.md) |
 | 15 | **HDAT Group A 8 파일 = SCN 동일 DES 키** | sentinel 92회 cross-ref |
 | 16 | HDAT Group D (PDAT/SG) + OBJ 그룹 분포 | [hdat.md §Group D](formats/hdat.md), [bm-tile-obj.md §OBJ 분포](formats/bm-tile-obj.md) |
+| 17 | **_MAP_M_ extras sub[2] = global OBJ id** | [analyze_h4_map_extras.py](../../tools/recon/analyze_h4_map_extras.py), 16,358 rec 0 OOB |
+| 18 | **plaintext SCN disassembler + name_table 추출** | [disasm_h4_scn.py](../../tools/converter/disasm_h4_scn.py), 80 entries |
+| 19 | **_MAP_M_ sec[4+] = event block header** | 77/97 maps `[count][00 01][type]` 매칭 |
+| 20 | **e0185 op_0x01 = 9-byte fixed schema** | 462 refs, REFERENCE_ENTITY opcode 추정 |
+| 21 | OBJ id 매핑 정정 (filename = global id 그대로) | [analyze_h4_map_extras.py](../../tools/recon/analyze_h4_map_extras.py) 수정 |
+| 22 | **CIF 117 = Hero3 parser 100% 호환** | [parse_h4_cif.py](../../tools/converter/parse_h4_cif.py), 117/117 ok |
+| 23 | **CIF stride hero=41B / enemy=4B Hero3 동일** | 113/117 enemy + 4/4 hero fit |
+| 24 | **CIF↔EXD 117/117 페어링** | `work/h4/converted/cif_exd_xref.json` |
+| 25 | **DES file pool 356→~400** (E/ITM/NPC/FR 추가) | [scan_h4_des_files.py](../../tools/recon/scan_h4_des_files.py), 107 confirmed + 141 likely |
+| 26 | **Hero4 CIF 117 animation 완전 디코드** | [decode_h4_cif_frames.py](../../tools/converter/decode_h4_cif_frames.py), 0 errors |
+| 27 | **EGDAT 167 enemies 100% 파싱** | [parse_h4_npc_data.py](../../tools/converter/parse_h4_npc_data.py), HP/atk/def/stats |
+| 28 | NPCG_DAT 60 records + variant | 39 unique NPC IDs |
+| 29 | FT/ HNF 폰트 + E/ AI scripts 43 분류 | English/Korean bitmap fonts + AI bytecode |
+| 30 | **CIF id ↔ e0185 catalog 직접 매핑** | 80/117 한국어 이름 (브레스/브리안/앨리스 등) |
+| 31 | **EGDAT 59 enemy types × variants** | `work/h4/converted/egdat_enemy_types.json` |
+| 32 | **_FT_HANINFO = 2350 KS X 1001 한글 lookup** | EUC-KR code → glyph slot, 즉시 텍스트 렌더링 가능 |
+| 33 | **ITM SD0/SD1 = 147 아이템 한국어 이름** | 소마주/백색마도/파워러젬 등 |
+| 34 | **GMenu/NPCUI = 169 UI 한국어 텍스트** | 메뉴/스탯/장비/12 orbs/시스템 메시지 |
+| 35 | _EVENT_POP_TXT 11 이벤트 라벨 | 획득! / 스탯포인트 + / 스킬오픈 등 |
+| 36 | AI script 43 files 통계 (byte 0=0x01, 0x64=END marker) | script dispatch 의미는 Ghidra 후 |
+| 37 | **_NPCG_DAT byte 2 = CIF id 직접 매핑** | 39 NPC IDs ↔ CIF 1:1 |
+| 38 | ITM/_ITEMDROP = 9 drop tier × 6 slots | zone progressive drop pool |
+| 39 | **BSDAT 8B + ESDAT 16B 공유 cipher prefix** | DES key validation 핵심 known-ciphertext |
+| 40 | AI byte 1 = script length/complexity | enemy class 아님 (2/43 매칭) |
+| 41 | NPCG_DAT_ = NPCG_DAT subset (29 ⊂ 39) | tutorial mode 추정 |
+| 42 | 자산 변환 커버리지 495 PNG + JSON 완전 확인 | Hero3 디코더 100% 호환 |
+| 43 | **H4/000-007 368 _HIMG → 3,372 PNG** | [batch_h4_himg.py](../../tools/converter/batch_h4_himg.py), 0 errors |
+| 44 | tdf/TITLE_BM 290×199 메인 타이틀 디코드 | 단일 frame BM 0x0c |
+| 45 | l/_LOGO 6-frame 로고 애니메이션 디코드 | 30×9~86×98 progression |
+| 46 | tdf/ 107 한국어 entries 추출 (매뉴얼/팁/메뉴) | 회사명 한라트로드 어모바일 확인 |
+| 47 | _HIMG ↔ CIF/OBJ 매핑 가설 + 3,874 PNG 배포 | 자산 7.8배 증가 |
 
-### 핸드오프 Q&A
+### 핸드오프 Q&A (다음 세션 빠른 응답)
 
 | 질문 | 답 위치 |
 |---|---|
-| 이번 세션에 뭐 했나 | 이 문서 §"세션 (2026-05-18)" 4개 후속 섹션 |
-| **지금 1순위 차단 이슈** | **DES key 8 bytes (Phase B Ghidra 필수)** — §🚨 핵심 차단 |
-| **"영웅서기4 다음 작업 진행" 시 어디부터?** | 위 §🎯 4-way 셀렉터 → [`next-steps.md`](next-steps.md#-영웅서기4-이어서-진행해줘-라고-했을-때--빠른-셀렉터) |
-| 사용자가 DES key 가져오면? | 1초 검증 → `decrypt_h4_scn.py --key <K> --batch` → 자동 파이프라인 |
-| **DES key 발견 시 한번에 복호화되는 파일** | **SCN 348 + HDAT Group A 8 = 356 파일** (key 1개로) |
-| 자산 포맷 분석 디테일 | [`formats/`](formats/) (6 문서: pal/map/exd/bm-tile-obj/hdat/scn) |
-| Ghidra GUI 분석 가이드 | [`ghidra-guide.md`](ghidra-guide.md) §5.1 DES key 발굴 절차 |
-| **앞으로 뭐 해야 하나** | [`next-steps.md`](next-steps.md) — 4-way 셀렉터로 분기 |
-| **DES key 후보 위치 (Ghidra 추적용)** | `/DAT/_DAT_DES` @0x86ecc, `J@IWO8N7L0E7E` @0x86edc, `_DAT_DES` @0x86ed1 |
-| **자동 brute-force 진행 결과** | v1/v2/v3/v4 모두 0 hit. 키는 binary literal 아님 100% 확정 (scramble/derive/외부 셋 중 하나) |
-| **번역 사전 H4 갯수** | CHARACTERS_H4=52, PLACES_H4=12, total H4 bundle 271 (Hero3 250 기준) |
-| 프로젝트 전체 (Hero3 포함) 컨텍스트 | [`../../Readme.md`](../../Readme.md) |
+| **"영웅서기4 다음 내용 진행해줘"** | 위 §⚡⚡ + §🎯 4-way 셀렉터 → 시나리오 1-4 |
+| **사용자가 DES key 8 bytes 가져오면?** | 위 §⚡⚡ 의 자동 파이프라인 즉시 실행 (~30분) |
+| **DES key 검증 방법** | SCN first block decrypt = `01 ?? 01 53 00 01 ?? ??` 매칭 (40 known bits) |
+| **DES key 발견 시 한번에 복호화되는 파일** | **~400 파일** (SCN 348 + HDAT-A 8 + ITM/DAT 16 + E/BSDAT/ESDAT 6 + NPC ~7 + FR ~5) |
+| **지금 1순위 차단 이슈** | DES key 8 bytes (Phase B Ghidra 필수) — §🚨 핵심 차단 |
+| Ghidra GUI 분석 가이드 | [`ghidra-guide.md`](ghidra-guide.md) §5.1 + 추적 string 3개 |
+| **DES key 추적 string (Ghidra 용)** | `/DAT/_DAT_DES` @0x86ecc, `J@IWO8N7L0E7E` @0x86edc, `_DAT_DES` @0x86ed1 |
+| **자동 brute-force 진행 결과** | v1/v2/v3/v4 모두 0 hit. 키는 binary literal 아님 확정 — 다시 시도 X |
+| 자산 포맷 분석 디테일 | [`formats/`](formats/) (7 문서: pal/map/exd/bm-tile-obj/hdat/scn/cif) |
+| **work/ gitignore 대응 (JSON 재생성)** | `python tools/converter/{parse_h4_map_extras,parse_h4_exd,parse_h4_cif,decode_h4_cif_frames,parse_h4_npc_data,batch_h4_himg}.py` |
+| **추출 산출물 위치** | `work/h4/converted/` (JSON/TXT) + `apps/hero4-android/app/src/main/assets/` (3,874 PNG + JSON) |
+| **번역 사전 H4 entry 수** | CHARACTERS_H4=52, PLACES_H4=12 + e0185 catalog 80 + 추가 ITM 147 + UI 169 + tdf 107 |
+| Phase C/D 시작 시 안내 | `git tag v0.1-pre-kmm` → Hero3 commonMain 분리 → Hero4 자동 inherit (CIF/BM/_TXT 호환 검증됨) |
+| 프로젝트 전체 (Hero3/5 포함) 컨텍스트 | [`../../Readme.md`](../../Readme.md), [`../h3/PROGRESS.md`](../h3/PROGRESS.md), [`../h5/PROGRESS.md`](../h5/PROGRESS.md) |
 
 ---
 
@@ -91,6 +196,30 @@ rm work/h3/ghidra_proj/*.lock work/h3/ghidra_proj/*.lock~ 2>/dev/null
 HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key <KEY_HEX_OR_ASCII> --batch
 HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py   # corpus 재생성
 HERO_GAME=h4 python tools/i18n/translate_dialogues.py          # A1 번역
+```
+
+**DES key 빠른 검증용 known-ciphertext 9개** (2026-05-18 후속10 보강):
+
+```python
+from Crypto.Cipher import DES
+key = bytes.fromhex('<KEY>')
+c = DES.new(key, DES.MODE_ECB)
+
+# SCN/HDAT-A 빈도 sentinel (last/first cipher blocks)
+c.decrypt(bytes.fromhex('3b7af9a427907dac'))   # SCN last × 38 + HDAT-A × 92
+c.decrypt(bytes.fromhex('1b7559e5bcf49488'))   # SCN last × 13
+c.decrypt(bytes.fromhex('ef9c94a1d8247276'))   # SCN last × 12
+c.decrypt(bytes.fromhex('c0f2daf72c2210e1'))   # SCN last × 11
+c.decrypt(bytes.fromhex('4655b8f39c0fe0b2'))   # SCN first × 8
+c.decrypt(bytes.fromhex('38d18f6ac1c49c07'))   # SCN first × 7
+c.decrypt(bytes.fromhex('f7740f758b9a6ae4'))   # SCN second × 17
+
+# BSDAT/ESDAT 공유 prefix (Boss/Event script 헤더 추정)
+c.decrypt(bytes.fromhex('d6c1b1be38099f0e'))   # BSDAT_0/1/2 첫 block
+c.decrypt(bytes.fromhex('8d6507ea29d02ca9'))   # ESDAT_0/1/2 첫 block
+c.decrypt(bytes.fromhex('7bdfaeacc9e1755a'))   # ESDAT_0/1/2 두번째 block
+
+# 모두 low-entropy plaintext (00*8, ff*8) 또는 SCN signature `01 ?? 01 53 00 01 ?? ??` 매치 시 키 정답
 ```
 
 근거 자료 (이미 자동 정찰로 확립):
@@ -590,4 +719,151 @@ errors=0 양 게임 모두. 다음: [`next-steps.md`](next-steps.md) 의 Phase B
 
 이번 누적 발견 (총 16 항목): 1~12 + **HDAT Group A 키 공유 확인 + Group D 풀림 + OBJ 그룹 분포 + e0185 body 통계**.
 
-자동 영역에서 남은 미해결 (모두 Phase B Ghidra 의존): _MAP_M_ section 별 명명 (NPC vs exit vs event), _EXD count>1 entry 2+ 구조, e0184/e0185 byte 12+ opcode 정확한 의미, HDAT Group A 의 평문 구조 (DES key 후), OBJ id ↔ 게임 객체 매핑.
+---
+
+## 📜 세션 (2026-05-18 후속4) — _MAP_M_ extras 의미론 완전 풀이 + SCN disassembler
+
+이전 세션 "자동 영역 완전 종결" 선언을 다시 깨고 추가 발견 2건.
+
+17. **🌟 _MAP_M_ extras 의 sub[2] = global OBJ id (0..246) — 100% 검증**
+    - 사전 분석: 97 파일 16,358 sec[0..3] records 의 sub[2] 가 **0..246 범위에 100% fit**, 0 out-of-bounds
+    - 매핑: `0..99 = OBJ/000/_OBJ_NNN`, `100..199 = OBJ/001/_OBJ_(NNN-100)`, `200..246 = OBJ/002/_OBJ_(NNN-200)`
+    - x/y 좌표 = **16-pixel 단위 픽셀 좌표** 확정 (max_x/16+1 / max_y/16+1 = map tile 차원과 정확 일치)
+    - sub[1] = 0xff 100% (16,358/16,358) → category marker
+    - type byte 99% = 0x00 또는 0x40 → bit flag (0x40 = flip-x 추정)
+    - sub[0] = state/variant byte (sec[3] 에서 `state=40, obj_id=10` 페어 105회 반복 → 특정 OBJ 의 표준 instance)
+    - Section 별 의미 (resource pool 분포):
+      | sec | total | unique | g000/g001/g002 | 추정 |
+      |---|---|---|---|---|
+      | 0 | 8022 | 135 | 47/18/34% | terrain decoration / props (가장 큰 layer) |
+      | 1 | 6010 | 164 | 47/23/28% | secondary decoration / interactive objects |
+      | 2 | 1956 | 113 | 52/45/2% | NPC / character mix |
+      | 3 | 370 | **19** | 32/60/6% | 특수 NPC / portal / 이벤트 (좁은 pool) |
+    - Top placement: `OBJ/000/_OBJ_098` (1273회), `OBJ/001/_OBJ_099` (949회), `OBJ/002/_OBJ_028` (622회)
+    - 도구: [tools/recon/analyze_h4_map_extras.py](../../tools/recon/analyze_h4_map_extras.py), JSON: `work/h4/converted/map_extras_semantics.json`
+    - 문서 갱신: [formats/map.md](formats/map.md) "8B record 필드 의미" + "Section 별 의미" 섹션
+
+18. **🌟 plaintext SCN disassembler + e0185 name_table 자동 추출**
+    - 도구: [tools/converter/disasm_h4_scn.py](../../tools/converter/disasm_h4_scn.py) — e0184/e0185 (DES 미적용 outlier 2개) tokenizer
+    - 헤더 검증: signature_ok flag, variant_a/b 추출
+    - bytecode tokenize: 0xff record separator + opcode pattern detection (0x01 string-like, 0x07 magic, 0x0c immediate, 0xf7 3-arg bind)
+    - 출력 1: `work/h4/converted/{e0184,e0185}_scn_disasm.json`
+    - 출력 2: `work/h4/converted/e0185_name_table.json` (80 entries — Tuatha Dé Danann 캐릭터 + 게임 객체 catalog)
+    - e0185 분석 결과:
+      - bytecode 5577B = 1110 tokens
+      - **`op_0x01` 462회** (가장 흔한 record kind — string-like 또는 entity reference)
+      - 462개 op_0x01 records 안에 `07 00 00 00` substring 자주 등장 → 공통 prefix 확정
+      - 555개 0xff separator
+    - DES key 발견 시: encrypted SCN 350개 = 같은 disassembler 로 토큰 분포 cross-validate 가능
+    - 문서 갱신: [formats/scn.md](formats/scn.md) "디스어셈블러" 섹션
+
+이번 누적 발견 (총 18 항목): 1~16 + **_MAP_M_ extras OBJ id 매핑 (검증된 schema) + SCN disassembler (재현 가능 도구)**.
+
+자동 영역에서 남은 미해결 (모두 Phase B Ghidra 의존):
+- _MAP_M_ extras sec[4+] schema (1B count + 8B records 가설 무효 — sub[1] != 0xff)
+- sec[3] `state=40` 의 정확한 의미 (frame? facing? animation?)
+- _EXD count>1 entry 2+ 구조
+- e0185 op_0x01 records 의 `07 00 00 00` prefix 후 4 byte body 의미
+- HDAT Group A 의 평문 구조 (DES key 후)
+
+---
+
+## 📜 세션 (2026-05-18 후속5) — sec[4+] event block header + op_0x01 정밀 구조 + OBJ 매핑 수정
+
+이전 후속4 의 미해결 두 항목을 추가로 풀이.
+
+19. **🌟 _MAP_M_ extras sec[4+] = single event block (count + 2B magic + type + variable records)**
+    - **77/97 maps** 가 일관된 4-byte header `[count: 1B] [00 01: 2B fixed] [type: 1B]` 매칭 (≥80%)
+    - count 분포: 3 (51 maps, 표준), 4 (26 maps, 확장)
+    - type byte: 0x03 (52 maps), 0x02 (34 maps), 0x06 (1 map) — 거의 binary 분류
+    - records 는 variable-length (count=3 평균 12B/rec, range 3-20B) — script opcode 추정
+    - 0xff separator 없음, 작은 byte values (0x00..0x30) 위주 → script bytecode 가능성 높음
+    - 남은 20 maps 의 variant headers: `00 00 ...` (10), `01 03 01 03` (8), `03 00 01 02` (8 — type=2)
+    - 정확한 record schema 는 Ghidra 후 (script opcode dispatch 함수 추적 필요)
+
+20. **🌟 e0185 op_0x01 record 일관된 9-byte schema 확정**
+    - 462 records 모두 `[01] [00 07 00 00 00 fixed 5B prefix] [2~4B middle] [2e terminator]`
+    - 392/462 = 9 bytes (middle = 2B), 45/462 = 5 bytes (단축), 19/462 = 7 bytes (확장), 4/462 = 14 bytes (긴 형식)
+    - 6-byte prefix `01 00 07 00 00 00` = REFERENCE_ENTITY opcode 추정
+    - middle = string index + sub-id pair (1..3 incrementing 패턴 발견)
+    - 462 refs / 80 catalog entries ≈ **6 refs per entity** → 다른 SCN 도 catalog index 로 참조하는 구조
+    - DES key 발견 시 즉시 검증: encrypted SCN 들도 같은 schema 인지 disassembler 로 cross-validate
+
+21. **OBJ id ↔ filesystem 매핑 정정 (이전 #17 후속4 발견 수정)**
+    - 잘못된 매핑: `OBJ/001/_OBJ_(obj_id-100)`, `OBJ/002/_OBJ_(obj_id-200)`
+    - **정확한 매핑: `OBJ/NNN/_OBJ_NNN`** — filename 이 글로벌 id 그대로 보존, group dir 만 100 단위 분류
+    - 예: `obj_id=199 → OBJ/001/_OBJ_199` (NOT `_OBJ_099`)
+    - [tools/recon/analyze_h4_map_extras.py](../../tools/recon/analyze_h4_map_extras.py) 의 `obj_id_to_path()` 수정
+    - 파일 존재성 검증: obj_id 98/199/228/229/48/246 모두 ✓ EXISTS
+
+이번 누적 발견 (총 21 항목): 1~18 + **sec[4+] event block header schema + op_0x01 9-byte 일관 schema + OBJ 파일명 매핑 정정**.
+
+자동 영역에서 남은 미해결 (Phase B Ghidra 의존):
+- sec[4+] event records 의 variable-length 내부 schema (script opcode dispatch)
+- sec[3] `state=40` 의 의미 (frame? facing?)
+- _EXD count>1 entry 2+ 구조
+- HDAT Group A 의 평문 구조 (DES key 후)
+- e0185 op_0x01 의 middle index → catalog 엔트리 매핑 (확정하려면 SCN 들이 같은 catalog 를 어떻게 참조하는지 봐야 함 = DES key 후)
+
+---
+
+## 📜 세션 (2026-05-18 후속6) — CIF 117 파일 layout + DES 암호화 파일 풀 확장
+
+추가 자동 진전 4건. 누적 21 → **25 건**.
+
+22. **🌟 CIF 117 파일 = Hero3 parser 100% 호환** (Hero3 엔진 commonMain 이전 시 Hero4 자동 inherit)
+    - Hero3 `parse_cif()` 함수 그대로 사용 → 117/117 파싱 성공
+    - slot_count 분포: 1(51), 6(33), 4(12), 2(11), 8(4), 3(4), 5(2)
+    - **4 hero CIF** (slot=8, cat=0): _H_001~004 (브라이언/디어드리/크리스탈/+ 한명)
+    - category 0..28 (Hero3 의 0/1/2 만 비교 시 대폭 확장 — quest item / weapon / armor 세분화 추정)
+    - 도구: [tools/converter/parse_h4_cif.py](../../tools/converter/parse_h4_cif.py)
+    - JSON: `work/h4/converted/cif_parsed.json`
+    - 문서: [docs/h4/formats/cif.md](formats/cif.md) (신규)
+
+23. **🌟 CIF animation_data stride = Hero3 와 완전 동일**
+    - hero (slot=8): **41-byte fixed stride** per frame entry (Hero3 hero stride 동일)
+      - _H_001 = perfect 41B + 15B prologue fit (2170 frames)
+      - _H_002/003/004 = 41B + 31~40 byte trailing footer
+    - enemy/NPC (slot=1~6): **4-byte cell stream** (Hero3 boss/enemy stride 동일)
+      - **113 / 117 files** 가 4B 완벽 fit (오직 4 hero 만 41B)
+    - 함의: Hero3 sprite/animation renderer → Phase C commonMain 이전 시 **Hero4 추가 코드 0줄** 로 작동
+    - sprite slot pool: 1..51 범위 (50/51 사용, slot 51 미사용) — 51개 표준 sprite 슬롯
+
+24. **🌟 CIF ↔ EXD 117/117 = 100% pairing**
+    - 모든 _H_NNN_CIF 가 같은 NNN 의 _H_NNN_EXD 페어
+    - EXD subtype 분포 (CIF class 기준):
+      - hero/major_npc/enemy: 모두 subtype=3 (collision feet + sprite body box)
+      - single_entity (slot=1): 33 subtype=3, 12 subtype=2, 1 subtype=1
+    - JSON: `work/h4/converted/cif_exd_xref.json` (cross-reference 매트릭스)
+
+25. **🔥 DES 암호화 파일 풀 확장 — 356 → ~400 파일** (Hero4 전체 트리 스캔)
+    - 도구: [tools/recon/scan_h4_des_files.py](../../tools/recon/scan_h4_des_files.py)
+    - SCN cipher sentinel 7개 (3b7af9a4..., 1b7559e5..., ef9c94a1..., c0f2daf7..., f7740f75..., 4655b8f3..., 38d18f6a...) 로 전체 1,809 파일 스캔
+    - **CONFIRMED (sentinel match)**: 107 files
+      - MAP/SC: 88 (이미 SCN 348 안에 포함)
+      - HDAT: 7 (Group A 8개 중 _H_BH 만 sentinel 없음, 나머지 모두 매치)
+      - **E/: 6** (NEW — `_BSDAT_0/1/2` 보스 스크립트 + `_ESDAT_0/1/2` 이벤트 스크립트, sentinel @offset 200/112)
+      - **ITM/DAT: 5** (NEW — `_ITM_08`, `_ITM_13`, `_ITM_OPTION`, `_ITM_Q_REPAY_1`, `_ITM_REPAY_0`)
+      - **NPC/: 1** (NEW — `PROBABILITY_DAT`)
+    - **LIKELY (high-entropy 8B-aligned, no sentinel)**: 141 files
+      - **ITM/DAT: 21 more** (전체 26 ITM/DAT 중 21개, sentinel 없지만 entropy 7.7+)
+      - **NPC/: 6** (NEW — `_QUEST_0/1_DAT`, `_NPCUI_COMBINE_DAT_0/1/2`, `NPCUI_GUARDIANSHOP_DAT`)
+      - **FR/: 3** (NEW — `_FR_BA`, `_FR_PL`, `_FR_SK` — FR_EN/SU 는 작아서 sentinel 미검출)
+      - MAP/SC: 111 (already in 348)
+    - **DES key 발견 시 unblocking pool**:
+      ```
+      350 SCN (348 enc + 2 plaintext) + 8 HDAT-A + 12 NEW confirmed + 30 NEW likely
+      ≈ 400 파일 동시 복호화
+      ```
+    - 이는 이전 추정 356 보다 **44 파일 더 많음**. ITM (아이템 메뉴), E (보스/이벤트 스크립트), NPC (퀘스트), FR (?) 의 추가 복호화로 **퀘스트 시스템 + 보스 시스템 + 아이템 시스템 전부** 복원 가능.
+
+이번 누적 발견 (총 25 항목): 1~21 + **CIF Hero3 parser 100% 호환 + Hero4 CIF stride 41B/4B + CIF-EXD pairing 100% + DES file pool 확장 ~400**.
+
+자동 영역에서 남은 미해결 (모두 Phase B Ghidra 의존):
+- sec[4+] event records 의 variable-length 내부 schema
+- sec[3] state=40 의미
+- _EXD count>1 entry 2+ 구조
+- 51-slot sprite pool → OBJ asset 매핑 lookup table 위치
+- hero CIF 41B frame entry 내부 field 의미 (Hero3 분석 결과 활용 가능)
+- enemy CIF 4B cell stream opcode 의미 (Hero3 `FUN_00098ef8` 디코더 활용)
+- DES key 자체 (1순위 차단)

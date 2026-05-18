@@ -90,30 +90,99 @@ y       : uint16 LE   (맵 픽셀 좌표, 보통 0~960)
 - **84 / 97** 파일은 1~40B trailing (variable-length 마지막 section 또는 padding)
 - 모든 파일에서 적어도 첫 4 sections 정상 파싱 → 핵심 구조 확정
 
-### Section 별 의미 추정 (Ghidra 후 확정 필요)
+### 8B record 필드 의미 (2026-05-18 후속4 확정)
 
-| section | typical count | 추정 |
+```
+struct ExtrasRecord {
+    uint8  type;       // bit flags. 99% 가 0x00 또는 0x40 (bit 0x40 = flip-x 추정)
+    uint8  state;      // sub[0]. variant / animation state / facing
+    uint8  marker;     // sub[1] = 0xff 100% (16,358/16,358 records). category separator
+    uint8  obj_id;     // sub[2] = global OBJ id (0..246)
+    uint16 x_le;       // pixel coord, /16 = tile_x
+    uint16 y_le;       // pixel coord, /16 = tile_y
+}
+```
+
+**global OBJ id 매핑** (sub[2]):
+
+| 범위 | OBJ 경로 | 파일 수 |
 |---|---|---|
-| 0 | 50~200 | tile decoration / NPC spawn 위치 |
-| 1 | 20~50 | exit / zone transition (sub data 가 다른 zone id) |
-| 2 | 10~30 | event trigger / interactive object |
-| 3+ | 0~20 | item/treasure / quest marker |
+| `0..99`     | `OBJ/000/_OBJ_NNN`  | 100 (16×16 icons) |
+| `100..199`  | `OBJ/001/_OBJ_NNN`  | 100 (variable characters) |
+| `200..246`  | `OBJ/002/_OBJ_NNN`  | 47 (variable items) |
+
+**filename = global id 그대로** (offset 빼지 않음). 예: `obj_id=199 → OBJ/001/_OBJ_199`, `obj_id=228 → OBJ/002/_OBJ_228`. group 디렉토리는 100 단위 분류용.
+
+**검증**: 16,358 sec[0..3] records 중 0 out-of-bounds (max=246). x/y 좌표는 16-pixel 정렬, max_x / max_y / 16 = map tile dimensions 정확히 일치 (`_MAP_M_001` size=2500 → 50×50 → 800×800px, max_x=776, max_y=805 ✓).
+
+### Section 별 의미 (resource pool 분포 기반)
+
+| section | total | unique obj_id | g000 / g001 / g002 비율 | 추정 |
+|---|---|---|---|---|
+| 0 | 8022 | 135 | 47% / 18% / 34% | terrain decoration / props (가장 큰 layer) |
+| 1 | 6010 | 164 | 47% / 23% / 28% | secondary decoration / interactive objects |
+| 2 | 1956 | 113 | 52% / 45% / 2% | NPC / character mix (g002 거의 제외) |
+| 3 | 370 | **19** | 32% / 60% / 6% | 특수 NPC / portal / 이벤트 객체 (좁은 자원 풀) |
+
+sec[3] 의 `(state=40, obj_id=10)` 페어가 105회 반복 — `OBJ/000/_OBJ_010` 의 표준 instance.
+
+sec[4+] 는 schema 가 다름 (sub[1] 가 0xff 아니고, x/y 가 픽셀 좌표 범위 벗어남). 실제로는 single event/script block 으로 추정.
+
+### sec[3] 뒤 event block schema (2026-05-18 후속5 발견)
+
+97/97 maps 가 sec[3] 뒤에 byte sequence 존재. 그 중 **77/97** 이 다음 4-byte header 매칭:
+
+```
+[count: 1B] [00 01: 2B fixed magic] [type: 1B] [count × variable-length records]
+```
+
+| count | maps | 추정 |
+|---|---|---|
+| 3 | 51 | 표준 이벤트 블록 (3 events) |
+| 4 | 26 | 확장 이벤트 블록 (4 events) |
+
+type byte:
+- `0x03`: 52 maps
+- `0x02`: 34 maps
+- `0x06`: 1 map
+
+Records 는 variable-length (count=3 평균 12B/rec, range 3-20B). 정확한 record schema 는 Ghidra 후 확정. payload bytes 가 script opcode 같이 보이며 (0x00..0x30 범위 작은 값 위주), 0xff separator 없음.
+
+남은 20 maps:
+- 10 maps: 첫 2 byte `00 00` (no events?)
+- 8 maps: `01 03 01 03` header (subtype variant)
+- 1 map 각: `01 03 02 03`, `02 00 03 06`
 
 ### 샘플 (`_MAP_M_000`, 수레바퀴섬/선착장, 20×20)
 
 ```
 extras = 850B, 4 sections, tail=6B
-  sec[0]: 55 records → e.g. type=0 sub=[40,255,47] pos=(232,224)
-  sec[1]: 26 records → e.g. type=0 sub=[0,255,58]  pos=(200,224)
-  sec[2]: 24 records → e.g. type=0 sub=[0,255,53]  pos=(40,32)
+  sec[0]: 55 records → e.g. obj=OBJ/000/_OBJ_047 state=40 flip_x=False pos=(232,224)
+  sec[1]: 26 records → e.g. obj=OBJ/000/_OBJ_058 state=0  flip_x=False pos=(200,224)
+  sec[2]: 24 records → e.g. obj=OBJ/000/_OBJ_053 state=0  flip_x=False pos=(40,32)
   sec[3]: 0 records  (마커 / 종료자)
 ```
 
-### 파서 + JSON
+### 파서 + 분석기 + JSON
 
-[tools/converter/parse_h4_map_extras.py](../../tools/converter/parse_h4_map_extras.py) 97 파일 모두 파싱. `work/h4/converted/map_extras_parsed.json` 출력. 각 record 의 `type` / `sub` / `x` / `y` 포함.
+- [tools/converter/parse_h4_map_extras.py](../../tools/converter/parse_h4_map_extras.py) — raw 8B record 파싱 → `work/h4/converted/map_extras_parsed.json`
+- [tools/recon/analyze_h4_map_extras.py](../../tools/recon/analyze_h4_map_extras.py) — global OBJ id 매핑 + 통계 → `work/h4/converted/map_extras_semantics.json`
 
-정확한 각 section 의 명명 (NPC vs exit vs event) + sub[3] 의 의미 (특히 type 의 상위 2비트가 무엇을 표시하는지) 는 Phase B Ghidra 분석으로 확정.
+Top 5 most-placed objects across 97 maps:
+
+| OBJ | count |
+|---|---|
+| `OBJ/000/_OBJ_098` | 1273 |
+| `OBJ/001/_OBJ_199` | 949 |
+| `OBJ/002/_OBJ_228` | 622 |
+| `OBJ/002/_OBJ_229` | 614 |
+| `OBJ/000/_OBJ_048` | 547 |
+
+남은 미해결 (Phase B Ghidra 필요):
+- sec[3] 의 `state=40` 의미 (frame/anim/dir?)
+- sec[4+] 의 정확한 schema
+- `state` 바이트가 OBJ 별로 다른 의미를 갖는지 (frame index? facing direction? animation state?)
+- 각 section 의 실제 게임 내 역할 (NPC spawn vs decoration vs trigger 등)
 
 ## Layer0/Layer1 의미
 
