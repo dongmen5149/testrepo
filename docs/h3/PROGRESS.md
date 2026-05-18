@@ -7,40 +7,43 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 68 종료 시점, uncommitted)**:
-> - 마지막 commit = `ed407132 feat:영웅서기3 Round 67 — skill header 14B 정밀 + enemy_dat trailer 의미 + boss skill ID 4 가설 분석`
-> - **Round 68 산출물 uncommitted** — 2 신규 recon 스크립트 + 4 json/log + 1 doc
-> - Hero3 분석 진행률 ~99%
+> **현재 git 상태 (2026-05-19 Round 69 종료 시점, uncommitted)**:
+> - 마지막 commit = `daeabed3 feat:영웅서기3 Round 68 — gun marker 0x1f 정밀 (s7 unique) + boss skill table 검색 + FUN_4f358 재확인`
+> - **Round 69 산출물 uncommitted** — 3 신규 recon 스크립트 + 6 json/log + 1 doc
+> - Hero3 분석 진행률 ~99.3%
+> - **자동 분석 완전 한계 도달** — Round 70+ 는 사용자 환경 필수
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
 
-**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 69 작업을 즉시 시작한다.**
+**자동 분석 완전 종료**. Round 69 의 i14 ammo 정정 + enemy stat scaling + dialogue translation queue 가 마지막 자동 작업. 남은 모든 작업이 사용자 환경에서 진행되어야 함.
 
-**자동 분석 한계 도달**. 남은 자동 작업은 minor / 정밀화 위주. 주요 진척은 DES 환경 필수.
+**Round 70+ 핵심 작업 (사용자 환경 필수)**:
 
-**Round 69 핵심 작업 (자동 가능, 제한적)**:
+1. ⭐⭐⭐ **DES 8 파일 복호화** (최우선)
+   - i15_dat (7400B, master item table 추정)
+   - drop_dat / droph_dat / getitem_dat (enemy 드롭)
+   - smith_dat / smithh_dat (smith 레시피)
+   - shop_dat / shoph_dat (상점)
+   - Hero5 NDK runner 활용 (key `"0EP@KO91"` + `dat/des_dat` tables)
 
-1. ⭐⭐ **i14 조합 재료 → 권총 ammo 시스템 연관** — R68 발견 (s7 0x1f marker = pistol unique) 와 R61 i14 탄성제 (총용) 연관
+2. ⭐⭐⭐ **boss skill ID 매핑 최종 확정** — R67/R68 H4 가설 검증. DES 파일 안에 boss AI table 발견 가능
 
-2. ⭐⭐ **enemy_dat f4_5/f6_7/f8_9 field 정밀** — 현재 hp_max @+0x0a..+0x0b 만 확정. ATT1/ATT2/MP/EXP 위치 정밀화
+3. ⭐⭐ **i14 smith 레시피 매핑** — smith_dat 복호화 후 i14 → i0~i12 매핑 (R69 의 7 카테고리 + crafting map 기준)
 
-3. ⭐ **dialogue corpus 9,741 unique 대사 정렬** — LLM 번역 준비
+4. ⭐⭐ **Dialogue LLM 번역** — 9,740 entries, **$4.09 추정** (Claude Sonnet 4.6)
 
-**사용자 환경 필수 (남은 주요 작업)**:
-
-- ⭐⭐⭐ DES 8 파일 복호화 (i15_dat 등) — Hero5 NDK runner 활용
-- ⭐⭐⭐ boss skill ID 매핑 최종 확정 — DES 파일 안에 boss AI table 발견 가능
-- ⭐⭐ smith_dat 레시피 — i14 → i0~i12 매핑
-- ⭐ SMAF→OGG 33 파일 변환 + 9,741 대사 LLM 번역
+5. ⭐ **SMAF→OGG audio 변환** — 33 파일
 
 **작업 후 수행**:
-- 새 `docs/h3/ghidra-round69-*.md` 작성
+- 새 `docs/h3/ghidra-round70-*.md` 작성 (사용자 환경 완료 시)
 - `PROGRESS.md` + `SESSION_HANDOFF.md` + `MEMORY.md` 갱신
-- commit: `feat:영웅서기3 Round 69 — ...`
+- commit: `feat:영웅서기3 Round 70 — DES 복호화 ...`
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 68, uncommitted) — **4HA + 4HB + 4HC = boss skill table 검색 + FUN_4f358 재확인 + gun marker 정밀**. (1) ⭐⭐⭐⭐ **gun marker 0x1f 정밀화**: s7 (건/피스톨) 만 unique flag pair (weapon_passive 0x14 + active_attack 0x1f). 라이플 (s8) 등 다른 weapon class 는 standard 0x01 사용. → 단발 권총 (s7) 은 별도 hit/ammo 시스템 보유, 라이플 (s8) 은 standard physical attack. (2) ⭐⭐⭐ **boss skill table 검색 결과**: R67 의 H4 가설 검증. 6 boss skill patterns 모두 binary 직접 매칭 0 hit. dat 파일 매칭은 enemyg_dat 케이 패턴 (2,2,1,1) 3 hits 만 (sprite coincidence 추정). H4 강화 but unresolved → DES 8 파일 복호화 후 재시도 필요. 신규 가설 H5/H6/H7 (tier 별 AI / stat boost / behavior weight). (3) ⭐⭐⭐ **FUN_4f358 본문 ARM disasm 재확인**: R55 의 NPC table multi-lookup 함수 재확인. 0x3c4 row stride + 0x3c element size + task[+0x9e28] NPC table base. **boss skill mapping 과 직접 관련 없음**. Thumb instruction literal pool 분석으로 확정. (4) **진행률 ~98-99% → ~99%** (+0.5%p, 게임 시스템 모델링 99.5→99.7%). **자동 분석 한계 도달** — 남은 작업 거의 DES 복호화 의존. 상세는 [ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 69, uncommitted) — **4IA + 4IB + 4IC = i14 ammo 시스템 정정 + enemy_dat field scaling + dialogue translation queue**. (1) ⭐⭐⭐⭐ **R68 's7 별도 ammo 시스템' 가설 정정**: i14 "탄성제" desc = "권총/라이플의 조합에 사용" 발견 → **권총 (s7) + 라이플 (s8) ammo 시스템 공유**. 0x1f marker (s7) vs 0x01 (s8) = **사거리/조준 모드 표시만**. 단발 권총 = 빠른 다중 타겟, 연발 라이플 = 정확 관통. "스톤/총기" 고대 정령석 = 다크석/홀리석 + 권총/라이플 4 class 공유. "시몬의문장" = 총기 전용 강화 (s7+s8 모두). (2) ⭐⭐⭐⭐ **i14 46 entries 7 카테고리 분류**: 공통 용액 3 / 공정 재료 6 / 원소 속성 4 / 몬스터 드롭 15 / 고대 재료 3 tier × 4 type = 12 / 클래스 강화 문장 5 (아벨=전사, 시몬=총기, 포프=마법, 부폰=방어, 하피=회피). weapon-class crafting map 완전 정리. (3) ⭐⭐⭐ **enemy_dat 19B field scaling 정밀** (161 normal vs hard pairs): hp_max ~2.22x stable (R60 확정), exp_gold ~6.92x median (group별 9.7x or 1.80x), f16 ATK ~2.93x, f17 AGI ~1.21x (+2 constant), f4_5 variant/ID (scaling 없음 1.04x). (4) ⭐⭐⭐ **dialogue corpus 9,740/9,741 meaningful Korean**, 34,043 chars total. 빈도+카테고리+event 별 정렬. **LLM 번역 비용 추정 $4.09** (Claude Sonnet 4.6). (5) **진행률 ~99% → ~99.3%** (+0.3%p, 게임 시스템 모델링 99.7→99.8%). **자동 분석 완전 한계 도달** — Round 70+ 는 모두 사용자 환경 필수. 상세는 [ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md](ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md).
+
+**이전 진행 라운드**: 2026-05-19 (Round 68, committed `daeabed3`) — **4HA + 4HB + 4HC = boss skill table 검색 + FUN_4f358 재확인 + gun marker 정밀**. (1) ⭐⭐⭐⭐ **gun marker 0x1f 정밀화**: s7 (건/피스톨) 만 unique flag pair (weapon_passive 0x14 + active_attack 0x1f). 라이플 (s8) 등 다른 weapon class 는 standard 0x01 사용. → 단발 권총 (s7) 은 별도 hit/ammo 시스템 보유, 라이플 (s8) 은 standard physical attack. (2) ⭐⭐⭐ **boss skill table 검색 결과**: R67 의 H4 가설 검증. 6 boss skill patterns 모두 binary 직접 매칭 0 hit. dat 파일 매칭은 enemyg_dat 케이 패턴 (2,2,1,1) 3 hits 만 (sprite coincidence 추정). H4 강화 but unresolved → DES 8 파일 복호화 후 재시도 필요. 신규 가설 H5/H6/H7 (tier 별 AI / stat boost / behavior weight). (3) ⭐⭐⭐ **FUN_4f358 본문 ARM disasm 재확인**: R55 의 NPC table multi-lookup 함수 재확인. 0x3c4 row stride + 0x3c element size + task[+0x9e28] NPC table base. **boss skill mapping 과 직접 관련 없음**. Thumb instruction literal pool 분석으로 확정. (4) **진행률 ~98-99% → ~99%** (+0.5%p, 게임 시스템 모델링 99.5→99.7%). **자동 분석 한계 도달** — 남은 작업 거의 DES 복호화 의존. 상세는 [ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md).
 
 **이전 진행 라운드**: 2026-05-19 (Round 67, committed `ed407132`) — **4GA + 4GB + 4GC = skill header 14B 정밀 + enemy_dat trailer 의미 + boss skill ID 매핑 가설**. (1) ⭐⭐⭐⭐ **skill header (+0x00..+0x0d) 완전 디코드**: +0x00..01 LE16 SP cost / +0x04 primary damage base / +0x05 secondary (combo) / +0x07 utility marker (0x14) / +0x09..+0x0a animation timing / **+0x0b range/AoE (단검 20 / 창 30 / 검·마법 40 / 라이플 80 / utility 100)** / **+0x0c weapon flag (1=attack, 31=gun marker s7 전용 4 skills, 0=utility)** / +0x0d hit flag. (2) ⭐⭐⭐⭐ **enemy_dat 2B trailer 의미 확정**: [0]=difficulty marker (`01`=normal / `02`=hard / `05`=cross-mode unchanged / `00`=sentinel), [1]=encounter type (`0x1e`=standard battle 126/161=78% / `0xff`=special/scripted 35). normal `01 1e` ↔ hard `02 1e` 동일 enemy, byte 0 만 차이. (3) ⭐⭐⭐ **boss skill slot ID (1..20) 매핑 4 가설 분석**: H1 (글로벌 active 1-base) / H2 (weapon internal active) / H3 (weapon 15-skill 1-base) 모두 일관되지 않음. **H4 (별도 boss skill table) most likely** → R68+ binary 분석 필요. distinct IDs {1,2,3,5,7,8,9,10,13,14,19,20}. (4) **진행률 ~97-98% → ~98-99%** (+1%p, 게임 시스템 모델링 99→99.5%). 상세는 [ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md](ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md).
 
