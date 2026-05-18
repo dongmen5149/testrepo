@@ -2,12 +2,59 @@
 
 > 이 문서는 다음 작업 세션에서 컨텍스트 유실 없이 이어서 진행할 수 있도록 정리한 핸드오프.
 > 자세한 자산 포맷 사양은 [`docs/asset-formats.md`](asset-formats.md) 참조.
+>
+> **★ 다음 세션 즉시 시작 가이드: [`SESSION_HANDOFF.md`](SESSION_HANDOFF.md)** — 사용자가 "영웅서기3 다음 내용 진행해줘" / "Hero3 이어서" 라고 하면 이 문서를 본다.
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 59 종료 시점)**:
-> - 마지막 commit = `a67426e5 feat:영웅서기3 Round 58 — Boss (15 entries) + Quest (44+) 평문 파싱 + DES variant matrix 실패 (NDK runner 필요 확정)`
-> - **Round 59 산출물 uncommitted** — 1 신규 doc + 1 신규 recon script + `PROGRESS.md` modified
+> **현재 git 상태 (2026-05-18 Round 59 종료 시점, COMMITTED)**:
+> - 마지막 commit = `4c0dad22 feat:영웅서기3 Round 59 — char/npcg/s4 dat 평문 파싱 (10 classes + 78 NPCs + 15 skills) + 리츠/케이 PLAYER 캐릭터 확정`
+> - **uncommitted 산출물 없음** — 정상 진행 가능
+> - Hero3 분석 진행률 ~75-78%
+
+### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
+
+**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 60 작업을 즉시 시작한다.**
+
+**Round 60 핵심 작업 (자동 가능 우선)**:
+
+1. ⭐⭐⭐ **다른 skill 파일 존재 확인 + 파싱** (`s1_dat`~`s10_dat`?)
+   ```bash
+   ls work/h3/extracted/skill/
+   ```
+   s4_dat 외 다른 클래스 (어쌀트워리어/디스럽터/건슬링어/나이트템플러/크레이지암즈/버서커/데스나이트/섀도우워커/가디언나이트/소울마스터) 의 skill 파일 존재 확인.
+   parser: `tools/recon/parse_char_npcg_s4_dat.py` 의 `parse_s4_dat()` 재사용.
+
+2. ⭐⭐⭐ **boss_dat stat field 정밀 분석** (24-bit HP 가설 검증)
+   bytes 0x08..0x0a (3 byte) 가 24-bit HP 일 가능성. 리츠 lvl 14 boss = 0x006810 = 26640 HP 추정.
+   리츠 동일 이름 다른 lvl 의 HP scaling 확인 → 추정 검증.
+
+3. ⭐⭐ **map/event/skill 폴더 추가 파일 확인**
+   ```bash
+   ls work/h3/extracted/{map,event,skill,fgi,font,snd,logo}/ | head -50
+   ```
+   미확인 데이터 파일 추출 + entropy 분석.
+
+4. ⭐⭐ **FUN_4f358 본문 정밀 분석** (Round 55 가설: int16 enemy stat extractor)
+   R55 의 asrs+ldrh+cmp #0xc 패턴이 실제로 enemy_dat 의 stat field 를 읽는지 검증.
+   ```bash
+   python tools/recon/disasm_battle_top_candidates.py  # FUN_4f358 정밀
+   ```
+
+5. ⭐ **FUN_3a028 16-JT 디코드** (Round 54 보류)
+   party stats menu dispatcher 의 16 entry 매핑.
+
+**사용자 환경 필요 작업 (보류)**:
+
+- DES 복호화 (drop_dat / smith_dat / getitem_dat 등 7 파일) — Hero5 NDK runner 활용. Android AVD armv7 또는 qemu-arm 환경 필요. `tools/ndk_des_runner/des_runner` + key `"0EP@KO91"` + des_dat tables.
+
+**작업 후 수행**:
+- 새 `docs/h3/ghidra-round60-*.md` 작성
+- `PROGRESS.md` 의 "⚡ 다음 세션" 섹션 + 산출물 인덱스 갱신
+- memory `project_hero3_status.md` 의 "Round 60 핵심 진척" 갱신
+- commit: `feat:영웅서기3 Round 60 — ...`
+
+---
 
 **최신 진행 라운드**: 2026-05-18 (Round 59, uncommitted) — **2ZA + 2ZB + 2ZC = char_dat + npcg_dat + s4_dat 완전 파싱**. (1) ⭐⭐⭐⭐ **char_dat (348B) = 10 playable character classes** — **리츠와 케이가 boss 가 아닌 PLAYER 주인공** 확정. 각 5 클래스: 리츠(어쌀트워리어/디스럽터/건슬링어/나이트템플러/크레이지암즈) + 케이(버서커/데스나이트/섀도우워커/가디언나이트/소울마스터). entry = header(3) + name1(EUC-KR) + name2_len(1) + name2(class name) + 7B stat + 2B trailer. stat byte 0 = weapon type (0=검, 1=세이버, 2=도끼, 3=총, 11=특수). (2) ⭐⭐⭐ **npcg_dat (1014B) = 78 NPC graphics info** (13B/entry 고정, type byte + 7B graphics data + terminator 0x06). 짝수 index = 변형, 홀수 = 본체 추정. (3) ⭐⭐⭐ **s4_dat (894B) = 15 skill entries = 창수 클래스 스킬 트리** — 창술 1-7 passive + 섬광/자격/압도/유도/장벽/태산/의지/정신 8 active. 각 skill 에 한국어 설명 + 30-70B stat block. (4) **다른 skill 파일 존재 추정** (s1~s10_dat?) → Round 60 확인. (5) **Hero3 게임 시스템 완전 매핑**: 2 주인공×5 클래스, 161×2 enemies, 15×2 bosses, 78 NPCs, ~150 skills, 44+ quests, 8 regions. (6) **진행률 ~75-78%** (+3-5%p). Round 60 우선: **NDK runner 로 DES 7 파일 복호화** + 다른 skill 파일 확인 + boss 24-bit HP 가설. 상세는 [ghidra-char-npcg-skill-parsing-2026-05-18.md](ghidra-char-npcg-skill-parsing-2026-05-18.md).
 
