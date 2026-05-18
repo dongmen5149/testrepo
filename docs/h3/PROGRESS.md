@@ -7,41 +7,42 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 67 종료 시점, uncommitted)**:
-> - 마지막 commit = `e38c13c2 feat:영웅서기3 Round 66 — debuff codes 정밀 + skill effect v2 (3-debuff 발견) + boss combat_rating 공식 + game_balance.json v1.1`
-> - **Round 67 산출물 uncommitted** — 3 신규 recon 스크립트 + 6 json/log + 1 doc
-> - Hero3 분석 진행률 ~98-99%
+> **현재 git 상태 (2026-05-19 Round 68 종료 시점, uncommitted)**:
+> - 마지막 commit = `ed407132 feat:영웅서기3 Round 67 — skill header 14B 정밀 + enemy_dat trailer 의미 + boss skill ID 4 가설 분석`
+> - **Round 68 산출물 uncommitted** — 2 신규 recon 스크립트 + 4 json/log + 1 doc
+> - Hero3 분석 진행률 ~99%
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
 
-**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 68 작업을 즉시 시작한다.**
+**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 69 작업을 즉시 시작한다.**
 
-**Round 68 핵심 작업 (자동 가능 우선)**:
+**자동 분석 한계 도달**. 남은 자동 작업은 minor / 정밀화 위주. 주요 진척은 DES 환경 필수.
 
-1. ⭐⭐⭐ **boss skill ID (1..20) → actual skill 매핑** — R67 결론: H4 (별도 boss skill table) 가장 유력. binary literal grep + FUN_4f358 ARM disasm + DES 파일 분석
-   - 스크립트: `tools/recon/find_boss_skill_table.py` (신규)
+**Round 69 핵심 작업 (자동 가능, 제한적)**:
 
-2. ⭐⭐⭐ **i15_dat NDK 복호화** + 7 DES 파일 일괄 (사용자 환경 계속 보류)
+1. ⭐⭐ **i14 조합 재료 → 권총 ammo 시스템 연관** — R68 발견 (s7 0x1f marker = pistol unique) 와 R61 i14 탄성제 (총용) 연관
 
-3. ⭐⭐ **i14 조합 재료 → smith_dat 레시피** — smith_dat (DES) 복호 시 매칭
+2. ⭐⭐ **enemy_dat f4_5/f6_7/f8_9 field 정밀** — 현재 hp_max @+0x0a..+0x0b 만 확정. ATT1/ATT2/MP/EXP 위치 정밀화
 
-4. ⭐⭐ **FUN_4f358 본문 ARM disassembly** — debuff handler dispatch + boss skill mapping 검증
+3. ⭐ **dialogue corpus 9,741 unique 대사 정렬** — LLM 번역 준비
 
-5. ⭐ **gun marker (0x1f at +0x0c) 추가 검증** — 라이플 (s8) 가 0x1f 보유 안 하는 이유
+**사용자 환경 필수 (남은 주요 작업)**:
 
-**사용자 환경 필요 작업 (보류)**:
-
-- DES 8 파일 복호화 — Hero5 NDK runner 활용 (key `"0EP@KO91"` + `dat/des_dat` tables).
+- ⭐⭐⭐ DES 8 파일 복호화 (i15_dat 등) — Hero5 NDK runner 활용
+- ⭐⭐⭐ boss skill ID 매핑 최종 확정 — DES 파일 안에 boss AI table 발견 가능
+- ⭐⭐ smith_dat 레시피 — i14 → i0~i12 매핑
+- ⭐ SMAF→OGG 33 파일 변환 + 9,741 대사 LLM 번역
 
 **작업 후 수행**:
-- 새 `docs/h3/ghidra-round68-*.md` 작성
-- `PROGRESS.md` 의 "⚡ 다음 세션" 섹션 + 산출물 인덱스 갱신
-- memory `MEMORY.md` 의 Hero3 entry 갱신
-- commit: `feat:영웅서기3 Round 68 — ...`
+- 새 `docs/h3/ghidra-round69-*.md` 작성
+- `PROGRESS.md` + `SESSION_HANDOFF.md` + `MEMORY.md` 갱신
+- commit: `feat:영웅서기3 Round 69 — ...`
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 67, uncommitted) — **4GA + 4GB + 4GC = skill header 14B 정밀 + enemy_dat trailer 의미 + boss skill ID 매핑 가설**. (1) ⭐⭐⭐⭐ **skill header (+0x00..+0x0d) 완전 디코드**: +0x00..01 LE16 SP cost / +0x04 primary damage base / +0x05 secondary (combo) / +0x07 utility marker (0x14) / +0x09..+0x0a animation timing / **+0x0b range/AoE (단검 20 / 창 30 / 검·마법 40 / 라이플 80 / utility 100)** / **+0x0c weapon flag (1=attack, 31=gun marker s7 전용 4 skills, 0=utility)** / +0x0d hit flag. (2) ⭐⭐⭐⭐ **enemy_dat 2B trailer 의미 확정**: [0]=difficulty marker (`01`=normal / `02`=hard / `05`=cross-mode unchanged / `00`=sentinel), [1]=encounter type (`0x1e`=standard battle 126/161=78% / `0xff`=special/scripted 35). normal `01 1e` ↔ hard `02 1e` 동일 enemy, byte 0 만 차이. (3) ⭐⭐⭐ **boss skill slot ID (1..20) 매핑 4 가설 분석**: H1 (글로벌 active 1-base) / H2 (weapon internal active) / H3 (weapon 15-skill 1-base) 모두 일관되지 않음. **H4 (별도 boss skill table) most likely** → R68+ binary 분석 필요. distinct IDs {1,2,3,5,7,8,9,10,13,14,19,20}. (4) **진행률 ~97-98% → ~98-99%** (+1%p, 게임 시스템 모델링 99→99.5%). 상세는 [ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md](ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 68, uncommitted) — **4HA + 4HB + 4HC = boss skill table 검색 + FUN_4f358 재확인 + gun marker 정밀**. (1) ⭐⭐⭐⭐ **gun marker 0x1f 정밀화**: s7 (건/피스톨) 만 unique flag pair (weapon_passive 0x14 + active_attack 0x1f). 라이플 (s8) 등 다른 weapon class 는 standard 0x01 사용. → 단발 권총 (s7) 은 별도 hit/ammo 시스템 보유, 라이플 (s8) 은 standard physical attack. (2) ⭐⭐⭐ **boss skill table 검색 결과**: R67 의 H4 가설 검증. 6 boss skill patterns 모두 binary 직접 매칭 0 hit. dat 파일 매칭은 enemyg_dat 케이 패턴 (2,2,1,1) 3 hits 만 (sprite coincidence 추정). H4 강화 but unresolved → DES 8 파일 복호화 후 재시도 필요. 신규 가설 H5/H6/H7 (tier 별 AI / stat boost / behavior weight). (3) ⭐⭐⭐ **FUN_4f358 본문 ARM disasm 재확인**: R55 의 NPC table multi-lookup 함수 재확인. 0x3c4 row stride + 0x3c element size + task[+0x9e28] NPC table base. **boss skill mapping 과 직접 관련 없음**. Thumb instruction literal pool 분석으로 확정. (4) **진행률 ~98-99% → ~99%** (+0.5%p, 게임 시스템 모델링 99.5→99.7%). **자동 분석 한계 도달** — 남은 작업 거의 DES 복호화 의존. 상세는 [ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md).
+
+**이전 진행 라운드**: 2026-05-19 (Round 67, committed `ed407132`) — **4GA + 4GB + 4GC = skill header 14B 정밀 + enemy_dat trailer 의미 + boss skill ID 매핑 가설**. (1) ⭐⭐⭐⭐ **skill header (+0x00..+0x0d) 완전 디코드**: +0x00..01 LE16 SP cost / +0x04 primary damage base / +0x05 secondary (combo) / +0x07 utility marker (0x14) / +0x09..+0x0a animation timing / **+0x0b range/AoE (단검 20 / 창 30 / 검·마법 40 / 라이플 80 / utility 100)** / **+0x0c weapon flag (1=attack, 31=gun marker s7 전용 4 skills, 0=utility)** / +0x0d hit flag. (2) ⭐⭐⭐⭐ **enemy_dat 2B trailer 의미 확정**: [0]=difficulty marker (`01`=normal / `02`=hard / `05`=cross-mode unchanged / `00`=sentinel), [1]=encounter type (`0x1e`=standard battle 126/161=78% / `0xff`=special/scripted 35). normal `01 1e` ↔ hard `02 1e` 동일 enemy, byte 0 만 차이. (3) ⭐⭐⭐ **boss skill slot ID (1..20) 매핑 4 가설 분석**: H1 (글로벌 active 1-base) / H2 (weapon internal active) / H3 (weapon 15-skill 1-base) 모두 일관되지 않음. **H4 (별도 boss skill table) most likely** → R68+ binary 분석 필요. distinct IDs {1,2,3,5,7,8,9,10,13,14,19,20}. (4) **진행률 ~97-98% → ~98-99%** (+1%p, 게임 시스템 모델링 99→99.5%). 상세는 [ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md](ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md).
 
 **이전 진행 라운드**: 2026-05-19 (Round 66, committed `e38c13c2`) — **4FA + 4FB + 4FC + 4FD = debuff code 정밀 매핑 + skill effect v2 (3-debuff 발견) + boss combat_rating 공식 + game_balance.json v1.1**. (1) ⭐⭐⭐⭐⭐ **R65 의 'debuff = 별도 enum' 가설 정정 → 'stat enum 동일, value 부호로 buff/debuff'**: i13 디버프 5 cases (effect_type high byte) + skill 디버프 9 cases 가 동일 enum 사용 확인. 2 컨텍스트 분리 코드 (0x0d: i13 CRI_DEF vs skill STUN_RESIST_DEBUFF / 0x1c: i13 REVIVE vs skill STUN_TRIGGER) + 1 신규 master enum (0x15 TAUNT, R63 미식별 코드 의 의미 확정). (2) ⭐⭐⭐⭐⭐ **skill effect block schema v2** — R65 의 "+0x13 d1, +0x18 d2" 부분 오류. 실제는 **right-justified chain** (pos 14/19/24 = slot1/2/3, pos 29 = rank). 전율 (s9_dat) = **3-debuff skill** 신규 발견 (P_DEF + M_DEF + DOD). 위협 의 "primary_damage 64767" 미스터리 = R65 schema 가 header padding 의 0xff 를 잘못 읽은 것. (3) ⭐⭐⭐⭐ **skill debuff distinct codes 6 → 11**: 신규 5개 발견 (0x05 ATT1 망각, 0x07 P_DEF 전율, 0x0b BLOCK 유도 자기버프, 0x0d STUN_RESIST_DEBUFF 위협, 0x15 TAUNT 유도). 유도 = 자기 BLOCK +5 + TAUNT 동시 = 탱커 능력. (4) ⭐⭐⭐⭐ **boss combat_rating 공식**: `rating = round(lvl/2 + 44)` (normal) / `round(lvl/2 + 64)` (hard). 30 boss entries 모두 검증 통과. "challenge equivalence level" = boss 권장 player level. (5) ⭐⭐⭐ **game_balance.json v1.1 출력** (537KB → 582KB): skills.*.effect_v2 + bosses.*.trailer_decoded + combat_rating_formula + stat_enum context_split (0x0d, 0x1c) + context_buff (0x0b) + TAUNT (0x15) + skill_debuff_codes 11 distinct. (6) **진행률 ~96-97% → ~97-98%** (+1%p, 게임 시스템 모델링 97→99%). 상세는 [ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md](ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md).
 
