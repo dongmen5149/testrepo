@@ -7,11 +7,11 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 71 종료 시점, uncommitted)**:
-> - 마지막 commit = `940f7195 feat:영웅서기3 Round 70 — Master Spec 통합 문서 + exp_gold 4 그룹 + 자동 분석 종결`
-> - **Round 71 산출물 uncommitted** — Hero3Catalog data classes + Loader + AndroidAssetReader + 12 unit tests + game_balance.json assets 복사
-> - Hero3 분석 진행률 ~99.7%
-> - **Android 리메이크 통합도**: data loader 완성 = MASTER_SPEC §13 step 2 완료
+> **현재 git 상태 (2026-05-19 Round 72 종료 시점, uncommitted)**:
+> - 마지막 commit = `ba002199 feat:영웅서기3 Round 71 — Hero3Catalog data classes + Loader + 12 unit tests (Android 통합 시작)`
+> - **Round 72 산출물 uncommitted** — MainActivity catalog lazy 통합 + CatalogViewerScene 신규 + BestiaryScene boss rating 표시
+> - Hero3 분석 진행률 ~99.8%
+> - **Android 리메이크 통합도**: data loader 완성 + scene 통합 시작 (MASTER_SPEC §13 step 2-3)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
@@ -42,7 +42,9 @@
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 71, uncommitted) — **4KA + 4KB + 4KC = Hero3Catalog data classes + CatalogLoader + 12 unit tests**. (1) ⭐⭐⭐⭐⭐ **Hero3Catalog 19 data classes + Hero3CatalogLoader** 구현 — R64-R70 의 game_balance.json (582KB v1.1) 을 typed Kotlin object 로 노출. MASTER_SPEC §13 의 "Android 리메이크 권장 구현 순서" 2번 data loader 완성. Hero4Catalog (R69 Phase C Step 5) 와 동일 패턴. (2) ⭐⭐⭐⭐ **AndroidAssetReader (Hero3 app)** — engine-core 의 platform-agnostic AssetReader interface 구현. Hero4 의 동일 클래스와 1:1 동일. (3) ⭐⭐⭐⭐ **android/app/src/main/assets/game_balance.json 복사** — Hero3 app 이 직접 import 가능 (582,116 bytes). (4) ⭐⭐⭐ **Hero3CatalogLoaderTest 12 unit tests 모두 통과** — 24 stat enum / 18 item / 7 skill set / 161 enemy / 15 boss / 6 rarity / 8 DES pending / boss combat_rating formula (30 entries 모두 match) / stat lookup. (5) build config: testImplementation `org.json:json:20240303` 추가 (Android stub null 회피). (6) **진행률 ~99.5% → ~99.7%** (+0.2%p, Android 통합도 = MASTER_SPEC §13 step 2 완료). 상세는 [ghidra-round71-catalog-loader-2026-05-19.md](ghidra-round71-catalog-loader-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 72, uncommitted) — **4LA + 4LB + 4LC = Android scene 통합 시작 (CatalogViewerScene + BestiaryScene boss rating)**. (1) ⭐⭐⭐⭐⭐ **MainActivity 에 Hero3Catalog lazy 로더 통합** — `MainActivity.catalog: Hero3Catalog by lazy { Hero3CatalogLoader.load(AndroidAssetReader(this)) }`. 모든 scene 에서 접근 가능, lazy 로딩 (TitleScene 진입 시 비용 0). SceneRequest.CatalogViewer 추가. (2) ⭐⭐⭐⭐⭐ **CatalogViewerScene 신규 작성** — R71 catalog 의 raw 데이터 7-tab brower: Overview (총 개수) / Stat Enum (24/25 codes) / Rarity (6 prefix) / Item Categories (18) / Skill Sets (7 weapon) / Boss Roster (15 + combat_rating + skill_slots) / DES Status (8 pending). 한국어/영어 i18n. 메인 메뉴 debug 항목에 추가. (3) ⭐⭐⭐⭐ **BestiaryScene 에 boss combat_rating 표시 추가** — 선택된 enemy 가 catalog.bossesNormal 과 매칭되면 "★ 보스 권장 lvl: 51" + "sprite #0 story/misc" 추가 표시. Context 가 MainActivity 가 아니거나 catalog 로딩 실패 → graceful degrade. (4) ⭐⭐⭐ **build 성공 + 12 unit tests 모두 통과** — :app:compileDebugKotlin BUILD SUCCESSFUL, :app:testDebugUnitTest BUILD SUCCESSFUL. (5) **진행률 ~99.7% → ~99.8%** (+0.1%p, Android 통합도: data loader 완성 → scene 통합 시작 MASTER_SPEC §13 step 2-3). 상세는 [ghidra-round72-scene-integration-2026-05-19.md](ghidra-round72-scene-integration-2026-05-19.md).
+
+**이전 진행 라운드**: 2026-05-19 (Round 71, committed `ba002199`) — **4KA + 4KB + 4KC = Hero3Catalog data classes + CatalogLoader + 12 unit tests**. (1) ⭐⭐⭐⭐⭐ **Hero3Catalog 19 data classes + Hero3CatalogLoader** 구현 — R64-R70 의 game_balance.json (582KB v1.1) 을 typed Kotlin object 로 노출. MASTER_SPEC §13 의 "Android 리메이크 권장 구현 순서" 2번 data loader 완성. Hero4Catalog (R69 Phase C Step 5) 와 동일 패턴. (2) ⭐⭐⭐⭐ **AndroidAssetReader (Hero3 app)** — engine-core 의 platform-agnostic AssetReader interface 구현. Hero4 의 동일 클래스와 1:1 동일. (3) ⭐⭐⭐⭐ **android/app/src/main/assets/game_balance.json 복사** — Hero3 app 이 직접 import 가능 (582,116 bytes). (4) ⭐⭐⭐ **Hero3CatalogLoaderTest 12 unit tests 모두 통과** — 24 stat enum / 18 item / 7 skill set / 161 enemy / 15 boss / 6 rarity / 8 DES pending / boss combat_rating formula (30 entries 모두 match) / stat lookup. (5) build config: testImplementation `org.json:json:20240303` 추가 (Android stub null 회피). (6) **진행률 ~99.5% → ~99.7%** (+0.2%p, Android 통합도 = MASTER_SPEC §13 step 2 완료). 상세는 [ghidra-round71-catalog-loader-2026-05-19.md](ghidra-round71-catalog-loader-2026-05-19.md).
 
 **이전 진행 라운드**: 2026-05-19 (Round 70, committed `940f7195`) — **4JA + 4JB + 4JC = Hero3 Master Spec 통합 + exp_gold 4 그룹 + enemyg sprite 정정**. (1) ⭐⭐⭐⭐⭐ **`docs/h3/MASTER_SPEC.md` 작성** — R56-R70 의 모든 발견을 단일 reference 로 통합. 15 section 4,700+ lines. Android 리메이크 개발자 entry point. stat enum 24 codes 표 + value scale 규칙 + rarity 7 prefix + 18 item category + 105 skill + enemy/boss/quest/i14 crafting 전체. R70 = 자동 분석 완전 종결 선언. (2) ⭐⭐⭐⭐ **exp_gold 4 그룹 분포 발견**: 9.7x (41 일반 전투, 가드/워리어/템플러) / 1.8x (22 정찰/고급, 로그/체이서/말벌) / **stable (16 보스/특별, `{` prefix 4개 포함 normal≈hard≈2,600)** / other (82 mixed). implicit enemy tier 시스템 — Android 리메이크 spawn 균형용. (3) ⭐⭐⭐ **enemyg_dat 케이 패턴 sprite coincidence 확정** — R68 의 dat 파일 1 hit (enemyg_dat (2,2,1,1) 3 hits) 정밀 검증. 22 byte sprite entry 의 byte 7-10 위치 = animation frame data. boss skill mapping 과 무관 확정. → boss skill ID 매핑은 binary/dat 어디서도 hard-coded 안 됨, H4 가설 confirm but DES 복호화 필수. (4) **진행률 ~99.3% → ~99.5%** (+0.2%p, 게임 시스템 모델링 99.8→99.9%). **분석 완전 종결**. 상세는 [ghidra-round70-master-spec-exp-groups-2026-05-19.md](ghidra-round70-master-spec-exp-groups-2026-05-19.md).
 

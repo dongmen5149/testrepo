@@ -8,12 +8,16 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
+import com.hero3.remake.catalog.Hero3Catalog
+import com.hero3.remake.catalog.Hero3CatalogLoader
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.GameView
 import com.hero3.remake.engine.InputController
 import com.hero3.remake.engine.Scene
 import com.hero3.remake.engine.Settings
 import com.hero3.remake.engine.VirtualKeypadView
+import com.hero3.remake.platform.AndroidAssetReader
+import com.hero3.remake.scene.CatalogViewerScene
 import com.hero3.remake.scene.DialogueDemoScene
 import com.hero3.remake.scene.EndingScene
 import com.hero3.remake.scene.EventViewerScene
@@ -44,6 +48,12 @@ class MainActivity : ComponentActivity() {
     private lateinit var gameView: GameView
     private lateinit var keypad: VirtualKeypadView
     private val sceneStack = ArrayDeque<Scene>()
+
+    /** R71 산출물 — game_balance.json v1.1 (582KB) 의 typed Kotlin 표현.
+     *  Lazy 로딩 — 첫 사용 시점 (CatalogViewerScene / BestiaryScene boss section 등) 에 한 번만 파싱. */
+    val catalog: Hero3Catalog by lazy {
+        Hero3CatalogLoader.load(AndroidAssetReader(this))
+    }
 
     override fun attachBaseContext(newBase: Context) {
         val s = Settings(newBase)
@@ -119,6 +129,7 @@ class MainActivity : ComponentActivity() {
         data object Bestiary : SceneRequest()
         data object Records : SceneRequest()
         data object EventViewer : SceneRequest()
+        data object CatalogViewer : SceneRequest()
         data object Travel : SceneRequest()
         data class NpcDialogue(val npcId: String) : SceneRequest()
         data class Shop(val npcId: String) : SceneRequest()
@@ -154,6 +165,7 @@ class MainActivity : ComponentActivity() {
             SceneRequest.Bestiary     -> pushScene(BestiaryScene(ctx, input, settings, gameState, cb))
             SceneRequest.Records      -> pushScene(RecordsScene(ctx, input, settings, gameState, cb))
             SceneRequest.EventViewer  -> pushScene(EventViewerScene(ctx, input, cb))
+            SceneRequest.CatalogViewer -> pushScene(CatalogViewerScene(ctx, input, settings, catalog, cb))
             SceneRequest.Travel       -> pushScene(TravelScene(ctx, input, settings, gameState, cb))
             SceneRequest.Battle       -> pushScene(BattleScene(ctx, input, settings, gameState, cb))
             is SceneRequest.NpcDialogue -> pushScene(NpcDialogueScene(ctx, input, settings, gameState, req.npcId, cb))

@@ -1,0 +1,4608 @@
+{
+  "meta": {
+    "round": "R72",
+    "date": "2026-05-19",
+    "source": "work\\h4\\decrypted\\E",
+    "pattern_bsdat": "[size:1B][00][name_len:1B][name:EUC-KR][body]",
+    "pattern_esdat": "[size:1B][00][00][name_len:1B][name:EUC-KR][body]",
+    "total_entries": 559
+  },
+  "bsdat": [
+    {
+      "file": "_BSDAT_0",
+      "size": 2008,
+      "count": 29,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x70",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xaa",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x154",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x18e",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c8",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "누아다",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x202",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x272",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ae",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x35a",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x392",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3ce",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 104,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x441",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x479",
+          "size_field": 61,
+          "name_len": 11,
+          "name": "가짜 누아다",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4b8",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x528",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x560",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x598",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5d0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x608",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x642",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x67c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6b4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6ec",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x75e",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x796",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 55,
+          "kor_samples": []
+        }
+      ]
+    },
+    {
+      "file": "_BSDAT_1",
+      "size": 2008,
+      "count": 30,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x70",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xaa",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x154",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x18e",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c8",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "누아다",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x202",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x272",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ae",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x35a",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x392",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3ce",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 104,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x441",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 43,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x473",
+          "size_field": 28,
+          "name_len": 25,
+          "name": "イ=\u000b가짜 누아다\u0012+8��",
+          "body_size": 41,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4b8",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 43,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4ea",
+          "size_field": 33,
+          "name_len": 30,
+          "name": "/파6\u0004????\u0011+@��3w3wN\r3",
+          "body_size": 29,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x528",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x560",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x598",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5d0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x608",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x642",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x67c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6b4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6ec",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x75e",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x796",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 55,
+          "kor_samples": []
+        }
+      ]
+    },
+    {
+      "file": "_BSDAT_2",
+      "size": 2008,
+      "count": 29,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x70",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xaa",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x154",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x18e",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c8",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "누아다",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x202",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x272",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ae",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "브리안",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x35a",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x392",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3ce",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 104,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x441",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x479",
+          "size_field": 61,
+          "name_len": 11,
+          "name": "가짜 누아다",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4b8",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 105,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x528",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x560",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x598",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5d0",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x608",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x642",
+          "size_field": 56,
+          "name_len": 6,
+          "name": "루레인",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x67c",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "루칸",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6b4",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "래비",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6ec",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 103,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x75e",
+          "size_field": 54,
+          "name_len": 4,
+          "name": "촉수",
+          "body_size": 49,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x796",
+          "size_field": 58,
+          "name_len": 8,
+          "name": "케프네스",
+          "body_size": 55,
+          "kor_samples": []
+        }
+      ]
+    }
+  ],
+  "esdat": [
+    {
+      "file": "_ESDAT_0",
+      "size": 13168,
+      "count": 157,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x52",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa4",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf6",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x148",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x19a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ec",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x240",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x294",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x33a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x38c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3de",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x42f",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x480",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4d1",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "듣는자들",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x520",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x56b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5b6",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x606",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x656",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6a5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6f4",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x746",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x797",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x7e9",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x83b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x88c",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x8dd",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x92c",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x97b",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x9cd",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa1a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa6c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xabe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb10",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb5d",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbaa",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbfe",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xc52",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "저주술사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xca1",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xcee",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0xd3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배반자",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0xd88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0xdd5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe24",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 나무령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe78",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xec5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf12",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf64",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xfb6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1005",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1054",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10a3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10ee",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1139",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1188",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11d7",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1226",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1275",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x12c6",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1317",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1362",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 213,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x143f",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1491",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x14e3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x152e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1579",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x15c4",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1611",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x165e",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16ae",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16fe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1750",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17a2",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17f4",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1848",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x189c",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x18f0",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x1944",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x1996",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x19e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x1a3a",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1a8e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "소환된 좀비",
+          "body_size": 140,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b29",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "소환된 굴",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b79",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1bc4",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c0f",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c5a",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ca9",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1cf8",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d47",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d97",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1de7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "퇴화한 고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ed5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f22",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f6f",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1fbc",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x200d",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x205e",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x20af",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2100",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2151",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21a2",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21f3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x223e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2289",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x22d4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x2325",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x2376",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x23c7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x241b",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x246f",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x24c3",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2510",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "불의 정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2560",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25ad",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25fa",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x264b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x269c",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x26ef",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2742",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2791",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x27e0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x282f",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x287e",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x28cb",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2918",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x296a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x29bc",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a0e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a60",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aad",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aff",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2b51",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ba0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2bef",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 432,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2dab",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2df6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e45",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "박스",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e90",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x2ee4",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f33",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "정예병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f80",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "기갑병",
+          "body_size": 140,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3016",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3067",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x30b4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고블린아머",
+          "body_size": 67,
+          "kor_samples": [
+            "ツツ"
+          ]
+        },
+        {
+          "offset": "0x3105",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "포병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3150",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x319b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x31e6",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x323a",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3285",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x32d0",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x331b",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "죽음의 구",
+          "body_size": 72,
+          "kor_samples": []
+        }
+      ]
+    },
+    {
+      "file": "_ESDAT_1",
+      "size": 13168,
+      "count": 157,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x52",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 63,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa0",
+          "size_field": 0,
+          "name_len": 20,
+          "name": "P\u0002\u000b공화국 보병\r4�\u0016",
+          "body_size": 62,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf6",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x148",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x19a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ec",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x240",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x294",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x33a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x38c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3de",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x42f",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x480",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4d1",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "듣는자들",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x520",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x56b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5b6",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x606",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x656",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6a5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6f4",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x746",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x797",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x7e9",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x83b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x88c",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x8dd",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x92c",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x97b",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x9cd",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa1a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa6c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xabe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb10",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb5d",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbaa",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbfe",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xc52",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "저주술사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xca1",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xcee",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0xd3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배반자",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0xd88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0xdd5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe24",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 나무령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe78",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xec5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf12",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf64",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xfb6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1005",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1054",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10a3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10ee",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1139",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1188",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11d7",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1226",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1275",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x12c6",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1317",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1362",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 213,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x143f",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1491",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x14e3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x152e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1579",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x15c4",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1611",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x165e",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16ae",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16fe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1750",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17a2",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17f4",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1848",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x189c",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x18f0",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x1944",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x1996",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x19e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x1a3a",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1a8e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "소환된 좀비",
+          "body_size": 140,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b29",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "소환된 굴",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b79",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1bc4",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c0f",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c5a",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ca9",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1cf8",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d47",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d97",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1de7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "퇴화한 고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ed5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f22",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f6f",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1fbc",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x200d",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x205e",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x20af",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2100",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2151",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21a2",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21f3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x223e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2289",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x22d4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x2325",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x2376",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x23c7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x241b",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x246f",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x24c3",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2510",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "불의 정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2560",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25ad",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25fa",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x264b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x269c",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x26ef",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2742",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2791",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x27e0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x282f",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x287e",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x28cb",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2918",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x296a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x29bc",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a0e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a60",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aad",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aff",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2b51",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ba0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2bef",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 432,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2dab",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2df6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e45",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "박스",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e90",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x2ee4",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f33",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "정예병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f80",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "기갑병",
+          "body_size": 140,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x3016",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3067",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x30b4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고블린아머",
+          "body_size": 67,
+          "kor_samples": [
+            "━㏉㏉"
+          ]
+        },
+        {
+          "offset": "0x3105",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "포병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3150",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x319b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x31e6",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x323a",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3285",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x32d0",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x331b",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "죽음의 구",
+          "body_size": 72,
+          "kor_samples": []
+        }
+      ]
+    },
+    {
+      "file": "_ESDAT_2",
+      "size": 13168,
+      "count": 157,
+      "entries": [
+        {
+          "offset": "0x0",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x52",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa4",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf6",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x148",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x19a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ec",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x240",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x294",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "공화국 기갑병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x33a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x38c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "공화국 상병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3de",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x42f",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x480",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "야전지휘관",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x4d1",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "듣는자들",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x520",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x56b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "지뢰",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x5b6",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x606",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x656",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6a5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "자동포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x6f4",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x746",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x797",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x7e9",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "은폐형 포대",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x83b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x88c",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "자동박격포",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x8dd",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x92c",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x97b",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 보병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x9cd",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa1a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xa6c",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xabe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "네베드 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb10",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xb5d",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "패잔병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbaa",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xbfe",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "네베드 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xc52",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "저주술사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xca1",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배신자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xcee",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xd3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "배반자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xd88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "라이칸",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xdd5",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe24",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 나무령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xe78",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xec5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf12",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xf64",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "강화 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0xfb6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1005",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "매직트랩",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1054",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "나무귀신",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10a3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x10ee",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1139",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1188",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "스켈레톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x11d7",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1226",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1275",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x12c6",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "해골마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1317",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1362",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "좀비",
+          "body_size": 213,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x143f",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1491",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x14e3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x152e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1579",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x15c4",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1611",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "해파리",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x165e",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16ae",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "타락한 자",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x16fe",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1750",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17a2",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "타락한 전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x17f4",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1848",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x189c",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x18f0",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1944",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1996",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x19e8",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "악몽의 기사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1a3a",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "오염된 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1a8e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "소환된 좀비",
+          "body_size": 140,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b29",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "소환된 굴",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1b79",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1bc4",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c0f",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악마",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1c5a",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ca9",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1cf8",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "데몬로드",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d47",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1d97",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "시체 골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1de7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "퇴화한 고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e3b",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1e88",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1ed5",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f22",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1f6f",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고대종",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x1fbc",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x200d",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x205e",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x20af",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대갑주병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2100",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2151",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21a2",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고대전투병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x21f3",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x223e",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2289",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x22d4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2325",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2376",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "바질리스크",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x23c7",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x241b",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x246f",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "뒤틀린 라이칸",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x24c3",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2510",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "불의 정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2560",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25ad",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "달팽이",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x25fa",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x264b",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x269c",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x26ef",
+          "size_field": 81,
+          "name_len": 12,
+          "name": "하급얼음정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2742",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2791",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "화염정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x27e0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x282f",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "빙결정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x287e",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x28cb",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2918",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x296a",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 사수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x29bc",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a0e",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "고블린 리더",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2a60",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aad",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2aff",
+          "size_field": 80,
+          "name_len": 11,
+          "name": "야생 소환수",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2b51",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ba0",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2bef",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 432,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2dab",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "악령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2df6",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "해골전사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e45",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "박스",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2e90",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 소환사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2ee4",
+          "size_field": 77,
+          "name_len": 8,
+          "name": "오토마톤",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f33",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "정예병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x2f80",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "기갑병",
+          "body_size": 140,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3016",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "하급불정령",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3067",
+          "size_field": 75,
+          "name_len": 6,
+          "name": "고블린",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x30b4",
+          "size_field": 79,
+          "name_len": 10,
+          "name": "고블린아머",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3105",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "포병",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3150",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "골렘",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x319b",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "유충",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x31e6",
+          "size_field": 82,
+          "name_len": 13,
+          "name": "타락한 마법사",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x323a",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x3285",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x32d0",
+          "size_field": 73,
+          "name_len": 4,
+          "name": "뇌전",
+          "body_size": 67,
+          "kor_samples": []
+        },
+        {
+          "offset": "0x331b",
+          "size_field": 78,
+          "name_len": 9,
+          "name": "죽음의 구",
+          "body_size": 72,
+          "kor_samples": [
+            "纜纜��"
+          ]
+        }
+      ]
+    }
+  ]
+}

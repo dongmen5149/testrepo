@@ -1,138 +1,109 @@
-# Hero3 인수인계 노트 (Round 71 종료 시점, 2026-05-19)
+# Hero3 인수인계 노트 (Round 72 종료 시점, 2026-05-19)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.7%**. R71 **Android 리메이크 통합 시작** — Hero3Catalog (19 data classes) + Loader + AndroidAssetReader + 12 unit tests 모두 통과. game_balance.json (582KB) Android assets 배포. MASTER_SPEC §13 step 2 (data loader) 완료. **R72+ 는 scene 통합 또는 사용자 환경 (DES 등) 필수**.
+**Hero3 분석 진행률 ~99.8%**. R72 **Android scene 통합 시작** — MainActivity 에 lazy catalog 통합 + CatalogViewerScene 신규 (7-tab brower) + BestiaryScene boss combat_rating 표시. 빌드 + 12 unit tests 모두 통과. MASTER_SPEC §13 step 2-3 진행 중.
 
-마지막 commit: `940f7195 feat:영웅서기3 Round 70 — Master Spec 통합 문서 + exp_gold 4 그룹 + 자동 분석 종결`
+마지막 commit: `ba002199 feat:영웅서기3 Round 71 — Hero3Catalog data classes + Loader + 12 unit tests (Android 통합 시작)`
 
-**Round 71 산출물 = uncommitted**:
-- 신규 doc: [`ghidra-round71-catalog-loader-2026-05-19.md`](ghidra-round71-catalog-loader-2026-05-19.md)
-- 신규 코드 3:
-  - `android/app/src/main/java/com/hero3/remake/catalog/Hero3Catalog.kt` (data classes 19 + loader)
-  - `android/app/src/main/java/com/hero3/remake/platform/AndroidAssetReader.kt`
-  - `android/app/src/test/java/com/hero3/remake/catalog/Hero3CatalogLoaderTest.kt` (12 tests)
-- 신규 asset: `android/app/src/main/assets/game_balance.json` (582,116 bytes)
-- build config 변경: `android/app/build.gradle.kts` (testImplementation org.json)
-- PROGRESS.md / SESSION_HANDOFF.md / MEMORY.md 갱신
+**Round 72 산출물 = uncommitted**:
+- 신규 doc: [`ghidra-round72-scene-integration-2026-05-19.md`](ghidra-round72-scene-integration-2026-05-19.md)
+- 신규 코드 1: `scene/CatalogViewerScene.kt` (171 lines, 7-tab catalog browser)
+- 수정 코드 4: MainActivity / MainMenuScene / BestiaryScene / strings.xml ×2
+- 빌드 + 12 unit tests 통과 검증
 
-## 1. 즉시 진행 가능한 작업 (R72+)
+## 1. 즉시 진행 가능한 작업 (R73)
 
-### 1.1 ⭐⭐⭐ scene 코드에 Hero3Catalog 통합
+### 1.1 ⭐⭐⭐ InventoryScene rarity color 표시
 
-R71 의 Catalog 가 노출됐으니 기존 scene 들이 사용:
-- **InventoryScene**: catalog.items[].items 직접 사용, rarity color 표시
-- **BattleScene**: catalog.enemiesNormal/Hard + catalog.statName() 으로 stat 표시
-- **BestiaryScene**: 161 enemies + 15 boss + combat_rating
-- **MainActivity**: catalog 로드 후 GameState 에 전달
-- **NpcDialogueScene**: 246 string + 9,740 dialogue (R69)
+R72 의 패턴 확장. catalog.rarity 활용:
+- item name prefix (`|` magic, `'` legendary, `$` epic, `{` boss_drop, `@` endgame, `}` quest_reward)
+- 각 rarity 의 color (blue/gold/purple/orange/red/green) 적용
+- 가격 modifier 표시 ("(magic 1.13×)" 등)
 
-스크립트/코드: 각 scene 의 hardcoded data → catalog 의 typed object 로 전환.
+### 1.2 ⭐⭐⭐ StatusScene 가 catalog.statName() 사용
 
-### 1.2 ⭐⭐⭐ Strings catalog 통합
+stat 표시 (ATT1/P_DEF 등) 의 일관된 이름:
+- Hero3Catalog.statName(0x05) → "ATT1"
+- 기존 hardcoded "STR/INT/VIT" UI 라벨과 internal stat 매핑
 
-기존 `assets/strings/*` 와 game_balance.json 의 stat_enum/rarity 통합. i18n 준비.
+### 1.3 ⭐⭐ BattleScene 의 catalog.statEnum 활용
 
-### 1.3 ⭐⭐ ChestRegistry / ShopRegistry catalog 연결
+skill effect 적용 시 catalog.statEnum 으로 buff/debuff lookup. R66 의 debuff context split (0x0d STUN_RESIST_DEBUFF, 0x1c STUN_TRIGGER) 적용.
 
-engine-core 의 기존 Registry 들이 game_balance.json 의 item 데이터 직접 참조.
+### 1.4 ⭐⭐ SkillScene 의 catalog.skills 활용
 
-### 1.4 ⭐⭐ skill effect simulator
+105 skill 목록 표시. 4 카테고리 (weapon_passive / active_attack / active_buff / passive_bonus) 별 그룹화.
 
-Hero3SkillEffectV2 의 slot1/2/3 chain 으로 실제 damage 계산. R66 의 schema v2 사용.
+### 1.5 ⭐ ShopScene catalog.items 가격 정보
 
-### 1.5 ⭐ Compose MP UI 마이그레이션 (Phase C Step 4d)
+game_balance.json 의 price 사용. rarity modifier (boss_drop 0.03x 등) 자동 적용.
 
-장기 작업 (~1-2주). engine-core 의 GameView/Scene/UiKit/VirtualKeypadView 등을 Compose MP 로 전환.
+## 2. 사용자 환경 필수 작업 (R70-R72 동일)
 
-## 2. 사용자 환경 필수 작업 (R70 와 동일)
+- ⭐⭐⭐ DES 8 파일 복호화 (i15/drop/smith/shop) — Hero5 NDK runner
+- ⭐⭐⭐ boss skill ID 매핑 최종 확정 (DES 후속)
+- ⭐⭐ Dialogue LLM 번역 ($4.09)
+- ⭐ SMAF→OGG audio
 
-### 2.1 ⭐⭐⭐ DES 8 파일 복호화
+## 3. Round 72 핵심 발견
 
-- i15_dat (master item table)
-- drop_dat / droph_dat / getitem_dat
-- smith_dat / smithh_dat / shop_dat / shoph_dat
-
-방법: Hero5 NDK runner (key `"0EP@KO91"` + dat/des_dat tables).
-
-### 2.2 ⭐⭐⭐ boss skill ID 매핑 최종 확정 (H4)
-
-DES 파일 안에 boss AI table 발견 가능.
-**Hero3Catalog.bossSkillIdsResolved()** 가 현재 false 반환 — DES 후 true 로 갱신 가능.
-
-### 2.3 ⭐⭐ Dialogue LLM 번역 + SMAF→OGG audio
-
-## 3. Round 71 핵심 발견
-
-### 3.1 Hero3Catalog API (★★★★★)
+### 3.1 MainActivity catalog lazy 통합 (★★★★★)
 
 ```kotlin
-val catalog: Hero3Catalog = Hero3CatalogLoader.load(AndroidAssetReader(context))
-
-catalog.totalItems     // 529
-catalog.totalSkills    // 105
-catalog.totalEnemies   // 161
-catalog.totalBosses    // 15
-catalog.statName(0x05) // "ATT1"
-
-catalog.bossesNormal.first { it.name == "리츠" }
-  .trailerDecoded?.combatRating  // 51 (= round(14/2 + 44))
-
-catalog.combatRatingFormulaNormal  // "round(lvl/2 + 44)"
-catalog.combatRatingFormulaHard    // "round(lvl/2 + 64)"
-
-catalog.desStatus.pendingFiles.size  // 8
-catalog.bossSkillIdsResolved()       // false (DES 후 true)
+class MainActivity : ComponentActivity() {
+    val catalog: Hero3Catalog by lazy {
+        Hero3CatalogLoader.load(AndroidAssetReader(this))
+    }
+}
 ```
 
-### 3.2 unit tests 12개 모두 통과 (★★★★)
+- TitleScene 진입 시 비용 0
+- CatalogViewerScene/BestiaryScene boss section 진입 시점 첫 파싱
+- 모든 scene 에서 `(context as? MainActivity)?.catalog` 접근 가능
 
-```
-✓ load_returns_non_null_catalog
-✓ catalog_schema_version_is_1_1
-✓ stat_enum_has_24_codes
-✓ rarity_has_6_prefixes
-✓ items_has_18_categories_and_529_total
-✓ skills_has_7_weapon_classes_and_105_total
-✓ enemies_has_161_normal_and_161_hard
-✓ bosses_has_15_normal_and_15_hard
-✓ combat_rating_formula_is_documented
-✓ boss_combat_rating_matches_formula      ★ 30 boss entries 모두 match
-✓ des_status_has_8_pending_files
-✓ boss_skill_ids_resolved_returns_false
-```
+### 3.2 CatalogViewerScene 7-tab brower (★★★★★)
 
-### 3.3 Hero4 패턴 재사용 (★★★)
+Overview / Stat Enum / Rarity / Items / Skills / Bosses / DES Status
 
-Hero4Catalog (R69 Phase C Step 5) 의 패턴을 1:1 복사:
-- data class 구조
-- AssetReader 기반 로더
-- AndroidAssetReader platform 구현
-- 별도 catalog 패키지 (`com.hero3.remake.catalog.*`)
+조작: `<>` tab 전환, `^v` row 선택, `OK/R` 뒤로.
 
-→ Hero5 에도 동일 패턴 적용 가능.
+R71 의 catalog 가 실제로 사용되는 입증 + 디버그 / 자료 검증용 scene.
 
-## 4. 작업 순서 권장 (R72)
+### 3.3 BestiaryScene boss combat_rating 표시 (★★★★)
+
+선택된 enemy 가 catalog 의 보스이면:
+- "★ 보스 권장 lvl: 51"
+- "sprite #0  story"
+표시. graceful degrade (catalog 미로딩 시 기존 동작).
+
+### 3.4 빌드 검증
+
+- `:app:compileDebugKotlin` BUILD SUCCESSFUL
+- `:app:testDebugUnitTest` BUILD SUCCESSFUL (R71 12 tests 모두 유지)
+
+## 4. 작업 순서 권장 (R73)
 
 1. `git status` + `git log --oneline -5`
-2. `git add` + `git commit` Round 71 산출물
-3. **scene 통합 작업 시작** (R72 핵심):
-   - MainActivity 에 catalog 로드 추가
-   - InventoryScene 가 catalog.items 직접 사용
-   - BestiaryScene 가 catalog.enemies/bosses 직접 사용
-4. **사용자 환경 진행** (병행):
-   - DES 8 파일 복호화 (Hero5 NDK runner)
-   - Dialogue LLM 번역 (9,740 entries, $4.09)
+2. `git add` + `git commit` Round 72 산출물
+3. **InventoryScene rarity color 통합** (R73 핵심):
+   - Hero3Item.rarity field 활용
+   - 각 rarity 색상 적용 + prefix 표시
+4. **StatusScene stat naming 통일**:
+   - catalog.statName() 사용
+5. **사용자 환경 진행** (병행):
+   - DES 8 파일 복호화
 
-목표 진행률 (R72 종료): Android 통합도 ~50% (scene 3-4 개 통합 후).
+목표 진행률 (R73 종료): Android 통합도 ~50% (InventoryScene + StatusScene 통합 후).
 
 ## 5. 참고 문서
 
 - ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (R70)
 - [PROGRESS.md](PROGRESS.md) — 전체 진행 기록
-- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — ★ 이번 라운드 (catalog loader)
+- [Round 72](ghidra-round72-scene-integration-2026-05-19.md) — ★ 이번 라운드 (scene 통합 시작)
+- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Catalog data classes + loader
 - [Round 70](ghidra-round70-master-spec-exp-groups-2026-05-19.md) — Master Spec + exp 그룹
 - [Round 69](ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md) — ammo 정정 + stat scaling
 - [Round 68](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md) — boss skill 검색

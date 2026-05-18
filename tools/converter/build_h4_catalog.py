@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69 + R70 + R71',
+            'round': 'R68 + R69 + R70 + R71 + R72',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
@@ -172,6 +172,31 @@ def main():
                 r = parse_npc_data(f)
                 catalog['npc'].append(r)
         print(f'NPC: {len(catalog["npc"])} files')
+
+    # Event scripts (R72) — separately parsed in h4_event_scripts.json
+    scripts_path = CONVERTED / 'h4_event_scripts.json'
+    if scripts_path.exists():
+        try:
+            sdata = json.loads(scripts_path.read_text(encoding='utf-8'))
+            # 압축: bsdat/esdat 각 파일별 entry name + count
+            bsdat_summary = [
+                {'file': r['file'], 'count': r['count'],
+                 'unique_names': sorted({e['name'] for e in r.get('entries', []) if e.get('name')})}
+                for r in sdata.get('bsdat', [])
+            ]
+            esdat_summary = [
+                {'file': r['file'], 'count': r['count'],
+                 'unique_names': sorted({e['name'] for e in r.get('entries', []) if e.get('name')})[:30]}
+                for r in sdata.get('esdat', [])
+            ]
+            catalog['event_scripts'] = {
+                'bsdat': bsdat_summary,
+                'esdat': esdat_summary,
+                'total_entries': sdata.get('meta', {}).get('total_entries', 0),
+            }
+            print(f'\nEvent scripts: {catalog["event_scripts"]["total_entries"]} entries (R72)')
+        except Exception as e:
+            print(f'  WARN: failed to load event_scripts: {e}', file=sys.stderr)
 
     # Hero stat blocks (R71) — separately parsed in h4_hero_stats.json
     hero_stats_path = CONVERTED / 'h4_hero_stats.json'

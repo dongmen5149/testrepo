@@ -49,6 +49,7 @@ class MainMenuScene(
         MenuItem(R.string.scene_bestiary, MainActivity.SceneRequest.Bestiary, isDebug = true),
         MenuItem(R.string.scene_records, MainActivity.SceneRequest.Records, isDebug = true),
         MenuItem(R.string.scene_event_viewer, MainActivity.SceneRequest.EventViewer, isDebug = true),
+        MenuItem(R.string.scene_catalog_viewer, MainActivity.SceneRequest.CatalogViewer, isDebug = true),
         MenuItem(R.string.scene_credits, MainActivity.SceneRequest.CreditsView, isDebug = true),
         MenuItem(R.string.scene_travel, MainActivity.SceneRequest.Travel),
         MenuItem(R.string.scene_dialogue_demo, MainActivity.SceneRequest.DialogueDemo, isDebug = true),

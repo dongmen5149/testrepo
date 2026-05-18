@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import com.hero3.remake.MainActivity
+import com.hero3.remake.catalog.Hero3Boss
 import com.hero3.remake.engine.EnemyRegistry
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
@@ -31,6 +32,20 @@ class BestiaryScene(
     private var idx = 0
     private val bg = Paint().apply { color = Color.rgb(15, 12, 25) }
     private val spriteCache: MutableMap<String, Bitmap?> = mutableMapOf()
+
+    /** R72: Hero3Catalog 의 보스 목록 — 선택된 enemy 가 보스이면 combat_rating 표시.
+     *  MainActivity 의 lazy catalog 가 로드되지 않은 경우 null 반환 (graceful degrade). */
+    private val catalogBosses: List<Hero3Boss>? by lazy {
+        runCatching {
+            (context as? MainActivity)?.catalog?.bossesNormal
+        }.getOrNull()
+    }
+
+    private fun bossInfoFor(enemyName: String): Hero3Boss? {
+        val bosses = catalogBosses ?: return null
+        // EnemyRegistry 의 nameKo 와 Hero3Catalog 의 name (EUC-KR 디코드) 매칭
+        return bosses.firstOrNull { it.name == enemyName }
+    }
 
     override fun update(deltaMs: Long) {
         if (input.pressedOnce(InputController.K_SOFT2) ||
@@ -84,10 +99,24 @@ class BestiaryScene(
             canvas.drawText("DEF ${sel.def}",  142f, statsTop + 28f,  UiKit.body)
             canvas.drawText("EXP ${sel.expReward}", 142f, statsTop + 42f, UiKit.muted)
             canvas.drawText("${sel.goldReward}G",   142f, statsTop + 56f, UiKit.muted)
+            // R72: 보스이면 catalog 의 combat_rating + sprite_idx 추가 표시
+            val boss = bossInfoFor(sel.nameKo)
+            if (boss?.trailerDecoded != null) {
+                val td = boss.trailerDecoded
+                canvas.drawText(
+                    if (isEn) "★ Boss rating: ${td.combatRating} (recommended lvl)" else "★ 보스 권장 lvl: ${td.combatRating}",
+                    142f, statsTop + 70f, UiKit.body,
+                )
+                canvas.drawText(
+                    "sprite #${td.spriteIdx}  ${if (td.isMiscBoss) "misc" else "story"}",
+                    142f, statsTop + 84f, UiKit.muted,
+                )
+            }
             // 드롭 목록
             if (sel.dropTable.isNotEmpty()) {
-                canvas.drawText(if (isEn) "Drops:" else "드롭:", 142f, statsTop + 76f, UiKit.muted)
-                var dy = statsTop + 88f
+                val dropY = if (bossInfoFor(sel.nameKo)?.trailerDecoded != null) statsTop + 100f else statsTop + 76f
+                canvas.drawText(if (isEn) "Drops:" else "드롭:", 142f, dropY, UiKit.muted)
+                var dy = dropY + 12f
                 for ((id, p) in sel.dropTable) {
                     val nm = ItemRegistry.get(id)?.let {
                         if (isEn) it.nameEn else it.nameKo
