@@ -60,6 +60,42 @@ def try_decrypt(path: Path) -> None:
     print(f"  byte distribution: korean-range={korean_count} ascii={ascii_count} null={null_count} (total={len(plain)})")
 
 
+def try_variants(path: Path) -> None:
+    """Try multiple DES modes + key variants."""
+    data = path.read_bytes()
+    if len(data) % 8 != 0:
+        return
+    print(f"\n=== {path.name} ({len(data)}B) variants ===")
+    # Variant 1: ECB
+    plain_ecb = DES.new(KEY, DES.MODE_ECB).decrypt(data)
+    # Variant 2: CBC with zero IV
+    plain_cbc0 = DES.new(KEY, DES.MODE_CBC, iv=b"\0" * 8).decrypt(data)
+    # Variant 3: CBC with key as IV
+    plain_cbck = DES.new(KEY, DES.MODE_CBC, iv=KEY).decrypt(data)
+    # Variant 4: ECB with key parity-adjusted
+    parity_key = bytes((b & 0xFE) | (0x01 ^ (bin(b).count("1") & 1)) for b in KEY)
+    plain_ecb_p = DES.new(parity_key, DES.MODE_ECB).decrypt(data)
+    # Variant 5: ECB with bit-reversed key
+    bitrev = lambda b: int(f"{b:08b}"[::-1], 2)
+    rev_key = bytes(bitrev(b) for b in KEY)
+    plain_rev = DES.new(rev_key, DES.MODE_ECB).decrypt(data)
+
+    for name, p in [("ECB-plain", plain_ecb), ("CBC-zero-IV", plain_cbc0),
+                    ("CBC-key-IV", plain_cbck), ("ECB-parity", plain_ecb_p),
+                    ("ECB-bitrev-key", plain_rev)]:
+        nulls = p.count(0)
+        ascii_n = sum(1 for b in p if 0x20 <= b < 0x7f)
+        korean_n = sum(1 for b in p if 0xa0 <= b < 0xff)
+        # entropy
+        from collections import Counter
+        import math
+        cnt = Counter(p)
+        h = -sum((c/len(p)) * math.log2(c/len(p)) for c in cnt.values())
+        flag = " ★ LOW ENTROPY" if h < 6 else ""
+        print(f"  {name:>16}: entropy={h:.3f}  null={nulls}  ascii={ascii_n}  korean={korean_n}{flag}")
+        print(f"  {' ':>16}  first 32B: {p[:32].hex(' ')}")
+
+
 def main() -> None:
     print(f"key: {KEY!r} (8 bytes, DES ECB mode)")
     for fname in ["drop_dat", "droph_dat", "getitem_dat", "des_dat",
@@ -67,6 +103,14 @@ def main() -> None:
         path = DAT_DIR / fname
         if path.exists():
             try_decrypt(path)
+
+    print("\n\n##############################################")
+    print("# DES variant matrix on candidate files")
+    print("##############################################")
+    for fname in ["drop_dat", "getitem_dat", "smith_dat", "shop_dat"]:
+        path = DAT_DIR / fname
+        if path.exists():
+            try_variants(path)
 
 
 if __name__ == "__main__":

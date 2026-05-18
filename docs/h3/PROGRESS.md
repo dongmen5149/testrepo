@@ -5,11 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 57 종료 시점)**:
-> - 마지막 commit = `30afd907 feat:영웅서기3 Round 56 — 전투 데이터 발견 (dat/enemy_dat 161 entries + 19B stat block)`
-> - **Round 57 산출물 uncommitted** — 1 신규 doc (`ghidra-des-system-and-dat-paths-2026-05-18.md`) + 4 신규 recon scripts + 1 converter + `PROGRESS.md` modified
+> **현재 git 상태 (2026-05-18 Round 58 종료 시점)**:
+> - 마지막 commit = `2d740a20 feat:영웅서기3 Round 57 — DES 시스템 완전 식별 (key "0EP@KO91" + des_dat 표준 tables) + dat path string 25개`
+> - **Round 58 산출물 uncommitted** — 1 신규 doc + 3 신규 recon scripts + 1 converter 확장 + `PROGRESS.md` modified
 
-**최신 진행 라운드**: 2026-05-18 (Round 57, uncommitted) — **2XA + 2XD = ★★★ DES 시스템 완전 식별 + dat path string 25개 발견**. (1) ⭐⭐⭐⭐ **binary 25 dat path strings**: `/dat/enemy_dat`(0xa63a4), `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`, `/dat/des_dat`(0xac584), `/dat/char_dat` 등. (2) ⭐⭐⭐⭐⭐ **DES 키 `"0EP@KO91"` 발견** @ binary 0xac594 (Hero5 와 동일 키, `[reference_h5_des_blocker.md]` 검증). (3) ⭐⭐⭐⭐⭐ **`dat/des_dat` 파일 = 표준 FIPS DES 알고리즘 테이블 824B 완전 매칭** (IP/IP⁻¹/E/P/S1-S8/PC1/PC2 정확히 일치). Hero3 DES = `[binary code + dat/des_dat tables + "0EP@KO91" key]` 완전 식별. (4) ⭐⭐ **GOT[+0x27c] = `/dat/char_dat` path ptr** 신규. (5) **Simple ECB 복호화 실패** — drop_dat/droph_dat/getitem_dat 가 ECB+key 그대로는 안 풀림. mode/parity/endian 변형 필요 (Round 58 후속). (6) **신규 데이터 파일 발견** (binary 내 string 만, extracted 폴더에 없음): `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`. (7) **Android remake 진행률 ~70%** (R56 + R57 합산 +10%p). Round 58 우선: **DES 복호화 매트릭스** (key parity / CBC + IV / endian / bit-reverse 변형) + **추가 dat 파일 JAR 재추출**. 상세는 [ghidra-des-system-and-dat-paths-2026-05-18.md](ghidra-des-system-and-dat-paths-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 58, uncommitted) — **2YA + 2YB = ★ Boss + Quest 평문 파싱 완료 + DES variant matrix 실패**. (1) ⭐⭐⭐ **R57 의 "JAR 재추출 필요" 가설 폐기** — 모든 파일이 이미 `work/h3/extracted/{boss,npc,skill,dat}/` 폴더에 추출되어 있음. (2) ⭐⭐⭐⭐ **boss_dat (508B) = 15 bosses 완전 파싱**: 리츠/케이 (paired tier 1-3), 멜페토/큐 (paired tier 4), 벨루스, 시즈타이탄(×2), 아르보르, 오르도(×2), 홀리가디언 (final boss 추정 lvl 46/67). entry 구조 = header(3) + name(4, no '@') + 19B stats + **6-byte 가변 trailer** (enemy 의 2B trailer 와 차이). (3) ⭐⭐⭐⭐ **quest_*_dat 4 파일 = 44+ quests 평문 EUC-KR**: 메인퀘스트 + 사이드퀘스트 본문 (노력의 증명1, 수상한 동굴, 길잃은 소녀, 협곡의 독소, 국경 돌파, 엔자크의 영광 등). entry = (name, description, location, target, category). (4) ⭐⭐⭐ **Hero3 게임 지역 식별**: 네메시스숲(시작), 네오솔티아, 협곡, 아스크라(적국), 엔자크사막, 토레즈(광산도시), 로우엔 평원, 리파이너의유적. (5) ⭐⭐ **신규 DES 후보**: smith_dat / smithh_dat (896B, entropy 7.76). 총 DES 후보 = drop_dat / droph_dat / getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat = **7 파일**. (6) ⭐⭐⭐ **DES variant matrix 시도** (ECB / CBC+zero-IV / CBC+key-IV / parity-adjusted / bit-reversed key) = **전부 실패** (entropy 7.7+ 유지). [`reference_h5_des_blocker`] 의 NDK runner 가 H3 에도 유일 해결책 확정. (7) **평문 미파싱**: s4_dat (skill), npcg_dat (78 entries × 13B), char_dat. Round 59 우선: **Hero5 NDK runner 로 H3 DES 복호화 검증** + 미파싱 평문 파일 (s4_dat, npcg_dat, char_dat). **진행률 ~72-75%** (+3-5%p). 상세는 [ghidra-boss-quest-dat-and-des-variants-2026-05-18.md](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 57, committed `2d740a20`) — **2XA + 2XD = ★★★ DES 시스템 완전 식별 + dat path string 25개 발견**. (1) ⭐⭐⭐⭐ **binary 25 dat path strings**: `/dat/enemy_dat`(0xa63a4), `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`, `/dat/des_dat`(0xac584), `/dat/char_dat` 등. (2) ⭐⭐⭐⭐⭐ **DES 키 `"0EP@KO91"` 발견** @ binary 0xac594 (Hero5 와 동일 키, `[reference_h5_des_blocker.md]` 검증). (3) ⭐⭐⭐⭐⭐ **`dat/des_dat` 파일 = 표준 FIPS DES 알고리즘 테이블 824B 완전 매칭** (IP/IP⁻¹/E/P/S1-S8/PC1/PC2 정확히 일치). Hero3 DES = `[binary code + dat/des_dat tables + "0EP@KO91" key]` 완전 식별. (4) ⭐⭐ **GOT[+0x27c] = `/dat/char_dat` path ptr** 신규. (5) **Simple ECB 복호화 실패** — drop_dat/droph_dat/getitem_dat 가 ECB+key 그대로는 안 풀림. mode/parity/endian 변형 필요 (Round 58 후속). (6) **신규 데이터 파일 발견** (binary 내 string 만, extracted 폴더에 없음): `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`. (7) **Android remake 진행률 ~70%** (R56 + R57 합산 +10%p). Round 58 우선: **DES 복호화 매트릭스** (key parity / CBC + IV / endian / bit-reverse 변형) + **추가 dat 파일 JAR 재추출**. 상세는 [ghidra-des-system-and-dat-paths-2026-05-18.md](ghidra-des-system-and-dat-paths-2026-05-18.md).
 
 **이전 진행 라운드**: 2026-05-18 (Round 56, committed `30afd907`) — **2WA = ★★★ 전투 데이터 발견** (Round 47-55의 미스터리 해결). (1) ⭐⭐⭐⭐ **work/h3/extracted/dat/ 폴더 전체 enumeration**: `enemy_dat` (5495B), `enemyh_dat` (5495B, hard mode), `enemyg_dat` (3542B graphics), `char_dat` (348B), `drop_dat` + `droph_dat` (3080B 암호화), `getitem_dat` (400B 암호화), `i0_dat`~`i18_dat` (chapter data). (2) ⭐⭐⭐⭐ **enemy_dat 구조 완전 분석**: header(3) + name+@(EUC-KR, name_len) + **19B stat block** + trailer(`01 1e`). 각 파일에 **161 enemies** 정확히 파싱됨. (3) ⭐⭐⭐⭐ **19B stat block 필드 매핑 (가설)**: lvl(byte) + pad(3) + 6×int16 BE (MP / **HP** / Gold / **ATK** / **DEF** / **EXP**) + AGI(byte) + ?(byte) + pad. Easy vs Hard 비교로 4.05x (HP), 9.75x (EXP), 13.7x (Gold), 4x (DEF) scaling 확인. HP max=28520 (boss), EXP max=6433. (4) ⭐⭐⭐ **R55 NPC table 가설 정정**: `task[+0x9e28]` (R27 cluster) = **runtime 에서 enemy_dat 로드한 in-memory copy**. 0x3c4 stride + 0x3c (60B) 변형 = R52 vtable[+0x54] alloc(60B) ObjectB instance 와 동일 크기 = **enemy instance object**. (5) ⭐⭐⭐ **enemy 라인업**: 아스크란/코르버스/솔티안/포레스트/와일드 군단 × 가드/워리어/템플러/로그/어쌔신/매지션/위자드/워락/건너/슈터/엑셀/체이서/쿠퍼 클래스 조합 + 일반 (도적). (6) **drop_dat/getitem_dat 는 high-entropy = MD5 또는 다른 암호화** (R53 발견 알고리즘과 연결 가능). (7) **Android 진행률**: ~65-70% (battle data 발견으로 +5%p). 다음 라운드: **binary 내 enemy_dat 로더 함수 식별** (literal pool grep `/dat/enemy`). 상세는 [ghidra-enemy-dat-and-battle-data-2026-05-18.md](ghidra-enemy-dat-and-battle-data-2026-05-18.md).
 
@@ -559,9 +561,19 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 57 uncommitted 산출물 (인덱스)
+### Round 58 uncommitted 산출물 (인덱스)
 
-> 마지막 commit (`30afd907`, Round 56) 이후 Round 57 산출물이 uncommitted.
+> 마지막 commit (`2d740a20`, Round 57) 이후 Round 58 산출물이 uncommitted.
+
+**Round 58 (2026-05-18)** — Boss + Quest 평문 파싱 완료 + DES variant matrix 실패:
+- 신규 doc: [`ghidra-boss-quest-dat-and-des-variants-2026-05-18.md`](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md)
+- 신규 scripts (3): `dump_all_dat_files.py`, `parse_boss_dat.py`, `parse_quest_dat.py`
+- 확장: `tools/converter/decrypt_h3_dat_des.py` (5 variant matrix)
+- 기타: `work/h3/round58_*.txt` (4개 raw outputs)
+
+**추천 commit 메시지**: `feat:영웅서기3 Round 58 — Boss (15 entries) + Quest (44+) 평문 파싱 + DES variant matrix 실패 (NDK runner 필요 확정)`
+
+### Round 57 산출물 (이미 commit `2d740a20`)
 
 **Round 57 (2026-05-18)** — DES 시스템 완전 식별 + dat path string 25개:
 - 신규 doc: [`ghidra-des-system-and-dat-paths-2026-05-18.md`](ghidra-des-system-and-dat-paths-2026-05-18.md)
