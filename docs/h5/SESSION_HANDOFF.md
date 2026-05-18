@@ -2,24 +2,24 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-## ⚡ "영웅서기5 다음 내용 진행해줘" → **Round 67 (잔여 .so 분석 또는 type 22 RE 또는 scn 검증)**
+## ⚡ "영웅서기5 다음 내용 진행해줘" → **Round 68 (Dialog system RE 또는 type 22 RE 또는 Skill level UI)**
 
 차기 세션 즉시 할 일:
 1. 환경 확인: `PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py` → `0 warnings` 확인
-2. 회귀 테스트 (선택): `python tools/h5_test_dual_host.py` → `All Round 66 dual host checks passed.`
-3. **R67 추천 작업** (이 문서 §D 참조):
-   - 옵션 A: 잔여 .so 함수 (Battle motion / NPC dialog, ~6%)
-   - 옵션 B: type 22 (0x16) special path RE — R65 미관측 case
-   - 옵션 C: scn opcode 실 game scene 동작 검증
-   - 옵션 D: Skill 보유 레벨 UI 표시 (status_panel + GameState.skill_levels)
+2. 회귀 테스트 (선택): `python tools/h5_test_battle_motion.py` → `All Round 67 Battle motion RE checks passed.`
+3. **R68 추천 작업** (이 문서 §D 참조):
+   - 옵션 A: NPC Dialog system RE — `EventProc::Event_DialogWindow` (@0x6eb38) + `DIALOG_INFO::DialogWindow_Proc` (@0x71b48) state machine 분석
+   - 옵션 B: type 22 (0x16) special path RE — R65 미관측 case (0xd4864 영역)
+   - 옵션 C: Skill 보유 레벨 UI 표시 (status_panel + GameState.skill_levels)
+   - 옵션 D: ChangeAttackMotion 정밀 분석 — R67 의 cmp 0xd/0x14/0xe/0x17 dispatch 미해결
 
-**전체 진척**: Godot 실 구현 79-83%, 리메이크 출시 78-88% (UI R51-58 + RE R59-60/65 + character/AI R61-63 + monster kill 보상 R64 + Quest reward RE R65 + dual host 명세 R66).
+**전체 진척**: Godot 실 구현 79-83%, 리메이크 출시 78-88% (UI R51-58 + RE R59-60/65/67 + character/AI R61-63 + monster kill 보상 R64 + Quest reward RE R65 + dual host R66 + Battle motion RE R67).
 
 ---
 
-업데이트: 2026-05-18 (Round 66 — **battle_system / character 두 host 명세 강화**. R65 SESSION_HANDOFF 의 "battle_system 의 13 stub = dead code" 가설이 잘못됐음 확인 — `start_battle` 가 `MonsterAI.create_runtime(self, monster_id)` 로 self 를 host 로 등록, **turn-based 전투 (B 키 / NPC) 의 합리적 default 로 사용 중**. R61 의 character host (real-time AI tick, G 키 spawn) 와는 별개 경로. 두 host 모두 dead code 아님. **R66 정리 작업**: (1) battle_system 의 host CHAR section docstring 강화 + 두 host 비교 표 + 각 method 의 turn-based default 의미 주석. (2) `is_able_skill` 가 실제 `_cooldowns.get(skill_id, 0) <= 0` 검사로 변경 (이전 `skill_id > 0` 만). (3) `set_cool_time` 가 실제 `_cooldowns[skill_id] = FRAME_PER_TURN` 설정으로 변경 (이전 pass). (4) `is_attack_able` 에 `not is_stunned()` 추가. (5) 신규 `is_stunned()` method (default false, debuff 시스템 hook). (6) `monster_ai.create_runtime` docstring 의 두 host 분기 명세 보완 — battle_system (turn-based) vs character.gd (real-time map 좌표). `h5_test_dual_host.py` — 두 host 모두 17/17 method + R66 6 패턴 + create_runtime docstring + 두 host 의도된 의미 차이 시뮬 + cooldown 동작 검증 (skill 5 사용가능 → set_cool_time → 차단 → 만료) + is_attack_able dead/stunned 조합 검증. Godot 실 구현 78-82% → 79-83%, 출시 77-87% → 78-88%.)
+업데이트: 2026-05-18 (Round 67 — **Battle motion enum + CHAR state machine RE 확정**. `CHAR::SetMotion` (@0x4af5c, 56B) + HERO 의 4 Set*Motion 함수 (SetWalk @0x98f6c / SetAttack @0x98870 / SetAttacked @0x98e58 / SetDie @0x98dd8) 정밀 디스어셈블. **R50 의 HOST_MOTION 가설 (walk=1, die=9 등) 잘못 확인**. 실제: **walk=motion 3, die=motion 5, attack/attacked=caller가 skill 기반 전달 (variable)**. main_state 와 motion 은 **별개 시스템**: main_state byte (CHAR::SetMainState) = 게임 액션 분류 (1=walk/2=attack/3=attacked/4=die), motion byte (CHAR::SetMotion → +0x2c) = 스프라이트 anim index. CHAR struct field 확정: +0x2c=motion / +0x2d=dir / +0x2e=frame(u16) / +0xc4=motion_change_flag / +0xc5=prev_frame_low / +0xc6=max_frame_current (GetMaxFrame 결과). helper 함수 6종 주소 확정 (SetMotion/GetMotion/SetMainState/SetDir/GetMaxFrame/SetNextState). character.gd 에 SO_MAIN_STATE_*/SO_MOTION_* 신규 상수 8개 추가 — 기존 HOST_MOTION_* 는 Godot 내부 logical code 로 유지 (monster_ai != 0 검사만 사용, 호환). docs/h5/RE/battle_motion.md 신규 RE 문서 (disasm 코드 + 가설 정정 표 + helper 함수 매핑). h5_test_battle_motion.py — 10 ELF symbol cross-verify + 9 character.gd 패턴 + 9 RE 문서 패턴 + R50 → R67 정정 8 case 통과. .so 함수 분석 92-94% → 94-95%, Godot 실 구현 79-83% 유지 (logical code 호환), 출시 78-88% 유지.)
 
-## 📜 Round 1-66 한 줄 요약
+## 📜 Round 1-67 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -48,13 +48,14 @@
 | R63 | Monster ↔ Hero 실 전투 — ai_skill_cast → hero HP 차감 + red popup + 사망 quick_load / SPACE 키 → Chebyshev ATTACK_RANGE_TILES=2 nearest monster 공격 + yellow popup + 방향 전환 |
 | R64 | monster kill 보상 흐름 — _award_kill_reward (enemy_stats sentinel→default exp/gold + 25% drop_table + add_battle_reward level_up + +%dEXP +%dG popup + Quest.on_enemy_killed) |
 | R65 | Quest reward type 6/10/11/12 RE — QuestRewardData @0xd458c 분석으로 reward.type=item slot, sub=idx, value=qty 확정 + type 17=money/18=exp/19=HP/20=INT + REWARD_SLOT_LABEL + 64/64 in-range 검증 + items.json item_name_at 라벨링 |
-| **R66** | **battle_system / character 두 host 명세 강화 — turn-based stub 이 dead code 아님 확정 (B 키 전투 host=self) + cooldown 실 동작 + is_stunned 추가 + 두 host 비교 표 docstring + h5_test_dual_host 17/17 + 6 R66 패턴 + 의미 차이 시뮬** |
+| R66 | battle_system / character 두 host 명세 강화 — turn-based stub 이 dead code 아님 확정 (B 키 전투 host=self) + cooldown 실 동작 + is_stunned 추가 + 두 host 비교 표 docstring + h5_test_dual_host 17/17 + 6 R66 패턴 + 의미 차이 시뮬 |
+| **R67** | **Battle motion enum + CHAR state machine RE 확정 — R50 의 HOST_MOTION (walk=1/die=9) 가설 잘못 확인 + 실제 walk=motion 3 / die=motion 5 + main_state(1-4) ≠ motion 별개 시스템 + CHAR struct +0x2c/0x2d/0x2e/0xc4-c6 + character.gd 에 SO_* 8 상수 추가 + 10 ELF symbol + 9 패턴 통과** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 66 시점)
+## 🎯 전체 진척 평가 (Round 67 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -62,13 +63,13 @@
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| **.so 함수 분석** (game logic) | ~92-94% | Mission/Quest/Reward 완전 RE. 잔여: Battle motion, NPC dialog |
-| **Godot 실 구현** | **~79-83%** | + **두 host (battle_system turn-based / character real-time) 명세 강화 + cooldown 실 동작 + is_stunned (R66)** |
+| **.so 함수 분석** (game logic) | ~94-95% | Mission/Quest/Reward 완전 RE + **Battle motion enum + CHAR state machine (R67)**. 잔여: NPC dialog, Cast motion |
+| **Godot 실 구현** | **~79-83%** | + **R67 RE 정확한 motion/state enum (character.gd SO_* 상수, logical HOST_MOTION_* 호환 유지)** |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 ~94-97%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **78-88%** (host 인터페이스 정합성 강화)
+- **"원본 분석"** (RE+자산) 으로 보면 ~95-97%
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **78-88%** (motion enum 정확화로 미래 .so cross-ref 안전)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -81,7 +82,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 67)
+## 🚀 다음 세션 즉시 시작 (Round 68)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -114,6 +115,7 @@ python tools/h5_test_ai_combat.py      # Round 63: Monster↔Hero 실 전투
 python tools/h5_test_kill_reward.py    # Round 64: monster kill 보상 흐름
 python tools/h5_test_reward_types.py   # Round 65: Quest reward type RE
 python tools/h5_test_dual_host.py      # Round 66: 두 host 명세
+python tools/h5_test_battle_motion.py  # Round 67: Battle motion enum + CHAR state
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -143,29 +145,38 @@ python tools/h5_test_dual_host.py      # Round 66: 두 host 명세
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 67 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 68 추천 작업 (자율 가능, 임팩트 순)
 
-> R66 으로 두 host 명세 강화 완료. R67 부터는 잔여 .so 분석 또는 작은 RE/UI 작업.
+> R67 으로 Battle motion enum RE 완료. R68 부터 NPC dialog 또는 작은 RE/UI 작업.
 
-#### ⭐ 1순위 — 잔여 .so 함수 분석 (Battle motion / NPC dialog, 1 라운드)
-- 남은 ~6% 미분석 영역 — Battle motion (스킬 시전 시 frame timing) / NPC dialog handler
-- 도구: `tools/recon/disasm_h5_*.py` 시리즈 패턴 재활용
-- lief 로 ELF symbol 검색 (`Motion`, `Animation`, `NpcDialog`, `Talk` 등 keyword)
+#### ⭐ 1순위 — NPC Dialog system RE (1 라운드, 추천 시작점)
+- 핵심 함수: `EventProc::Event_DialogWindow` (@0x6eb38, 656B) + `DIALOG_INFO::DialogWindow_Proc` (@0x71b48, 912B)
+- DIALOG_INFO struct: +0x29 = state byte, +0x2d/+0x2f = sub state (R67 PASS 1 에서 식별)
+- state dispatch: `cmp r2, #7` / `cmp r1, #5` 등 — multi-state machine
+- 다른 함수: `EventProc::Event_SituateDialogText` (@0x73030, 600B), `GMenu::DrawDialogBox` (@0x8245c, 1784B)
+- 작업: state 7가지 의미 + DIALOG_INFO struct layout + 작업 흐름 정리
+- 산출물: `docs/h5/RE/npc_dialog.md` + `dialog_box.gd` Godot 통합 강화 + `h5_test_dialog.py`
 
-#### 2순위 — type 22 (0x16) special path RE (0.5 라운드)
+#### 2순위 — ChangeAttackMotion 정밀 분석 (0.5 라운드)
+- R67 의 미해결: `cmp r0, #0xd / #0x14 / #0xe / #0x17` dispatch + `mov r1, #0x18 / #0x26 / #0x16 / #0xa / #0xf`
+- 0xd=13/0x14=20/0xe=14/0x17=23 = skill_type 또는 weapon kind?
+- 0x18=24/0x26=38/0x16=22/0xa=10/0xf=15 = attack motion id 별 값 (R67 의 "caller arg" 의 실 값)
+- 작업: HERO::ChangeAttackMotion (@0x91e7c, 340B) 정밀 disasm → skill_type → motion enum 매핑
+
+#### 3순위 — type 22 (0x16) special path RE (0.5 라운드)
 - Round 65 disasm 에서 식별만 됨 (`cmp r1, #0x16; beq 0xd4864`), observation 없음
 - 가설: special item add with `r1=#0x11` (slot 17 = skill_book_gk?)
 - 작업: 0xd4864..0xd48c0 영역 정밀 disasm → handler 의미 확정
 
-#### 3순위 — Skill 보유 레벨 UI 표시 (0.5 라운드)
+#### 4순위 — Skill 보유 레벨 UI 표시 (0.5 라운드)
 - status_panel 에 `GameState.skill_levels` dict 추가 표시
 - R57 SkillBook 학습 UI 의 자연스러운 보완 — 학습한 스킬 시각화
 
-#### 4순위 — scn opcode 실 game scene 검증 (2-3 라운드)
+#### 5순위 — scn opcode 실 game scene 검증 (2-3 라운드)
 - Title/ClassSelect/Demo 외 화면 진입 테스트
 - scn opcode 흐름 vs 실제 Godot scene 동작 cross-check
 
-#### 5순위 — Save binary device import/export (1 라운드)
+#### 6순위 — Save binary device import/export (1 라운드)
 - 실 디바이스의 H_*.sav 추출 → Godot save_manager 의 deserialize_hero_save 로 round-trip 검증
 
 ### E. Round 51-58 UI 시스템 통합 상태 (참고)

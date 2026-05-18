@@ -20,14 +20,30 @@ const MOTION_WALK := 0
 const MOTION_RUN := 1
 const MOTION_STAND := 2
 
-# 원본 CHAR motion enum (Round 50 RE — host_get_motion 에서 반환):
-#   0 = idle, 1 = walk, 5 = run, 6 = attack, 9 = die, 12 = skill_cast
+# Godot 내부 logical motion code (host.get_motion 반환). monster_ai 는 != 0 만 검사.
+# R50 의 "원본 .so 와 일치" 가설은 R67 RE 로 잘못 확인됨 — 원본은 SO_* 참조.
 const HOST_MOTION_IDLE := 0
 const HOST_MOTION_WALK := 1
 const HOST_MOTION_RUN := 5
 const HOST_MOTION_ATTACK := 6
 const HOST_MOTION_DIE := 9
 const HOST_MOTION_CAST := 12
+
+# === Round 67 RE: 원본 .so 의 정확한 CHAR motion / main_state enum ===
+# 출처: docs/h5/RE/battle_motion.md — CHAR::SetMotion (0x4af5c) + HERO::Set*Motion 5종 disasm
+#
+# main_state byte (CHAR::SetMainState 의 인자) — 게임 액션 분류
+const SO_MAIN_STATE_IDLE := 0       # default
+const SO_MAIN_STATE_WALK := 1
+const SO_MAIN_STATE_ATTACK := 2
+const SO_MAIN_STATE_ATTACKED := 3   # 피격
+const SO_MAIN_STATE_DIE := 4
+#
+# motion byte (CHAR struct +0x2c, CHAR::SetMotion 의 인자) — 스프라이트 anim index
+# main_state 와 별개 시스템. R50 의 1=walk/9=die 가설은 잘못.
+const SO_MOTION_WALK := 3      # SetWalkMotion 의 mov r1, #3; bl SetMotion
+const SO_MOTION_DIE := 5       # SetDieMotion 의 mov r1, #5; bl SetMotion
+# attack / attacked motion: SetAttackMotion 의 caller 가 skill_id 기반 lookup 으로 전달
 
 # direction enum (원본과 일치 가정)
 const DIR_DOWN := 0
