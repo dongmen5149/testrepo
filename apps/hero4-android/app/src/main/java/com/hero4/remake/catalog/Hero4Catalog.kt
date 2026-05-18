@@ -52,6 +52,23 @@ data class Hero4Quest(
     val category: String,
 )
 
+/**
+ * Hero4 의 hero 시작 stat block (R71, _H_BH 4 entries).
+ *
+ * 정확한 field 매핑은 추후 Ghidra 분석 필요. 현재는 raw bytes + LE16 + observation 메타.
+ */
+data class Hero4HeroStat(
+    val entryIndex: Int,
+    val name: String,
+    val indexByte: Int,         // 0..3 sequential
+    val modeByte: Int,          // 0 = 티르 class, 1 = 루레인 class
+    val modeLabel: String,
+    val sizeField: Int,
+    val nameLen: Int,
+    val statsBytes: List<Int>,
+    val statsLE16: List<Int>,
+)
+
 data class Hero4Catalog(
     val meta: Map<String, Any>,
     val heroes: List<Hero4Hero>,
@@ -59,6 +76,7 @@ data class Hero4Catalog(
     val items: List<Hero4ItemFile>,
     val npc: List<Hero4NpcFile>,
     val quests: List<Hero4Quest>,
+    val heroStats: List<Hero4HeroStat>,
 ) {
     val totalSkills: Int get() = skillSets.sumOf { it.skillCount }
     val totalItemKorean: Int get() = items.sumOf { it.koreanCount }
@@ -156,8 +174,29 @@ object Hero4CatalogLoader {
             }
         }
 
-        return Hero4Catalog(meta, heroes, skillSets, items, npc, quests)
+        // hero_stats (R71)
+        val heroStats = mutableListOf<Hero4HeroStat>()
+        root.optJSONObject("hero_stats")?.optJSONArray("entries")?.let { arr ->
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                heroStats += Hero4HeroStat(
+                    entryIndex = o.optInt("entry_index"),
+                    name = o.optString("name"),
+                    indexByte = o.optInt("index_byte"),
+                    modeByte = o.optInt("mode_byte"),
+                    modeLabel = o.optString("mode_label"),
+                    sizeField = o.optInt("size_field"),
+                    nameLen = o.optInt("name_len"),
+                    statsBytes = o.optJSONArray("stats_bytes")?.toIntList() ?: emptyList(),
+                    statsLE16 = o.optJSONArray("stats_LE16")?.toIntList() ?: emptyList(),
+                )
+            }
+        }
+
+        return Hero4Catalog(meta, heroes, skillSets, items, npc, quests, heroStats)
     }
+
+    private fun JSONArray.toIntList(): List<Int> = (0 until length()).map { optInt(it) }
 
     private fun JSONObject.toStringMap(): Map<String, Any> {
         val out = mutableMapOf<String, Any>()

@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69 + R70',
+            'round': 'R68 + R69 + R70 + R71',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
@@ -172,6 +172,19 @@ def main():
                 r = parse_npc_data(f)
                 catalog['npc'].append(r)
         print(f'NPC: {len(catalog["npc"])} files')
+
+    # Hero stat blocks (R71) — separately parsed in h4_hero_stats.json
+    hero_stats_path = CONVERTED / 'h4_hero_stats.json'
+    if hero_stats_path.exists():
+        try:
+            hsdata = json.loads(hero_stats_path.read_text(encoding='utf-8'))
+            catalog['hero_stats'] = {
+                'entries': hsdata.get('entries', []),
+                'observations': hsdata.get('observations', {}),
+            }
+            print(f'\nHero stats: {len(hsdata.get("entries", []))} entries (R71)')
+        except Exception as e:
+            print(f'  WARN: failed to load hero_stats: {e}', file=sys.stderr)
 
     # Quests (R70) — separately parsed in h4_quests.json
     quests_path = CONVERTED / 'h4_quests.json'

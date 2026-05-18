@@ -38,7 +38,8 @@ class MainActivity : Activity() {
             sb.append("    skill sets=${catalog.skillSets.size}, total skills=${catalog.totalSkills}\n")
             sb.append("    items=${catalog.items.size} files, ${catalog.totalItemKorean} Korean entries\n")
             sb.append("    NPC scripts=${catalog.npc.size}, ${catalog.totalNpcKorean} Korean entries\n")
-            sb.append("    quests=${catalog.quests.size} (${catalog.mainStoryQuests} 메인스토리)\n\n")
+            sb.append("    quests=${catalog.quests.size} (${catalog.mainStoryQuests} 메인스토리)\n")
+            sb.append("    hero stat blocks=${catalog.heroStats.size}\n\n")
             if (catalog.quests.isNotEmpty()) {
                 sb.append("First quest: ${catalog.quests[0].name}\n")
                 sb.append("  → ${catalog.quests[0].description.take(40)}\n\n")
