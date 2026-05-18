@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69',
+            'round': 'R68 + R69 + R70',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
@@ -131,6 +131,7 @@ def main():
         'shop': {},
         'items': [],
         'npc': [],
+        'quests': [],
     }
 
     # Skill sets
@@ -171,6 +172,23 @@ def main():
                 r = parse_npc_data(f)
                 catalog['npc'].append(r)
         print(f'NPC: {len(catalog["npc"])} files')
+
+    # Quests (R70) — separately parsed in h4_quests.json
+    quests_path = CONVERTED / 'h4_quests.json'
+    if quests_path.exists():
+        try:
+            qdata = json.loads(quests_path.read_text(encoding='utf-8'))
+            for fn, qfile in qdata.get('files', {}).items():
+                for q in qfile.get('quests', []):
+                    catalog['quests'].append({
+                        'source_file': fn,
+                        'name': q.get('name', ''),
+                        'description': q.get('description', ''),
+                        'category': q.get('category', ''),
+                    })
+            print(f'\nQuests: {len(catalog["quests"])} entries (R70)')
+        except Exception as e:
+            print(f'  WARN: failed to load quests: {e}', file=sys.stderr)
 
     # Save
     out = CONVERTED / 'h4_catalog.json'

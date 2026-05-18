@@ -37,7 +37,12 @@ class MainActivity : Activity() {
             sb.append("    heroes=${catalog.heroes.size} (${catalog.heroes.joinToString { it.name }})\n")
             sb.append("    skill sets=${catalog.skillSets.size}, total skills=${catalog.totalSkills}\n")
             sb.append("    items=${catalog.items.size} files, ${catalog.totalItemKorean} Korean entries\n")
-            sb.append("    NPC scripts=${catalog.npc.size}, ${catalog.totalNpcKorean} Korean entries\n\n")
+            sb.append("    NPC scripts=${catalog.npc.size}, ${catalog.totalNpcKorean} Korean entries\n")
+            sb.append("    quests=${catalog.quests.size} (${catalog.mainStoryQuests} 메인스토리)\n\n")
+            if (catalog.quests.isNotEmpty()) {
+                sb.append("First quest: ${catalog.quests[0].name}\n")
+                sb.append("  → ${catalog.quests[0].description.take(40)}\n\n")
+            }
             sb.append("Phase 3 (engine wiring) — 자산 + 데이터 준비 완료")
         } catch (e: Exception) {
             sb.append("Catalog load failed: ${e.message}")

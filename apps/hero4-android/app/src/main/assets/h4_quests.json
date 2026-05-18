@@ -1,0 +1,1051 @@
+{
+  "meta": {
+    "game": "Hero4 (영웅서기4)",
+    "round": "R70",
+    "date": "2026-05-19",
+    "source_files": [
+      "work/h4/decrypted/NPC/_QUEST_0_DAT",
+      "work/h4/decrypted/NPC/_QUEST_1_DAT"
+    ],
+    "pattern": "Hero3 quest_dat 변종: [size:1B][00 00 00][name_len:1B][name:EUC-KR][body]",
+    "total_quests": 128
+  },
+  "files": {
+    "_QUEST_0_DAT": {
+      "size": 7568,
+      "count": 62,
+      "quests": [
+        {
+          "offset": "0x0",
+          "size_field": 92,
+          "name": "케프네스를 찾아라",
+          "description": "방향키나 2468키로 이동하여 케프네스의 연설장소로 가보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 574
+        },
+        {
+          "offset": "0x23e",
+          "size_field": 19,
+          "name": "(종속퀘)",
+          "description": "",
+          "category": "",
+          "raw_bytes": 21
+        },
+        {
+          "offset": "0x253",
+          "size_field": 19,
+          "name": "(종속퀘)",
+          "description": "",
+          "category": "",
+          "raw_bytes": 21
+        },
+        {
+          "offset": "0x268",
+          "size_field": 19,
+          "name": "(종속퀘)",
+          "description": "",
+          "category": "",
+          "raw_bytes": 21
+        },
+        {
+          "offset": "0x27d",
+          "size_field": 76,
+          "name": "유적조사",
+          "description": "수레바퀴 섬 동쪽에 있는 유적을 조사해 보자.",
+          "category": "",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0x2cb",
+          "size_field": 88,
+          "name": "크래드를 찾아라",
+          "description": "집 밖에 있을 크래드를 만나서 이야기를 들어보자.",
+          "category": "이름없는섬:크래드��",
+          "raw_bytes": 167
+        },
+        {
+          "offset": "0x372",
+          "size_field": 85,
+          "name": "엘렌을 찾아라",
+          "description": "엘렌을 찾아보자. 이름없는 섬 동쪽 어딘가에 있다.",
+          "category": "",
+          "raw_bytes": 87
+        },
+        {
+          "offset": "0x3c9",
+          "size_field": 80,
+          "name": "약 재료 수집",
+          "description": "백련초 10개를 모아 크래드에게 가져다 주자.",
+          "category": "이름없는섬:크래드",
+          "raw_bytes": 82
+        },
+        {
+          "offset": "0x41b",
+          "size_field": 96,
+          "name": "가면 제작",
+          "description": "크래드가 부탁한 가면 제작 재료를 구해서 위장용 가면을 만들자.",
+          "category": "이름없는섬:크래드��",
+          "raw_bytes": 98
+        },
+        {
+          "offset": "0x47d",
+          "size_field": 92,
+          "name": "가면재료1",
+          "description": "가면에 필요한 매우얇은가죽을 10개 모아서 크래드에게 주자.",
+          "category": "이름없는섬:크래드",
+          "raw_bytes": 94
+        },
+        {
+          "offset": "0x4db",
+          "size_field": 84,
+          "name": "가면재료2",
+          "description": "가면에 필요한 아교를 10개 모아서 크래드에게 주자.",
+          "category": "이름없는섬:크래드",
+          "raw_bytes": 86
+        },
+        {
+          "offset": "0x531",
+          "size_field": 73,
+          "name": "매도우 힐로",
+          "description": "매도우 힐로 갈 방법을 찾아 주둔지에 가보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 75
+        },
+        {
+          "offset": "0x57c",
+          "size_field": 90,
+          "name": "이자벨",
+          "description": "프로비던스에 있는 여관으로 가서 이자벨을 만날 방법을 찾자.",
+          "category": "프로비던스:이자벨��",
+          "raw_bytes": 92
+        },
+        {
+          "offset": "0x5d8",
+          "size_field": 74,
+          "name": "케프네스",
+          "description": "매도우 힐 어딘가에 있는 케프네스를 찾자.",
+          "category": "매도우힐:케프네스��",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0x624",
+          "size_field": 92,
+          "name": "검은 바위 섬",
+          "description": "검은 바위 섬에 있는 던전으로 가서 케프네스의 부하를 구출하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 94
+        },
+        {
+          "offset": "0x682",
+          "size_field": 84,
+          "name": "추가병력 합류",
+          "description": "배를 타기위해 군수물자를 빼돌리던 병사를 이용해보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 175
+        },
+        {
+          "offset": "0x731",
+          "size_field": 84,
+          "name": "(종속퀘)",
+          "description": "통행증을 얻기 위해 고블린에게서 군수물자를 되찾아 가자.",
+          "category": "",
+          "raw_bytes": 86
+        },
+        {
+          "offset": "0x787",
+          "size_field": 84,
+          "name": "(종속퀘)",
+          "description": "통행증을 얻기 위해 고블린에게서 군수물자를 되찾아 가자.",
+          "category": "",
+          "raw_bytes": 86
+        },
+        {
+          "offset": "0x7dd",
+          "size_field": 79,
+          "name": "팔리아스",
+          "description": "팔리아스로 가서 케프네스의 부하를 한 명 더 구출하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 81
+        },
+        {
+          "offset": "0x82e",
+          "size_field": 87,
+          "name": "선주종의 배",
+          "description": "선주종 주둔지의 선착장으로 가서 탈 수 있는 배를 찾아보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 89
+        },
+        {
+          "offset": "0x887",
+          "size_field": 80,
+          "name": "배의 부품",
+          "description": "배를 수리하기 위해 부품을 가진 큰 몬스터를 찾아보자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 82
+        },
+        {
+          "offset": "0x8d9",
+          "size_field": 52,
+          "name": "탈출",
+          "description": "루칸과 합류하러 돌아가자.",
+          "category": "",
+          "raw_bytes": 54
+        },
+        {
+          "offset": "0x90f",
+          "size_field": 74,
+          "name": "케프네스 구출",
+          "description": "매도우 힐로 돌아가서 케프네스를 구출하자. \n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0x95b",
+          "size_field": 94,
+          "name": "주둔지 침입",
+          "description": "케프네스가 감금되어 있는 던전에 침입해야 한다. 장교를 잡아 보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 96
+        },
+        {
+          "offset": "0x9bb",
+          "size_field": 78,
+          "name": "유물 탈취",
+          "description": "브리안이 뮤리아스로 빼돌리고 있는 유물을 탈취하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 80
+        },
+        {
+          "offset": "0xa0b",
+          "size_field": 81,
+          "name": "프로비던스로",
+          "description": "프로비던스로 가서 브리안이 빼돌리는 배를 찾아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 83
+        },
+        {
+          "offset": "0xa5e",
+          "size_field": 65,
+          "name": "추격",
+          "description": "브리안의 배를 따라잡은 후 유물을 찾아보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0xaa1",
+          "size_field": 90,
+          "name": "이름없는 섬",
+          "description": "기절한 엘렌을 이름없는 섬의 크래드의 집으로 데려가자.",
+          "category": "이름없는섬:크래드��",
+          "raw_bytes": 92
+        },
+        {
+          "offset": "0xafd",
+          "size_field": 71,
+          "name": "크래드",
+          "description": "선착장으로 가기 전에 크래드를 만나보자.",
+          "category": "이름없는섬:크래드��",
+          "raw_bytes": 73
+        },
+        {
+          "offset": "0xb46",
+          "size_field": 81,
+          "name": "포로수용소",
+          "description": "뮤리아스에 있는 포로수용소로 가서 브리안을 찾아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 83
+        },
+        {
+          "offset": "0xb99",
+          "size_field": 90,
+          "name": "선착장으로",
+          "description": "이름없는 섬의 선착장으로 가서 루레인을 만나 배를 타자.",
+          "category": "이름없는섬:루레인��",
+          "raw_bytes": 92
+        },
+        {
+          "offset": "0xbf5",
+          "size_field": 64,
+          "name": "도주",
+          "description": "루레인을 데리고 이름없는 섬까지 도망치자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 66
+        },
+        {
+          "offset": "0xc37",
+          "size_field": 58,
+          "name": "습격",
+          "description": "집 밖으로 나가서 습격자를 물리치자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 60
+        },
+        {
+          "offset": "0xc73",
+          "size_field": 63,
+          "name": "비밀통로",
+          "description": "비밀통로를 통해 선착장까지 도망치자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0xcb4",
+          "size_field": 64,
+          "name": "엘렌",
+          "description": "여관에 있는 엘렌의 상태를 확인해 보자.",
+          "category": "",
+          "raw_bytes": 66
+        },
+        {
+          "offset": "0xcf6",
+          "size_field": 72,
+          "name": "루레인",
+          "description": "마을에 있는 루레인을 찾아 이야기를 나누자.",
+          "category": "",
+          "raw_bytes": 74
+        },
+        {
+          "offset": "0xd40",
+          "size_field": 75,
+          "name": "엘렌의 약",
+          "description": "이름없는 섬으로 돌아가 엘렌의 약을 가져오자.",
+          "category": "",
+          "raw_bytes": 77
+        },
+        {
+          "offset": "0xd8d",
+          "size_field": 76,
+          "name": "루레인을 찾아라",
+          "description": "루레인이 날 찾는다고 한다. 만나보자.",
+          "category": "",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0xddb",
+          "size_field": 83,
+          "name": "피신",
+          "description": "엘렌을 데리고 아눈 섬으로 피신하자. 선찬장으로 간다.",
+          "category": "",
+          "raw_bytes": 85
+        },
+        {
+          "offset": "0xe30",
+          "size_field": 69,
+          "name": "결판",
+          "description": "아눈 섬 어딘가에 있는 루레인과 이야기하자.",
+          "category": "",
+          "raw_bytes": 71
+        },
+        {
+          "offset": "0xe77",
+          "size_field": 65,
+          "name": "브리안",
+          "description": "핀디아스에 있을 브리안을 찾아내자.",
+          "category": "",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0xeba",
+          "size_field": 73,
+          "name": "핀디아스의 신전",
+          "description": "핀디아스 동쪽 끝에 있는 신전을 찾아가자\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 75
+        },
+        {
+          "offset": "0xf05",
+          "size_field": 88,
+          "name": "꿈의 탐색",
+          "description": "꼬마 브리안을 따라가 무슨 일이 일어났는지 알아보자.",
+          "category": "",
+          "raw_bytes": 90
+        },
+        {
+          "offset": "0xf5f",
+          "size_field": 51,
+          "name": "주둔지",
+          "description": "매도우 힐의 주둔지로 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 53
+        },
+        {
+          "offset": "0xf94",
+          "size_field": 63,
+          "name": "이자벨",
+          "description": "프로비던스로 가서 이자벨을 만난다",
+          "category": "",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0xfd5",
+          "size_field": 76,
+          "name": "누아다",
+          "description": "꼬마 브리안을 찾고 누아다를 생포하러 가자.",
+          "category": "",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0x1023",
+          "size_field": 44,
+          "name": "비밀",
+          "description": "매도우 힐로 돌아가자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 46
+        },
+        {
+          "offset": "0x1051",
+          "size_field": 79,
+          "name": "진실",
+          "description": "꼬마 브리안을 따라 프로비던스 여관 지하로 가자.",
+          "category": "",
+          "raw_bytes": 81
+        },
+        {
+          "offset": "0x10a2",
+          "size_field": 63,
+          "name": "듣는 자",
+          "description": "다시 한 번 매도우 힐의 주둔지로 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0x10e3",
+          "size_field": 87,
+          "name": "포로수용소",
+          "description": "포로수용소로 가서 케프네스가 숨겨 놓고 있는 것을 찾아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 89
+        },
+        {
+          "offset": "0x113c",
+          "size_field": 93,
+          "name": "포로수용소 침입",
+          "description": "포로수용소의 입구에 걸린 방어마법을 해제할 방법을 찾아보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 95
+        },
+        {
+          "offset": "0x119b",
+          "size_field": 71,
+          "name": "엔리코",
+          "description": "베스무라에 있다는 엔리코라는 사람을 찾자",
+          "category": "",
+          "raw_bytes": 73
+        },
+        {
+          "offset": "0x11e4",
+          "size_field": 93,
+          "name": "마력기관",
+          "description": "고대전투병에게서 마력기관 15개를 얻어 엔리코에게 가져다주자.",
+          "category": "",
+          "raw_bytes": 95
+        },
+        {
+          "offset": "0x1243",
+          "size_field": 61,
+          "name": "아눈 섬",
+          "description": "아눈 섬으로 돌아가서 엘렌을 찾는다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 63
+        },
+        {
+          "offset": "0x1282",
+          "size_field": 65,
+          "name": "리온 조사",
+          "description": "불타는 도시를 조사해서 엘렌을 찾는다",
+          "category": "",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0x12c5",
+          "size_field": 66,
+          "name": "구출",
+          "description": "던전 최하층으로 가서 엘렌과 루레인을 구한다\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 68
+        },
+        {
+          "offset": "0x1309",
+          "size_field": 53,
+          "name": "던전탈출",
+          "description": "아눈 섬의 던전을 탈출하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 55
+        },
+        {
+          "offset": "0x1340",
+          "size_field": 59,
+          "name": "성지",
+          "description": "케프네스와의 결전을 위해 성지로 가자\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 61
+        },
+        {
+          "offset": "0x137d",
+          "size_field": 55,
+          "name": "지연작전",
+          "description": "병력이 후퇴할 시간을 번다.",
+          "category": "",
+          "raw_bytes": 57
+        },
+        {
+          "offset": "0x13b6",
+          "size_field": 63,
+          "name": "성역의 중심",
+          "description": "성지 중앙에 있는 신전을 찾아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0x13f7",
+          "size_field": 69,
+          "name": "전이장치",
+          "description": "신전 왼편으로 가서 전이 장치를 작동시키자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 71
+        },
+        {
+          "offset": "0x143e",
+          "size_field": 64,
+          "name": "케프네스",
+          "description": "케프네스를 찾아 신전 최하층까지 가자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 2386
+        }
+      ]
+    },
+    "_QUEST_1_DAT": {
+      "size": 7328,
+      "count": 66,
+      "quests": [
+        {
+          "offset": "0x0",
+          "size_field": 65,
+          "name": "성지 방어1",
+          "description": "성지에 침입한 인간 병사들을 물리친다.",
+          "category": "",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0x43",
+          "size_field": 72,
+          "name": "성지 방어2",
+          "description": "성지 동쪽으로 도망간 인간 정예병을 물리치자.",
+          "category": "",
+          "raw_bytes": 74
+        },
+        {
+          "offset": "0x8d",
+          "size_field": 64,
+          "name": "노덴스",
+          "description": "신전 안에 있는 노덴스에게 상황을 보고하자.",
+          "category": "",
+          "raw_bytes": 66
+        },
+        {
+          "offset": "0xcf",
+          "size_field": 73,
+          "name": "수호자",
+          "description": "브레스를 만나 성지에서 일어난 일을 전하자.",
+          "category": "",
+          "raw_bytes": 75
+        },
+        {
+          "offset": "0x11a",
+          "size_field": 52,
+          "name": "탈주",
+          "description": "선착장까지 가는 길을 뚫는다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 54
+        },
+        {
+          "offset": "0x150",
+          "size_field": 66,
+          "name": "활로1",
+          "description": "길을 막고 있는 인간 병사를 모두 처리한다.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 68
+        },
+        {
+          "offset": "0x194",
+          "size_field": 63,
+          "name": "활로2",
+          "description": "길을 막고 있는 인간 기갑병을 처리한다.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0x1d5",
+          "size_field": 76,
+          "name": "활로3",
+          "description": "길을 막고 있는 멍청해 보이는 인간 병사를 처리하자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0x223",
+          "size_field": 81,
+          "name": "선박 탈취",
+          "description": "배 안에 있는 인간 병사들을 물리치고 제어권을 뺏는다.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 83
+        },
+        {
+          "offset": "0x276",
+          "size_field": 74,
+          "name": "연금술사",
+          "description": "리온의 연금술사를 만나서 배의 준비를 돕자.",
+          "category": "",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0x2c2",
+          "size_field": 76,
+          "name": "대장장이",
+          "description": "리온의 대장장이를 만나서 무기의 준비를 돕자.",
+          "category": "",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0x310",
+          "size_field": 96,
+          "name": "방어 준비 이후",
+          "description": "무기와 배의 준비가 끝나면 브레스를 찾아가 보고하자.",
+          "category": "",
+          "raw_bytes": 98
+        },
+        {
+          "offset": "0x372",
+          "size_field": 85,
+          "name": "불의 정령석",
+          "description": "하급 불의 정령으로부터 불의 정령석을 5개를 모은다.",
+          "category": "",
+          "raw_bytes": 87
+        },
+        {
+          "offset": "0x3c9",
+          "size_field": 77,
+          "name": "웜의 껍질",
+          "description": "웜의 껍질 10개를 수집하여 대장장이에게 준다.",
+          "category": "",
+          "raw_bytes": 79
+        },
+        {
+          "offset": "0x418",
+          "size_field": 101,
+          "name": "스트레이츠",
+          "description": "리온에 있는 스트레이츠를 찾아 마석을 대신할 물건에 대해 알아보자.",
+          "category": "",
+          "raw_bytes": 103
+        },
+        {
+          "offset": "0x47f",
+          "size_field": 85,
+          "name": "악령",
+          "description": "아눈 섬 서쪽 숲에서 악령을 잡아 녹색가루 10개를 모으자.",
+          "category": "",
+          "raw_bytes": 87
+        },
+        {
+          "offset": "0x4d6",
+          "size_field": 72,
+          "name": "퇴각",
+          "description": "검은 바위 섬의 주둔지로 가서 병력을 데리고 오자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 74
+        },
+        {
+          "offset": "0x520",
+          "size_field": 74,
+          "name": "검은 바위 섬으로",
+          "description": "선착장으로 가서 검은 바위 섬으로 가자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0x56c",
+          "size_field": 58,
+          "name": "괴물들",
+          "description": "주둔지에 있는 괴물들을 처리하자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 60
+        },
+        {
+          "offset": "0x5a8",
+          "size_field": 65,
+          "name": "사라진 병사들",
+          "description": "사라진 네베드 병사들을 찾아보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0x5eb",
+          "size_field": 79,
+          "name": "흔적들",
+          "description": "단서가 될만한 것을 찾아 주둔지의 막사들을 조사해보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 81
+        },
+        {
+          "offset": "0x63c",
+          "size_field": 65,
+          "name": "의문의 동굴",
+          "description": "검은 바위 섬의 동굴을 조사해 보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0x67f",
+          "size_field": 75,
+          "name": "소환수?",
+          "description": "인간들이 소환수를 데려간 동굴 최하층으로 가본다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 77
+        },
+        {
+          "offset": "0x6cc",
+          "size_field": 62,
+          "name": "카드키 입수",
+          "description": "인간 병사를 잡아 카드키를 얻자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 64
+        },
+        {
+          "offset": "0x70c",
+          "size_field": 56,
+          "name": "탈출",
+          "description": "동굴을 빠져나가 선착장까지 가자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 58
+        },
+        {
+          "offset": "0x746",
+          "size_field": 80,
+          "name": "보고",
+          "description": "브레스를 만나 검은 바위 섬에서 있었던 일을 보고하자.",
+          "category": "",
+          "raw_bytes": 82
+        },
+        {
+          "offset": "0x798",
+          "size_field": 68,
+          "name": "생존자의 증언",
+          "description": "브레스를 따라 생존자를 만나러 가자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 70
+        },
+        {
+          "offset": "0x7de",
+          "size_field": 65,
+          "name": "불길한 징조",
+          "description": "수레바퀴 섬의 신전을 조사한다.",
+          "category": "",
+          "raw_bytes": 67
+        },
+        {
+          "offset": "0x821",
+          "size_field": 64,
+          "name": "에리나",
+          "description": "팔리아스로 가서 에리나를 만난다.",
+          "category": "",
+          "raw_bytes": 66
+        },
+        {
+          "offset": "0x863",
+          "size_field": 80,
+          "name": "고블린 소굴",
+          "description": "비밀항로를 막고 있는 고블린들을 처치하자.",
+          "category": "",
+          "raw_bytes": 82
+        },
+        {
+          "offset": "0x8b5",
+          "size_field": 86,
+          "name": "고블린 소탕",
+          "description": "고블린 소굴에서 리더로 보이는 고블린들을 찾아 제거하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 88
+        },
+        {
+          "offset": "0x90d",
+          "size_field": 77,
+          "name": "수레바퀴섬의 신전",
+          "description": "수레바퀴 섬의 동쪽에 있는 신전으로 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 79
+        },
+        {
+          "offset": "0x95c",
+          "size_field": 104,
+          "name": "팔리아스의 신전",
+          "description": "팔리아스의 정착지에 있는 신전에 들어가 봉인지의 위치에 대해 알아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 106
+        },
+        {
+          "offset": "0x9c6",
+          "size_field": 68,
+          "name": "팔리아스의 봉인",
+          "description": "팔리아스 서쪽에 있는 봉인에 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 70
+        },
+        {
+          "offset": "0xa0c",
+          "size_field": 75,
+          "name": "팔리아스 사건 보고",
+          "description": "브레스를 만나 팔리아스의 사건을 보고한다.",
+          "category": "",
+          "raw_bytes": 77
+        },
+        {
+          "offset": "0xa59",
+          "size_field": 74,
+          "name": "추적",
+          "description": "도망친 가디언을 쫓아 팔리아스 동쪽 해안으로 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0xaa5",
+          "size_field": 92,
+          "name": "핀디아스의 봉인",
+          "description": "핀디아스의 봉인에 침입자가 없는지 확인하고 수호물을 강화한다.",
+          "category": "",
+          "raw_bytes": 94
+        },
+        {
+          "offset": "0xb03",
+          "size_field": 74,
+          "name": "수호물 강화",
+          "description": "수호물 강화를 위해 악마의 피를 모아야 한다.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 76
+        },
+        {
+          "offset": "0xb4f",
+          "size_field": 71,
+          "name": "핀디아스의 침입자",
+          "description": "핀디아스 동굴의 침입자를 추적하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 73
+        },
+        {
+          "offset": "0xb98",
+          "size_field": 85,
+          "name": "누아다 구출",
+          "description": "누아다가 살아 있다고 한다. 어디에 있는지 알아내야한다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 87
+        },
+        {
+          "offset": "0xbef",
+          "size_field": 77,
+          "name": "인간 반역자",
+          "description": "크래드가 데리고 있다는 인간 반역자를 만나보자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 79
+        },
+        {
+          "offset": "0xc3e",
+          "size_field": 82,
+          "name": "포로수용소",
+          "description": "뮤리아스 동쪽의 포로수용소로 가서 누아다를 구출하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 84
+        },
+        {
+          "offset": "0xc92",
+          "size_field": 79,
+          "name": "포로 구출",
+          "description": "포로수용소 안에 갇혀있는 네베드 포로들을 구출한다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 81
+        },
+        {
+          "offset": "0xce3",
+          "size_field": 76,
+          "name": "소환수 구출",
+          "description": "포로수용소 안에 갇혀있는 소환수들을 구출한다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0xd31",
+          "size_field": 62,
+          "name": "크리스탈",
+          "description": "크리스탈이라는 것에 대해 알아내자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 64
+        },
+        {
+          "offset": "0xd71",
+          "size_field": 59,
+          "name": "크래드",
+          "description": "티르를 따라 크래드를 만나러 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 61
+        },
+        {
+          "offset": "0xdae",
+          "size_field": 59,
+          "name": "탈출로 확보",
+          "description": "선착장까지 가는 길을 뚫는다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 61
+        },
+        {
+          "offset": "0xdeb",
+          "size_field": 56,
+          "name": "다른 길",
+          "description": "선착장으로 가는 다른 길을 물어보자.",
+          "category": "",
+          "raw_bytes": 58
+        },
+        {
+          "offset": "0xe25",
+          "size_field": 54,
+          "name": "비밀 통로",
+          "description": "비밀통로를 따라 탈출하자.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 56
+        },
+        {
+          "offset": "0xe5d",
+          "size_field": 83,
+          "name": "다시 비밀통로",
+          "description": "크래드의 집을 통해 다시 한 번 비밀통로로 들어간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 85
+        },
+        {
+          "offset": "0xeb2",
+          "size_field": 81,
+          "name": "포로수용소 사건 보고.",
+          "description": "브레스를 만나 포로수용소의 일을 이야기 한다.",
+          "category": "",
+          "raw_bytes": 83
+        },
+        {
+          "offset": "0xf05",
+          "size_field": 77,
+          "name": "아눈 신전",
+          "description": "아눈 섬의 신전에 들어가서 시험을 마저 통과하고 온다.",
+          "category": "",
+          "raw_bytes": 79
+        },
+        {
+          "offset": "0xf54",
+          "size_field": 76,
+          "name": "크리스탈의 단서",
+          "description": "티르에게서 크리스탈에 대해 알아내자.",
+          "category": "",
+          "raw_bytes": 78
+        },
+        {
+          "offset": "0xfa2",
+          "size_field": 63,
+          "name": "브레스의 호출",
+          "description": "아눈 섬으로 가서 브레스를 만나자.",
+          "category": "",
+          "raw_bytes": 65
+        },
+        {
+          "offset": "0xfe3",
+          "size_field": 71,
+          "name": "핀디아스의 침입자",
+          "description": "핀디아스의 침입자를 저지하러 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 73
+        },
+        {
+          "offset": "0x102c",
+          "size_field": 73,
+          "name": "매도우 힐의 연구소",
+          "description": "매도우 힐에 있는 연구소에 침입한다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 75
+        },
+        {
+          "offset": "0x1077",
+          "size_field": 79,
+          "name": "주둔지 정찰",
+          "description": "주둔지 지하로부터 연구소에 침입하는 길을 찾는다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 81
+        },
+        {
+          "offset": "0x10c8",
+          "size_field": 64,
+          "name": "침입로",
+          "description": "주둔지 지하 2층의 문을 열 열쇠를 찾자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 66
+        },
+        {
+          "offset": "0x110a",
+          "size_field": 48,
+          "name": "아눈 섬",
+          "description": "아눈 섬으로 돌아간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 50
+        },
+        {
+          "offset": "0x113c",
+          "size_field": 82,
+          "name": "크리스탈 파괴",
+          "description": "엘렌을 아눈 섬 봉인 최하층으로 데려가서 파괴한다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 84
+        },
+        {
+          "offset": "0x1190",
+          "size_field": 73,
+          "name": "팔리아스",
+          "description": "마지막 남은 마을. 팔리아스의 정착지로 가본다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 75
+        },
+        {
+          "offset": "0x11db",
+          "size_field": 68,
+          "name": "팔리아스 방어전1",
+          "description": "팔리아스 서쪽의 적들을 막아내자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 70
+        },
+        {
+          "offset": "0x1221",
+          "size_field": 75,
+          "name": "팔리아스 방어전2",
+          "description": "팔라아스 동쪽에 나타난 적들을 막아내자.\n메인퀘스트",
+          "category": "메인퀘스트",
+          "raw_bytes": 77
+        },
+        {
+          "offset": "0x126e",
+          "size_field": 56,
+          "name": "성지",
+          "description": "성지의 신전 앞까지 가서 티르를 만난다.",
+          "category": "",
+          "raw_bytes": 58
+        },
+        {
+          "offset": "0x12a8",
+          "size_field": 78,
+          "name": "전이 장치",
+          "description": "성지 신전의 서쪽으로 가서 전이 장치를 가동시킨다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 80
+        },
+        {
+          "offset": "0x12f8",
+          "size_field": 53,
+          "name": "케프네스",
+          "description": "케프네스를 물리치러 간다.\n메인퀘스트��",
+          "category": "메인퀘스트",
+          "raw_bytes": 2472
+        }
+      ]
+    }
+  }
+}

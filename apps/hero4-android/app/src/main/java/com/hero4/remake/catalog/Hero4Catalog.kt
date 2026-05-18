@@ -45,16 +45,25 @@ data class Hero4NpcFile(
     val samples: List<String>,
 )
 
+data class Hero4Quest(
+    val sourceFile: String,
+    val name: String,
+    val description: String,
+    val category: String,
+)
+
 data class Hero4Catalog(
     val meta: Map<String, Any>,
     val heroes: List<Hero4Hero>,
     val skillSets: List<Hero4SkillSet>,
     val items: List<Hero4ItemFile>,
     val npc: List<Hero4NpcFile>,
+    val quests: List<Hero4Quest>,
 ) {
     val totalSkills: Int get() = skillSets.sumOf { it.skillCount }
     val totalItemKorean: Int get() = items.sumOf { it.koreanCount }
     val totalNpcKorean: Int get() = npc.sumOf { it.koreanCount }
+    val mainStoryQuests: Int get() = quests.count { it.category == "메인퀘스트" }
 }
 
 object Hero4CatalogLoader {
@@ -133,7 +142,21 @@ object Hero4CatalogLoader {
             }
         }
 
-        return Hero4Catalog(meta, heroes, skillSets, items, npc)
+        // quests (R70)
+        val quests = mutableListOf<Hero4Quest>()
+        root.optJSONArray("quests")?.let { arr ->
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                quests += Hero4Quest(
+                    sourceFile = o.optString("source_file"),
+                    name = o.optString("name"),
+                    description = o.optString("description"),
+                    category = o.optString("category"),
+                )
+            }
+        }
+
+        return Hero4Catalog(meta, heroes, skillSets, items, npc, quests)
     }
 
     private fun JSONObject.toStringMap(): Map<String, Any> {
