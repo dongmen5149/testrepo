@@ -1,117 +1,136 @@
-# Hero3 인수인계 노트 (Round 72 종료 시점, 2026-05-19)
+# Hero3 인수인계 노트 (Round 73 종료 시점, 2026-05-19)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.8%**. R72 **Android scene 통합 시작** — MainActivity 에 lazy catalog 통합 + CatalogViewerScene 신규 (7-tab brower) + BestiaryScene boss combat_rating 표시. 빌드 + 12 unit tests 모두 통과. MASTER_SPEC §13 step 2-3 진행 중.
+**Hero3 분석 진행률 ~99.95%**. 🏆 **R73 DES 8/8 파일 복호화 성공** (Hero5 mx_des_decrypt 변종 + key 0EP@KO91). R58 의 "NDK runner 필수" 가설 폐기. **i15_dat = master shop catalog** 한글 텍스트 발견. SMAF pipeline 작성 (외부 도구 부재 graceful detection).
 
-마지막 commit: `ba002199 feat:영웅서기3 Round 71 — Hero3Catalog data classes + Loader + 12 unit tests (Android 통합 시작)`
+마지막 commit: `54e14071 feat:영웅서기4 Round 72 — E/BSDAT + ESDAT 6 파일 정밀 파싱 (559 entries)` (H3 R72 흡수)
 
-**Round 72 산출물 = uncommitted**:
-- 신규 doc: [`ghidra-round72-scene-integration-2026-05-19.md`](ghidra-round72-scene-integration-2026-05-19.md)
-- 신규 코드 1: `scene/CatalogViewerScene.kt` (171 lines, 7-tab catalog browser)
-- 수정 코드 4: MainActivity / MainMenuScene / BestiaryScene / strings.xml ×2
-- 빌드 + 12 unit tests 통과 검증
+**Round 73 산출물 = uncommitted**:
+- 신규 doc 2: [`smaf_conversion_guide.md`](smaf_conversion_guide.md) + [`ghidra-round73-des-success-smaf-pipeline-2026-05-19.md`](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md)
+- 신규 스크립트 2: `tools/converter/decrypt_h3_mx_des.py` + `convert_h3_smaf_pipeline.py`
+- 신규 복호화 산출물 (work/h3/decrypted/, gitignored): `i15_dat.plain` + 7 others
+- MASTER_SPEC §10 갱신 (DES 0 pending)
+- PROGRESS.md / SESSION_HANDOFF.md / MEMORY.md 갱신
 
-## 1. 즉시 진행 가능한 작업 (R73)
+## 1. 즉시 진행 가능한 작업 (R74)
 
-### 1.1 ⭐⭐⭐ InventoryScene rarity color 표시
+### 1.1 ⭐⭐⭐⭐ DES 평문 데이터 정밀 파싱
 
-R72 의 패턴 확장. catalog.rarity 활용:
-- item name prefix (`|` magic, `'` legendary, `$` epic, `{` boss_drop, `@` endgame, `}` quest_reward)
-- 각 rarity 의 color (blue/gold/purple/orange/red/green) 적용
-- 가격 modifier 표시 ("(magic 1.13×)" 등)
+R73 의 8 plain 파일을 typed Kotlin object 로 디코드:
 
-### 1.2 ⭐⭐⭐ StatusScene 가 catalog.statName() 사용
+1. **i15_dat parser** — master shop catalog text DB
+   - entry = (size, name, description text)
+   - body 가 "레벨 10 투구; 머리띠; 보스용도 15년;" 같은 자연어
+   - 텍스트 → 구조화 (level / category / desc 분리)
 
-stat 표시 (ATT1/P_DEF 등) 의 일관된 이름:
-- Hero3Catalog.statName(0x05) → "ATT1"
-- 기존 hardcoded "STR/INT/VIT" UI 라벨과 internal stat 매핑
+2. **drop_dat / droph_dat parser** — 18-byte stride entry
+   - `11 00` separator 의 의미 (drop_count 또는 entry header)
+   - enemy_id ↔ drop item_id + drop_rate% 매핑
 
-### 1.3 ⭐⭐ BattleScene 의 catalog.statEnum 활용
+3. **smith_dat / smithh_dat parser** — i14 → i0~i12 레시피
+   - input items + output item + cost(gold) 구조 추정
 
-skill effect 적용 시 catalog.statEnum 으로 buff/debuff lookup. R66 의 debuff context split (0x0d STUN_RESIST_DEBUFF, 0x1c STUN_TRIGGER) 적용.
+4. **shop_dat / shoph_dat parser** — 상점 NPC 별 판매 목록
+   - price 정보 + item_id 표
 
-### 1.4 ⭐⭐ SkillScene 의 catalog.skills 활용
+5. **boss skill ID H4 가설 검증** — R67/R68 의 결론. drop_dat 또는 신규 dat 안에 boss AI table 있는지 확인
 
-105 skill 목록 표시. 4 카테고리 (weapon_passive / active_attack / active_buff / passive_bonus) 별 그룹화.
+### 1.2 ⭐⭐⭐ Hero3Catalog 확장
 
-### 1.5 ⭐ ShopScene catalog.items 가격 정보
+R73 산출물 → R71 Hero3Catalog 에 통합:
+- Hero3ShopEntry / Hero3DropEntry / Hero3Recipe data class 추가
+- game_balance.json v1.2 (582KB → ~700KB 예상)
 
-game_balance.json 의 price 사용. rarity modifier (boss_drop 0.03x 등) 자동 적용.
+### 1.3 ⭐⭐ Compose MP UI 마이그레이션 (Phase C Step 4d)
 
-## 2. 사용자 환경 필수 작업 (R70-R72 동일)
+엔진 코드 분리의 마지막 단계.
 
-- ⭐⭐⭐ DES 8 파일 복호화 (i15/drop/smith/shop) — Hero5 NDK runner
-- ⭐⭐⭐ boss skill ID 매핑 최종 확정 (DES 후속)
-- ⭐⭐ Dialogue LLM 번역 ($4.09)
-- ⭐ SMAF→OGG audio
+## 2. 사용자 환경 필수 작업
 
-## 3. Round 72 핵심 발견
+### 2.1 ⭐⭐ SMAF → OGG 변환
 
-### 3.1 MainActivity catalog lazy 통합 (★★★★★)
+R73 의 pipeline 스크립트 + 가이드 작성 완료. 외부 도구 4종 설치만 하면 즉시 33 파일 변환:
+1. smaf-converter.jar (https://github.com/antanas-vasiliauskas/smaf-converter)
+2. TiMidity++ 또는 FluidSynth
+3. FluidR3_GM.sf2 (130MB SoundFont)
+4. FFmpeg (`winget install Gyan.FFmpeg`)
 
-```kotlin
-class MainActivity : ComponentActivity() {
-    val catalog: Hero3Catalog by lazy {
-        Hero3CatalogLoader.load(AndroidAssetReader(this))
-    }
-}
+설치 후:
+```bash
+python tools/converter/convert_h3_smaf_pipeline.py
 ```
 
-- TitleScene 진입 시 비용 0
-- CatalogViewerScene/BestiaryScene boss section 진입 시점 첫 파싱
-- 모든 scene 에서 `(context as? MainActivity)?.catalog` 접근 가능
+자세한 가이드: [smaf_conversion_guide.md](smaf_conversion_guide.md).
 
-### 3.2 CatalogViewerScene 7-tab brower (★★★★★)
+### 2.2 ⭐⭐ Dialogue LLM 번역
 
-Overview / Stat Enum / Rarity / Items / Skills / Bosses / DES Status
+9,740 entries, $4.09 추정 (Claude Sonnet 4.6). R69 의 `work/h3/translation_queue.json` 사용.
 
-조작: `<>` tab 전환, `^v` row 선택, `OK/R` 뒤로.
+## 3. Round 73 핵심 발견
 
-R71 의 catalog 가 실제로 사용되는 입증 + 디버그 / 자료 검증용 scene.
+### 3.1 DES 8/8 복호화 성공 (🏆)
 
-### 3.3 BestiaryScene boss combat_rating 표시 (★★★★)
+```
+algorithm:  Hero5 mx_des_decrypt 변종 (startDes mode=0 + swap halves)
+key:        "0EP@KO91" (Hero3 R57 확정)
+python port: tools/h5_des.py
+```
 
-선택된 enemy 가 catalog 의 보스이면:
-- "★ 보스 권장 lvl: 51"
-- "sprite #0  story"
-표시. graceful degrade (catalog 미로딩 시 기존 동작).
+| 파일 | 검증 |
+|---|---|
+| i15_dat | 한글 "붉은머리띠 / 레벨 10 투구" 발견 = master shop catalog 확정 |
+| getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat | entropy 3.6-4.1 = binary table 평문 |
+| drop_dat / droph_dat | 18-byte stride + `11 00` separator binary drop table |
 
-### 3.4 빌드 검증
+**핵심 lesson**: 벤더 공통 cipher = cross-game 1순위 시도. R58 의 1년 묵은 "NDK 필수" 가설이 30분에 해결됨.
 
-- `:app:compileDebugKotlin` BUILD SUCCESSFUL
-- `:app:testDebugUnitTest` BUILD SUCCESSFUL (R71 12 tests 모두 유지)
+### 3.2 i15_dat = master shop catalog (★★★★★)
 
-## 4. 작업 순서 권장 (R73)
+평문 첫 entry:
+```
+@0x0008  size=52  nl=26  name=(...붉은머리띠...)
+                          body=" 레벨 10 투구; 머리띠; 보스용도 15년; "
+```
+
+→ shop NPC 가 표시하는 item description 텍스트 직접 포함.
+
+### 3.3 SMAF pipeline (★★★)
+
+33/33 SMAF 헤더 검증 통과. 외부 도구 설치 후 자동 33 파일 변환 가능.
+
+## 4. 작업 순서 권장 (R74)
 
 1. `git status` + `git log --oneline -5`
-2. `git add` + `git commit` Round 72 산출물
-3. **InventoryScene rarity color 통합** (R73 핵심):
-   - Hero3Item.rarity field 활용
-   - 각 rarity 색상 적용 + prefix 표시
-4. **StatusScene stat naming 통일**:
-   - catalog.statName() 사용
-5. **사용자 환경 진행** (병행):
-   - DES 8 파일 복호화
+2. `git add` + `git commit` Round 73 산출물
+3. **i15_dat parser 작성** (R74 핵심):
+   - entry 디코드 + description 텍스트 분리
+   - shop catalog → Hero3Catalog 확장
+4. **drop_dat parser**:
+   - 18-byte stride entry 디코드
+   - enemy_id ↔ drop item 매핑
+5. **smith_dat parser**:
+   - 조합 레시피 매핑
+6. **사용자 환경 진행** (병행):
+   - SMAF 도구 설치 → OGG 변환
+   - Dialogue LLM 번역
 
-목표 진행률 (R73 종료): Android 통합도 ~50% (InventoryScene + StatusScene 통합 후).
+목표 진행률 (R74 종료): **~99.98%**.
 
 ## 5. 참고 문서
 
-- ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (R70)
+- ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (§10 DES 0 pending)
 - [PROGRESS.md](PROGRESS.md) — 전체 진행 기록
-- [Round 72](ghidra-round72-scene-integration-2026-05-19.md) — ★ 이번 라운드 (scene 통합 시작)
-- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Catalog data classes + loader
-- [Round 70](ghidra-round70-master-spec-exp-groups-2026-05-19.md) — Master Spec + exp 그룹
-- [Round 69](ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md) — ammo 정정 + stat scaling
-- [Round 68](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md) — boss skill 검색
-- [Round 67](ghidra-round67-skill-header-enemy-trailer-boss-skill-id-2026-05-19.md) — skill header
-- [Round 66](ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md) — debuff codes + v1.1
-- [Round 65](ghidra-round65-trailer-effect-mask-signed-2026-05-19.md) — effect mask + signed
-- [Round 64](ghidra-round64-balance-export-value-scale-2026-05-19.md) — game_balance.json v1.0
-- (R56-R63) — see MASTER_SPEC §14
-- [Hero4Catalog](../../apps/hero4-android/app/src/main/java/com/hero4/remake/catalog/Hero4Catalog.kt) — R71 의 reference 패턴
+- [Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) — ★ 이번 라운드 (DES success + SMAF)
+- [smaf_conversion_guide.md](smaf_conversion_guide.md) — SMAF 외부 도구 가이드
+- [Round 72](ghidra-round72-scene-integration-2026-05-19.md) — Android scene 통합
+- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Hero3Catalog data layer
+- [Round 70](ghidra-round70-master-spec-exp-groups-2026-05-19.md) — Master Spec
+- (R56-R69) — see MASTER_SPEC §14
+- `tools/converter/decrypt_h3_mx_des.py` — R73 DES batch
+- `tools/converter/convert_h3_smaf_pipeline.py` — R73 SMAF pipeline
+- `tools/h5_des.py` — Hero5 mx_des_decrypt Python 포팅 (Hero5 R68)
 - 모든 round docs: `docs/h3/ghidra-*-2026-05-1[0-9].md`
 - 모든 recon scripts: `tools/recon/`

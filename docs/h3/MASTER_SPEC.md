@@ -327,13 +327,17 @@ menu/*_txt             — 50 menu UI strings
 event/e000X_scn        — 350 dialogue SCN files (9,740 unique Korean)
 ```
 
-## 10. DES System (R57)
+## 10. DES System (R57 / R73)
 
-- algorithm: standard FIPS DES (ECB-like, see Hero5 NDK runner)
-- key: `"0EP@KO91"` (binary @0xac594)
+- algorithm: **Hero5 `mx_des_decrypt` 변종** (`startDes(mode=0)` swap halves + 정방향 라운드 키)
+- key: `"0EP@KO91"` (binary @0xac594, R57 확정)
 - tables: `dat/des_dat` (824B FIPS, IP/IP⁻¹/E/P/S1-S8/PC1/PC2 모두 평문)
-- pending: 8 files (i15/drop/droph/getitem/smith/smithh/shop/shoph)
-- blocker: 사용자 환경 NDK runner 필요 (`reference_h5_des_blocker.md` 참고)
+- Python port: `tools/h5_des.py` 의 `mx_des_decrypt(data, key)` 그대로 사용
+- 🎉 **R73: 8/8 파일 모두 복호화 성공** — 이전 R58 의 "표준 변종 5종 실패 / NDK runner 필수" 가설 정정
+  - i15_dat (7400B → master shop catalog, 한글 텍스트 "붉은머리띠 / 레벨 10 투구" 등)
+  - drop_dat / droph_dat (3080B → 18-byte stride binary drop table)
+  - getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat (binary recipe/shop table)
+- pending: **0 files** (R73 완료)
 
 ## 11. Region Map (8 main, R58)
 
