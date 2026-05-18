@@ -357,10 +357,8 @@ func spawn_monster(monster_id: int, pos: Vector2, ai_type_id: int = -1) -> Sprit
 	c.hp = c.max_hp
 	c.set_meta("monster_id", monster_id)
 	add_child(c)
-	# AI 가 skill 발동 시 demo 가 처리 (현재는 toast 만)
-	c.ai_skill_cast.connect(func(skill_id, source):
-		preload("res://scripts/ui/toast.gd").show_msg(self,
-			"몬스터 #%d 스킬 %d 시전" % [monster_id, skill_id]))
+	# Round 63: AI skill cast → hero HP 차감 + damage popup
+	c.ai_skill_cast.connect(_on_monster_skill_cast.bind(monster_id))
 	if ai_type_id >= 0:
 		var rt = MonsterAI.create_runtime(c, ai_type_id)
 		# rt 는 caller 가 보관 (process 호출 책임 분리). 일단 노드 meta 에 저장.
@@ -398,6 +396,82 @@ func _physics_process(delta: float) -> void:
 		_monsters.erase(c)
 		if c != null and is_instance_valid(c):
 			c.queue_free()
+
+
+# === Round 63: Monster ↔ Hero 실 전투 처리 ===
+
+const ATTACK_RANGE_TILES := 2   # hero 의 인접 공격 거리 (Chebyshev, tiles)
+
+## monster 가 ai_cast_skill emit → hero HP 차감 + damage popup.
+##
+## skill_id 별 데미지: skill_id == 0 또는 신호가 plain attack 인 경우 단순 공식.
+## ai_check_irect_hit 가 이미 attack range 검증 했으므로 거리 재검증은 light 만.
+func _on_monster_skill_cast(skill_id: int, source: Node2D, monster_id: int) -> void:
+	if not is_instance_valid(source): return
+	# 거리 재검증 (AI 가 호출했지만 hero 위치 변동 가능)
+	var dist_tiles = source.fast_distance_to_hero() if source.has_method("fast_distance_to_hero") else 999
+	if dist_tiles > 6:
+		# 시야 밖 → miss
+		return
+	# 데미지 계산: enemy_stats 의 attack + skill_id 기반 multiplier
+	var stats = GameData.enemy_stats(monster_id)
+	var base_atk = int(stats.get("attack", 5 + monster_id % 8))
+	var skill_mult = 100 + (skill_id * 20)   # skill_id 0=plain, 매 단계 +20%
+	var raw = max(1, base_atk * skill_mult / 100 + randi() % 5)
+	var defense = GameState.total_defense() if GameState.has_method("total_defense") else 0
+	var dmg = max(1, raw - defense / 2)
+	GameState.hp = max(0, GameState.hp - dmg)
+	GameState.state_changed.emit()
+	# damage popup at hero
+	var DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+	DamagePopup.spawn(self, _hero.position + Vector2(-10, -30),
+		"-%d" % dmg, Color(1, 0.4, 0.4, 1))
+	# 몬스터 위에 스킬 이름
+	preload("res://scripts/ui/toast.gd").show_msg(self,
+		"#%d → skill %d (-%d HP)" % [monster_id, skill_id, dmg])
+	# 사망 처리
+	if GameState.hp == 0:
+		_dialog.show_dialog("System", "쓰러졌다... (slot 0 자동 로드)")
+		# F9 와 동일 — 슬롯 0 빠른 로드
+		if GameState.quick_load(0):
+			_scene_idx = GameState.current_scene_id
+			_apply_scene()
+
+
+## Hero 의 SPACE 공격 — Chebyshev ATTACK_RANGE_TILES 이내의 monster 중 가장 가까운 것 1마리 처리.
+##
+## monster.take_damage 호출 → dead 전환 시 AI tick 루프가 list 정리 + Mission 트리거.
+func _hero_attack_nearest() -> void:
+	if _monsters.is_empty():
+		preload("res://scripts/ui/toast.gd").show_msg(self, "공격할 적 없음")
+		return
+	var best: Node2D = null
+	var best_dist := 9999
+	for c in _monsters:
+		if c == null or not is_instance_valid(c) or c.dead: continue
+		var dx = abs(int(c.position.x - _hero.position.x)) / 32
+		var dy = abs(int(c.position.y - _hero.position.y)) / 32
+		var d = max(dx, dy)
+		if d <= ATTACK_RANGE_TILES and d < best_dist:
+			best = c; best_dist = d
+	if best == null:
+		preload("res://scripts/ui/toast.gd").show_msg(self,
+			"공격 범위 내 적 없음 (≤%d tile)" % ATTACK_RANGE_TILES)
+		return
+	var atk = GameState.total_attack() if GameState.has_method("total_attack") else 10
+	var dmg = max(1, atk + randi() % 8)
+	best.take_damage(dmg)
+	# damage popup at monster
+	var DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+	DamagePopup.spawn(self, best.position + Vector2(-10, -30),
+		"-%d" % dmg, Color(1, 0.9, 0.5, 1))
+	# hero 가 monster 향해 방향 전환
+	var dx = int(best.position.x - _hero.position.x)
+	var dy = int(best.position.y - _hero.position.y)
+	if abs(dx) >= abs(dy):
+		_hero.direction = (2 if dx > 0 else 1)   # RIGHT or LEFT (Round 61 enum)
+	else:
+		_hero.direction = (0 if dy > 0 else 3)   # DOWN or UP
 
 
 func _input(event: InputEvent) -> void:
@@ -483,6 +557,9 @@ func _input(event: InputEvent) -> void:
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
+			KEY_SPACE:
+				# SPACE: 인접 monster 공격 (Round 63 — ATTACK_RANGE_TILES 이내)
+				_hero_attack_nearest()
 			KEY_G:
 				# G: hero 주변에 random monster 스폰 (Round 62 — AI tick 테스트)
 				var mid = randi() % 75
