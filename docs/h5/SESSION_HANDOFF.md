@@ -2,6 +2,21 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
+## ⚡ "영웅서기5 다음 내용 진행해줘" → **Round 64 보상 흐름**
+
+차기 세션 즉시 할 일 (이 문서 §D 1순위 상세 참조):
+1. 환경 확인: `PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py` → `0 warnings` 확인
+2. 회귀 테스트 (선택): `python tools/h5_test_ai_combat.py` → `All Round 63 combat flow checks passed.`
+3. **R64 시작**: [demo.gd `_physics_process`](../../apps/hero5-godot/scripts/ui/demo.gd) 의 `if c.dead:` 블록에 exp/gold/drop 지급 추가
+   - 패턴: [battle_system.gd `_finish(victory=true)`](../../apps/hero5-godot/scripts/core/battle_system.gd) 의 `enemy_stats`/`_roll_drops` 재활용
+   - `GameState.add_battle_reward(exp, gold)` + `GameState.inventory.append(<drop>)`
+   - damage_popup 으로 `+EXP +Gold` 표시
+4. 검증 신규: `tools/h5_test_kill_reward.py` — exp/gold/drop 시뮬 + level_up signal 트리거
+
+**전체 진척**: Godot 실 구현 74-78%, 리메이크 출시 73-83% (UI R51-58 + RE R59-60 + character/AI R61-63 통합 완료).
+
+---
+
 업데이트: 2026-05-18 (Round 63 — **Monster ↔ Hero 실 전투**. demo.gd 의 `ai_skill_cast` toast-only handler → `_on_monster_skill_cast(skill_id, source, monster_id)` 실 전투 로직: `base_atk × (100 + skill_id × 20)% - defense/2` 데미지 → `GameState.hp` 차감 + red damage popup. hero HP=0 시 자동 quick_load(0). 신규 `_hero_attack_nearest()` (SPACE 키) — `ATTACK_RANGE_TILES=2` 이내 Chebyshev nearest monster 에 `total_attack + 0..7` 데미지 + hero 방향 전환 + yellow damage popup. dead monster 는 Round 62 AI tick 루프가 자동 list 정리 + Mission.bump_progress 트리거. `h5_test_ai_combat.py` — 9 구조 패턴 + Python 시뮬 (monster skill 0 vs skill 5 데미지 차이 12 vs 32 / 누적 사망 / Chebyshev nearest in-range / out-of-range skip / 빈 list -1). Godot 실 구현 71-75% → 74-78%, 출시 70-80% → 73-83%.)
 
 ## 📜 Round 1-63 한 줄 요약
@@ -124,34 +139,36 @@ python tools/h5_test_ai_combat.py      # Round 63: Monster↔Hero 실 전투
 
 ### D. Round 64 추천 작업 (자율 가능, 임팩트 순)
 
-> R62-63 으로 monster spawn + AI tick + 실 전투 완성. R64 부터는 보상 / 잔여 RE.
+> R62-63 으로 monster spawn + AI tick + 실 전투 완성. R64 부터는 보상 흐름 + 잔여 RE.
 
-**1순위 — Hero 의 monster kill 보상 흐름** (0.5 라운드)
-- 현재 SPACE 로 monster 죽이면 Mission progress 만 트리거 — exp/gold/drop 미지급
-- monster_id 별 enemy_stats.exp / gold / droptable.dat (Round 30: 252 EquipItem entries) 적용
-- battle_system 의 _finish(victory=true) 로직 재활용 + GameState.add_battle_reward
+#### ⭐ 1순위 — Hero 의 monster kill 보상 흐름 (0.5 라운드, 추천 시작점)
 
-**2순위 — Reward type 6/10/11/12 의미 RE** (0.5 라운드)
-- Round 56 sweep: reward type 6(1), 10(1), 11(3), 12(1) 미해석 (rare)
-- `QuestMgr::QuestRewardData` 디스어셈블 (Round 59 의 disasm_h5_mission_quest.py 도구 확장)
-- 가설: 6=skill, 10=switch, 11/12=item variant
+**문제**: 현재 SPACE 로 monster 죽이면 [demo.gd `_physics_process`](../../apps/hero5-godot/scripts/ui/demo.gd) 의 dead 처리 분기가 `Mission.bump_progress(EVENT_MONSTER_KILL, monster_id)` 만 트리거. **exp/gold/drop 모두 미지급**.
 
-**3순위 — battle_system 의 host stub 제거** (0.5 라운드)
-- character 가 host 를 제공하므로 battle_system 의 13 method stub 은 dead code
-- battle_system 에서 AI 사용하는 경우 character (현재 _hero ref 가 GameState.hp 통해 동작) 와 일관 처리
+**시작점 — 구체 위치**:
+- `demo.gd _physics_process` 의 `to_remove.append(c)` 직전 (현재 `if c.dead:` 블록) 에 보상 지급 추가
+- battle_system 의 `_finish(victory=true)` 가 이미 보상 로직 가짐 — 그 패턴 재활용:
+  ```gdscript
+  var stats = GameData.enemy_stats(mid)
+  var exp_g = _stat_or(stats, "exp", 10 + randi() % 20)
+  var gold_g = _stat_or(stats, "gold", 5 + randi() % 50)
+  GameState.add_battle_reward(exp_g, gold_g)
+  ```
+- Drop: `GameData.drop_table()` (Round 30 의 droptable.dat 252 entries, EquipItem drop pool) 가 이미 로드됨
+- damage_popup 으로 `+EXP +Gold` 표시 + toast `<item> 획득`
 
-**2순위 — character.gd 실제 host CHAR method** (1 라운드)
-- 현재 battle_system 의 turn-based stub 만 — Monster AI 가 실제 위치/방향 정보 받지 못함
-- character.gd 에 `fast_distance_to_hero / get_motion / get_dir` 등 실 구현 추가
-- 맵 위 monster spawn 시 AI runtime 이 character 와 직접 상호작용
+**검증**: 새 `tools/h5_test_kill_reward.py` — Python 시뮬로 exp/gold/drop 흐름 + level_up signal 트리거 검사. 기존 `h5_test_ai_tick.py` regression.
 
-**3순위 — Skill 보유 레벨 UI 표시** (0.5 라운드)
-- status_panel 에 GameState.skill_levels 표시 (현재는 unlocked 목록만)
-- battle 메뉴에서 스킬 사용 시 정확한 level 의 stat 적용
+#### 2순위 — Reward type 6/10/11/12 의미 RE (0.5 라운드)
+- Round 56 sweep 발견 미해석: reward type 6(1), 10(1), 11(3), 12(1)
+- `QuestMgr::QuestRewardData` (@ 디스어셈블 필요) — `tools/recon/disasm_h5_mission_quest.py` 의 TARGETS dict 에 추가
+- 가설: 6=skill 보상, 10=switch 토글, 11/12=item variant
+- 산출물: `docs/h5/RE/quest_reward_types.md` + `quest_system.gd::reward_label` 의 새 상수
 
-**4순위 — battle_system 의 turn-based → real-time 합성** (1-2 라운드)
-- Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
-- Round 50 의 host CHAR interface 13 method 가 실제 character.gd 와 연결되면 가능
+#### 3순위 — battle_system 의 host CHAR stub 제거 (0.5 라운드)
+- Round 61 으로 character 가 host method 제공. battle_system.gd lines 98-159 의 13 stub method 는 dead code
+- 단, battle_system 도 호출 가능성이 있으면 character ref 위임 (`return _hero.fast_distance_to_hero()`)
+- 검증: `h5_test_char_host.py` 가 monster_ai 호출 패턴 cross-check 계속 통과해야
 
 ### E. Round 51-58 UI 시스템 통합 상태 (참고)
 

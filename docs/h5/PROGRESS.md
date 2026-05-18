@@ -57,51 +57,57 @@ Round 62 AI tick 루프가 자동 mission 트리거. h5_test_ai_combat.py — 9 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
 1. **UI 시스템 — R51-58 완료** (인벤토리/강화/합성/Orb/NPC blacksmith/Quest/SkillBook/Mission)
-2. **Battle 실행 흐름** — Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
-3. **character.gd host CHAR 실 구현** — 현재 battle_system 의 turn-based stub 만 (R50)
-4. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트
-5. **Save device import/export** — 실 H_*.sav / SL_*.sav 디바이스 추출 → Godot 로드 검증
+2. **AI/Battle 통합 — R61-63 완료** (character host CHAR 17 method + 30fps tick + 실 전투)
+3. **★ 보상 흐름 — R64 추천** (Hero kill → exp/gold/drop 지급, battle_system pattern 재활용)
+4. **Reward type RE 잔여** — 6/10/11/12 미해석 (Round 56 sweep)
+5. **Battle motion / NPC dialog 잔여 .so 분석** — ~8-10% 남음
+6. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트
+7. **Save device import/export** — 실 H_*.sav / SL_*.sav 디바이스 추출 → Godot 로드 검증
 
-## 🚀 Round 55 즉시 시작 명령
+## 🚀 Round 64 즉시 시작 명령
 
-> **다음 세션은 이 섹션만 보면 됨**
+> **다음 세션은 이 섹션 + [SESSION_HANDOFF.md](SESSION_HANDOFF.md) §D 1순위 만 보면 됨**
 
 ### 1. 환경 검증 한 줄
+
 ```bash
 PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py   # 0 errors / 0 warnings 기대
-python tools/h5_test_monster_ai.py    # AI VM 48/48
-python tools/h5_test_items_lookup.py  # 1360 items
-python tools/h5_test_refine.py        # Refine prob/시뮬
-python tools/h5_test_mix.py           # 116 recipe
-python tools/h5_test_orb.py           # 53 orb / 5-socket / 2x rule
+# 빠른 회귀 (3초): 가장 최근 4개만
+python tools/h5_test_char_host.py    # R61 17 host method
+python tools/h5_test_ai_tick.py      # R62 30 fps tick 루프
+python tools/h5_test_ai_combat.py    # R63 실 전투
+python tools/h5_test_cond_types.py   # R60 cond_type RE
 ```
 
-### 2. Round 55 추천 = **NPC blacksmith UI** (D3b)
+### 2. Round 64 추천 = **Hero 의 monster kill 보상 흐름** (0.5 라운드)
 
-R53 mix_panel pattern 재활용 가능 — 데이터 source 만 교체.
+R62-63 으로 monster spawn + AI tick + 실 전투 완성. 현재 SPACE 로 monster 죽이면 Mission progress 만 트리거 — **exp/gold/drop 모두 미지급**.
 
-- 데이터: `c/csv/smith_0/1/2.dat` (각 96 × 300B = 288 recipes, R32 검증)
-- decoder 산출물: `apps/hero5-godot/assets/gamedata/smithtable.json`
-- mix_book (slot_15, 116 recipes, 90-100% sr) 와 분리 — 모두 75% sr
-- 시작점:
-  ```bash
-  cp apps/hero5-godot/scripts/ui/mix_panel.gd apps/hero5-godot/scripts/ui/smith_panel.gd
-  cp apps/hero5-godot/scenes/mix_panel.tscn apps/hero5-godot/scenes/smith_panel.tscn
-  # 다음을 교체:
-  #   class_name MixPanel → SmithPanel
-  #   GameData.mix_recipes → GameData.smith_recipes_v2 (신규: smithtable.json 로더)
-  #   uid://hero5_mix → uid://hero5_smith
-  # demo.gd 에 KEY_J 바인딩 추가
-  # Python: tools/h5_test_smith.py (288 recipe sweep, R32 의 col-major struct 검증)
+- 시작점: [demo.gd `_physics_process`](../../apps/hero5-godot/scripts/ui/demo.gd) 의 `if c.dead:` 블록 (Round 62 추가됨)
+  ```gdscript
+  if c.dead:
+      to_remove.append(c)
+      var mid = c.get_meta("monster_id", -1)
+      if mid >= 0:
+          # ↓ 여기에 보상 지급 추가 (R64 작업)
+          var stats = GameData.enemy_stats(mid)
+          var exp_g = int(stats.get("exp", 10 + randi() % 20))
+          var gold_g = int(stats.get("gold", 5 + randi() % 50))
+          GameState.add_battle_reward(exp_g, gold_g)
+          # drop: GameData.drop_table() (Round 30 droptable.dat 252 entries)
+          # damage_popup: "+%d EXP" / toast: "<item> 획득"
+          Mission.bump_progress(Mission.EVENT_MONSTER_KILL, mid)   # 기존
   ```
+- 참고: [battle_system.gd `_finish(victory=true)`](../../apps/hero5-godot/scripts/core/battle_system.gd) 가 이미 동일 로직 보유 — pattern 재활용
+- 검증 신규: `tools/h5_test_kill_reward.py` — Python 시뮬로 exp/gold/drop 흐름 + level_up signal
 
 ### 3. 대안 옵션
 
-- **Quest 패널 강화** (1 라운드) — quests.json 의 phase1/phase2 표시
-- **Skill book 학습 UI** (1 라운드) — slot_16/17, Round 21 의 4 byte
-- **character.gd host 실 구현** (1 라운드) — Monster AI 가 실 위치 받음
-- **scn opcode 검증** (2-3 라운드) — UI 정합성 확인
-- **잔여 .so 분석** — UI/NPC/Battle motion (~12-15%, 분석 트랙)
+- **Reward type 6/10/11/12 의미 RE** (0.5 라운드) — Round 56 sweep 의 미해석 4 type. QuestRewardData 디스어셈블
+- **battle_system 의 host CHAR stub 제거** (0.5 라운드) — R61 으로 dead code 된 13 method 정리
+- **잔여 .so 분석** — Battle motion / NPC dialog (~8-10%, 분석 트랙)
+- **Skill 보유 레벨 UI 표시** (0.5 라운드) — status_panel 에 GameState.skill_levels
+- **scn opcode 검증** (2-3 라운드) — Title/ClassSelect/Demo 외 화면 진입 테스트
 
 한 페이지 인수인계는 [SESSION_HANDOFF.md](SESSION_HANDOFF.md).
 
