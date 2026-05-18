@@ -1,17 +1,39 @@
 # Hero4 다음 단계
 
-Phase A (자산 변환) 종료. 이 문서는 사용자 (또는 다음 세션 Claude) 가 진행해야 할 작업을 우선순위 순으로 정리.
+Phase A 종료 + Phase C Step 5 진행 중. 이 문서는 사용자 (또는 다음 세션 Claude) 가 진행해야 할 작업을 우선순위 순으로 정리.
 
 > 사용자 컨텍스트: "리메이크" 정의는 [`../REMAKE_METHODOLOGY.md`](../REMAKE_METHODOLOGY.md) 참조 — 최종 산출물은 Play Store + App Store 직배포.
 
 ---
 
-## ⏭ "영웅서기4 다음 내용 진행해줘" 라고 했을 때 — 빠른 셀렉터
+## 🏁 Round 75 종료 (2026-05-19) — 자동 데이터 분석 ~95% 종결
 
-> **🏁 2026-05-18 후속12 — 자동 영역 완전 종결 (47건)**.
-> Hero4 자산 100% 추출 완료 (3,874 PNG + 600+ 한국어 entries). **사용자가 다음에 가져올 것 = DES key 8 bytes (Ghidra GUI 결과)**. 키 발견 시 ~400 파일 자동 복호화 (~30분).
+R68 DES 해제 후 R69-R75 8 라운드 연속 분석. **자세한 가이드**: [SESSION_HANDOFF.md](SESSION_HANDOFF.md) + [round70-75-summary.md](round70-75-summary.md).
 
-**가장 가능성 높은 시나리오**: 사용자가 Ghidra 작업 후 DES key 8 bytes 를 들고 옴.
+### Round 76+ 자동 가능 트랙
+
+1. ⭐ **캐릭터별 weapon class 매핑** (~1 hour) — R75 의 7 weapon classes 와 R69 의 4 character class 매핑 검증
+2. **BSDAT body opcode dispatch** (~2 hour) — R72 의 88 boss script body 분석 (SCN bytecode 비교)
+3. **ITEMDROP / smith / shop dat 정밀** (~1 hour) — R69 가 raw 만 추출, entry struct 풀이 필요
+4. **Phase C Step 4d (Compose MP UI)** — 1-2 주 큰 작업, 두 게임 (Hero3+Hero4) 동시
+
+### 사용자 환경 필요
+
+5. **A1 영어 번역** (Claude Sonnet 4.6, ~$4.09, API key) — corpus 35,752 + 128 quests + 148 descriptions + 40 skills + 129 weapons 한국어 진본 번역
+6. **Ghidra stat field 정밀** — _H_BH 40B 의 정확한 stat 의미
+7. **SMAF → OGG** 음성 변환 — `docs/h3/SMAF_pipeline.md` 가이드
+8. **Phase D iOS 출시** — Apple Silicon Mac 필요
+
+---
+
+## ⏭ "영웅서기4 다음 내용 진행해줘" 라고 했을 때 — (HISTORY) 셀렉터
+
+> 아래는 R68 이전의 가이드. R75 이후엔 [SESSION_HANDOFF.md](SESSION_HANDOFF.md) 우선 참조.
+
+> **🏁 2026-05-18 후속12 — 자동 영역 완전 종결 (47건)** (R67 이전 상태).
+> Hero4 자산 100% 추출 완료 (3,874 PNG + 600+ 한국어 entries). **사용자가 다음에 가져올 것 = DES key 8 bytes (Ghidra GUI 결과)**. 키 발견 시 ~400 파일 자동 복호화 (~30분). → R68 에서 cross-game 분석으로 자동 해결됨.
+
+**가장 가능성 높은 시나리오**: 사용자가 Ghidra 작업 후 DES key 8 bytes 를 들고 옴. (R68 에서 Ghidra 없이 해결)
 
 ### 시나리오 1: 사용자가 DES key 가져옴 ⭐ (1순위 예상)
 

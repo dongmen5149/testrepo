@@ -2,7 +2,28 @@
 
 > 다음 세션에서 가장 먼저 읽기. 디테일은 분류별 폴더 / 파일 참조.
 >
-> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 바로 아래 §🏆 Round 68 결과 + Round 69 가이드.
+> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
+
+## 🏆 Round 68 - 75 (2026-05-18/19) — Hero4 자동 데이터 분석 8 라운드 종결
+
+> **상태**: ⚡ **Hero4 자동 영역 ~95% 종결**. 407 파일 복호화 + 40 skills + 128 quests + 559 event scripts + 349 items (148 descriptions + 129 weapon stats) + 4 hero stat block.
+>
+> 라운드별 상세: [round68-des-key-discovered.md](round68-des-key-discovered.md) · [round69-skill-catalog-and-batch-decrypt.md](round69-skill-catalog-and-batch-decrypt.md) · **[round70-75-summary.md](round70-75-summary.md)** ★
+
+### R70-R75 한눈에 (2026-05-19)
+
+| R | 작업 | 결과 |
+|---|---|---|
+| **R70** | NPC QUEST 정밀 파싱 (`commit 03e6eee8`) | **128 quests** (메인 62 + 사이드 66) |
+| **R71** | _H_BH hero stat block 구조 (`commit 9a21481f`) | 4 entries 가변 길이 + mode/index 구조 |
+| **R72** | E/BSDAT + ESDAT (`commit 54e14071`) | **559 entries** (boss 88 + encounter 471) |
+| **R73** | ITM/DAT entry struct (`commit d5241a1e`) | **349 items** (price + slot + tier) |
+| **R74** | item stat_block field mapping (`commit 84ec6b66`) | **148 descriptions** (HP/lvl/레시피/효과) |
+| **R75** | weapon stat field (`commit c626cde2`) | **129 weapons** (lvl 1→91, ATK1/ATK2) |
+
+**Round 76 즉시 시작** — [SESSION_HANDOFF.md](SESSION_HANDOFF.md) 의 트랙 A-F 참조.
+
+---
 
 ## 🏆 Round 68+69 (2026-05-18/19) — DES + 게임 데이터 100% 추출
 
