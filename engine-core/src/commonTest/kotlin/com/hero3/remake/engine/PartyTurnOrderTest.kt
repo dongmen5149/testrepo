@@ -1,7 +1,7 @@
 package com.hero3.remake.engine
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class PartyTurnOrderTest {
 

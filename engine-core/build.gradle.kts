@@ -1,23 +1,36 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
-    `java-library`
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    id("org.jetbrains.kotlin.multiplatform")
+    id("com.android.library")
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
+    jvm()
+
+    sourceSets {
+        val commonMain by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
 
-dependencies {
-    testImplementation("junit:junit:4.13.2")
-}
+android {
+    namespace = "com.hero3.remake.engine"
+    compileSdk = 35
 
-tasks.test {
-    useJUnit()
+    defaultConfig {
+        minSdk = 24
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
