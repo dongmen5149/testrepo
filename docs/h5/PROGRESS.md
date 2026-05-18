@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-54)
+## 📜 라운드 요약 (Round 1-55)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -21,33 +21,35 @@
 | **R52: 강화(Refine) UI** | `refine_panel.gd` + `.tscn` 신규 — Round 17/26 의 ApplyItemRefine 5-case (큰성공/성공/재료소비/lock/destroy) + `refined_stat = base + sub_count` Godot 구현. GameState 에 `refine_state` dict + `equipment_bonus` refine 보너스 합산. demo.gd R 키 toggle. `h5_test_refine.py` — prob 합 1000 / 단조성 / 10000회 시뮬 (max 2.5% / locked 65.1% / destroyed 32.5%) 검증 |
 | **R53: 합성(Mix) UI** | `mix_panel.gd` + `.tscn` 신규 — Round 25/28 의 ApplySpecialMix mechanism. `GameData.mix_recipes()` (116 entries) + `parse_recipe()` (ing×3 + result + success_rate). GameState `inventory_count(name)` / `consume_inventory(name, n)` helper (장착된 슬롯 보호 + refine_state 동기 정리). 제작가능 필터 + 재료 부족 시 disabled. demo.gd K 키. `h5_test_mix.py` — 116 recipe 100% parse / 한국어 이름 0 miss / success_rate 평균 60.6% / 카테고리 분포 검증 |
 | **R54: Orb socket UI** | `orb_panel.gd` + `.tscn` 신규 — Round 17/26 의 ApplyOrbCombine mechanism. GameState `orb_state` dict + 4 helper (get_orb_sockets/add_orb_to_socket/remove_orb_from_socket/clear_orbs). EquipItemInfo +0x168 (count) / +0x169..+0x16d (5 socket bytes) 매핑. `equipment_bonus` 에 orb bonus 합산 + 5-socket fill 시 2x rule. GameData `orb_records()` (53 orbs, slot_12) / `orb_bonus_for` / `orb_group` / `orb_name`. demo.gd O 키. `h5_test_orb.py` — 53 orb 0 miss / encoding 5/5 fill / remove 3/3 / 2x rule (12→32) 검증 |
+| **R55: NPC 대장간(Blacksmith) UI** | `blacksmith_panel.gd` + `.tscn` 신규 — Round 28/32 의 ApplyNormalMix mechanism (csv slot_15 mix_book 과 별개 데이터원). GameData `smith_table(sid)` / `smith_all()` / `parse_smith_recipe()` — smithtable.json (smith_0/1/2.dat, 288 entries 중 named 231) 파서. 탭(기본/세트/고급/전체) + 제작가능 필터 + 재료 부족 시 disabled. demo.gd J 키. `h5_test_blacksmith.py` — 231 recipe 0 miss / sr 분포 {75,100} / smith_0 단순(2.74 ing) vs smith_1 복합(2.98 ing) 가설 검증. Round 32 의 "모두 75%" 추측은 부분 표본 — 실제로 정제류는 100%. **부수 수정**: 누락됐던 items.json `_meta.category_dispatch` + recipe 필드 재생성 (decode_h5_item.py 재실행). mix/orb/items_lookup 테스트도 동시 회복 |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 48-53%.
-원본 분석 90-95%, 리메이크 출시 45-55%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 53-58%.
+원본 분석 90-95%, 리메이크 출시 50-60%.
 
 
 
-업데이트: 2026-05-18 (Round 54 종료) — **Orb socket UI 구현**.
-Round 17/26 의 ApplyOrbCombine mechanism — items.json slot_12 의 53 orb 활용.
-orb_panel.gd/.tscn 신규 + GameState orb_state dict (5 socket × byte encoded) +
-equipment_bonus orb bonus 합산 + 5-socket fill 시 2x. demo.gd O 키.
-`h5_test_orb.py` — encoding 5/5 fill + remove 3/3 + 2x rule (12→32) 검증.
+업데이트: 2026-05-18 (Round 55 종료) — **NPC 대장간 UI 구현**.
+Round 28/32 의 ApplyNormalMix mechanism — smithtable.json (smith_0/1/2.dat) 288 entries
+중 231 named recipe 활용. blacksmith_panel.gd/.tscn 신규 + GameData smith_table/smith_all/
+parse_smith_recipe + 4-탭 (기본/세트/고급/전체) + 제작가능 필터. demo.gd J 키.
+`h5_test_blacksmith.py` — 0 miss / sr {75,100} / smith_0 vs smith_1 복잡도 차이 검증.
+부수: items.json 재생성으로 mix/orb/items_lookup 테스트 동시 회복.
 
-## 🎯 전체 진척 평가 (Round 54 시점)
+## 🎯 전체 진척 평가 (Round 55 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~48-53%** | + **Orb socket UI + 53 orb**. 미구현: NPC blacksmith/Quest 강화, Save device import |
+| Godot 실 구현 | **~53-58%** | + **NPC blacksmith UI (231 recipes)**. 미구현: Quest 강화, Skill book 학습, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **45-55%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **50-60%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
-1. **잔여 UI 시스템** — NPC blacksmith / Quest 패널 강화 / Skill book 학습 UI (인벤토리/강화/합성/Orb 완료 R51-54)
+1. **잔여 UI 시스템** — Quest 패널 강화 / Skill book 학습 UI / Mission 진척 UI (인벤토리/강화/합성/Orb/NPC blacksmith 완료 R51-55)
 2. **Battle 실행 흐름** — Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
 3. **character.gd host CHAR 실 구현** — 현재 battle_system 의 turn-based stub 만 (R50)
 4. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트

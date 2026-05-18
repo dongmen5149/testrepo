@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 54 — **Orb socket UI 구현**. Round 17/26 의 ApplyOrbCombine + items.json slot_12 의 53 orb. orb_panel.gd/.tscn 신규 (~170 line, 3-column layout) + GameState orb_state dict (4 helper) + equipment_bonus orb 합산 + 5-socket 2x rule. demo.gd O 키. `h5_test_orb.py` — 53 orb 0 name miss / encoding 5/5 fill / remove 3/3 케이스 / 5-socket 2x (12→32) 검증. Godot 실 구현 45-50% → 48-53%, 출시 42-52% → 45-55%.)
+업데이트: 2026-05-18 (Round 55 — **NPC 대장간(Blacksmith) UI 구현**. Round 28/32 의 ApplyNormalMix + smithtable.json 288 entries 중 named 231. blacksmith_panel.gd/.tscn 신규 (~200 line, 4-탭 + 필터) + GameData smith_table/smith_all/parse_smith_recipe. demo.gd J 키. `h5_test_blacksmith.py` — 231 recipe 0 miss / sr 분포 {75,100} / smith_0 단순(2.74 ing) vs smith_1 복합(2.98 ing). 부수: items.json `_meta.category_dispatch` + recipe 필드 누락 회복 (decode_h5_item.py 재실행) — mix/orb/items_lookup 테스트 동시 회복. Godot 실 구현 48-53% → 53-58%, 출시 45-55% → 50-60%.)
 
-## 📜 Round 1-54 한 줄 요약
+## 📜 Round 1-55 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -21,13 +21,14 @@
 | R51 | 인벤토리 items.json 정확 통합 (1360 records unique index) — kind 기반 filter + class_mask/level_limit 검증 + tooltip 풍부 |
 | R52 | 강화(Refine) UI 구현 — Round 17/26 의 5-case + `refined_stat = base+sub_count` + 10000회 시뮬 (+10 2.5%/lock 65%/destroy 33%) |
 | R53 | 합성(Mix) UI 구현 — Round 25/28 ApplySpecialMix + 116 recipe parse (ing×3 + result + sr) + 제작가능 필터 + 재료 보호 소비 |
-| **R54** | **Orb socket UI 구현 — Round 17/26 ApplyOrbCombine + 53 orb + 5-socket encoding + 2x rule + add/remove 검증** |
+| R54 | Orb socket UI 구현 — Round 17/26 ApplyOrbCombine + 53 orb + 5-socket encoding + 2x rule + add/remove 검증 |
+| **R55** | **NPC 대장간(Blacksmith) UI 구현 — Round 28/32 ApplyNormalMix + smithtable.json 231 named recipes + 4-탭 + 제작가능 필터 + items.json _meta 회복** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 54 시점)
+## 🎯 전체 진척 평가 (Round 55 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -36,12 +37,12 @@
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~48-53%** | + **Orb socket UI + 53 orb**. 미구현: NPC blacksmith/Quest 강화, Save device import |
+| **Godot 실 구현** | **~53-58%** | + **NPC blacksmith UI (231 recipes)**. 미구현: Quest 강화, Skill book 학습, Mission 진척, Save device import |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **45-55%** (Orb socket UI 완성)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **50-60%** (NPC blacksmith UI 완성)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -54,7 +55,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 55)
+## 🚀 다음 세션 즉시 시작 (Round 56)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -75,6 +76,7 @@ python tools/h5_test_items_lookup.py   # 1360 items unique-name index
 python tools/h5_test_refine.py         # Refine prob + 10000회 시뮬
 python tools/h5_test_mix.py            # 116 recipe parse
 python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
+python tools/h5_test_blacksmith.py     # 231 smith recipes + sr 분포
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -87,6 +89,7 @@ python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
 | **R** | 강화(Refine) 패널 토글 | **R52** |
 | **K** | 합성(Mix) 패널 토글 | **R53** |
 | **O** | Orb socket 패널 토글 | **R54** |
+| **J** | NPC 대장간(Blacksmith) 패널 토글 | **R55** |
 | Q | 퀘스트 패널 토글 | R20 |
 | S | 상점 열기 | R8 |
 | H | 도움말 토글 | R10 |
@@ -99,33 +102,30 @@ python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 55 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 56 추천 작업 (자율 가능, 임팩트 순)
 
-**1순위 — NPC blacksmith UI** (1-2 라운드, Round 53 mix_panel pattern 재활용)
-- 데이터: `c/csv/smith_0/1/2.dat` (각 96 entries × 300B = 288 recipes, Round 32 검증)
-- mix_book (slot_15, 116 recipes) 와 데이터 source 다름 — MixSmithTableInfo struct
-- 모두 success_rate 75% (mix_book 의 90-100% / 20-22% 와 다른 밸런스)
-- 시작점: `tools/converter/decode_h5_smithtable.py` 산출 `smithtable.json` 확인 →
-  `mix_panel.gd` 복제 + 데이터 source 만 교체 + NPC 대화 흐름 (Round 8 의 npc_table) 연결
-- 새 키 = `J` (rJ = blacksmith Job 어울림)
-
-**2순위 — Quest 패널 강화** (1 라운드)
+**1순위 — Quest 패널 강화** (1 라운드)
 - 현재 quest_panel.tscn = 기본 list 표시만. quests.json (151 × 3 difficulty, 645KB) 미활용
 - Round 40 의 phase1 objective (3×6B: cond_type/cond_sub/target_value) + phase2 reward
   (17=money / 18=exp / 255=unused) 표시
 - 진행 상태 (Quest.gd singleton) 와 연동
 
-**3순위 — Skill book 학습 UI** (1 라운드)
+**2순위 — Skill book 학습 UI** (1 라운드)
 - slot_16/17 (Warrior+Rogue / Gunslinger+Knight, 95+98 = 193 books)
 - Round 21 의 4 byte ext: class_id / skill_index / skill_level / required_level
 - HERO::IfLearnSkill 의 `(class_id/2) + 16` 공식 — class 별 슬롯 dispatch
+- 시작점: items_in_slot(16/17) 의 books → "사용" 시 GameState 의 학습 스킬 set 에 추가
+
+**3순위 — Mission 진척 UI** (1 라운드)
+- mission_list.dat 의 105 mission. Round 37/40 의 Mission::CheckMissionXxxx 13 함수 연동.
+- mix/blacksmith/orb 패널이 이미 Mission::CheckMission* 트리거 가능한 지점에 hook 추가 가능
 
 **4순위 — character.gd 실제 host CHAR method** (1 라운드)
 - 현재 battle_system 의 turn-based stub 만 — Monster AI 가 실제 위치/방향 정보 받지 못함
 - character.gd 에 `fast_distance_to_hero / get_motion / get_dir` 등 실 구현 추가
 - 맵 위 monster spawn 시 AI runtime 이 character 와 직접 상호작용
 
-### E. Round 51-54 UI 시스템 통합 상태 (참고)
+### E. Round 51-55 UI 시스템 통합 상태 (참고)
 
 | 패널 | 데이터 source | 핵심 mechanic | helper 함수 |
 |---|---|---|---|
@@ -133,8 +133,10 @@ python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
 | refine_panel (R52) | EquipItemInfo +0x165..+0x167 | 5-case prob + base+sub stat | GameState.refine_state |
 | mix_panel (R53) | slot_15 의 116 recipe | success_rate roll + 재료 소비 | GameData.parse_recipe |
 | orb_panel (R54) | slot_12 의 53 orb + +0x168..+0x16d | 5 socket encoding + 2x rule | GameState.orb_state |
+| blacksmith_panel (R55) | smithtable.json 231 named (288 entries) | 4-탭(기본/세트/고급/전체) + sr {75,100} | GameData.smith_table / smith_all / parse_smith_recipe |
 
 모두 GameState 의 단일 inventory 배열을 공유. `consume_inventory` 가 refine_state + orb_state 동기 정리.
+blacksmith 는 mix 와 동일한 parse_recipe 형식이라 schema 호환.
 
 ### F. 미구현 / 향후 옵션
 

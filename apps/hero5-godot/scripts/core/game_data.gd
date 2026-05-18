@@ -350,6 +350,60 @@ func parse_recipe(rec: Dictionary) -> Dictionary:
 	}
 
 
+## smithtable.json 의 NPC blacksmith recipe 캐시 (Round 32 / Round 55).
+##
+## Round 28 의 ApplyNormalMix 가 MixSmithTableInfo* 별도 데이터 사용.
+## smith_0/1/2.dat = 각 96 entries (option_grade 별 — 0=common, 1=set craft, 2=advanced).
+## 총 288 records (모두 success_rate 75%). mix_book 의 csv slot_15 와 다른 데이터원.
+var _smith_cache: Dictionary = {}
+
+func _load_smithtable() -> Dictionary:
+	if _smith_cache.is_empty():
+		var p := "res://assets/gamedata/smithtable.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_smith_cache = JSON.parse_string(f.get_as_text()) or {}
+	return _smith_cache
+
+
+## smith_id (0..2) 의 named recipe 만 반환 (NONE / 빈 record 제외).
+func smith_table(smith_id: int) -> Array:
+	var data = _load_smithtable()
+	var tbl: Dictionary = data.get("smith_%d" % smith_id, {})
+	var entries: Array = tbl.get("entries", [])
+	var out: Array = []
+	for e in entries:
+		var rec: Dictionary = e
+		var nm = str(rec.get("name", ""))
+		if nm.is_empty() or nm == "NONE": continue
+		var recipe: Dictionary = rec.get("recipe", {})
+		if recipe.is_empty(): continue
+		# ing1 도 없는 placeholder 도 제거
+		if recipe.get("ing1") == null: continue
+		out.append(rec)
+	return out
+
+
+## smith recipe (smith_NN.dat 의 row) → mix_panel 의 parse_recipe 와 동일 schema.
+## smithtable.json 은 이미 recipe = {ing1/2/3, result_cat/idx, success_rate} 형태이므로
+## parse_recipe 를 재활용 가능.
+func parse_smith_recipe(rec: Dictionary) -> Dictionary:
+	return parse_recipe(rec)
+
+
+## smith_0/1/2 전체 named recipe 합쳐 반환 — blacksmith UI 의 list 소스.
+## 각 entry 에 _smith_id (0/1/2), _grade label 부착.
+func smith_all() -> Array:
+	var out: Array = []
+	for sid in range(3):
+		for rec in smith_table(sid):
+			var copy: Dictionary = rec.duplicate()
+			copy["_smith_id"] = sid
+			copy["_grade"] = ["기본", "세트", "고급"][sid] if sid < 3 else "?"
+			out.append(copy)
+	return out
+
+
 ## items.json slot_12 의 53 orb record 반환 (Round 54).
 ##
 ## orb 1개 = item record. orb_idx (0..52) 가 record idx + 1 - 1 = idx 그 자체.
