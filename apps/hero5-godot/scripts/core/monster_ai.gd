@@ -114,6 +114,13 @@ class MonsterAIState:
 
 
 ## Runtime state 생성. host 가 GetX/GetY/GetMotion/GetDir 등 인터페이스를 제공해야 함.
+##
+## 사용 가능한 두 host 종류 (R66 명세, 둘 다 정상 경로):
+##   - battle_system  — turn-based 전투. distance=0, motion=0 default + cooldown 실 동작.
+##   - character.gd   — real-time AI tick (R62 G 키 spawn). map 좌표 기반 정확 값 (R61).
+##
+## host 가 17 method 모두 구현할 필요 없음 — `has_method()` 로 optional 위임.
+## 미구현 method 는 _host_call_int/_host_call_bool 의 default 값 사용.
 func create_runtime(host: Node, ai_type_id: int) -> MonsterAIState:
 	if not ai_defs.has(ai_type_id):
 		push_warning("AI def %d not loaded" % ai_type_id)

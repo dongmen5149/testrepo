@@ -95,11 +95,27 @@ func _ai_pick_skill() -> int:
 	return -1
 
 
-# === MonsterAI host CHAR interface (Round 50) ===
+# === MonsterAI host CHAR interface (Round 50, R66 명세 강화) ===
 ##
-## monster_ai.gd 의 Ai_Action 13 sub-state 가 호출하는 CHAR 인터페이스. battle_system
-## 은 turn-based 추상화라서 위치/방향/모션 개념이 약함 — 합리적 default 로 stub 채움.
-## 실 게임에서 monster 가 map 위에 있을 때 character.gd 등 노드가 더 정확한 값을 제공.
+## monster_ai.gd 의 Ai_Action 13 sub-state 가 호출하는 CHAR 인터페이스.
+##
+## 시스템은 두 host 경로 사용 (둘 다 dead code 아님):
+##
+## | host             | 사용 경로                  | 호출 특성                       |
+## |------------------|----------------------------|---------------------------------|
+## | battle_system    | turn-based 전투 (B / NPC)  | 위치 개념 없음 — 시야/거리 default |
+## | character.gd     | real-time AI tick (R62 G)  | map 좌표 기반 정확한 값 (R61)   |
+##
+## battle_system 의 stub 은 turn-based 추상화의 **합리적 default**:
+##   - 거리/방향 개념 없음 → distance=0, dir=0 (항상 hero 와 같은 cell)
+##   - 시야 trigger → 항상 true (시야 진입 1회 trigger 가 즉시 활성)
+##   - motion 항상 idle → 매 turn AI VM 이 다음 action 진행
+##   - cooldown 실제 동작 (R66 추가): `_cooldowns` dict + is_able_skill 검사
+##
+## character.gd (R61) 의 의미:
+##   - fast_distance_to_hero: tile Chebyshev 거리
+##   - get_dir/set_dir: map dir enum
+##   - get_motion: HOST_MOTION_* 의 실시간 anim state
 
 ## Ai_Action 의 _do_cast 가 호출. 다음 enemy turn 에 쓸 skill_id 기록.
 var _ai_pending_skill_id: int = -1
@@ -110,15 +126,18 @@ func ai_cast_skill(skill_id: int) -> void:
 func is_die() -> bool:
 	return enemy_hp <= 0
 
-## turn-based: idle 만 (motion 0 = idle, 1 = walk, 5 = run, etc.)
+## turn-based: idle 항상 (motion 0). 매 turn AI VM 이 walk/cast 진행 가능.
 func get_motion() -> int:
 	return 0
 
+## turn-based: dead 또는 stunned 시 공격 불가.
 func is_attack_able() -> bool:
-	return enemy_hp > 0
+	return enemy_hp > 0 and not is_stunned()
 
+## turn-based: skill_id > 0 + cooldown 만료. R66 으로 _cooldowns 실 연동.
 func is_able_skill(skill_id: int) -> bool:
-	return skill_id > 0
+	if skill_id <= 0: return false
+	return int(_cooldowns.get(skill_id, 0)) <= 0
 
 func get_dir() -> int:
 	return 0
@@ -137,8 +156,10 @@ func set_attack_motion(skill_id: int) -> void:
 	# state 4/6 = motion+dir lookup 후 cast. ai_cast_skill 가 후속으로 호출됨.
 	_ai_pending_skill_id = skill_id
 
-func set_cool_time(_skill_id: int) -> void:
-	pass
+## turn-based: R66 으로 실 동작. skill_id 별 FRAME_PER_TURN frame 까지 lock.
+func set_cool_time(skill_id: int) -> void:
+	if skill_id > 0:
+		_cooldowns[skill_id] = FRAME_PER_TURN
 
 func skill_end() -> void:
 	pass
@@ -155,6 +176,10 @@ func ai_all_dead() -> bool:
 	return enemy_hp <= 0
 
 func ai_tutorial_flag(_idx: int) -> bool:
+	return false
+
+## turn-based: stun 상태 — 기본 false. 추후 enemy debuff 시스템에서 set.
+func is_stunned() -> bool:
 	return false
 
 
