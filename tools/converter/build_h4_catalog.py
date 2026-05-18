@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69 + R70 + R71 + R72',
+            'round': 'R68 + R69 + R70 + R71 + R72 + R73',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
@@ -172,6 +172,25 @@ def main():
                 r = parse_npc_data(f)
                 catalog['npc'].append(r)
         print(f'NPC: {len(catalog["npc"])} files')
+
+    # Items detailed (R73) — separately parsed in h4_items_detailed.json
+    items_detailed_path = CONVERTED / 'h4_items_detailed.json'
+    if items_detailed_path.exists():
+        try:
+            idata = json.loads(items_detailed_path.read_text(encoding='utf-8'))
+            sd_summary = [{'file': r['file'], 'count': r['count']}
+                          for r in idata.get('sd_files', [])]
+            dat_summary = [{'file': r['file'], 'count': r['count']}
+                           for r in idata.get('dat_files', [])]
+            catalog['items_detailed'] = {
+                'sd_files': sd_summary,
+                'dat_files': dat_summary,
+                'total_entries': idata.get('meta', {}).get('total_entries', 0),
+                'note': 'LE16[0] = price (gold) confirmed for _DAT files',
+            }
+            print(f'\nItems detailed: {catalog["items_detailed"]["total_entries"]} entries (R73)')
+        except Exception as e:
+            print(f'  WARN: failed to load items_detailed: {e}', file=sys.stderr)
 
     # Event scripts (R72) — separately parsed in h4_event_scripts.json
     scripts_path = CONVERTED / 'h4_event_scripts.json'

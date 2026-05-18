@@ -1,7 +1,7 @@
 {
   "meta": {
     "game": "Hero4 (영웅서기4 - 환영의검)",
-    "round": "R68 + R69 + R70 + R71 + R72",
+    "round": "R68 + R69 + R70 + R71 + R72 + R73",
     "date": "2026-05-19",
     "key": "J@IWO8N7",
     "cipher": "Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)",
@@ -2050,6 +2050,98 @@
       "category": "메인퀘스트"
     }
   ],
+  "items_detailed": {
+    "sd_files": [
+      {
+        "file": "_ITM_0_SD",
+        "count": 17
+      },
+      {
+        "file": "_ITM_1_SD",
+        "count": 17
+      },
+      {
+        "file": "_ITM_2_SD",
+        "count": 9
+      },
+      {
+        "file": "_ITM_3_SD",
+        "count": 9
+      },
+      {
+        "file": "_ITM_4_SD",
+        "count": 10
+      },
+      {
+        "file": "_ITM_6_SD",
+        "count": 10
+      }
+    ],
+    "dat_files": [
+      {
+        "file": "_ITM_00_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_01_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_02_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_03_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_04_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_05_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_06_DAT",
+        "count": 17
+      },
+      {
+        "file": "_ITM_08_DAT",
+        "count": 29
+      },
+      {
+        "file": "_ITM_09_DAT",
+        "count": 29
+      },
+      {
+        "file": "_ITM_10_DAT",
+        "count": 38
+      },
+      {
+        "file": "_ITM_11_DAT",
+        "count": 13
+      },
+      {
+        "file": "_ITM_12_DAT",
+        "count": 38
+      },
+      {
+        "file": "_ITM_13_DAT",
+        "count": 1
+      },
+      {
+        "file": "_ITM_14_DAT",
+        "count": 0
+      },
+      {
+        "file": "_ITM_15_DAT",
+        "count": 10
+      }
+    ],
+    "total_entries": 349,
+    "note": "LE16[0] = price (gold) confirmed for _DAT files"
+  },
   "event_scripts": {
     "bsdat": [
       {
