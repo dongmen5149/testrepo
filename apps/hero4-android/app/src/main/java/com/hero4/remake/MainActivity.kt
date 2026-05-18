@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.hero3.remake.engine.ItemRegistry
 import com.hero4.remake.catalog.Hero4CatalogLoader
+import com.hero4.remake.platform.AndroidAssetReader
 
 /**
  * Hero4 Android 진입점 — Phase C Step 5 에서 engine-core (KMM) 의존 추가 (2026-05-19).
@@ -30,7 +31,7 @@ class MainActivity : Activity() {
         // Phase C Step 5 — engine-core 의존 검증 + Hero4 catalog 로드 (proof-of-concept)
         val sb = StringBuilder("영웅서기4 - 환영의검\nRemake (Hero4)\n\n")
         try {
-            val catalog = Hero4CatalogLoader.load(this)
+            val catalog = Hero4CatalogLoader.load(AndroidAssetReader(this))
             sb.append("✓ engine-core (KMM): item registry size = ${ItemRegistry.all.size}\n")
             sb.append("✓ Hero4 catalog (R69):\n")
             sb.append("    heroes=${catalog.heroes.size} (${catalog.heroes.joinToString { it.name }})\n")

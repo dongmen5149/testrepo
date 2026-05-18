@@ -1,6 +1,6 @@
 package com.hero4.remake.catalog
 
-import android.content.Context
+import com.hero3.remake.engine.AssetReader
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -59,9 +59,10 @@ data class Hero4Catalog(
 
 object Hero4CatalogLoader {
 
-    /** assets/h4_catalog.json 을 파싱하여 Hero4Catalog 반환. */
-    fun load(context: Context): Hero4Catalog {
-        val raw = context.assets.open("h4_catalog.json").bufferedReader().use { it.readText() }
+    /** [reader] 를 통해 `h4_catalog.json` 을 파싱하여 Hero4Catalog 반환.
+     *  Phase C Step 4c (2026-05-19) — Context 직접 의존을 platform-agnostic AssetReader 로 전환. */
+    fun load(reader: AssetReader): Hero4Catalog {
+        val raw = reader.readText("h4_catalog.json")
         val root = JSONObject(raw)
 
         // meta
