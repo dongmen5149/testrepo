@@ -1,10 +1,10 @@
-"""Hero4 R73 — ITM/DAT 26 파일 entry struct 정밀 파싱.
+"""Hero4 R73+R74 — ITM/DAT 26 파일 entry struct 정밀 파싱.
 
-R69 에서 평문 확인. 두 sub-pattern:
-    _SD (shop/category lists): `[size:1B][00][nlen:1B][name:EUC-KR][item_id:1B][ff][slot:1B]`
-    _DAT (extended item data): `[size:1B][00][nn:1B][nlen:1B][name:EUC-KR][stat_block:varB]`
-
-각 entry 에서 item_id + slot code 추출 (slot 0x6a/0x6b = gender or category).
+R69 평문 + R73 패턴 발견 + **R74 stat block field 확정**:
+    LE32 [0:4]   = price (gold) — R73 LE16[0] 의 정확화
+    byte[4]      = description_len (consumable items 만, equipment = 0)
+    bytes[5:5+L] = description text (ASCII "HP/SP" + EUC-KR 혼합)
+    예: 포션 → "HP를 200까지;천천히 회복" / 퀵포션 → "HP를 600까지;천천히 회복"
 
 산출: work/h4/converted/h4_items_detailed.json
 """
@@ -110,12 +110,28 @@ def parse_dat(data: bytes) -> list[dict]:
             next_i = len(data)
         stats = data[body_start:next_i]
         # Extract first 12 bytes of stat block (typical = price LE16, level/req, atk, def, etc.)
+        # R74: stat block field 확정
+        # LE16[0] = price (R73 confirmed); LE32 변환은 _ITM_15 같은 다른 layout 에서 garbage
+        price = (stats[0] | (stats[1] << 8)) if len(stats) >= 2 else 0
+        desc_len = stats[4] if len(stats) >= 5 else 0
+        description = ''
+        if 0 < desc_len <= 60 and 5 + desc_len <= len(stats):
+            desc_bytes = stats[5:5+desc_len]
+            try:
+                # 첫 byte 가 ASCII printable 또는 EUC-KR 면 description 으로 간주
+                if (0x20 <= desc_bytes[0] <= 0x7e or 0xa1 <= desc_bytes[0] <= 0xfe):
+                    description = desc_bytes.decode('euc-kr', errors='replace').replace('\x00', '')
+            except Exception:
+                pass
+
         entries.append({
             'offset': hex(i),
             'size_field': size_field,
             'tier_byte': tier,
             'name_len': name_len,
             'name': name,
+            'price': price,
+            'description': description,
             'stat_len': len(stats),
             'stats_bytes': list(stats[:24]),
             'stats_LE16': [stats[j] | (stats[j+1] << 8) for j in range(0, min(24, len(stats)) - 1, 2)],
@@ -161,10 +177,11 @@ def main():
             'entries': entries,
         })
         total += len(entries)
-        print(f'{f.name}: {len(entries)} entries (DAT)')
+        n_with_desc = sum(1 for e in entries if e['description'])
+        print(f'{f.name}: {len(entries)} entries (DAT, {n_with_desc} with desc)')
         for e in entries[:3]:
-            le16 = e['stats_LE16'][:6]
-            print(f"    [{e['offset']:>5}] {e['name']!r:20} stat_len={e['stat_len']} LE16[:6]={le16}")
+            desc = f' desc={e["description"]!r}' if e['description'] else ''
+            print(f"    [{e['offset']:>5}] {e['name']!r:20} price={e['price']:>5}{desc}")
 
     out['meta']['total_entries'] = total
     OUT.parent.mkdir(parents=True, exist_ok=True)

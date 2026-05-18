@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69 + R70 + R71 + R72 + R73',
+            'round': 'R68 + R69 + R70 + R71 + R72 + R73 + R74',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
