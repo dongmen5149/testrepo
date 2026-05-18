@@ -49,4 +49,6 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.2")
 
     testImplementation("junit:junit:4.13.2")
+    // R71 Hero3CatalogLoader unit test 에서 실제 org.json 구현 필요 (Android stub null 회피)
+    testImplementation("org.json:json:20240303")
 }
