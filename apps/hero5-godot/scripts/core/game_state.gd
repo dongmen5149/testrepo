@@ -31,8 +31,19 @@ var stat_int: int = 10
 var stat_con: int = 6
 var stat_points: int = 0   # 사용자 수동 분배 점수
 
-# 해금된 스킬 (skill_id 리스트)
+# 해금된 스킬 (skill_id 리스트) — 레벨업 자동 해금. unlocked_skills 가 "사용 가능" 목록.
 var unlocked_skills: Array[int] = [0]  # 첫 스킬 (basic attack) 시작부터
+
+## 스킬북으로 학습한 스킬의 레벨 (Round 57). skill_index → current_max_level.
+##
+## 원본 HERO::IfLearnSkill (Round 21) 의 학습 mechanism:
+##   - skill_book 의 class_id 가 player class 와 일치해야 학습 가능
+##   - skill_level (1..7) 이 현재 보유 레벨보다 높을 때만 갱신
+##   - 학습 시 skill_index 의 새 레벨이 stat scaling 에 반영 (game_data.resolve_skill_desc)
+##
+## 기본값: {0: 1} (basic attack LV1) — unlocked_skills [0] 와 매칭.
+var skill_levels: Dictionary = {0: 1}
+
 var inventory: Array = []
 var flags: Dictionary = {}
 
@@ -126,6 +137,52 @@ func remove_orb_from_socket(inv_idx: int, slot_idx: int) -> int:
 ## 모든 socket 의 orb 일괄 제거 (아이템 제거 시).
 func clear_orbs(inv_idx: int) -> void:
 	orb_state.erase(inv_idx)
+
+
+## 스킬북 학습 가능 여부 + 사유 (Round 57).
+##
+## 반환 {ok, reason}. reason 은 ok=false 일 때만 채워짐 (UX 메시지).
+##
+## 조건 (Round 21 의 HERO::IfLearnSkill 매핑):
+##   1) book.class_id 가 player class_id 와 일치
+##   2) player level >= book.required_level
+##   3) 현재 보유 skill_level < book.skill_level (이미 동급 이상이면 학습 불필요)
+func can_learn_skill_book(info: Dictionary) -> Dictionary:
+	if info.is_empty() or info.get("kind") not in ["skill_book_wr", "skill_book_gk"]:
+		return {"ok": false, "reason": "스킬북이 아닙니다"}
+	var book_class: int = int(info.get("class_id", -1))
+	if book_class != class_id:
+		return {"ok": false, "reason": "다른 클래스 전용 (클래스 %d)" % book_class}
+	var req_lvl: int = int(info.get("required_level", 0))
+	if level < req_lvl:
+		return {"ok": false, "reason": "레벨 부족 (필요 Lv.%d)" % req_lvl}
+	var book_lvl: int = int(info.get("skill_level", 1))
+	var skill_idx: int = int(info.get("skill_index", 0))
+	var have: int = int(skill_levels.get(skill_idx, 0))
+	if have >= book_lvl:
+		return {"ok": false, "reason": "이미 LV%d 보유 (책은 LV%d)" % [have, book_lvl]}
+	return {"ok": true, "reason": ""}
+
+
+## 스킬북 학습 — skill_levels 갱신 + unlocked_skills 에 없으면 추가.
+##
+## 호출자 책임: 인벤토리에서 책 제거 (skill_book_panel 이 _learn 후 처리).
+## skill_index 가 unlocked_skills 에 없어도 학습 가능 (책으로 직접 해금).
+func learn_skill_book(info: Dictionary) -> bool:
+	var check = can_learn_skill_book(info)
+	if not check["ok"]: return false
+	var skill_idx: int = int(info["skill_index"])
+	var book_lvl: int = int(info["skill_level"])
+	skill_levels[skill_idx] = book_lvl
+	if skill_idx not in unlocked_skills:
+		unlocked_skills.append(skill_idx)
+	state_changed.emit()
+	return true
+
+
+## skill_idx 의 현재 보유 레벨 (책 + 자연 해금 포함). 미보유 시 0.
+func get_skill_level(skill_idx: int) -> int:
+	return int(skill_levels.get(skill_idx, 0))
 
 
 ## 아이템을 슬롯에 장착. inventory 인덱스 사용.
@@ -316,6 +373,7 @@ func to_save_dict() -> Dictionary:
 		"inventory": inventory,
 		"equipment": equipment,
 		"unlocked_skills": unlocked_skills,
+		"skill_levels": skill_levels,
 		"flags": flags,
 		"quest": Quest.to_save() if Quest else {},
 	}

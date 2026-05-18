@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-56)
+## 📜 라운드 요약 (Round 1-57)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -23,34 +23,35 @@
 | **R54: Orb socket UI** | `orb_panel.gd` + `.tscn` 신규 — Round 17/26 의 ApplyOrbCombine mechanism. GameState `orb_state` dict + 4 helper (get_orb_sockets/add_orb_to_socket/remove_orb_from_socket/clear_orbs). EquipItemInfo +0x168 (count) / +0x169..+0x16d (5 socket bytes) 매핑. `equipment_bonus` 에 orb bonus 합산 + 5-socket fill 시 2x rule. GameData `orb_records()` (53 orbs, slot_12) / `orb_bonus_for` / `orb_group` / `orb_name`. demo.gd O 키. `h5_test_orb.py` — 53 orb 0 miss / encoding 5/5 fill / remove 3/3 / 2x rule (12→32) 검증 |
 | **R55: NPC 대장간(Blacksmith) UI** | `blacksmith_panel.gd` + `.tscn` 신규 — Round 28/32 의 ApplyNormalMix mechanism (csv slot_15 mix_book 과 별개 데이터원). GameData `smith_table(sid)` / `smith_all()` / `parse_smith_recipe()` — smithtable.json (smith_0/1/2.dat, 288 entries 중 named 231) 파서. 탭(기본/세트/고급/전체) + 제작가능 필터 + 재료 부족 시 disabled. demo.gd J 키. `h5_test_blacksmith.py` — 231 recipe 0 miss / sr 분포 {75,100} / smith_0 단순(2.74 ing) vs smith_1 복합(2.98 ing) 가설 검증. Round 32 의 "모두 75%" 추측은 부분 표본 — 실제로 정제류는 100%. **부수 수정**: 누락됐던 items.json `_meta.category_dispatch` + recipe 필드 재생성 (decode_h5_item.py 재실행). mix/orb/items_lookup 테스트도 동시 회복 |
 | **R56: Quest 패널 강화** | `quest_panel.gd/.tscn` 전면 개편 — quests.json 새 schema (`by_difficulty.q0/q1/q2 × 151`) 활용. quest_system.gd 에 `current_difficulty` + `quest_objectives/quest_rewards/quest_description/quest_category/reward_label/objective_label` 추가. 자동 보상 지급이 quests.json 의 rewards 사용 (이전 rewards.json fallback 대체). UI 에 detail card (제목/카테고리/설명/목표/보상/진척) + 난이도 토글. `h5_test_quest.py` — 3×151 entries / name_match 147/151 / category 분포 / cond_type 분포 (top: 14,13,17) / reward 분포 (exp 128, money 16, type_15 item 15) / **difficulty scaling 단조성 100% (141/141)**. 부수 발견: Round 40 의 cond_type 17/18 추측은 부분 표본 — 실제 sub_type 14/13/17 다수 존재 + 미해석 reward type 6/10-15 (item 보상 추정) |
+| **R57: SkillBook 학습 UI** | `skill_book_panel.gd` + `.tscn` 신규 — Round 21 의 HERO::IfLearnSkill mechanism Godot 구현. GameState 에 `skill_levels: Dictionary` + `can_learn_skill_book/learn_skill_book/get_skill_level` 추가. GameData 에 `skill_book_slot_for_class((cid/2)+16)` / `skill_books_for_class` / `skill_book_detail` (resolve_skill_desc 호출). 학습 조건 4종 검증 (book.class_id 일치 / required_level / 기존 LV < book LV / 인벤 보유). 인벤토리 보유 책만 필터 + 상세 카드 (스킬/필요레벨/설명). demo.gd L 키. `h5_test_skill_book.py` — slot_16=95 / slot_17=98 / class별 분포 (W=48, R=47, G=49, K=49) / Sorcerer 0 (stub 검증) / 5 case 시뮬 (학습/재학습 거부/다른 클래스 거부/레벨 부족/upgrade) 통과. **부수 발견**: Round 21 의 required_level 가설은 보수적 — 실제 데이터는 max 92 까지 (Lv.7 책은 60-90+ 요구) |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 56-61%.
-원본 분석 90-95%, 리메이크 출시 53-63%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 59-64%.
+원본 분석 90-95%, 리메이크 출시 56-66%.
 
 
 
-업데이트: 2026-05-18 (Round 56 종료) — **Quest 패널 강화**.
-Round 40 의 quest_*.dat 디코더 재실행으로 quests.json 새 schema (`by_difficulty.q0/q1/q2 × 151`)
-적용. quest_system.gd 에 helper 7개 추가 (current_difficulty / quest_objectives / quest_rewards /
-quest_description / quest_category / reward_label / objective_label) + 자동 보상이 quests.json
-의 rewards 직접 사용. UI 에 detail card (제목/카테고리/설명/목표/보상/진척) + 난이도 토글.
-`h5_test_quest.py` — difficulty scaling 100% 단조 / cond_type 분포 재발견 (14/13/17).
+업데이트: 2026-05-18 (Round 57 종료) — **SkillBook 학습 UI 구현**.
+Round 21 의 HERO::IfLearnSkill mechanism Godot 구현. items.json slot_16(95)/slot_17(98)
+의 193 skill books 활용. GameState 에 skill_levels dict + 3 helper (can_learn_skill_book /
+learn_skill_book / get_skill_level). GameData 에 slot_for_class/skill_books_for_class/
+skill_book_detail. UI 는 인벤 필터 + 상세 카드 (스킬/필요레벨/설명) + 학습 버튼.
+demo.gd L 키. h5_test_skill_book.py — 5 case 시뮬 + class별 분포 + Sorcerer 0 stub 검증.
 
-## 🎯 전체 진척 평가 (Round 56 시점)
+## 🎯 전체 진척 평가 (Round 57 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~56-61%** | + **Quest 패널 강화 (151×3 quests)**. 미구현: Skill book 학습, Mission 진척, Save device import |
+| Godot 실 구현 | **~59-64%** | + **SkillBook 학습 UI (193 books)**. 미구현: Mission 진척, Save device import |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **53-63%**.
+**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **56-66%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
-1. **잔여 UI 시스템** — Skill book 학습 UI / Mission 진척 UI (인벤토리/강화/합성/Orb/NPC blacksmith/Quest 완료 R51-56)
+1. **잔여 UI 시스템** — Mission 진척 UI (인벤토리/강화/합성/Orb/NPC blacksmith/Quest/SkillBook 완료 R51-57)
 2. **Battle 실행 흐름** — Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
 3. **character.gd host CHAR 실 구현** — 현재 battle_system 의 turn-based stub 만 (R50)
 4. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트

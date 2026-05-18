@@ -404,6 +404,47 @@ func smith_all() -> Array:
 	return out
 
 
+## class_id → 해당 클래스의 skill_book 이 들어있는 items.json slot (Round 21).
+##
+## HERO::IfLearnSkill 공식: `(class_id / 2) + 16`. Warrior(0)/Rogue(1) → slot_16,
+## Gunslinger(2)/Knight(3) → slot_17. Sorcerer(4) 는 stub (dead code, Round 22).
+func skill_book_slot_for_class(class_id: int) -> int:
+	return (class_id / 2) + 16
+
+
+## 해당 class 의 모든 skill book record (slot_16 또는 slot_17 에서 class_id 일치 필터).
+##
+## slot_16 = Warrior(0)+Rogue(1) 합쳐 95 books, slot_17 = Gunslinger(2)+Knight(3) 98 books.
+## 같은 slot 안에서도 두 클래스 책이 섞여있어 record.class_id 로 추가 필터링.
+func skill_books_for_class(class_id: int) -> Array:
+	var slot = skill_book_slot_for_class(class_id)
+	var data = _load_items()
+	var arr: Array = data.get("slot_%d" % slot, [])
+	var out: Array = []
+	for r in arr:
+		if int(r.get("class_id", -1)) == class_id:
+			out.append(r)
+	return out
+
+
+## skill_book record 의 사람 친화 detail.
+##
+## {name, class_id, skill_index, skill_level, required_level, price, desc}
+## desc = resolve_skill_desc(class_id, skill_index) 결과 (LV stat 치환).
+func skill_book_detail(rec: Dictionary) -> Dictionary:
+	var cid = int(rec.get("class_id", 0))
+	var sidx = int(rec.get("skill_index", 0))
+	return {
+		"name": str(rec.get("name", "")),
+		"class_id": cid,
+		"skill_index": sidx,
+		"skill_level": int(rec.get("skill_level", 1)),
+		"required_level": int(rec.get("required_level", 0)),
+		"price": int(rec.get("price", 0)),
+		"desc": resolve_skill_desc(cid, sidx),
+	}
+
+
 ## items.json slot_12 의 53 orb record 반환 (Round 54).
 ##
 ## orb 1개 = item record. orb_idx (0..52) 가 record idx + 1 - 1 = idx 그 자체.
