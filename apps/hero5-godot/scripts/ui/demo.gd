@@ -28,6 +28,7 @@ var _mix: CanvasLayer
 var _orb: CanvasLayer
 var _blacksmith: CanvasLayer
 var _skill_book: CanvasLayer
+var _mission: CanvasLayer
 
 
 func _ready() -> void:
@@ -115,6 +116,24 @@ func _ready() -> void:
 	# Round 57: 스킬북 학습 패널
 	_skill_book = preload("res://scenes/skill_book_panel.tscn").instantiate()
 	add_child(_skill_book)
+	# Round 58: 미션 진척 패널
+	_mission = preload("res://scenes/mission_panel.tscn").instantiate()
+	add_child(_mission)
+	# 기존 패널의 mission hook 연결
+	_refine.refined.connect(func(_idx, _case):
+		Mission.bump_progress(Mission.EVENT_REFINE_DONE))
+	_mix.mixed.connect(func(_ridx, success):
+		if success: Mission.bump_progress(Mission.EVENT_MIX_DONE))
+	_orb.orb_changed.connect(func(_inv, _act):
+		Mission.bump_progress(Mission.EVENT_ORB_COMBINE))
+	_blacksmith.crafted.connect(func(_sid, _idx, success):
+		if success: Mission.bump_progress(Mission.EVENT_MIX_DONE))
+	# 전투 승리 시 monster_kill 이벤트 (battle_system 의 _monster_id 사용)
+	_battle_ui.battle_completed.connect(func(victory, _exp, _gold, _items):
+		if victory and "_monster_id" in _battle_ui:
+			Mission.bump_progress(Mission.EVENT_MONSTER_KILL, int(_battle_ui._monster_id)))
+	Quest.quest_completed.connect(func(_qid):
+		Mission.bump_progress(Mission.EVENT_QUEST_DONE))
 	_interp = H5Interpreter.new()
 	# Dialog 관련 opcode (.so disasm 검증):
 	#   0x35 (53) Event_SituateBallon       (2B)
@@ -389,6 +408,9 @@ func _input(event: InputEvent) -> void:
 			KEY_L:
 				# L: 스킬북 학습 패널 토글 (Round 57 — Learn 의미)
 				_skill_book.toggle()
+			KEY_COMMA:
+				# , : 미션 진척 패널 토글 (Round 58)
+				_mission.toggle()
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})

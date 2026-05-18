@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 57 — **SkillBook 학습 UI 구현**. Round 21 의 HERO::IfLearnSkill mechanism — items.json slot_16(95)/slot_17(98) = 193 books. GameState 에 `skill_levels: Dictionary` + `can_learn_skill_book/learn_skill_book/get_skill_level` 추가. GameData 에 `skill_book_slot_for_class` ((cid/2)+16) / `skill_books_for_class` / `skill_book_detail`. UI: 인벤 필터 + 상세 카드 (스킬/필요레벨/설명) + 학습 버튼 (4 case 거부 이유 표시). demo.gd L 키. `h5_test_skill_book.py` — class 분포 (W=48, R=47, G=49, K=49) / Sorcerer 0 (stub) / 5 case 시뮬 (학습 / 재학습 거부 / 다른 클래스 거부 / 레벨 부족 / upgrade 허용). Godot 실 구현 56-61% → 59-64%, 출시 53-63% → 56-66%.)
+업데이트: 2026-05-18 (Round 58 — **Mission 진척 UI 구현**. Round 37/38 의 mission.json (105 missions) 활용. mission_system.gd 신규 autoload + 7 event API (monster_kill/item_obtained/refine_done/orb_combine/mix_done/playtime/money/quest_done) + 자동 완료 트리거. mission_panel UI (4-탭 + detail card). 기존 panel 6 hook 연결 (refine/mix/orb/blacksmith/battle/quest). demo.gd `,` 키. `h5_test_mission.py` — type 분포 검증 ({0:20, 1:5, 2:22, 3:47, 4:5, 5:5, 255:1}) + 3 case 시뮬 (사냥 30회 / 누적 100회 / 세트 4종 수집). Godot 실 구현 59-64% → 62-67%, 출시 56-66% → 60-70%.)
 
-## 📜 Round 1-57 한 줄 요약
+## 📜 Round 1-58 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -24,13 +24,14 @@
 | R54 | Orb socket UI 구현 — Round 17/26 ApplyOrbCombine + 53 orb + 5-socket encoding + 2x rule + add/remove 검증 |
 | R55 | NPC 대장간(Blacksmith) UI 구현 — Round 28/32 ApplyNormalMix + smithtable.json 231 named recipes + 4-탭 + 제작가능 필터 + items.json _meta 회복 |
 | R56 | Quest 패널 강화 — Round 40 quests.json 새 schema (3×151) + detail card (목표/보상/설명) + 난이도 토글 + 자동 보상 quests.json 직접 사용 + difficulty scaling 100% 단조 검증 |
-| **R57** | **SkillBook 학습 UI 구현 — Round 21 IfLearnSkill + slot_16/17 193 books + GameState skill_levels dict + 4 조건 검증 (class/lvl/upgrade/inv) + Sorcerer stub 검증** |
+| R57 | SkillBook 학습 UI 구현 — Round 21 IfLearnSkill + slot_16/17 193 books + GameState skill_levels dict + 4 조건 검증 + Sorcerer stub 검증 |
+| **R58** | **Mission 진척 UI 구현 — Round 37/38 mission.json 105 missions + MissionSystem autoload + 7 event API + 6 panel hook 자동 연결 + type 분포 검증 + 3 case 시뮬** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 57 시점)
+## 🎯 전체 진척 평가 (Round 58 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -39,12 +40,12 @@
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
 | **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~59-64%** | + **SkillBook 학습 UI (193 books)**. 미구현: Mission 진척, Save device import |
+| **Godot 실 구현** | **~62-67%** | + **Mission 진척 UI (105 missions + 6 hook)**. UI 시스템 R51-58 완료. 미구현: RE 잔여 (host CHAR, scn opcode, save device) |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **56-66%** (SkillBook 학습 UI 완성)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **60-70%** (Mission UI 완성으로 UI 시스템 라운드 종료)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -57,7 +58,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 58)
+## 🚀 다음 세션 즉시 시작 (Round 59)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -81,6 +82,7 @@ python tools/h5_test_orb.py            # 53 orb encoding + 2x rule
 python tools/h5_test_blacksmith.py     # 231 smith recipes + sr 분포
 python tools/h5_test_quest.py          # 151×3 quests + difficulty scaling
 python tools/h5_test_skill_book.py     # 193 skill books + 5 case 시뮬
+python tools/h5_test_mission.py        # 105 missions + 3 case 시뮬
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -96,6 +98,7 @@ python tools/h5_test_skill_book.py     # 193 skill books + 5 case 시뮬
 | **J** | NPC 대장간(Blacksmith) 패널 토글 | **R55** |
 | **Q** | 퀘스트 패널 토글 (R56 detail card + 난이도 토글) | R20 (R56 강화) |
 | **L** | 스킬북 학습(Learn) 패널 토글 | **R57** |
+| **,** | 미션 진척 패널 토글 | **R58** |
 | S | 상점 열기 | R8 |
 | H | 도움말 토글 | R10 |
 | X | 설정 토글 | R10 |
@@ -107,29 +110,31 @@ python tools/h5_test_skill_book.py     # 193 skill books + 5 case 시뮬
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 58 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 59 추천 작업 (자율 가능, 임팩트 순)
 
-**1순위 — Mission 진척 UI** (1 라운드)
-- mission_list.dat 의 105 mission. Round 37/40 의 Mission::CheckMissionXxxx 13 함수 연동.
-- mix/blacksmith/orb 패널이 이미 Mission::CheckMission* 트리거 가능한 지점에 hook 추가 가능
-- 새 키 = `,` (mission 의 m 은 map 과 중복)
+> R51-58 으로 핵심 UI 시스템 완료. R59 부터는 RE / 시스템 통합 단계.
 
-**2순위 — Quest cond_type 의미 해석** (0.5-1 라운드, RE)
+**1순위 — Quest cond_type 의미 해석** (0.5-1 라운드, RE)
 - Round 56 의 h5_test_quest.py 가 cond_type 14/13/17 분포 발견 — Round 40 의 17/18 추측은 부분 표본
 - QuestMgr::CheckObjective 같은 함수 디스어셈블로 type 별 의미 확정
 - type 14 (38건) = item 획득 / type 13 (8건) = 방문 / type 17 (7건) = 처치 가설 검증
 - 동시에 reward type_15 (item 보상) / type_11/12 도 매핑
+- Round 58 mission_type 의 의미 (현재 0/1/2/3/4/5 가설) 와 동시 RE 가능
 
-**3순위 — character.gd 실제 host CHAR method** (1 라운드)
+**2순위 — character.gd 실제 host CHAR method** (1 라운드)
 - 현재 battle_system 의 turn-based stub 만 — Monster AI 가 실제 위치/방향 정보 받지 못함
 - character.gd 에 `fast_distance_to_hero / get_motion / get_dir` 등 실 구현 추가
 - 맵 위 monster spawn 시 AI runtime 이 character 와 직접 상호작용
 
-**4순위 — Skill 보유 레벨 UI 표시** (0.5 라운드)
+**3순위 — Skill 보유 레벨 UI 표시** (0.5 라운드)
 - status_panel 에 GameState.skill_levels 표시 (현재는 unlocked 목록만)
 - battle 메뉴에서 스킬 사용 시 정확한 level 의 stat 적용
 
-### E. Round 51-57 UI 시스템 통합 상태 (참고)
+**4순위 — battle_system 의 turn-based → real-time 합성** (1-2 라운드)
+- Formula VM 평가는 됨, turn order / animation timing / skill VFX 미통합
+- Round 50 의 host CHAR interface 13 method 가 실제 character.gd 와 연결되면 가능
+
+### E. Round 51-58 UI 시스템 통합 상태 (참고)
 
 | 패널 | 데이터 source | 핵심 mechanic | helper 함수 |
 |---|---|---|---|
@@ -140,10 +145,12 @@ python tools/h5_test_skill_book.py     # 193 skill books + 5 case 시뮬
 | blacksmith_panel (R55) | smithtable.json 231 named (288 entries) | 4-탭(기본/세트/고급/전체) + sr {75,100} | GameData.smith_table / smith_all / parse_smith_recipe |
 | quest_panel (R56) | quests.json by_difficulty.q0/q1/q2 × 151 | detail card + 난이도 토글 + scaling 단조 | Quest.quest_objectives / quest_rewards / reward_label |
 | skill_book_panel (R57) | items.json slot_16/17 의 193 books | class match + req_lvl + upgrade check | GameData.skill_books_for_class / GameState.learn_skill_book |
+| mission_panel (R58) | mission.json 105 missions | 7 event → mission_type 매핑 / 자동 완료 | Mission.bump_progress / mission_completed signal |
 
 모두 GameState 의 단일 inventory 배열을 공유. `consume_inventory` 가 refine_state + orb_state 동기 정리.
 blacksmith 는 mix 와 동일한 parse_recipe 형식이라 schema 호환. quest_panel 은 Quest singleton 사용.
 skill_book_panel 은 GameState.skill_levels dict (skill_idx → max LV) 갱신 + unlocked_skills 동시 갱신.
+mission_panel 은 Mission singleton (R58 신규 autoload) 사용. 기존 panel 6개 hook 자동 연결.
 
 ### F. 미구현 / 향후 옵션
 

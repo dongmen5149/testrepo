@@ -21,6 +21,7 @@ extends CanvasLayer
 @onready var close_btn: Button = $BG/CloseBtn
 
 signal closed
+signal orb_changed(inv_idx: int, action: String)  ## action ∈ {"socket", "remove"} — Round 58 mission hook
 
 var _selected_inv_idx: int = -1
 var _selected_socket_slot: int = -1
@@ -137,6 +138,7 @@ func _on_orb_activated(idx: int) -> void:
 	# inventory 에서 1개 소비
 	GameState.consume_inventory(orb_name, 1)
 	info_label.text = "✓ %s → slot %d" % [orb_name, slot]
+	orb_changed.emit(_selected_inv_idx, "socket")
 	# 인벤 변동으로 selected idx 가 shift 됐을 수도 있음 — 전체 refresh
 	_refresh_equip_list()
 	# 선택 복원 (가능한 한)
@@ -157,6 +159,7 @@ func _on_remove_pressed() -> void:
 	GameState.inventory.append(orb_name)
 	GameState.state_changed.emit()
 	info_label.text = "✓ %s 제거 → 인벤토리" % orb_name
+	orb_changed.emit(_selected_inv_idx, "remove")
 	_refresh_socket_list()
 	_refresh_orb_list()
 	_refresh_equip_list()
