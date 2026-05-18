@@ -4,41 +4,33 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * SharedPreferences 기반 영구 설정.
+ * SharedPreferences 기반 영구 설정. engine-core 의 [AppSettings] 인터페이스 구현.
  *
  * - language: "ko" (default) / "en"
  * - quality:  "sd" (default) / "hd"  (sprites_hd 디렉토리에서 4× 자산 사용)
+ *
+ * Phase C Step 4a (2026-05-19) — 공유 가능한 동작 (spritesDir/isEn/lang) 은 interface
+ * default 로 이전, 저장소 backed property 만 override.
  */
-class Settings(context: Context) {
+class Settings(context: Context) : AppSettings {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("hero3_remake", Context.MODE_PRIVATE)
 
-    var language: String
+    override var language: String
         get() = prefs.getString(KEY_LANGUAGE, "ko") ?: "ko"
         set(value) { prefs.edit().putString(KEY_LANGUAGE, value).apply() }
 
-    var qualityHd: Boolean
+    override var qualityHd: Boolean
         get() = prefs.getBoolean(KEY_QUALITY_HD, false)
         set(value) { prefs.edit().putBoolean(KEY_QUALITY_HD, value).apply() }
 
-    /** 인카운터 배수. 0.0 = 비활성, 0.5 = 절반, 1.0 = 기본, 2.0 = 두 배. */
-    var encounterMultiplier: Float
+    override var encounterMultiplier: Float
         get() = prefs.getFloat(KEY_ENCOUNTER, 1.0f)
         set(value) { prefs.edit().putFloat(KEY_ENCOUNTER, value).apply() }
 
-    /** MapWalk 미니맵 표시 여부. */
-    var minimapVisible: Boolean
+    override var minimapVisible: Boolean
         get() = prefs.getBoolean(KEY_MINIMAP, true)
         set(value) { prefs.edit().putBoolean(KEY_MINIMAP, value).apply() }
-
-    /** 현재 품질에 따른 sprite asset 디렉토리. */
-    fun spritesDir(): String = if (qualityHd) "sprites_hd" else "sprites"
-
-    /** 현재 언어가 영어인지. */
-    val isEn: Boolean get() = language == "en"
-
-    /** 한·영 분기 헬퍼. 한국어가 기본 언어이므로 ko 인자가 앞. */
-    fun lang(ko: String, en: String): String = if (isEn) en else ko
 
     companion object {
         private const val KEY_LANGUAGE = "language"
