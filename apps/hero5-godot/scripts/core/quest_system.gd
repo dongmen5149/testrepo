@@ -1,8 +1,21 @@
 ## Quest 진행 시스템.
 ##
-## quests.json (105 missions + 72 tree) + quests_text.json 사용.
+## quests.json (Round 40 decoder 산출: by_difficulty.q0/q1/q2 × 151 quests) 사용.
 ## Interpreter 의 Quest opcode (QuestStatus / QuestSwitch / QuestQSwitch /
 ## QuestBoss) 와 연결.
+##
+## 데이터 schema (decode_h5_quest.py — Round 40):
+##   {
+##     "by_difficulty": {
+##       "q0": [{idx, name, description, category, h0, h2, obj_count,
+##               objectives: [{type, sub, value, kind}×3],
+##               rewards:    [{type, sub, value, kind}×3], trailer, ...}×151],
+##       "q1": [...×151], "q2": [...×151]
+##     },
+##     "reward_type_table": {17: "money", 18: "exp", 255: "unused"},
+##     "cond_type_table": {17: "cond_17", 18: "cond_18", 255: "unused"},
+##     "compare": [...]
+##   }
 extends Node
 
 signal quest_started(quest_id: int, name: String)
@@ -15,9 +28,20 @@ const STATUS_ACTIVE := 1
 const STATUS_COMPLETED := 2
 const STATUS_FAILED := 3
 
-var _quests: Array = []     # mission_list
-var _tree: Array = []       # questTree
-var _state: Dictionary = {} # quest_id → status
+# Reward type codes (phase2 byte 0) — Round 40 검증
+const REWARD_TYPE_MONEY := 17
+const REWARD_TYPE_EXP := 18
+const REWARD_TYPE_UNUSED := 255
+
+# Condition type codes (phase1 byte 0)
+const COND_TYPE_UNUSED := 255
+
+# 어느 difficulty 로 quest detail 표시할지 (0/1/2 = easy/normal/hard).
+# UI 가 변경 가능. data 는 모든 difficulty 가 동시에 메모리에 있음.
+var current_difficulty: int = 0
+
+var _difficulty_data: Array = [[], [], []]   # 3 arrays of 151 quest dicts
+var _state: Dictionary = {}                  # quest_id → status
 
 # 처치 카운트 추적: { quest_id: { monster_id: count } }
 var _kill_counts: Dictionary = {}
@@ -26,19 +50,102 @@ var _kill_targets: Dictionary = {}
 
 
 func _ready() -> void:
+	_load_quests()
+
+
+func _load_quests() -> void:
 	var p := "res://assets/gamedata/quests.json"
-	if FileAccess.file_exists(p):
-		var f := FileAccess.open(p, FileAccess.READ)
-		var data = JSON.parse_string(f.get_as_text())
-		if data is Dictionary:
-			_quests = data.get("quests", [])
-			_tree = data.get("tree", [])
-	print("[Quest] loaded %d quests, %d tree nodes" % [_quests.size(), _tree.size()])
+	if not FileAccess.file_exists(p):
+		push_warning("quests.json not found")
+		return
+	var f := FileAccess.open(p, FileAccess.READ)
+	var data = JSON.parse_string(f.get_as_text())
+	if not (data is Dictionary): return
+	# 신규 Round 40 schema
+	var by_diff = data.get("by_difficulty", {})
+	if by_diff is Dictionary and not by_diff.is_empty():
+		_difficulty_data[0] = by_diff.get("q0", [])
+		_difficulty_data[1] = by_diff.get("q1", [])
+		_difficulty_data[2] = by_diff.get("q2", [])
+	else:
+		# Legacy schema (Round 39 이전): {quests: [{name, extra_hex}]}
+		var legacy = data.get("quests", [])
+		_difficulty_data[0] = legacy
+		_difficulty_data[1] = legacy
+		_difficulty_data[2] = legacy
+	print("[Quest] loaded %d / %d / %d quests (q0/q1/q2)" % [
+		_difficulty_data[0].size(), _difficulty_data[1].size(), _difficulty_data[2].size()])
+
+
+## 현재 difficulty 의 quest 배열.
+func quests() -> Array:
+	return _difficulty_data[current_difficulty]
+
+
+func quest_count() -> int:
+	return quests().size()
+
+
+func quest_dict(qid: int) -> Dictionary:
+	var arr = quests()
+	if qid < 0 or qid >= arr.size(): return {}
+	return arr[qid]
 
 
 func quest_name(qid: int) -> String:
-	if qid < 0 or qid >= _quests.size(): return ""
-	return _quests[qid].get("name", "")
+	return str(quest_dict(qid).get("name", ""))
+
+
+func quest_description(qid: int) -> String:
+	return str(quest_dict(qid).get("description", ""))
+
+
+func quest_category(qid: int) -> String:
+	return str(quest_dict(qid).get("category", ""))
+
+
+## phase1 의 3 objectives 중 unused (type=255) 제외.
+## 각 entry: {type, sub, value, kind}.
+func quest_objectives(qid: int) -> Array:
+	var arr: Array = quest_dict(qid).get("objectives", [])
+	var out: Array = []
+	for e in arr:
+		if int(e.get("type", 255)) == COND_TYPE_UNUSED: continue
+		out.append(e)
+	return out
+
+
+## phase2 의 3 rewards 중 unused (type=255) 제외.
+## 각 entry: {type, sub, value, kind}.
+func quest_rewards(qid: int) -> Array:
+	var arr: Array = quest_dict(qid).get("rewards", [])
+	var out: Array = []
+	for e in arr:
+		if int(e.get("type", 255)) == REWARD_TYPE_UNUSED: continue
+		out.append(e)
+	return out
+
+
+## 사람이 읽을 수 있는 reward 라벨 (UI 표시용).
+func reward_label(reward: Dictionary) -> String:
+	var t = int(reward.get("type", 255))
+	var v = int(reward.get("value", 0))
+	match t:
+		REWARD_TYPE_MONEY: return "💰 골드 +%d" % v
+		REWARD_TYPE_EXP:   return "⭐ 경험치 +%d" % v
+		REWARD_TYPE_UNUSED: return ""
+	return "보상[type=%d, sub=%d, val=%d]" % [t, int(reward.get("sub", 0)), v]
+
+
+## 사람이 읽을 수 있는 objective 라벨 (UI 표시용).
+## type/sub 의 의미는 Round 40 시점 미해석 — 일단 numeric 라벨.
+func objective_label(obj: Dictionary) -> String:
+	var t = int(obj.get("type", 255))
+	var s = int(obj.get("sub", 0))
+	var v = int(obj.get("value", 0))
+	if t == COND_TYPE_UNUSED: return ""
+	# 가설: type 17 / sub 가 monster_id 또는 quest_target_id, value 가 target count.
+	return "조건 [type=%d, sub=%d] → 목표 %d" % [t, s, v]
 
 
 func start(qid: int) -> void:
@@ -85,56 +192,28 @@ func complete(qid: int) -> void:
 	_state[qid] = STATUS_COMPLETED
 	quest_completed.emit(qid)
 	quest_status_changed.emit(qid, STATUS_COMPLETED)
-	# 자동 보상 지급: rewards.json 의 tier 0 entry 사용
+	# 자동 보상 지급: quests.json 의 rewards 사용 (Round 40)
 	_grant_reward(qid)
 
 
-## 보상 지급 — rewards.json 의 6B record 사용 (type-byte 분기).
-##   현재 가설: byte[0] 가 reward_type (0x06+=item, 0x0d=gold, 0x0f=exp),
-##   byte[1..3] 가 value (LE u24).
-##   기본값: gold = qid×50+100, exp = qid×30+50.
-var _rewards_cache: Array = []
-
-
+## quests.json 의 quest_rewards(qid) 를 GameState 에 적용.
+## REWARD_TYPE_MONEY / EXP 만 자동 처리. 다른 type 은 type/value 로 부족 시 default 폴백.
 func _grant_reward(qid: int) -> void:
-	if _rewards_cache.is_empty():
-		var p := "res://assets/gamedata/rewards.json"
-		if FileAccess.file_exists(p):
-			var f := FileAccess.open(p, FileAccess.READ)
-			_rewards_cache = JSON.parse_string(f.get_as_text()) or []
-
-	var gold_reward = qid * 50 + 100
-	var exp_reward = qid * 30 + 50
-	var item_to_grant := ""
-
-	# rewards tier 0 의 qid 번째 record 가 있으면 사용
-	if _rewards_cache.size() > 0:
-		var tier = _rewards_cache[0]
-		var recs: Array = tier.get("records", [])
-		if qid < recs.size():
-			var hex = recs[qid].get("extra_hex", "")
-			if hex.length() >= 4:
-				var reward_type = int(hex.substr(0, 2), 16)
-				var value_lo = int(hex.substr(2, 2), 16)
-				var value_hi = int(hex.substr(4, 2), 16) if hex.length() >= 6 else 0
-				var value = value_lo | (value_hi << 8)
-				match reward_type:
-					0x0d:  # gold 추정
-						gold_reward = max(gold_reward, value * 10)
-					0x0f:  # exp 추정
-						exp_reward = max(exp_reward, value * 5)
-					0x06, 0x07, 0x08, 0x11:  # item 추정
-						# value 를 item 인덱스로 슬롯 0..3 에서 검색
-						var slot = reward_type - 0x06
-						var arr = GameData.items_in_slot(slot)
-						if value < arr.size() and not arr[value].is_empty():
-							item_to_grant = arr[value]
-
-	GameState.gold += gold_reward
-	GameState.add_battle_reward(exp_reward, 0)
-	if item_to_grant.is_empty():
-		item_to_grant = "미들포션"  # fallback
-	GameState.inventory.append(item_to_grant)
+	var rewards = quest_rewards(qid)
+	var gold_gain = 0
+	var exp_gain = 0
+	for r in rewards:
+		var t = int(r.get("type", 255))
+		var v = int(r.get("value", 0))
+		match t:
+			REWARD_TYPE_MONEY: gold_gain += v
+			REWARD_TYPE_EXP:   exp_gain += v
+	# 미정의 / 빈 보상의 경우 최소 default 지급 (UX)
+	if gold_gain == 0 and exp_gain == 0:
+		gold_gain = qid * 50 + 100
+		exp_gain = qid * 30 + 50
+	GameState.gold += gold_gain
+	GameState.add_battle_reward(exp_gain, 0)
 	GameState.state_changed.emit()
 
 

@@ -8,15 +8,15 @@ script = ExtResource("1_quest")
 
 [node name="BG" type="ColorRect" parent="."]
 offset_left = 16.0
-offset_top = 24.0
-offset_right = 304.0
-offset_bottom = 456.0
+offset_top = 16.0
+offset_right = 624.0
+offset_bottom = 464.0
 color = Color(0.05, 0.08, 0.05, 0.95)
 
 [node name="Title" type="Label" parent="BG"]
 offset_left = 8.0
 offset_top = 4.0
-offset_right = 280.0
+offset_right = 600.0
 offset_bottom = 24.0
 text = "퀘스트"
 horizontal_alignment = 1
@@ -25,42 +25,119 @@ theme_override_font_sizes/font_size = 14
 [node name="ActiveLabel" type="Label" parent="BG"]
 offset_left = 8.0
 offset_top = 28.0
-offset_right = 280.0
+offset_right = 240.0
 offset_bottom = 44.0
 text = "활성:"
 theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 12
 
 [node name="ActiveList" type="ItemList" parent="BG"]
 offset_left = 8.0
 offset_top = 46.0
-offset_right = 280.0
-offset_bottom = 200.0
+offset_right = 240.0
+offset_bottom = 220.0
+allow_reselect = true
 
 [node name="CompletedLabel" type="Label" parent="BG"]
 offset_left = 8.0
-offset_top = 210.0
-offset_right = 280.0
-offset_bottom = 226.0
+offset_top = 226.0
+offset_right = 240.0
+offset_bottom = 242.0
 text = "완료:"
 theme_override_colors/font_color = Color(0.5, 1, 0.5, 1)
+theme_override_font_sizes/font_size = 12
 
 [node name="CompletedList" type="ItemList" parent="BG"]
 offset_left = 8.0
-offset_top = 228.0
-offset_right = 280.0
-offset_bottom = 360.0
+offset_top = 244.0
+offset_right = 240.0
+offset_bottom = 384.0
+allow_reselect = true
 
 [node name="Info" type="Label" parent="BG"]
 offset_left = 8.0
-offset_top = 366.0
-offset_right = 280.0
-offset_bottom = 400.0
+offset_top = 388.0
+offset_right = 240.0
+offset_bottom = 410.0
 text = ""
 autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="Detail" type="ColorRect" parent="BG"]
+offset_left = 250.0
+offset_top = 28.0
+offset_right = 600.0
+offset_bottom = 410.0
+color = Color(0.1, 0.13, 0.1, 0.95)
+
+[node name="TitleLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 342.0
+offset_bottom = 26.0
+text = "(퀘스트 선택)"
+theme_override_colors/font_color = Color(1, 0.95, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+
+[node name="CategoryLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 28.0
+offset_right = 342.0
+offset_bottom = 42.0
+text = ""
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 10
+
+[node name="DescLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 46.0
+offset_right = 342.0
+offset_bottom = 152.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="ObjectivesLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 158.0
+offset_right = 342.0
+offset_bottom = 230.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+
+[node name="RewardsLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 236.0
+offset_right = 342.0
+offset_bottom = 320.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.8, 1, 0.8, 1)
+
+[node name="ProgressLabel" type="Label" parent="BG/Detail"]
+offset_left = 8.0
+offset_top = 326.0
+offset_right = 342.0
+offset_bottom = 375.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
+
+[node name="DiffBtn" type="Button" parent="BG"]
+offset_left = 250.0
+offset_top = 416.0
+offset_right = 380.0
+offset_bottom = 440.0
+text = "난이도: 쉬움"
 
 [node name="CloseButton" type="Button" parent="BG"]
-offset_left = 192.0
-offset_top = 404.0
-offset_right = 280.0
-offset_bottom = 426.0
+offset_left = 510.0
+offset_top = 416.0
+offset_right = 598.0
+offset_bottom = 440.0
 text = "닫기"
