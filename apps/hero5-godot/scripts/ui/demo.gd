@@ -328,6 +328,37 @@ func _spawn_hero() -> Sprite2D:
 	# 적당한 캐릭터 sprite 디렉토리 — 첫 sprites/img0/0NN
 	c.sprite_dir = "res://assets/sprites/img0/000"
 	c.position = Vector2(160, 240)
+	c.is_hero = true
+	return c
+
+
+## Round 61: 맵 위에 monster character 스폰 + monster_ai runtime 연결.
+##
+## 반환: spawn 된 character (host CHAR interface 13 method 제공).
+## 호출자가 add_child + monster_ai 의 create_runtime(host=char, ai_type=...) 사용.
+##
+## AI 가 character 의 host method 를 직접 호출 (battle_system stub 우회). 실제 거리/방향/
+## 모션이 map 좌표 기반으로 계산되어 정확.
+func spawn_monster(monster_id: int, pos: Vector2, ai_type_id: int = -1) -> Sprite2D:
+	var c = Character.new()
+	c.is_hero = false
+	c.target_hero = _hero   # AI 의 fast_distance_to_hero / hero_turn_direction 용
+	c.position = pos
+	# monster_id 별 sprite (간이 매핑 — img0/NNN 형식)
+	c.sprite_dir = "res://assets/sprites/img0/%03d" % (monster_id % 100)
+	# enemy stats 에서 HP 가져오기
+	var stats = GameData.enemy_stats(monster_id)
+	c.max_hp = int(stats.get("hp", 50))
+	c.hp = c.max_hp
+	add_child(c)
+	# AI 가 skill 발동 시 demo 가 처리 (현재는 toast 만)
+	c.ai_skill_cast.connect(func(skill_id, source):
+		preload("res://scripts/ui/toast.gd").show_msg(self,
+			"몬스터 #%d 스킬 %d 시전" % [monster_id, skill_id]))
+	if ai_type_id >= 0:
+		var rt = MonsterAI.create_runtime(c, ai_type_id)
+		# rt 는 caller 가 보관 (process 호출 책임 분리). 일단 노드 meta 에 저장.
+		if rt: c.set_meta("ai_runtime", rt)
 	return c
 
 
