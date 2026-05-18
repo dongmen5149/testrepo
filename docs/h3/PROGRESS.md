@@ -5,11 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 58 종료 시점)**:
-> - 마지막 commit = `2d740a20 feat:영웅서기3 Round 57 — DES 시스템 완전 식별 (key "0EP@KO91" + des_dat 표준 tables) + dat path string 25개`
-> - **Round 58 산출물 uncommitted** — 1 신규 doc + 3 신규 recon scripts + 1 converter 확장 + `PROGRESS.md` modified
+> **현재 git 상태 (2026-05-18 Round 59 종료 시점)**:
+> - 마지막 commit = `a67426e5 feat:영웅서기3 Round 58 — Boss (15 entries) + Quest (44+) 평문 파싱 + DES variant matrix 실패 (NDK runner 필요 확정)`
+> - **Round 59 산출물 uncommitted** — 1 신규 doc + 1 신규 recon script + `PROGRESS.md` modified
 
-**최신 진행 라운드**: 2026-05-18 (Round 58, uncommitted) — **2YA + 2YB = ★ Boss + Quest 평문 파싱 완료 + DES variant matrix 실패**. (1) ⭐⭐⭐ **R57 의 "JAR 재추출 필요" 가설 폐기** — 모든 파일이 이미 `work/h3/extracted/{boss,npc,skill,dat}/` 폴더에 추출되어 있음. (2) ⭐⭐⭐⭐ **boss_dat (508B) = 15 bosses 완전 파싱**: 리츠/케이 (paired tier 1-3), 멜페토/큐 (paired tier 4), 벨루스, 시즈타이탄(×2), 아르보르, 오르도(×2), 홀리가디언 (final boss 추정 lvl 46/67). entry 구조 = header(3) + name(4, no '@') + 19B stats + **6-byte 가변 trailer** (enemy 의 2B trailer 와 차이). (3) ⭐⭐⭐⭐ **quest_*_dat 4 파일 = 44+ quests 평문 EUC-KR**: 메인퀘스트 + 사이드퀘스트 본문 (노력의 증명1, 수상한 동굴, 길잃은 소녀, 협곡의 독소, 국경 돌파, 엔자크의 영광 등). entry = (name, description, location, target, category). (4) ⭐⭐⭐ **Hero3 게임 지역 식별**: 네메시스숲(시작), 네오솔티아, 협곡, 아스크라(적국), 엔자크사막, 토레즈(광산도시), 로우엔 평원, 리파이너의유적. (5) ⭐⭐ **신규 DES 후보**: smith_dat / smithh_dat (896B, entropy 7.76). 총 DES 후보 = drop_dat / droph_dat / getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat = **7 파일**. (6) ⭐⭐⭐ **DES variant matrix 시도** (ECB / CBC+zero-IV / CBC+key-IV / parity-adjusted / bit-reversed key) = **전부 실패** (entropy 7.7+ 유지). [`reference_h5_des_blocker`] 의 NDK runner 가 H3 에도 유일 해결책 확정. (7) **평문 미파싱**: s4_dat (skill), npcg_dat (78 entries × 13B), char_dat. Round 59 우선: **Hero5 NDK runner 로 H3 DES 복호화 검증** + 미파싱 평문 파일 (s4_dat, npcg_dat, char_dat). **진행률 ~72-75%** (+3-5%p). 상세는 [ghidra-boss-quest-dat-and-des-variants-2026-05-18.md](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 59, uncommitted) — **2ZA + 2ZB + 2ZC = char_dat + npcg_dat + s4_dat 완전 파싱**. (1) ⭐⭐⭐⭐ **char_dat (348B) = 10 playable character classes** — **리츠와 케이가 boss 가 아닌 PLAYER 주인공** 확정. 각 5 클래스: 리츠(어쌀트워리어/디스럽터/건슬링어/나이트템플러/크레이지암즈) + 케이(버서커/데스나이트/섀도우워커/가디언나이트/소울마스터). entry = header(3) + name1(EUC-KR) + name2_len(1) + name2(class name) + 7B stat + 2B trailer. stat byte 0 = weapon type (0=검, 1=세이버, 2=도끼, 3=총, 11=특수). (2) ⭐⭐⭐ **npcg_dat (1014B) = 78 NPC graphics info** (13B/entry 고정, type byte + 7B graphics data + terminator 0x06). 짝수 index = 변형, 홀수 = 본체 추정. (3) ⭐⭐⭐ **s4_dat (894B) = 15 skill entries = 창수 클래스 스킬 트리** — 창술 1-7 passive + 섬광/자격/압도/유도/장벽/태산/의지/정신 8 active. 각 skill 에 한국어 설명 + 30-70B stat block. (4) **다른 skill 파일 존재 추정** (s1~s10_dat?) → Round 60 확인. (5) **Hero3 게임 시스템 완전 매핑**: 2 주인공×5 클래스, 161×2 enemies, 15×2 bosses, 78 NPCs, ~150 skills, 44+ quests, 8 regions. (6) **진행률 ~75-78%** (+3-5%p). Round 60 우선: **NDK runner 로 DES 7 파일 복호화** + 다른 skill 파일 확인 + boss 24-bit HP 가설. 상세는 [ghidra-char-npcg-skill-parsing-2026-05-18.md](ghidra-char-npcg-skill-parsing-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 58, committed `a67426e5`) — **2YA + 2YB = ★ Boss + Quest 평문 파싱 완료 + DES variant matrix 실패**. (1) ⭐⭐⭐ **R57 의 "JAR 재추출 필요" 가설 폐기** — 모든 파일이 이미 `work/h3/extracted/{boss,npc,skill,dat}/` 폴더에 추출되어 있음. (2) ⭐⭐⭐⭐ **boss_dat (508B) = 15 bosses 완전 파싱**: 리츠/케이 (paired tier 1-3), 멜페토/큐 (paired tier 4), 벨루스, 시즈타이탄(×2), 아르보르, 오르도(×2), 홀리가디언 (final boss 추정 lvl 46/67). entry 구조 = header(3) + name(4, no '@') + 19B stats + **6-byte 가변 trailer** (enemy 의 2B trailer 와 차이). (3) ⭐⭐⭐⭐ **quest_*_dat 4 파일 = 44+ quests 평문 EUC-KR**: 메인퀘스트 + 사이드퀘스트 본문 (노력의 증명1, 수상한 동굴, 길잃은 소녀, 협곡의 독소, 국경 돌파, 엔자크의 영광 등). entry = (name, description, location, target, category). (4) ⭐⭐⭐ **Hero3 게임 지역 식별**: 네메시스숲(시작), 네오솔티아, 협곡, 아스크라(적국), 엔자크사막, 토레즈(광산도시), 로우엔 평원, 리파이너의유적. (5) ⭐⭐ **신규 DES 후보**: smith_dat / smithh_dat (896B, entropy 7.76). 총 DES 후보 = drop_dat / droph_dat / getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat = **7 파일**. (6) ⭐⭐⭐ **DES variant matrix 시도** (ECB / CBC+zero-IV / CBC+key-IV / parity-adjusted / bit-reversed key) = **전부 실패** (entropy 7.7+ 유지). [`reference_h5_des_blocker`] 의 NDK runner 가 H3 에도 유일 해결책 확정. (7) **평문 미파싱**: s4_dat (skill), npcg_dat (78 entries × 13B), char_dat. Round 59 우선: **Hero5 NDK runner 로 H3 DES 복호화 검증** + 미파싱 평문 파일 (s4_dat, npcg_dat, char_dat). **진행률 ~72-75%** (+3-5%p). 상세는 [ghidra-boss-quest-dat-and-des-variants-2026-05-18.md](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md).
 
 **이전 진행 라운드**: 2026-05-18 (Round 57, committed `2d740a20`) — **2XA + 2XD = ★★★ DES 시스템 완전 식별 + dat path string 25개 발견**. (1) ⭐⭐⭐⭐ **binary 25 dat path strings**: `/dat/enemy_dat`(0xa63a4), `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`, `/dat/des_dat`(0xac584), `/dat/char_dat` 등. (2) ⭐⭐⭐⭐⭐ **DES 키 `"0EP@KO91"` 발견** @ binary 0xac594 (Hero5 와 동일 키, `[reference_h5_des_blocker.md]` 검증). (3) ⭐⭐⭐⭐⭐ **`dat/des_dat` 파일 = 표준 FIPS DES 알고리즘 테이블 824B 완전 매칭** (IP/IP⁻¹/E/P/S1-S8/PC1/PC2 정확히 일치). Hero3 DES = `[binary code + dat/des_dat tables + "0EP@KO91" key]` 완전 식별. (4) ⭐⭐ **GOT[+0x27c] = `/dat/char_dat` path ptr** 신규. (5) **Simple ECB 복호화 실패** — drop_dat/droph_dat/getitem_dat 가 ECB+key 그대로는 안 풀림. mode/parity/endian 변형 필요 (Round 58 후속). (6) **신규 데이터 파일 발견** (binary 내 string 만, extracted 폴더에 없음): `/boss/boss_dat`, `/dat/quest_00_dat`, `/dat/shop_dat`, `/dat/smith_dat`, `/skill/s4_dat`, `/npc/npcg_dat`. (7) **Android remake 진행률 ~70%** (R56 + R57 합산 +10%p). Round 58 우선: **DES 복호화 매트릭스** (key parity / CBC + IV / endian / bit-reverse 변형) + **추가 dat 파일 JAR 재추출**. 상세는 [ghidra-des-system-and-dat-paths-2026-05-18.md](ghidra-des-system-and-dat-paths-2026-05-18.md).
 
@@ -561,9 +563,18 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 58 uncommitted 산출물 (인덱스)
+### Round 59 uncommitted 산출물 (인덱스)
 
-> 마지막 commit (`2d740a20`, Round 57) 이후 Round 58 산출물이 uncommitted.
+> 마지막 commit (`a67426e5`, Round 58) 이후 Round 59 산출물이 uncommitted.
+
+**Round 59 (2026-05-18)** — char/npcg/s4 dat 평문 파싱 + 리츠/케이 PLAYER 캐릭터 확정:
+- 신규 doc: [`ghidra-char-npcg-skill-parsing-2026-05-18.md`](ghidra-char-npcg-skill-parsing-2026-05-18.md)
+- 신규 scripts (1): `parse_char_npcg_s4_dat.py`
+- 기타: `work/h3/round59_misc_dat_v2.txt`
+
+**추천 commit 메시지**: `feat:영웅서기3 Round 59 — char/npcg/s4 dat 평문 파싱 (10 classes + 78 NPCs + 15 skills) + 리츠/케이 PLAYER 캐릭터 확정`
+
+### Round 58 산출물 (이미 commit `a67426e5`)
 
 **Round 58 (2026-05-18)** — Boss + Quest 평문 파싱 완료 + DES variant matrix 실패:
 - 신규 doc: [`ghidra-boss-quest-dat-and-des-variants-2026-05-18.md`](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md)
