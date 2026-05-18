@@ -5,13 +5,14 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **⚠ 현재 git 상태 (2026-05-18 종료 시점)**:
-> - 마지막 commit = Round 47 (`b83f0552 feat:영웅서기3 Round 47 — ObjectB.vtable[+0x60] 신규...`)
-> - **Round 48 / 49 / 50 산출물은 모두 uncommitted** — 3 신규 docs + 23 신규 recon scripts + `PROGRESS.md` modified
-> - 다음 세션에서 가장 먼저 할 일: (1) `git status` 확인 (2) Round 48-50 산출물 검토 (3) commit 의사 결정 (한 번에 또는 라운드 별)
-> - 산출물 인덱스 — **§ "Round 48-50 uncommitted 산출물" 섹션** 참조 (아래)
+> **현재 git 상태 (2026-05-18 Round 51 종료 시점)**:
+> - 마지막 commit = `54bc5060 feat:영웅서기 3,4,5 추가작업 진행` (Round 48-50 + Hero4 work 포함)
+> - **Round 51 산출물 uncommitted** — 1 신규 doc (`ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md`) + 9 신규 recon scripts + `PROGRESS.md` modified
+> - Round 51 산출물 인덱스 — **§ "Round 51 uncommitted 산출물" 섹션** 참조 (아래)
 
-**최신 진행 라운드**: 2026-05-18 (Round 50, uncommitted) — **2QA + 2QB + 2QC + 2QD + 2QE + 2QF = FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance @ +0x08 + FUN_818f0 정정 + ObjectB vtable[+0x58] destructor 확정**. (1) ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers** (self-relative JT @ 0xa745c): **-1/-2 = cursor DEC (UP)** + **-3/-4 = cursor INC (DOWN)** + **-5 = letter input via FUN_3c920** + **-16 = ctx_byte -1 (clear)** + **-15..-6 (10 entries) = NO-OP/epilogue**. (2) ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT keypad** (FUN_92cc0 '2'/'8' UP/DOWN 의 짝꿍) → 완전한 4방향 phone keypad 체계 확립. (3) ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스** (60-byte) — vtable[+0x54] = allocator (NEW) + **vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). lifecycle: free → alloc → store. ObjectB known methods 9 → **10개** (Round 47의 9 + Round 50의 +0x54). (4) ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` 범위 검사 = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. (5) ⭐⭐ **FUN_75b98 = render flush** (256-byte buffer @ ctx+lit+0xa0 의 dirty flag → memset(0) → indirect render call). (6) FUN_82df4 (44B) = 공유 epilogue trampoline. 상세는 [ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 51, uncommitted) — **2RA + 2RB + 2RC + 2RD + 2RE = FUN_818f0 74-entry JT 완전 디코드 + nested 2nd-level state JT 6개 + FUN_4ad10 = task_struct getter + FUN_3d434 cleanup + FUN_92bf8 cursor INC/DEC + FUN_3c920 mode dispatch + vtable[+0x54] = alloc + FUN_75b98 timer 분기**. (1) ⭐⭐⭐ **FUN_818f0 74 entries → 9 distinct primary handlers** (-16 init / -5 letter / -4 paired / -3 paired / -2 UP-down / -1 UP-down / +55 guard / +57 guard / +others NO-OP). (2) ⭐⭐⭐ **모든 8 유의미 handler 가 동일한 `task[+0xac78]` (Round 28 entity_state) secondary key 로 nested JT dispatch** — completes the (event_code, entity_state) **2D matrix dispatcher** = ~30 leaf handlers. (3) ⭐⭐⭐ **FUN_4ad10 = `*GOT[+0x444]` task_struct getter** (GVM-injected runtime ptr → 0xb6c80 binary 외부). (4) ⭐⭐⭐ **FUN_3d434 = global cleanup** (GOT[+0x284/288/28c] sub-system slot destruct via vtable[+0x58] + task[+0xa23c/a24c] zero). (5) ⭐⭐ **FUN_92bf8 = cursor INC/DEC wraparound** (task[0xa280] cur + task[0xa281] max). (6) ⭐⭐ **FUN_3c920 = mode 1-4 dispatch + entity context (task[+0x9e28] storage × 0x3c4 NPC grid)** = letter input for entity name. (7) ⭐⭐⭐ **vtable[+0x54] = alloc(size_t)** + **GOT[+0x18] = ObjectB master ptr 정체 확정** + **GOT[+0xb44/b48], task[+0xa32c]** 신규 (behavior selector). (8) ⭐⭐ **FUN_75b98 mode==1 = timer arm (curr+0x7d0 = 2s) at GOT[+0x9ac], mode≠1 = clear**. ObjectB methods 10 → **12** (+0x54 alloc, +0x70 time getter). 상세는 [ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md](ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 50) — **2QA + 2QB + 2QC + 2QD + 2QE + 2QF = FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance @ +0x08 + FUN_818f0 정정 + ObjectB vtable[+0x58] destructor 확정**. (1) ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers** (self-relative JT @ 0xa745c): **-1/-2 = cursor DEC (UP)** + **-3/-4 = cursor INC (DOWN)** + **-5 = letter input via FUN_3c920** + **-16 = ctx_byte -1 (clear)** + **-15..-6 (10 entries) = NO-OP/epilogue**. (2) ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT keypad** (FUN_92cc0 '2'/'8' UP/DOWN 의 짝꿍) → 완전한 4방향 phone keypad 체계 확립. (3) ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스** (60-byte) — vtable[+0x54] = allocator (NEW) + **vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). lifecycle: free → alloc → store. ObjectB known methods 9 → **10개** (Round 47의 9 + Round 50의 +0x54). (4) ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` 범위 검사 = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. (5) ⭐⭐ **FUN_75b98 = render flush** (256-byte buffer @ ctx+lit+0xa0 의 dirty flag → memset(0) → indirect render call). (6) FUN_82df4 (44B) = 공유 epilogue trampoline. 상세는 [ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md).
 
 **이전 라운드 종합**: Round 18~50 의 진척 요약은 **§"Round 18~50 한눈 요약"** 표 (아래) 참조. Round 18 부터 차례로:
 - **Round 18~19** — sub-handler + JT 디코드 + vtable invoker 발견
@@ -547,7 +548,18 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 48-50 uncommitted 산출물 (인덱스)
+### Round 51 uncommitted 산출물 (인덱스)
+
+> 마지막 commit (`54bc5060`, Round 48-50 포함) 이후 Round 51 산출물이 uncommitted.
+
+**Round 51 (2026-05-18)** — FUN_818f0 (event_code × entity_state) 2D matrix dispatcher + FUN_4ad10 task getter + vtable[+0x54] alloc + FUN_75b98 timer:
+- 신규 doc: [`ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md`](ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md)
+- 신규 scripts (11): `disasm_818f0_dispatch.py`, `decode_818f0_jt.py`, `disasm_818f0_jt_targets.py`, `disasm_4ad10_3d434.py`, `check_got_444.py`, `extract_818f0_handler_ctx_offsets.py`, `decode_818f0_nested_jts.py`, `disasm_92bf8_full.py`, `disasm_3c920_prologue_jt.py`, `trace_vtable_54_allocator.py`, `disasm_75b98_mode7.py`
+- 기타 산출물: `work/h3/round51_818f0_handlers.txt`, `work/h3/round51_3c920_dump.txt`, `work/h3/round51_75b98.txt`, `work/h3/round51_vtable54.txt`
+
+**추천 commit 메시지**: `feat:영웅서기3 Round 51 — FUN_818f0 (event×state) 2D dispatch matrix + task_struct getter + vtable[+0x54] alloc`
+
+### Round 48-50 산출물 (이미 commit `54bc5060`)
 
 > 마지막 commit (Round 47) 이후 3 라운드분 산출물이 모두 uncommitted. 다음 세션에서 commit 전에 검토.
 
