@@ -5,11 +5,13 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 54 종료 시점)**:
-> - 마지막 commit = `1a90c54b feat:영웅서기3 Round 53 — FUN_9a008 7-mode bytecode interpreter + MD5 algorithm (FUN_5610c) + ObjectB storage iterator`
-> - **Round 54 산출물 uncommitted** — 1 신규 doc (`ghidra-mode4-jt-and-battle-search-2026-05-18.md`) + 3 신규 recon scripts + `PROGRESS.md` modified
+> **현재 git 상태 (2026-05-18 Round 55 종료 시점)**:
+> - 마지막 commit = `fb119e2f feat:영웅서기3 Round 54 — FUN_9a008 mode 4 sub-JT + task field wide-scan + 전투 시스템 검색 (3 신규 dispatcher 발견)`
+> - **Round 55 산출물 uncommitted** — 1 신규 doc (`ghidra-asset-paths-and-arith-grep-2026-05-18.md`) + 7 신규 recon scripts + `PROGRESS.md` modified
 
-**최신 진행 라운드**: 2026-05-18 (Round 54, uncommitted) — **2UA + 2UC + 2UD = FUN_9a008 mode 4 sub-JT 디코드 + task[+0x9bb4]/0x9c70 wide-scan + 전투 시스템 검색**. (1) ⭐⭐ **mode 4 의 31 entries → 단 8 distinct leaf** (22 epilogue) — active states 2/3/4-5/6/7/9/10/30, **state 7/10 = GOT[+0xd28], state 9 = GOT[+0xd38]** = 인접 16B 간격 paired storage system (★ player party vs enemy 버퍼 후보). (2) ⭐⭐⭐ **task[+0x9bb4] wide-scan 71 sites / 19 readers** — top reader FUN_9ada4 (41 reads) 가 실제로는 **FUN_9a008 mode 2 의 sub-leaf** (Ghidra 오분류). mode 2 = status condition tester 가설. (3) ⭐⭐⭐ **task[+0x9c70] wide-scan 44 sites / 27 readers** — 신규 dispatcher 3개 발견: **FUN_3a028 (500B 16-JT party stats menu) / FUN_630e8 (3.9KB render driver) / FUN_88a30 (1.2KB task[+0xa848] sub-dispatcher)**. (4) ⭐⭐ **전투 시스템 후보 없음** — 분석된 11개 함수 모두 menu/UI/state/save dispatcher. 새 가설: **전투가 SCN bytecode opcode 내부에 임베디드** (FUN_8e89e R35 SCN 또는 FUN_9a008 의 leaf). (5) **신규 helpers**: FUN_861a8 (88a30 dominant), FUN_45f78/46890/64018/4fc7c/5512c/5727c/54648. **known funcs ~141** (binary 의 1,433 entries 중 ~10%). GOT slots 25 → **27**. 상세는 [ghidra-mode4-jt-and-battle-search-2026-05-18.md](ghidra-mode4-jt-and-battle-search-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 55, uncommitted) — **2VA + 2VD = paired storage 가설 폐기 + arith-heavy leaf grep + NPC table indexing 패턴**. (1) ⭐⭐⭐ **GOT[+0xd28/+0xd38] 가설 완전 폐기** — R54 의 "player vs enemy paired buffer" 가설이 잘못. 두 슬롯은 **binary 내부 asset path string table 의 인접 entries**: `/menu/chatacterheader_txt` + `/menu/chatacterbody_txt` (typo `chatacter`). FUN_9a008 mode 4 = **character data 화면 로딩 모드**. (2) ⭐⭐⭐ **arith-heavy leaf grep**: 1,433 함수 entries 중 30 candidates 추출. Top 6 후보 (FUN_95408 34 muls / 95a64 26 muls / 4de34 21 muls / 26130 14 muls / 4f358 10 muls + 34 asrs / 47814 13 muls) 모두 **단일 패턴 (`r2 *= 0x3c4; r3 *= 0x3c; addr = base + 0x3c4*row + 0x3c*col`) = Round 14 의 NPC table grid indexing**. arith-heavy = **NPC table multi-lookup 함수**, NOT damage formula. (3) ⭐⭐ **FUN_4f358 asrs 패턴 = int16 sign-extension + cmp #0xc** → **새 가설: enemy stats 가 NPC table row 의 int16 필드에 임베디드** (HP/atk/def/lvl). (4) **전투 시스템 미발견 — 확정된 negative result**: R47-R55 의 12개 분석 함수 모두 NPC table accessor / menu dispatcher / asset loader. **전투가 NPC table data + SCN opcode 조합으로 분산** 추정. (5) **부수 산출물**: asset path string table 의 16+ entries 발견 (`/logo/`, `/menu/`, `/comm/`, `/hero/` 등 다수 typo 포함). Round 56 우선: **NPC table row 0 의 raw structure dump** + **FUN_4f358 본문 정밀** + **SCN opcode 0x12 (R37 11.4KB) 47-arm 매핑**. 상세는 [ghidra-asset-paths-and-arith-grep-2026-05-18.md](ghidra-asset-paths-and-arith-grep-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 54, committed `fb119e2f`) — **2UA + 2UC + 2UD = FUN_9a008 mode 4 sub-JT 디코드 + task[+0x9bb4]/0x9c70 wide-scan + 전투 시스템 검색**. (1) ⭐⭐ **mode 4 의 31 entries → 단 8 distinct leaf** (22 epilogue) — active states 2/3/4-5/6/7/9/10/30, **state 7/10 = GOT[+0xd28], state 9 = GOT[+0xd38]** = 인접 16B 간격 paired storage system (★ player party vs enemy 버퍼 후보). (2) ⭐⭐⭐ **task[+0x9bb4] wide-scan 71 sites / 19 readers** — top reader FUN_9ada4 (41 reads) 가 실제로는 **FUN_9a008 mode 2 의 sub-leaf** (Ghidra 오분류). mode 2 = status condition tester 가설. (3) ⭐⭐⭐ **task[+0x9c70] wide-scan 44 sites / 27 readers** — 신규 dispatcher 3개 발견: **FUN_3a028 (500B 16-JT party stats menu) / FUN_630e8 (3.9KB render driver) / FUN_88a30 (1.2KB task[+0xa848] sub-dispatcher)**. (4) ⭐⭐ **전투 시스템 후보 없음** — 분석된 11개 함수 모두 menu/UI/state/save dispatcher. 새 가설: **전투가 SCN bytecode opcode 내부에 임베디드** (FUN_8e89e R35 SCN 또는 FUN_9a008 의 leaf). (5) **신규 helpers**: FUN_861a8 (88a30 dominant), FUN_45f78/46890/64018/4fc7c/5512c/5727c/54648. **known funcs ~141** (binary 의 1,433 entries 중 ~10%). GOT slots 25 → **27**. 상세는 [ghidra-mode4-jt-and-battle-search-2026-05-18.md](ghidra-mode4-jt-and-battle-search-2026-05-18.md).
 
 **이전 진행 라운드**: 2026-05-18 (Round 53, committed `1a90c54b`) — **2TA + 2TB + 2TC + 2TD = FUN_9a008 = 7-mode bytecode interpreter (122 sub-opcodes) + MD5 알고리즘 발견 + ObjectB storage iterator + FUN_439a0 script opcode dispatcher**. (1) ⭐⭐⭐ **FUN_9a008 정정 = 7-mode script bytecode interpreter** (R52 의 "sparse state machine" 가설 폐기). JT_1 (7 entries @ 0xacbd0) + 각 leaf 의 mode-specific sub-JT (size 0xf/0x10/0x11/0xd/0x1e/0xd/0xb = **122 sub-opcode slots**). mode 4 (31 entries) 가 dominant. 공통 setup pattern = "advance IP by 8" → bytecode VM 확정. (2) ⭐⭐⭐⭐ **MD5 algorithm 발견 in Hero3** — FUN_5613c (Init) literal pool = `0x67452301/0xefcdab89/0x98badcfe/0x10325476` (MD5 magic constants A/B/C/D). FUN_5613c/56164/561dc/5610c = MD5 trio + wrapper `void md5(data, len, out16)`. (3) ⭐⭐⭐ **FUN_77c78 정정 = MD5-verified save record reader** (R52 의 "16B name compare" → "16B MD5 digest compare"). 피처폰 save data tampering 방지. (4) ⭐⭐⭐ **FUN_99a9c = ObjectB storage iterator** (vtable[+0x7c] size + vtable[+0x80] read) — JVM RecordStore API mapping 추정 (-12 = INVALID_RECORD_ID, -18 = STORE_FULL/IO). **ObjectB methods 12 → 14**. (5) ⭐⭐ **FUN_439a0 = FUN_9a008 의 opcode dispatcher helper** (2372B, 7 calls from FUN_9a008). task[+0x9bb4] (R24 bit flags) + task[+0x9cbc] (R40 callback queue) + task[+0x29e] (신규 interpreter flag) 사용. (6) **신규 GOT slots**: +0x68, +0x70 (FUN_d060). **신규 task field**: +0x29e (interpreter active flag). **전투 시스템 위치 여전히 미발견** — R47-53 어느 함수도 명확한 battle 패턴 없음. R35 FUN_8e89e (16.3KB SCN) opcode 정밀 또는 별도 large function search 필요. 상세는 [ghidra-9a008-interpreter-and-md5-saveload-2026-05-18.md](ghidra-9a008-interpreter-and-md5-saveload-2026-05-18.md).
 
@@ -553,9 +555,18 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 54 uncommitted 산출물 (인덱스)
+### Round 55 uncommitted 산출물 (인덱스)
 
-> 마지막 commit (`1a90c54b`, Round 53) 이후 Round 54 산출물이 uncommitted.
+> 마지막 commit (`fb119e2f`, Round 54) 이후 Round 55 산출물이 uncommitted.
+
+**Round 55 (2026-05-18)** — paired storage 가설 폐기 + arith-heavy leaf grep + NPC table indexing 패턴 확인:
+- 신규 doc: [`ghidra-asset-paths-and-arith-grep-2026-05-18.md`](ghidra-asset-paths-and-arith-grep-2026-05-18.md)
+- 신규 scripts (7): `scan_got_d28_d38_paired.py`, `dump_ac25c_ac26c_data.py`, `dump_ac1xx_string_table.py`, `find_arith_heavy_leaves.py`, `disasm_battle_top_candidates.py`, `dump_mul_context_95408.py`, `dump_mul_context_4f358_26130.py`
+- 기타: `work/h3/round55_*.txt` (5개 raw dumps)
+
+**추천 commit 메시지**: `feat:영웅서기3 Round 55 — paired storage 가설 폐기 + arith-heavy leaf grep → NPC table indexing 패턴 + enemy stats int16 가설`
+
+### Round 54 산출물 (이미 commit `fb119e2f`)
 
 **Round 54 (2026-05-18)** — FUN_9a008 mode 4 sub-JT 디코드 + task[+0x9bb4]/0x9c70 wide-scan + 전투 시스템 검색:
 - 신규 doc: [`ghidra-mode4-jt-and-battle-search-2026-05-18.md`](ghidra-mode4-jt-and-battle-search-2026-05-18.md)
