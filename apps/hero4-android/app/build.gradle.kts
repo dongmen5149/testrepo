@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+    // Phase C Step 5 — shared engine module (Hero3 와 동일 KMM 모듈, androidTarget AAR)
+    implementation(project(":engine-core"))
+
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.activity:activity-ktx:1.9.2")
