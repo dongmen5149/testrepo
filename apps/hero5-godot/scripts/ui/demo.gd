@@ -382,10 +382,12 @@ func _physics_process(delta: float) -> void:
 			to_remove.append(c); continue
 		if c.dead:
 			to_remove.append(c)
-			# mission monster_kill 이벤트 (monster_id 는 sprite_dir 에서 복원 불가 — meta 사용)
+			# Round 64: monster kill 시 exp/gold/drop 지급 + mission/quest 이벤트.
 			var mid = c.get_meta("monster_id", -1)
 			if mid >= 0:
+				_award_kill_reward(c, mid)
 				Mission.bump_progress(Mission.EVENT_MONSTER_KILL, mid)
+				Quest.on_enemy_killed(mid)
 			continue
 		# AI runtime 가 있으면 process
 		if c.has_meta("ai_runtime"):
@@ -472,6 +474,55 @@ func _hero_attack_nearest() -> void:
 		_hero.direction = (2 if dx > 0 else 1)   # RIGHT or LEFT (Round 61 enum)
 	else:
 		_hero.direction = (0 if dy > 0 else 3)   # DOWN or UP
+
+
+# === Round 64: monster kill 보상 흐름 ===
+
+## 죽은 monster 1마리에 대한 exp/gold/drop 지급 + popup + toast.
+##
+## battle_system._finish(victory=true) 의 보상 패턴 재활용:
+## - enemy_stats(mid) lookup, sentinel(65535) 시 default 공식
+## - 25% 확률로 drop_table 에서 1-2 item → GameState.inventory 에 append
+## - GameState.add_battle_reward → level_up signal 자동 처리
+func _award_kill_reward(monster_node: Node2D, mid: int) -> void:
+	var stats = GameData.enemy_stats(mid)
+	var exp_g = _kill_stat_or(stats, "exp", 10 + randi() % 20)
+	var gold_g = _kill_stat_or(stats, "gold", 5 + randi() % 50)
+	var drops = _roll_kill_drops()
+	var pos = monster_node.position if is_instance_valid(monster_node) else _hero.position
+	var DamagePopup = preload("res://scripts/ui/damage_popup.gd")
+	DamagePopup.spawn(self, pos + Vector2(-20, -40),
+		"+%dEXP +%dG" % [exp_g, gold_g], Color(0.5, 1, 0.5, 1))
+	GameState.add_battle_reward(exp_g, gold_g)
+	for item_name in drops:
+		GameState.inventory.append(item_name)
+		preload("res://scripts/ui/toast.gd").show_msg(self,
+			"획득: %s" % item_name, 2.0, Color(0.7, 0.9, 1, 1))
+	if not drops.is_empty():
+		GameState.state_changed.emit()
+
+
+## 65535 = sentinel (enemy_table.json 의 atk/def/exp/gold 모두 65535 — 실 stats 는
+## enemy_*.dat 3 difficulty 에 있음, Round 35). default 공식 사용.
+func _kill_stat_or(stats: Dictionary, key: String, default_val: int) -> int:
+	if not stats.has(key): return default_val
+	var v = int(stats[key])
+	if v <= 0 or v >= 65535: return default_val
+	return v
+
+
+## battle_system._roll_drops 와 동일: 25% × 1-2 item.
+func _roll_kill_drops() -> Array:
+	if randi() % 100 >= 25: return []
+	var table = GameData.drop_table()
+	if table.is_empty(): return []
+	var n = 1 + (randi() % 2)
+	var out: Array = []
+	for i in n:
+		var pick = table[randi() % table.size()]
+		if pick and not out.has(pick):
+			out.append(pick)
+	return out
 
 
 func _input(event: InputEvent) -> void:
