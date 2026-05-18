@@ -5,12 +5,14 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 51 종료 시점)**:
-> - 마지막 commit = `54bc5060 feat:영웅서기 3,4,5 추가작업 진행` (Round 48-50 + Hero4 work 포함)
-> - **Round 51 산출물 uncommitted** — 1 신규 doc (`ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md`) + 9 신규 recon scripts + `PROGRESS.md` modified
-> - Round 51 산출물 인덱스 — **§ "Round 51 uncommitted 산출물" 섹션** 참조 (아래)
+> **현재 git 상태 (2026-05-18 Round 52 종료 시점)**:
+> - 마지막 commit = `c49b1503 feat:영웅서기3 Round 51 — FUN_818f0 (event×state) 2D dispatch matrix + task_struct getter + vtable[+0x54] alloc`
+> - **Round 52 산출물 uncommitted** — 1 신규 doc (`ghidra-818f0-leaves-and-record-comparator-2026-05-18.md`) + 3 신규 recon scripts + `PROGRESS.md` modified
+> - Round 52 산출물 인덱스 — **§ "Round 52 uncommitted 산출물" 섹션** 참조 (아래)
 
-**최신 진행 라운드**: 2026-05-18 (Round 51, uncommitted) — **2RA + 2RB + 2RC + 2RD + 2RE = FUN_818f0 74-entry JT 완전 디코드 + nested 2nd-level state JT 6개 + FUN_4ad10 = task_struct getter + FUN_3d434 cleanup + FUN_92bf8 cursor INC/DEC + FUN_3c920 mode dispatch + vtable[+0x54] = alloc + FUN_75b98 timer 분기**. (1) ⭐⭐⭐ **FUN_818f0 74 entries → 9 distinct primary handlers** (-16 init / -5 letter / -4 paired / -3 paired / -2 UP-down / -1 UP-down / +55 guard / +57 guard / +others NO-OP). (2) ⭐⭐⭐ **모든 8 유의미 handler 가 동일한 `task[+0xac78]` (Round 28 entity_state) secondary key 로 nested JT dispatch** — completes the (event_code, entity_state) **2D matrix dispatcher** = ~30 leaf handlers. (3) ⭐⭐⭐ **FUN_4ad10 = `*GOT[+0x444]` task_struct getter** (GVM-injected runtime ptr → 0xb6c80 binary 외부). (4) ⭐⭐⭐ **FUN_3d434 = global cleanup** (GOT[+0x284/288/28c] sub-system slot destruct via vtable[+0x58] + task[+0xa23c/a24c] zero). (5) ⭐⭐ **FUN_92bf8 = cursor INC/DEC wraparound** (task[0xa280] cur + task[0xa281] max). (6) ⭐⭐ **FUN_3c920 = mode 1-4 dispatch + entity context (task[+0x9e28] storage × 0x3c4 NPC grid)** = letter input for entity name. (7) ⭐⭐⭐ **vtable[+0x54] = alloc(size_t)** + **GOT[+0x18] = ObjectB master ptr 정체 확정** + **GOT[+0xb44/b48], task[+0xa32c]** 신규 (behavior selector). (8) ⭐⭐ **FUN_75b98 mode==1 = timer arm (curr+0x7d0 = 2s) at GOT[+0x9ac], mode≠1 = clear**. ObjectB methods 10 → **12** (+0x54 alloc, +0x70 time getter). 상세는 [ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md](ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 52, uncommitted) — **2SA + 2SB + 2SD + 2SE = 30 leaf handler (event×state) 게임 액션 매핑 + FUN_77c78 save/load record comparator + entity_state record 9 sub-field 매핑 + FUN_9a008 NOT-battle (sparse state machine)**. (1) ⭐⭐⭐ **30 leaf handler 게임 액션 매핑** — arg=-16 = Confirm, arg=-5 = letter input, arg=-1/-2 (state 0/1) = UP/DOWN (FUN_92cc0), arg=-3/-4 (state 3/9) = LEFT/RIGHT (FUN_92d30), arg=+55/+57 = menu hotkeys (state==2/8 guard). (2) ⭐⭐⭐ **party member array @ `task[+0x9c70] + idx*0x3c`** 확정 (60B stride = R50 ObjectB alloc 크기와 일치) → `task[+0xac94] = "현재 선택된 party member 의 ObjectB instance"`. (3) ⭐⭐⭐ **task[+0xac78..+0xac9d] 38B entity_state record 9 sub-field** 매핑: +0x00 state / +0x01 backup / +0x02 flag / +0x08 ext_ptr / +0x0c sub_struct / +0x1c ObjectB inst (R31) / +0x20 cursor / +0x24 input_result / +0x25 limit. (4) ⭐⭐⭐ **FUN_77c78 정정 = save/load record comparator** (R51의 "behavior installer" 가설 폐기): vtable[+0x54] alloc 16B 2회 + **FUN_99a9c query** (신규) + **FUN_9f624/d060/5610c** (신규 3 helpers) + 16-byte name 비교 + match/mismatch destructor. (5) ⭐⭐⭐ **FUN_9a008 (8.8KB) = NOT battle interpreter** — 23 cmp + 28 BL = sparse state machine, 2 nested JTs (cmp #6=7entries + cmp #0xf=16entries @ self-relative offsets 0xffff9f90/9fac), task[+0xb4] sub-struct base (FUN_75b98의 +0xa3ac와 별개), top helper FUN_439a0 (신규, x7). → menu/status screen 후보, 전투 시스템 위치 아직 미발견. (6) ⭐⭐ **신규 helper 8개** 발견 (FUN_99a9c/9f624/d060/5610c/439a0/442e4/47a14/7a49c). 상세는 [ghidra-818f0-leaves-and-record-comparator-2026-05-18.md](ghidra-818f0-leaves-and-record-comparator-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 51, committed `c49b1503`) — **2RA + 2RB + 2RC + 2RD + 2RE = FUN_818f0 74-entry JT 완전 디코드 + nested 2nd-level state JT 6개 + FUN_4ad10 = task_struct getter + FUN_3d434 cleanup + FUN_92bf8 cursor INC/DEC + FUN_3c920 mode dispatch + vtable[+0x54] = alloc + FUN_75b98 timer 분기**. (1) ⭐⭐⭐ **FUN_818f0 74 entries → 9 distinct primary handlers** (-16 init / -5 letter / -4 paired / -3 paired / -2 UP-down / -1 UP-down / +55 guard / +57 guard / +others NO-OP). (2) ⭐⭐⭐ **모든 8 유의미 handler 가 동일한 `task[+0xac78]` (Round 28 entity_state) secondary key 로 nested JT dispatch** — completes the (event_code, entity_state) **2D matrix dispatcher** = ~30 leaf handlers. (3) ⭐⭐⭐ **FUN_4ad10 = `*GOT[+0x444]` task_struct getter** (GVM-injected runtime ptr → 0xb6c80 binary 외부). (4) ⭐⭐⭐ **FUN_3d434 = global cleanup** (GOT[+0x284/288/28c] sub-system slot destruct via vtable[+0x58] + task[+0xa23c/a24c] zero). (5) ⭐⭐ **FUN_92bf8 = cursor INC/DEC wraparound** (task[0xa280] cur + task[0xa281] max). (6) ⭐⭐ **FUN_3c920 = mode 1-4 dispatch + entity context (task[+0x9e28] storage × 0x3c4 NPC grid)** = letter input for entity name. (7) ⭐⭐⭐ **vtable[+0x54] = alloc(size_t)** + **GOT[+0x18] = ObjectB master ptr 정체 확정** + **GOT[+0xb44/b48], task[+0xa32c]** 신규 (behavior selector). (8) ⭐⭐ **FUN_75b98 mode==1 = timer arm (curr+0x7d0 = 2s) at GOT[+0x9ac], mode≠1 = clear**. ObjectB methods 10 → **12** (+0x54 alloc, +0x70 time getter). 상세는 [ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md](ghidra-818f0-dispatch-matrix-and-allocator-2026-05-18.md).
 
 **이전 진행 라운드**: 2026-05-18 (Round 50) — **2QA + 2QB + 2QC + 2QD + 2QE + 2QF = FUN_3a86c JT 4 handlers + 4방향 keypad + ObjectB instance @ +0x08 + FUN_818f0 정정 + ObjectB vtable[+0x58] destructor 확정**. (1) ⭐⭐⭐ **FUN_3a86c 16 JT entries → 4 distinct handlers** (self-relative JT @ 0xa745c): **-1/-2 = cursor DEC (UP)** + **-3/-4 = cursor INC (DOWN)** + **-5 = letter input via FUN_3c920** + **-16 = ctx_byte -1 (clear)** + **-15..-6 (10 entries) = NO-OP/epilogue**. (2) ⭐⭐⭐ **FUN_92d30 = '4'/'6' LEFT/RIGHT keypad** (FUN_92cc0 '2'/'8' UP/DOWN 의 짝꿍) → 완전한 4방향 phone keypad 체계 확립. (3) ⭐⭐⭐ **task[0xa848]+0x08 = 동적 할당된 ObjectB 인스턴스** (60-byte) — vtable[+0x54] = allocator (NEW) + **vtable[+0x58] = destructor 확정** (Round 47의 method0x58 정체 풀림). lifecycle: free → alloc → store. ObjectB known methods 9 → **10개** (Round 47의 9 + Round 50의 +0x54). (4) ⭐⭐⭐ **FUN_000818f0 정정 — 74-entry JT 입력 디스패처** (NOT iteration loop): `(arg+0x10) ≤ 0x49 unsigned` 범위 검사 = signed [-0x10..0x39] = 74 distinct event codes. Round 48의 "74-entity iteration loop" 가설 완전 정정. (5) ⭐⭐ **FUN_75b98 = render flush** (256-byte buffer @ ctx+lit+0xa0 의 dirty flag → memset(0) → indirect render call). (6) FUN_82df4 (44B) = 공유 epilogue trampoline. 상세는 [ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md](ghidra-input-dispatcher-and-objectb-instance-2026-05-18.md).
 
@@ -548,7 +550,18 @@ PYTHONIOENCODING=utf-8 python tools/recon/disasm_subsystem_func.py 0x40fb0 <next
 
 **※ Round 27~36 (PM-17~PM-26) 완료** — 위 명령은 참고용. 실제 다음 작업은 아래 Round 37.
 
-### Round 51 uncommitted 산출물 (인덱스)
+### Round 52 uncommitted 산출물 (인덱스)
+
+> 마지막 commit (`c49b1503`, Round 51) 이후 Round 52 산출물이 uncommitted.
+
+**Round 52 (2026-05-18)** — 30 leaf handler 매핑 + FUN_77c78 save/load comparator + entity_state 9 sub-field + FUN_9a008 NOT-battle:
+- 신규 doc: [`ghidra-818f0-leaves-and-record-comparator-2026-05-18.md`](ghidra-818f0-leaves-and-record-comparator-2026-05-18.md)
+- 신규 scripts (3): `dump_818f0_leaf_handlers.py`, `disasm_77c78_behavior_installer.py`, `disasm_9a008_prologue.py`
+- 기타: `work/h3/round52_leaf_handlers.txt` (660 lines), `work/h3/round52_77c78.txt`, `work/h3/round52_9a008.txt`
+
+**추천 commit 메시지**: `feat:영웅서기3 Round 52 — FUN_818f0 30 leaf handlers + save/load comparator + entity_state 9-field + FUN_9a008 NOT-battle`
+
+### Round 51 산출물 (이미 commit `c49b1503`)
 
 > 마지막 commit (`54bc5060`, Round 48-50 포함) 이후 Round 51 산출물이 uncommitted.
 
