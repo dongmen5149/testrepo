@@ -12,14 +12,16 @@
 ##                  sub_conditions: [{slot, sub_flag, target_value} × 5]}×105]
 ##   }
 ##
-## mission_type 분포 (Round 58 sweep):
-##   0 (20)  사냥꾼 — monster_kill: sub_flag = monster_id, value = kill count
-##   1 (5)   특수 enemy/event kill — sub_flag = enemy_id
-##   2 (22)  set item 수집 — slot = equip slot (5-8), sub_flag = item_idx
-##   3 (47)  누적/playtime/level — value = threshold (level/money/playtime)
-##   4 (5)   카테고리 수집 — sub_type = item category (1=무기, 2=방어, 3=장신구)
-##   5 (5)   달성과제 랭크 — 누적 mission 완료 수
-##   255 (1) 튜토리얼 — 첫 quest "여행자" 시작 시 자동 완료
+## mission_type 매핑 (Round 59 RE 확인 — docs/h5/RE/mission_quest_types.md):
+##   0 (20)  사냥 — CheckMonsterHunting + HuntingCounting. sub_flag = monster_id
+##   1 (5)   특수 처치 — BossCompleteCounting (this[0x22c]==3 boss flag)
+##   2 (22)  세트 수집 — CheckMissionSetItem. slot = equip slot (5-8), sub_flag = item_idx
+##   3 (47)  누적 도전 — sub_type 으로 sub-dispatch:
+##                       sub_type 1 = HeroDie, 2 = Playtime, 4 = BattleUseItem,
+##                       6 = Refine, 0xa(10) = OrbCombine, 기타 = generic threshold
+##   4 (5)   카테고리 수집 — CheckCollection (sub_type = item category 1/2/3)
+##   5 (5)   달성 과제 (Rank) — CheckMissionRank + QuestCompleteCounting (cap 99)
+##   255 (1) 튜토리얼 — 첫 quest "여행자" (모든 필드 0xFF)
 extends Node
 
 signal mission_started(mission_id: int, name: String)
@@ -47,7 +49,7 @@ const EVENT_PLAYTIME := "playtime"
 const EVENT_MONEY := "money"
 const EVENT_QUEST_DONE := "quest_done"
 
-# event_kind 가 매칭되는 mission_type (느슨한 매핑 — RE 완료 시 정정)
+# event_kind 가 매칭되는 mission_type (Round 59 RE 결과).
 const EVENT_TO_MISSION_TYPES := {
 	EVENT_MONSTER_KILL: [0, 1],
 	EVENT_ITEM_OBTAINED: [2, 4],
@@ -57,6 +59,16 @@ const EVENT_TO_MISSION_TYPES := {
 	EVENT_PLAYTIME: [3],
 	EVENT_MONEY: [3],
 	EVENT_QUEST_DONE: [5],
+}
+
+## type=3 누적 도전 의 sub_type 정밀 필터 (Round 59 RE).
+## event_kind 가 type 3 의 sub_type 와 매칭되는지 — 없으면 모든 sub_type 허용 (느슨).
+const EVENT_TO_SUB_TYPES := {
+	EVENT_REFINE_DONE: [6],          # CheckMissionRefine 의 cmp #6
+	EVENT_ORB_COMBINE: [10],         # CheckOrbCombine 의 cmp #0xa
+	EVENT_PLAYTIME: [2],             # CheckMissionPlaytime 의 cmp #2
+	EVENT_MIX_DONE: [],              # sub_type 미해석 — 모든 sub 허용
+	EVENT_MONEY: [],                 # sub_type 미해석 — 모든 sub 허용
 }
 
 var _missions: Array = []  # 105 mission record
@@ -140,11 +152,17 @@ func progress_summary(mid: int) -> String:
 func bump_progress(event_kind: String, key: int = -1, amount: int = 1) -> void:
 	var types: Array = EVENT_TO_MISSION_TYPES.get(event_kind, [])
 	if types.is_empty(): return
+	# Round 59: type=3 의 경우 sub_type 도 필터링 (정밀 매핑)
+	var sub_types_filter: Array = EVENT_TO_SUB_TYPES.get(event_kind, [])
 	for mid in _missions.size():
 		if is_completed(mid): continue
 		var rec: Dictionary = _missions[mid]
 		var mtype = int(rec.get("mission_type", 255))
 		if mtype not in types: continue
+		# type=3 면 sub_type 도 매칭 (sub_types_filter 가 비어있으면 모두 허용)
+		if mtype == 3 and not sub_types_filter.is_empty():
+			var rec_sub = int(rec.get("sub_type", 0))
+			if rec_sub not in sub_types_filter: continue
 		var subs: Array = rec.get("sub_conditions", [])
 		var changed := false
 		for i in subs.size():

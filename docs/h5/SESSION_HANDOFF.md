@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 58 — **Mission 진척 UI 구현**. Round 37/38 의 mission.json (105 missions) 활용. mission_system.gd 신규 autoload + 7 event API (monster_kill/item_obtained/refine_done/orb_combine/mix_done/playtime/money/quest_done) + 자동 완료 트리거. mission_panel UI (4-탭 + detail card). 기존 panel 6 hook 연결 (refine/mix/orb/blacksmith/battle/quest). demo.gd `,` 키. `h5_test_mission.py` — type 분포 검증 ({0:20, 1:5, 2:22, 3:47, 4:5, 5:5, 255:1}) + 3 case 시뮬 (사냥 30회 / 누적 100회 / 세트 4종 수집). Godot 실 구현 59-64% → 62-67%, 출시 56-66% → 60-70%.)
+업데이트: 2026-05-18 (Round 59 — **Mission/Quest type 의미 RE**. libHeroesLore5.so 의 23 Mission/Quest 함수 디스어셈블 (Mission 21 + QuestMgr 3) — `tools/recon/disasm_h5_mission_quest.py` + `disasm_h5_questcheck.py` 신규. Round 58 mission_type 가설 확정 + type 3 의 sub_type 정밀 매핑 발견 (1=HeroDie, 2=Playtime, 4=BattleUseItem, 6=Refine, 10=OrbCombine). mission_system.gd 에 EVENT_TO_SUB_TYPES dict 추가. docs/h5/RE/mission_quest_types.md 신규 RE 문서 (23 함수 주소 표 + 분석 근거). `h5_test_re_types.py` — ELF 심볼 cross-verify (8/8 ✓). .so 함수 분석 85-88% → 88-90%, Godot 실 구현 62-67% → 64-68%, 출시 60-70% → 62-72%. Quest cond_type 14/13/17 은 QuestCheck inner BL 추적 필요 (R60+).)
 
-## 📜 Round 1-58 한 줄 요약
+## 📜 Round 1-59 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -25,13 +25,14 @@
 | R55 | NPC 대장간(Blacksmith) UI 구현 — Round 28/32 ApplyNormalMix + smithtable.json 231 named recipes + 4-탭 + 제작가능 필터 + items.json _meta 회복 |
 | R56 | Quest 패널 강화 — Round 40 quests.json 새 schema (3×151) + detail card (목표/보상/설명) + 난이도 토글 + 자동 보상 quests.json 직접 사용 + difficulty scaling 100% 단조 검증 |
 | R57 | SkillBook 학습 UI 구현 — Round 21 IfLearnSkill + slot_16/17 193 books + GameState skill_levels dict + 4 조건 검증 + Sorcerer stub 검증 |
-| **R58** | **Mission 진척 UI 구현 — Round 37/38 mission.json 105 missions + MissionSystem autoload + 7 event API + 6 panel hook 자동 연결 + type 분포 검증 + 3 case 시뮬** |
+| R58 | Mission 진척 UI 구현 — Round 37/38 mission.json 105 missions + MissionSystem autoload + 7 event API + 6 panel hook 자동 연결 + type 분포 검증 + 3 case 시뮬 |
+| **R59** | **Mission/Quest type 의미 RE — 23 함수 디스어셈블 + mission_type 0-5 의미 확정 + type 3 sub_type 정밀 매핑 (Refine 6 / OrbCombine 10 / Playtime 2 / HeroDie 1 / BattleUseItem 4) + EVENT_TO_SUB_TYPES filter + RE 문서** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 58 시점)
+## 🎯 전체 진척 평가 (Round 59 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -39,13 +40,13 @@
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| **.so 함수 분석** (game logic) | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| **Godot 실 구현** | **~62-67%** | + **Mission 진척 UI (105 missions + 6 hook)**. UI 시스템 R51-58 완료. 미구현: RE 잔여 (host CHAR, scn opcode, save device) |
+| **.so 함수 분석** (game logic) | **~88-90%** | + **Mission/Quest 23 함수 RE**. 미분석: QuestCheck inner BL (cond_type 14/13/17), Battle motion, NPC dialog |
+| **Godot 실 구현** | **~64-68%** | + **mission_system sub_type 정밀 매핑**. UI 시스템 R51-58 완료 |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 ~90-95%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **60-70%** (Mission UI 완성으로 UI 시스템 라운드 종료)
+- **"원본 분석"** (RE+자산) 으로 보면 ~92-95%
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **62-72%** (RE 진전으로 추정치 상향)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -58,7 +59,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 59)
+## 🚀 다음 세션 즉시 시작 (Round 60)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -83,6 +84,7 @@ python tools/h5_test_blacksmith.py     # 231 smith recipes + sr 분포
 python tools/h5_test_quest.py          # 151×3 quests + difficulty scaling
 python tools/h5_test_skill_book.py     # 193 skill books + 5 case 시뮬
 python tools/h5_test_mission.py        # 105 missions + 3 case 시뮬
+python tools/h5_test_re_types.py       # Round 59 RE: ELF symbol verify + sub_type 분포
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -110,16 +112,15 @@ python tools/h5_test_mission.py        # 105 missions + 3 case 시뮬
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 59 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 60 추천 작업 (자율 가능, 임팩트 순)
 
-> R51-58 으로 핵심 UI 시스템 완료. R59 부터는 RE / 시스템 통합 단계.
+> R51-58 = UI 시스템 / R59 = Mission/Quest type RE. R60 부터는 RE 심화 / 시스템 통합.
 
-**1순위 — Quest cond_type 의미 해석** (0.5-1 라운드, RE)
-- Round 56 의 h5_test_quest.py 가 cond_type 14/13/17 분포 발견 — Round 40 의 17/18 추측은 부분 표본
-- QuestMgr::CheckObjective 같은 함수 디스어셈블로 type 별 의미 확정
-- type 14 (38건) = item 획득 / type 13 (8건) = 방문 / type 17 (7건) = 처치 가설 검증
-- 동시에 reward type_15 (item 보상) / type_11/12 도 매핑
-- Round 58 mission_type 의 의미 (현재 0/1/2/3/4/5 가설) 와 동시 RE 가능
+**1순위 — QuestCheck inner BL 추적 → cond_type 14/13/17 의미** (1 라운드, RE)
+- Round 59 가 mission_type 만 확정. cond_type 14(38건)/13(8건)/17(7건) 는 미해석
+- QuestMgr::QuestCheck (@0xd3acc, 1492B) 의 inner BL: `#0xd1df8` × 3 calls, `#0x890c8` × 2
+- 두 함수 디스어셈블 + LDRB 패턴으로 type → action 분기 파악
+- 도구: `tools/recon/disasm_h5_questcheck.py` 확장 / 새 스크립트 작성
 
 **2순위 — character.gd 실제 host CHAR method** (1 라운드)
 - 현재 battle_system 의 turn-based stub 만 — Monster AI 가 실제 위치/방향 정보 받지 못함

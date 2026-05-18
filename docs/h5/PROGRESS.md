@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-58)
+## 📜 라운드 요약 (Round 1-59)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -25,30 +25,31 @@
 | **R56: Quest 패널 강화** | `quest_panel.gd/.tscn` 전면 개편 — quests.json 새 schema (`by_difficulty.q0/q1/q2 × 151`) 활용. quest_system.gd 에 `current_difficulty` + `quest_objectives/quest_rewards/quest_description/quest_category/reward_label/objective_label` 추가. 자동 보상 지급이 quests.json 의 rewards 사용 (이전 rewards.json fallback 대체). UI 에 detail card (제목/카테고리/설명/목표/보상/진척) + 난이도 토글. `h5_test_quest.py` — 3×151 entries / name_match 147/151 / category 분포 / cond_type 분포 (top: 14,13,17) / reward 분포 (exp 128, money 16, type_15 item 15) / **difficulty scaling 단조성 100% (141/141)**. 부수 발견: Round 40 의 cond_type 17/18 추측은 부분 표본 — 실제 sub_type 14/13/17 다수 존재 + 미해석 reward type 6/10-15 (item 보상 추정) |
 | **R57: SkillBook 학습 UI** | `skill_book_panel.gd` + `.tscn` 신규 — Round 21 의 HERO::IfLearnSkill mechanism Godot 구현. GameState 에 `skill_levels: Dictionary` + `can_learn_skill_book/learn_skill_book/get_skill_level` 추가. GameData 에 `skill_book_slot_for_class((cid/2)+16)` / `skill_books_for_class` / `skill_book_detail` (resolve_skill_desc 호출). 학습 조건 4종 검증 (book.class_id 일치 / required_level / 기존 LV < book LV / 인벤 보유). 인벤토리 보유 책만 필터 + 상세 카드 (스킬/필요레벨/설명). demo.gd L 키. `h5_test_skill_book.py` — slot_16=95 / slot_17=98 / class별 분포 (W=48, R=47, G=49, K=49) / Sorcerer 0 (stub 검증) / 5 case 시뮬 (학습/재학습 거부/다른 클래스 거부/레벨 부족/upgrade) 통과. **부수 발견**: Round 21 의 required_level 가설은 보수적 — 실제 데이터는 max 92 까지 (Lv.7 책은 60-90+ 요구) |
 | **R58: Mission 진척 UI** | `mission_system.gd` 신규 autoload + `mission_panel.gd/.tscn` 신규 — Round 37/38 의 mission.json (105 missions) 활용. 7 event API (monster_kill/item_obtained/refine_done/orb_combine/mix_done/playtime/money/quest_done) → 8 event-to-type 매핑. `bump_progress(event_kind, key, amount)` 가 일치 sub_conditions 누적 + target_count 충족 시 자동 완료 (`mission_completed` signal). UI: 4-탭 (전체/진행중/완료/미시작) + detail card (제목/타입 라벨/조건별 진척). 기존 panel hook 6개 연결: refine.refined/mix.mixed/orb.orb_changed (신규 signal)/blacksmith.crafted/battle.battle_completed/Quest.quest_completed. demo.gd `,` 키. `h5_test_mission.py` — type 분포 검증 ({0:20, 1:5, 2:22, 3:47, 4:5, 5:5, 255:1}) + 3 case 시뮬 (사냥 30회 / 누적 100회 / 세트 4종 수집). **부수 식별**: mission_type 의미 — 0/1=사냥, 2=세트, 3=누적, 4=카테고리, 5=달성, 255=튜토리얼 (느슨한 매핑, RE 시 정정) |
+| **R59: Mission/Quest type 의미 RE** | `disasm_h5_mission_quest.py` + `disasm_h5_questcheck.py` 신규 — libHeroesLore5.so 의 23 함수(Mission 21 + QuestMgr 3) 주소·심볼·CMP imm 추출. **Round 58 mission_type 가설 확정**: type 0/1=사냥(monster_id), 2=세트수집(slot 5-8), 3=누적도전+sub_type 분기, 4=카테고리수집, 5=달성과제(랭크). type 3 의 sub_type 정밀 매핑: 1=HeroDie, 2=Playtime, 4=BattleUseItem, 6=Refine, 10=OrbCombine. mission_system.gd 에 `EVENT_TO_SUB_TYPES` dict 추가 — bump_progress 가 type 3 매칭 시 sub_type 도 필터. `docs/h5/RE/mission_quest_types.md` 신규 RE 문서 (23 함수 주소 표 + 매핑 근거). `h5_test_re_types.py` — ELF 심볼 cross-verify (8/8 ✓) + sub_type 분포 (Refine 5/OrbCombine 13/Playtime 3/HeroDie 3/BattleUseItem 4건). **Quest cond_type 14/13/17**은 QuestCheck inner BL 추적 필요 (Round 60+) |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 85-88% / Godot 실 구현 62-67%.
-원본 분석 90-95%, 리메이크 출시 60-70%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 88-90% (Mission/Quest RE 완료) / Godot 실 구현 64-68%.
+원본 분석 92-95%, 리메이크 출시 62-72%.
 
 
 
-업데이트: 2026-05-18 (Round 58 종료) — **Mission 진척 UI 구현**.
-Round 37/38 의 mission.json (105 missions) 활용. mission_system.gd 신규 autoload
-+ 7 event API (monster_kill/item_obtained/refine_done/orb_combine/mix_done/playtime/
-money/quest_done) + 자동 완료 트리거. mission_panel UI (4-탭 + detail card).
-기존 panel 6개 hook 연결 (refine/mix/orb/blacksmith/battle/quest). demo.gd `,` 키.
-h5_test_mission.py — type 분포 검증 + 3 case 시뮬 (사냥 30회 / 누적 100회 / 세트 4종).
+업데이트: 2026-05-18 (Round 59 종료) — **Mission/Quest type 의미 RE**.
+libHeroesLore5.so 의 23 Mission/Quest 함수 디스어셈블 (Mission 21 + QuestMgr 3).
+Round 58 mission_type 가설 확정 + sub_type 정밀 매핑 (1/2/4/6/10) 도출.
+mission_system.gd 에 EVENT_TO_SUB_TYPES dict 추가 (bump_progress 가 type=3 시 sub_type 필터).
+docs/h5/RE/mission_quest_types.md 신규 — 23 함수 주소 표 + 분석 근거.
+h5_test_re_types.py — ELF 심볼 cross-verify (8/8 ✓) + sub_type 분포 검증.
 
-## 🎯 전체 진척 평가 (Round 58 시점)
+## 🎯 전체 진척 평가 (Round 59 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| .so 함수 분석 | ~85-88% | Monster AI 완전. 미분석: UI, NPC 대화, Battle motion |
-| Godot 실 구현 | **~62-67%** | + **Mission 진척 UI (105 missions + 6 hook)**. 미구현: 잔여는 RE 작업 (character/host CHAR, scn opcode, save device) |
+| .so 함수 분석 | **~88-90%** | Mission/Quest 23 함수 RE 완료. 잔여: QuestCheck inner BL (cond_type 14/13/17), Battle motion, NPC dialog |
+| Godot 실 구현 | **~64-68%** | + **mission_system sub_type 정밀 매핑**. UI 시스템 R51-58 완료 |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 90-95%, 리메이크 출시 ≈ **60-70%**.
+**종합**: 원본 분석 ≈ 92-95%, 리메이크 출시 ≈ **62-72%**.
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
