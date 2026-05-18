@@ -7,50 +7,53 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-18 Round 60 종료 시점, uncommitted)**:
-> - 마지막 commit = `4c0dad22 feat:영웅서기3 Round 59 — char/npcg/s4 dat 평문 파싱 (10 classes + 78 NPCs + 15 skills) + 리츠/케이 PLAYER 캐릭터 확정`
-> - **Round 60 산출물 uncommitted** (이 라운드 commit 시 같이 들어감) — 4 신규 recon 스크립트 + 4 json/log + 1 doc
-> - Hero3 분석 진행률 ~82-85%
+> **현재 git 상태 (2026-05-18 Round 61 종료 시점, uncommitted)**:
+> - 마지막 commit = `7b855de2 feat:영웅서기3 Round 60 — skill 7 파일 일괄 / boss HP 위치 / string table 246 strings / item 17 파일 480+ items + i15_dat 신규 DES`
+> - **Round 61 산출물 uncommitted** — 2 신규 recon 스크립트 + json/log + 1 doc
+> - Hero3 분석 진행률 ~86-89%
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
 
-**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 61 작업을 즉시 시작한다.**
+**다음 세션에서 사용자가 "영웅서기3 다음 내용 진행해줘" 라고 하면, 아래 Round 62 작업을 즉시 시작한다.**
 
-**Round 61 핵심 작업 (자동 가능 우선)**:
+**Round 62 핵심 작업 (자동 가능 우선)**:
 
-1. ⭐⭐⭐ **item dat body 19~20B stat block 정밀 필드 매핑**
-   - 가격(LE16 추정) + 요구레벨/스탯 + tier number + flag 위치 확정
-   - 9 슬롯 × ~25 items = 230+ items 의 완전 정량화
-   - 입력: `work/h3/recon/i_dat_all.json` 의 17 파일
+1. ⭐⭐⭐ **i15_dat 8번째 DES 파일 복호** (사용자 환경 필요)
+   - 7400B, entropy 7.97 = master shop/item table 추정
+   - 다른 7 DES (drop/droph/getitem/smith/smithh/shop/shoph) 와 함께 NDK runner 일괄 처리
 
-2. ⭐⭐⭐ **i15_dat (7400B) 8번째 DES 파일 시도**
-   - entropy 7.97, 헤더 `6a 02 87 9c 6d b8 09 76 ...`
-   - 기존 7 DES 후보와 함께 NDK runner 한번에 처리 (`tools/ndk_des_runner/des_runner` + `"0EP@KO91"` + `dat/des_dat`)
-   - 평문 시 가장 큰 게임 데이터 → 핵심 master table 후보
+2. ⭐⭐⭐ **item body 의 unknown byte 추가 식별**
+   - byte +4 (tier index) 와 sprite/icon 매핑
+   - byte +5 (variant) 의 color/skin 분포 분석
+   - 무기 stat_secondary (sub-damage) 의 정확한 의미 (속성/관통/2nd hit?)
+   - 입력: `work/h3/recon/item_decoded.json`
 
-3. ⭐⭐ **i13_dat (35) / i14_dat (46) 카테고리 식별**
-   - 1st entry: `자비의손길` / `붉은용액` — body 패턴 비교 + skill 매칭 검증
+3. ⭐⭐ **weapon mastery skill body 30B stat block 정밀 디코드**
+   - byte +11/+12 의 weapon damage 와 i*_dat 의 sub-stat 비교
+   - skill rank 별 스탯 변화 (rank 1→2→3)
+   - 입력: `work/h3/recon/skill_decoded.json`
 
-4. ⭐⭐ **skill_dat 의 5+ tier stat 디코드**
-   - 7 파일 × 15 skills 각 30-70B body 의 데미지/쿨다운/SP/element 필드 식별
-   - 입력: `work/h3/recon/skill_dat_all.json`
+4. ⭐⭐ **i17 퀘스트 아이템과 quest_*_dat 메타데이터 cross-reference**
+   - 시그널펜던트A/B / 협곡의성수 / 토레즈시민증 등의 사용 컨텍스트 매핑
 
-5. ⭐ **FUN_4f358 본문 정밀 분석** (R55/R59 보류)
-6. ⭐ **FUN_3a028 16-JT 디코드** (R54 보류)
+5. ⭐ **FUN_4f358 본문 정밀 분석** (R55/R59/R61 보류, 여전히)
+6. ⭐ **FUN_3a028 16-JT 디코드** (R54 보류, 여전히)
 
 **사용자 환경 필요 작업 (보류)**:
 
-- DES 복호화 (drop / smith / getitem / shop / 그리고 **i15_dat** = 총 8 파일) — Hero5 NDK runner 활용.
+- DES 8 파일 복호화 — Hero5 NDK runner 활용 (key `"0EP@KO91"` + `dat/des_dat` tables).
 
 **작업 후 수행**:
-- 새 `docs/h3/ghidra-round61-*.md` 작성
+- 새 `docs/h3/ghidra-round62-*.md` 작성
 - `PROGRESS.md` 의 "⚡ 다음 세션" 섹션 + 산출물 인덱스 갱신
-- memory `project_hero3_remake.md` 의 "Round 61 핵심 진척" 갱신
-- commit: `feat:영웅서기3 Round 61 — ...`
+- memory `MEMORY.md` 의 Hero3 entry 갱신
+- commit: `feat:영웅서기3 Round 62 — ...`
 
 ---
 
-**최신 진행 라운드**: 2026-05-18 (Round 60, uncommitted) — **3AA + 3AB + 3AC + 3AD = skill 7 파일 일괄 / boss HP 위치 확정 / menu+dat string table / item 17 파일 카탈로그 + i15_dat 신규 DES**. (1) ⭐⭐⭐ **skill_dat 7 파일 모두 평문 파싱** (s4~s10, 105 skills): 창술/검술/단도/사격/격발/영탄/광아 7 weapon classes × 15 skills (7 passive + 8 active). char_dat 의 10 playable classes (리츠 5 + 케이 5) 와 country header 의 "네오솔티아-케이 / 아스크라-리츠" 와 100% 매핑. parse_s4_dat 재사용. (2) ⭐⭐⭐ **boss_dat HP 위치 정밀 확정** — R58 의 "24-bit BE HP @ +0x08..+0x0a" 가설 폐기. 6 Ritz boss (lvl 14/24/32/51/56/60) brute-force 검증으로 **+0x0a..+0x0b (BE16) = MaxHP**, +0x0c..+0x0d = CurrentHP, +0x0e..+0x0f = EXP/Gold. boss = enemy 의 단순 superset (6B 가변 trailer 만 차이). enemy_dat `f10_11` 필드와 동일. HP scaling normal→hard 2.1~2.5x. (3) ⭐⭐⭐⭐ **menu/dat string table 6 파일 = 246 strings 평문 파싱**: chatacterhader_txt (10 클래스 이름) / chatacterbody_txt (10 클래스 설명) / countryheader_txt (4 국가) / countrybody_txt (2 배경) / helpbody_txt (13 도움말 페이지) / **dat/InGame_txt (196 UI 텍스트)** — i18n 196개 UI 어휘의 원본 위치 확정. format: `[LE16 size][LE16 count][LE16 offsets×N][null-term EUC-KR strings]`. (4) ⭐⭐⭐⭐ **dat/i0~i18 = 게임 전체 아이템 카탈로그 (17 파일 480+ items)**: i0=모자(33) / i1=갑옷(41) / i2=장갑(37) / i3=신발(38) / i4=창(25) / i5=대검(25) / i6=단검(25) / i7=건(25) / i8=라이플(25) / i9=다크마법(25) / i10=홀리마법(25) / i11=방패(22) / i12=반지(40) / i13=?(35) / i14=희귀(46) / i16=enchant옵션(15) / i17=퀘스트(21) / i18=소비(26 — 포션/엘릭서/과일쥬스). 모두 parse_s4_dat 재사용. (5) ⭐⭐⭐ **i15_dat = 신규 8번째 DES 후보** (7400B, entropy 7.97, 헤더 `6a 02 87 9c 6d b8 09 76`) — 기존 7 DES 파일과 함께 NDK runner 일괄 처리 가능. **가장 큰 암호화 파일 → 핵심 master table 후보**. (6) **진행률 ~82-85%** (+7%p, item/skill/string 평문 매핑 75%→95%로 +25%p, 데이터 거의 완료). 상세는 [ghidra-round60-skill-item-strings-bosshp-2026-05-18.md](ghidra-round60-skill-item-strings-bosshp-2026-05-18.md).
+**최신 진행 라운드**: 2026-05-18 (Round 61, uncommitted) — **3BA + 3BB + 3BC = item body 정밀 디코드 / i13·i14 식별 / skill body 디코드**. (1) ⭐⭐⭐⭐ **18 item 카테고리 body 디코드 완료** (480+ items): 장비류 (i0~i11) = 20B fixed (`price LE16 + tier byte + variant byte + req_level byte + stat_primary LE16 @ +12 + stat_secondary LE16 @ +14`). 무기 ATK 곡선 quantified: 창 base 43 +10/tier / 검 51 +12 / 단검 47 +11 / 건 40 +10 / 라이플 59 +13 / 다크 60 +13 / 홀리 45 +9 (가장 약함, but 회복 보조). 방어구 DEF 단조 증가. (2) ⭐⭐⭐ **i12 반지 (40) bonus_type 매핑** (18B layout): type 2=HP / 3=HPRegen / 5=STR / 6=INT / 7=VIT / 10=AGI / 14=명중 / 15=회피 / 18=ATK. (3) ⭐⭐⭐⭐ **i13_dat = 패시브 스크롤 (35)** 확정: variable body with effect_type LE16 + value LE16. effect 인코딩 (high=종류, low=대상): 0x0102=사용자HP회복 / 0x0104=파티HP회복 / 0x0202=HP최대치증가 / 0x0502=물공증가 / 0x0602=특수공증가. (4) ⭐⭐⭐⭐ **i14_dat = 조합/제련 재료 (46)** 확정: 붉은/푸른/투명용액 / 제련석 / 연마가루 (창/검/나이프용) / 정령석 (마법석용) / 탄성제 (총용) / 강화제 (방어구). → smith_dat (DES) 가 이 재료들의 레시피 master = R60 DES 8 파일과 직접 연관. (5) ⭐⭐⭐ **i16 enchant (15) 4B tail 분석**: tail = (bonus_type, level_req, sub_a, sub_b). 투신의(HP최대) / 공명의(HP자동회복) / 뇌제의(무기공격) / 금강의(물리방어) / 정령의(마법방어) / 사신의(명중) / 영제의(회피) / 철벽의(블록) / 속박의(크리티컬발생) / 결의의(크리피해감소). (6) ⭐⭐⭐⭐ **i18 소비 (26) effect_type 명확화**: 0x0112/13/14/15 = HP회복 4-tier (200/600/1500/3000) / 0x0416/17/18 = SP회복 3-tier (20%/50%/100%) / 0x261a = 마을귀환 / 0x371c = 오브원석 등. (7) ⭐⭐⭐ **skill_dat 7 파일 105 skills body 디코드**: skill_category byte 0 = 0/1/2/3 (weapon_passive 7 + active_attack 3 + active_buff 2 + passive_bonus 3 per class). SP cost 7-tier (100/200/300/400/500/600/800). weapon mastery base damage: 창 3 / 검 42 / 단검 41 / 사격 45 / 격발 45+105 / 영탄 64 / 광아 64. 특수 rank: 난무=15 (단검 최강), 나락=5 (다크). (8) **진행률 ~82-85% → ~86-89%** (+4%p, 게임 시스템 모델링 60→78%). 상세는 [ghidra-round61-item-skill-body-decode-2026-05-18.md](ghidra-round61-item-skill-body-decode-2026-05-18.md).
+
+**이전 진행 라운드**: 2026-05-18 (Round 60, committed `7b855de2`) — **3AA + 3AB + 3AC + 3AD = skill 7 파일 일괄 / boss HP 위치 확정 / menu+dat string table / item 17 파일 카탈로그 + i15_dat 신규 DES**. (1) ⭐⭐⭐ **skill_dat 7 파일 모두 평문 파싱** (s4~s10, 105 skills): 창술/검술/단도/사격/격발/영탄/광아 7 weapon classes × 15 skills (7 passive + 8 active). char_dat 의 10 playable classes (리츠 5 + 케이 5) 와 country header 의 "네오솔티아-케이 / 아스크라-리츠" 와 100% 매핑. parse_s4_dat 재사용. (2) ⭐⭐⭐ **boss_dat HP 위치 정밀 확정** — R58 의 "24-bit BE HP @ +0x08..+0x0a" 가설 폐기. 6 Ritz boss (lvl 14/24/32/51/56/60) brute-force 검증으로 **+0x0a..+0x0b (BE16) = MaxHP**, +0x0c..+0x0d = CurrentHP, +0x0e..+0x0f = EXP/Gold. boss = enemy 의 단순 superset (6B 가변 trailer 만 차이). enemy_dat `f10_11` 필드와 동일. HP scaling normal→hard 2.1~2.5x. (3) ⭐⭐⭐⭐ **menu/dat string table 6 파일 = 246 strings 평문 파싱**: chatacterhader_txt (10 클래스 이름) / chatacterbody_txt (10 클래스 설명) / countryheader_txt (4 국가) / countrybody_txt (2 배경) / helpbody_txt (13 도움말 페이지) / **dat/InGame_txt (196 UI 텍스트)** — i18n 196개 UI 어휘의 원본 위치 확정. format: `[LE16 size][LE16 count][LE16 offsets×N][null-term EUC-KR strings]`. (4) ⭐⭐⭐⭐ **dat/i0~i18 = 게임 전체 아이템 카탈로그 (17 파일 480+ items)**: i0=모자(33) / i1=갑옷(41) / i2=장갑(37) / i3=신발(38) / i4=창(25) / i5=대검(25) / i6=단검(25) / i7=건(25) / i8=라이플(25) / i9=다크마법(25) / i10=홀리마법(25) / i11=방패(22) / i12=반지(40) / i13=?(35) / i14=희귀(46) / i16=enchant옵션(15) / i17=퀘스트(21) / i18=소비(26 — 포션/엘릭서/과일쥬스). 모두 parse_s4_dat 재사용. (5) ⭐⭐⭐ **i15_dat = 신규 8번째 DES 후보** (7400B, entropy 7.97, 헤더 `6a 02 87 9c 6d b8 09 76`) — 기존 7 DES 파일과 함께 NDK runner 일괄 처리 가능. **가장 큰 암호화 파일 → 핵심 master table 후보**. (6) **진행률 ~82-85%** (+7%p, item/skill/string 평문 매핑 75%→95%로 +25%p, 데이터 거의 완료). 상세는 [ghidra-round60-skill-item-strings-bosshp-2026-05-18.md](ghidra-round60-skill-item-strings-bosshp-2026-05-18.md).
 
 **이전 진행 라운드**: 2026-05-18 (Round 59, committed `4c0dad22`) — **2ZA + 2ZB + 2ZC = char_dat + npcg_dat + s4_dat 완전 파싱**. (1) ⭐⭐⭐⭐ **char_dat (348B) = 10 playable character classes** — **리츠와 케이가 boss 가 아닌 PLAYER 주인공** 확정. 각 5 클래스: 리츠(어쌀트워리어/디스럽터/건슬링어/나이트템플러/크레이지암즈) + 케이(버서커/데스나이트/섀도우워커/가디언나이트/소울마스터). entry = header(3) + name1(EUC-KR) + name2_len(1) + name2(class name) + 7B stat + 2B trailer. stat byte 0 = weapon type (0=검, 1=세이버, 2=도끼, 3=총, 11=특수). (2) ⭐⭐⭐ **npcg_dat (1014B) = 78 NPC graphics info** (13B/entry 고정, type byte + 7B graphics data + terminator 0x06). 짝수 index = 변형, 홀수 = 본체 추정. (3) ⭐⭐⭐ **s4_dat (894B) = 15 skill entries = 창수 클래스 스킬 트리** — 창술 1-7 passive + 섬광/자격/압도/유도/장벽/태산/의지/정신 8 active. 각 skill 에 한국어 설명 + 30-70B stat block. (4) **다른 skill 파일 존재 추정** (s1~s10_dat?) → Round 60 확인. (5) **Hero3 게임 시스템 완전 매핑**: 2 주인공×5 클래스, 161×2 enemies, 15×2 bosses, 78 NPCs, ~150 skills, 44+ quests, 8 regions. (6) **진행률 ~75-78%** (+3-5%p). Round 60 우선: **NDK runner 로 DES 7 파일 복호화** + 다른 skill 파일 확인 + boss 24-bit HP 가설. 상세는 [ghidra-char-npcg-skill-parsing-2026-05-18.md](ghidra-char-npcg-skill-parsing-2026-05-18.md).
 
