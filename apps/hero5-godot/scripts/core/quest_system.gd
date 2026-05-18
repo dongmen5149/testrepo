@@ -28,11 +28,26 @@ const STATUS_ACTIVE := 1
 const STATUS_COMPLETED := 2
 const STATUS_FAILED := 3
 
-# Reward type codes (phase2 byte 0) — Round 40 검증 + Round 56/60 sweep 확장
-const REWARD_TYPE_MONEY := 17
-const REWARD_TYPE_EXP := 18
-const REWARD_TYPE_ITEM := 15      # Round 56 sweep (15 entries) — item reward 가설
+# Reward type codes (phase2 byte 0) — Round 65 RE 확정 (docs/h5/RE/quest_reward_types.md)
+# QuestRewardData @0xd458c 분석: type 0-16 모두 ItemTable::NewItemToBagEx(cat=type, idx=sub, qty=value)
+# 즉 reward.type = item category (= items.json slot 번호), sub = idx, value = quantity
+const REWARD_TYPE_MONEY := 17     # BagItem::IncreaseMoney(value)
+const REWARD_TYPE_EXP := 18       # HERO+0x230 += value
+const REWARD_TYPE_HP := 19        # HERO+0x234 += value (stat[0]=HP) — disasm only
+const REWARD_TYPE_INT := 20       # HERO+0x246 += value (stat[5]=INT) — disasm only
 const REWARD_TYPE_UNUSED := 255
+# type 0..16 = item slot (cat). R65 RE 로 확정.
+const REWARD_TYPE_ITEM_MAX := 16  # type ≤ 16 = item dispatch
+
+# slot → 한국어 라벨 (items.json _meta.category_dispatch kind 와 1:1)
+const REWARD_SLOT_LABEL := {
+	0: "무기A", 1: "무기B", 2: "무기C", 3: "무기D",
+	4: "갑옷", 5: "헬멧", 6: "부츠",
+	7: "액세서리A", 8: "액세서리B", 9: "방패",
+	10: "영혼석", 11: "포션", 12: "오브",
+	13: "재료", 14: "퀘스트 아이템", 15: "합성서",
+	16: "스킬북",
+}
 
 # Condition type codes (phase1 byte 0) — Round 60 RE 확정 (docs/h5/RE/quest_cond_types.md)
 const COND_TYPE_ITEM_HOLD_A := 13     # bag item count (variant A) — 8 quests
@@ -131,16 +146,28 @@ func quest_rewards(qid: int) -> Array:
 	return out
 
 
-## 사람이 읽을 수 있는 reward 라벨 (UI 표시용).
+## 사람이 읽을 수 있는 reward 라벨 (UI 표시용). Round 65 RE 반영.
+##
+## type ≤ 16 = item (cat=type, idx=sub). items.json 에서 이름 조회.
+## type 17 = money, 18 = exp, 19 = HP, 20 = INT, 255 = unused.
 func reward_label(reward: Dictionary) -> String:
 	var t = int(reward.get("type", 255))
 	var s = int(reward.get("sub", 0))
 	var v = int(reward.get("value", 0))
-	match t:
-		REWARD_TYPE_MONEY: return "💰 골드 +%d" % v
-		REWARD_TYPE_EXP:   return "⭐ 경험치 +%d" % v
-		REWARD_TYPE_ITEM:  return "🎁 아이템 #%d × %d" % [s, v]
-		REWARD_TYPE_UNUSED: return ""
+	if t == REWARD_TYPE_MONEY: return "💰 골드 +%d" % v
+	if t == REWARD_TYPE_EXP:   return "⭐ 경험치 +%d" % v
+	if t == REWARD_TYPE_HP:    return "❤ HP +%d" % v
+	if t == REWARD_TYPE_INT:   return "🔮 INT +%d" % v
+	if t == REWARD_TYPE_UNUSED: return ""
+	if t >= 0 and t <= REWARD_TYPE_ITEM_MAX:
+		var item_name = GameData.item_name_at(t, s) if GameData else ""
+		var slot_label = REWARD_SLOT_LABEL.get(t, "?")
+		if item_name and item_name != "" and not item_name.begins_with("("):
+			if v > 1:
+				return "🎁 %s × %d" % [item_name, v]
+			return "🎁 %s" % item_name
+		# fallback: slot label
+		return "🎁 [%s] #%d × %d" % [slot_label, s, v]
 	return "보상[type=%d, sub=%d, val=%d]" % [t, s, v]
 
 
@@ -207,18 +234,32 @@ func complete(qid: int) -> void:
 	_grant_reward(qid)
 
 
-## quests.json 의 quest_rewards(qid) 를 GameState 에 적용.
-## REWARD_TYPE_MONEY / EXP 만 자동 처리. 다른 type 은 type/value 로 부족 시 default 폴백.
+## quests.json 의 quest_rewards(qid) 를 GameState 에 적용. Round 65 RE 반영.
+##
+## type ≤ 16 = item (inventory append). 17 = money. 18 = exp. 19/20 = stat boost. 255 = unused.
 func _grant_reward(qid: int) -> void:
 	var rewards = quest_rewards(qid)
 	var gold_gain = 0
 	var exp_gain = 0
 	for r in rewards:
 		var t = int(r.get("type", 255))
+		var s = int(r.get("sub", 0))
 		var v = int(r.get("value", 0))
-		match t:
-			REWARD_TYPE_MONEY: gold_gain += v
-			REWARD_TYPE_EXP:   exp_gain += v
+		if t == REWARD_TYPE_MONEY: gold_gain += v
+		elif t == REWARD_TYPE_EXP: exp_gain += v
+		elif t == REWARD_TYPE_HP:
+			GameState.max_hp += v
+			GameState.hp = min(GameState.hp + v, GameState.max_hp)
+		elif t == REWARD_TYPE_INT:
+			GameState.stat_int += v
+		elif t == REWARD_TYPE_UNUSED: pass
+		elif t >= 0 and t <= REWARD_TYPE_ITEM_MAX:
+			# item reward (cat=type, idx=sub, qty=value)
+			var item_name = GameData.item_name_at(t, s) if GameData else ""
+			if item_name and item_name != "" and not item_name.begins_with("("):
+				var qty = max(1, v)
+				for _i in range(qty):
+					GameState.inventory.append(item_name)
 	# 미정의 / 빈 보상의 경우 최소 default 지급 (UX)
 	if gold_gain == 0 and exp_gain == 0:
 		gold_gain = qid * 50 + 100

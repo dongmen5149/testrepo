@@ -2,23 +2,23 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-## ⚡ "영웅서기5 다음 내용 진행해줘" → **Round 65 (Reward type 6/10/11/12 의미 RE 또는 host stub 정리)**
+## ⚡ "영웅서기5 다음 내용 진행해줘" → **Round 66 (battle_system host stub 정리 또는 잔여 RE)**
 
 차기 세션 즉시 할 일:
 1. 환경 확인: `PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py` → `0 warnings` 확인
-2. 회귀 테스트 (선택): `python tools/h5_test_kill_reward.py` → `All Round 64 kill reward flow checks passed.`
-3. **R65 추천 작업** (이 문서 §D 참조):
-   - 옵션 A: Reward type 6/10/11/12 의미 RE (`QuestMgr::QuestRewardData` 디스어셈블)
-   - 옵션 B: battle_system 의 host CHAR stub 13개 제거 → character ref 위임
+2. 회귀 테스트 (선택): `python tools/h5_test_reward_types.py` → `All Round 65 reward type RE checks passed.`
+3. **R66 추천 작업** (이 문서 §D 참조):
+   - 옵션 A: battle_system 의 host CHAR stub 13개 제거 → character ref 위임
+   - 옵션 B: 잔여 .so 함수 (Battle motion / NPC dialog, ~8-10%)
    - 옵션 C: scn opcode 실 game scene 동작 검증
 
-**전체 진척**: Godot 실 구현 76-80%, 리메이크 출시 75-85% (UI R51-58 + RE R59-60 + character/AI R61-63 + monster kill 보상 R64 통합 완료).
+**전체 진척**: Godot 실 구현 78-82%, 리메이크 출시 77-87% (UI R51-58 + RE R59-60/65 + character/AI R61-63 + monster kill 보상 R64 + Quest reward RE R65 통합 완료).
 
 ---
 
-업데이트: 2026-05-18 (Round 64 — **monster kill 보상 흐름**. demo.gd `_physics_process` 의 `if c.dead:` 분기에 `_award_kill_reward(monster_node, mid)` 추가 — `GameData.enemy_stats(mid)` lookup → `_kill_stat_or` (65535 sentinel → default `10+rand%20` exp / `5+rand%50` gold) + `_roll_kill_drops` (25% × 1-2 item, battle_system 의 `_roll_drops` 재활용) + `GameState.add_battle_reward(exp, gold)` (자동 level_up signal) + drop name 별 `inventory.append` + 녹색 damage popup `+%dEXP +%dG` + 파랑 toast "획득: <item>". `Quest.on_enemy_killed(mid)` 도 호출 (battle_system 의 _finish 와 동일 트리거 흐름). `h5_test_kill_reward.py` — 9 구조 패턴 + enemy_table.json sentinel 분포 검증 (exp/gold 166/166 sentinel = default 강제) + `_kill_stat_or` 5-case + drop 25% 1000회 (~250) + add_battle_reward level_up 시뮬 (level 5 도달 시 unlocked_skills append). Godot 실 구현 74-78% → 76-80%, 출시 73-83% → 75-85%.)
+업데이트: 2026-05-18 (Round 65 — **Quest reward type 6/10/11/12 RE 확정**. R56 sweep 미해석 4 type 의 의미를 `QuestMgr::QuestRewardData` (@0xd458c, 1552B) 디스어셈블로 확정. **핵심 발견: reward.type = item category (= items.json slot 번호), reward.sub = idx, reward.value = quantity** — R60 의 type 15="item" 가설을 일반화. type 0-16 모두 `ItemTable::NewItemToBagEx(cat=type, idx=sub, qty=value, 1)` 단일 dispatch. type 17=`BagItem::IncreaseMoney(value)`, 18=`HERO+0x230 += value` (EXP), 19=`HERO+0x234 += value` (HP), 20=`HERO+0x246 += value` (INT, R43 stat offset 일치). type 22(0x16) 는 special path (r1=#0x11). 검증: type 6 sub 84/88/92=boots "엠프리스/실버 채리옷/더 월드", type 10=spirit, type 11=potion×수량, type 12 sub=1=orb "뇌제의 오브", type 14=quest item "소녀의 사진". `quest_system.gd` REWARD_TYPE_HP/INT/ITEM_MAX + REWARD_SLOT_LABEL dict 추가, reward_label 가 items.json item_name_at 호출, _grant_reward 가 item type → inventory.append + HP/INT 보상도 처리. `docs/h5/RE/quest_reward_types.md` 신규 RE 문서. `h5_test_reward_types.py` — 3 difficulty × 151 quest 의 reward 분포 + 64/64 in-range 검증 + 4 ELF symbol cross-verify + 11/11 reward_label 케이스. Godot 실 구현 76-80% → 78-82%, 출시 75-85% → 77-87%.)
 
-## 📜 Round 1-64 한 줄 요약
+## 📜 Round 1-65 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -45,13 +45,14 @@
 | R61 | character.gd host CHAR interface 구현 — Round 50 의 17 method 실 구현 + map 좌표 기반 distance/dir/motion |
 | R62 | Monster spawner + AI tick 루프 — demo `_physics_process` 30fps tick + MonsterAI.process + cooldown_tick + dead 정리 + Mission.bump 자동 + KEY_G 테스트 spawn |
 | R63 | Monster ↔ Hero 실 전투 — ai_skill_cast → hero HP 차감 + red popup + 사망 quick_load / SPACE 키 → Chebyshev ATTACK_RANGE_TILES=2 nearest monster 공격 + yellow popup + 방향 전환 |
-| **R64** | **monster kill 보상 흐름 — _award_kill_reward (enemy_stats sentinel→default exp/gold + 25% drop_table + add_battle_reward level_up + +%dEXP +%dG popup + Quest.on_enemy_killed)** |
+| R64 | monster kill 보상 흐름 — _award_kill_reward (enemy_stats sentinel→default exp/gold + 25% drop_table + add_battle_reward level_up + +%dEXP +%dG popup + Quest.on_enemy_killed) |
+| **R65** | **Quest reward type 6/10/11/12 RE — QuestRewardData @0xd458c 분석으로 reward.type=item slot, sub=idx, value=qty 확정 + type 17=money/18=exp/19=HP/20=INT + REWARD_SLOT_LABEL + 64/64 in-range 검증 + items.json item_name_at 라벨링** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 64 시점)
+## 🎯 전체 진척 평가 (Round 65 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -59,13 +60,13 @@
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| **.so 함수 분석** (game logic) | ~90-92% | Mission/Quest 완전 RE. 잔여: Battle motion, NPC dialog, Reward type 6/10-12 |
-| **Godot 실 구현** | **~76-80%** | + **monster kill 보상 흐름 (exp/gold/drop + level_up)**. 게임 루프 완성도 추가 향상 |
+| **.so 함수 분석** (game logic) | ~92-94% | Mission/Quest/Reward 완전 RE. 잔여: Battle motion, NPC dialog |
+| **Godot 실 구현** | **~78-82%** | + **Quest reward 정확한 item name 라벨링 + item/HP/INT 자동 지급 (Round 65 RE 적용)** |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
-- **"원본 분석"** (RE+자산) 으로 보면 ~93-96%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **75-85%** (monster kill → 보상까지 완성)
+- **"원본 분석"** (RE+자산) 으로 보면 ~94-97%
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **77-87%** (Quest reward → item name 정확 표시)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -78,7 +79,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 65)
+## 🚀 다음 세션 즉시 시작 (Round 66)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -109,6 +110,7 @@ python tools/h5_test_char_host.py      # Round 61: 17 host CHAR method 시그니
 python tools/h5_test_ai_tick.py        # Round 62: spawner + 30fps AI tick 루프
 python tools/h5_test_ai_combat.py      # Round 63: Monster↔Hero 실 전투
 python tools/h5_test_kill_reward.py    # Round 64: monster kill 보상 흐름
+python tools/h5_test_reward_types.py   # Round 65: Quest reward type RE
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -138,20 +140,18 @@ python tools/h5_test_kill_reward.py    # Round 64: monster kill 보상 흐름
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 65 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 66 추천 작업 (자율 가능, 임팩트 순)
 
-> R64 으로 monster kill → exp/gold/drop/level_up 흐름 완성. R65 부터는 잔여 RE + dead code 정리.
+> R65 으로 Quest reward type 6/10/11/12 RE 완료. R66 부터는 dead code 정리 + 잔여 RE.
 
-#### ⭐ 1순위 — Reward type 6/10/11/12 의미 RE (0.5 라운드, 추천 시작점)
-- Round 56 sweep 발견 미해석: reward type 6(1), 10(1), 11(3), 12(1)
-- `QuestMgr::QuestRewardData` 디스어셈블 — `tools/recon/disasm_h5_mission_quest.py` 의 TARGETS dict 에 추가
-- 가설: 6=skill 보상, 10=switch 토글, 11/12=item variant
-- 산출물: `docs/h5/RE/quest_reward_types.md` + `quest_system.gd::reward_label` 의 새 상수
-
-#### 2순위 — battle_system 의 host CHAR stub 제거 (0.5 라운드)
-- Round 61 으로 character 가 host method 제공. battle_system.gd lines 98-159 의 13 stub method 는 dead code
+#### ⭐ 1순위 — battle_system 의 host CHAR stub 제거 (0.5 라운드, 추천 시작점)
+- Round 61 으로 character 가 host method 제공. [battle_system.gd:98-159](../../apps/hero5-godot/scripts/core/battle_system.gd#L98-L159) 의 13 stub method 는 dead code
 - 단, battle_system 도 호출 가능성이 있으면 character ref 위임 (`return _hero.fast_distance_to_hero()`)
 - 검증: `h5_test_char_host.py` 가 monster_ai 호출 패턴 cross-check 계속 통과해야
+
+#### 2순위 — 잔여 .so 함수 분석 (Battle motion, NPC dialog, 1 라운드)
+- 남은 ~6-8% 미분석 영역 — Battle motion / NPC dialog handler
+- 도구: `tools/recon/disasm_h5_*.py` 시리즈 패턴 재활용
 
 #### 3순위 — scn opcode 실 game scene 검증 (1 라운드)
 - Title/ClassSelect/Demo 외 화면 진입 테스트
@@ -159,6 +159,10 @@ python tools/h5_test_kill_reward.py    # Round 64: monster kill 보상 흐름
 
 #### 4순위 — Save binary device import/export (1 라운드)
 - 실 디바이스의 H_*.sav 추출 → Godot save_manager 의 deserialize_hero_save 로 round-trip 검증
+
+#### 5순위 — type 22 (0x16) special path RE (0.5 라운드)
+- Round 65 disasm 에서 식별만 됨, observation 없음
+- 가설: special item add with r1=#0x11 (cat=17 = skill_book_gk)
 
 ### E. Round 51-58 UI 시스템 통합 상태 (참고)
 
