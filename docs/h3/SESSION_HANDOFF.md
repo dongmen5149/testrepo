@@ -1,142 +1,124 @@
-# Hero3 인수인계 노트 (Round 65 종료 시점, 2026-05-19)
+# Hero3 인수인계 노트 (Round 66 종료 시점, 2026-05-19)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~96-97%**. 게임 데이터 평문 파싱 ~98% 완료. **skill effect mask 완전 디코드** (+0x10..+0x1d 14B), debuff code 가 별도 enum 확정, **0x14/0x19 = completely unused**, boss trailer 6B = sprite_idx + skill slots, **signed int16 사용처 정확히 2곳만**.
+**Hero3 분석 진행률 ~97-98%**. game_balance.json v1.1 (582KB) 출력 완료. R66 정정: debuff code = stat enum 동일 (value 부호로 buff/debuff), skill effect block = right-justified chain (전율 3-debuff 발견), boss combat_rating = round(lvl/2 + 44|64). DES 8 파일만 사용자 환경 필요.
 
-마지막 commit: `2a0bc9f9 feat:영웅서기3 Round 64 — game_balance.json 통합 출력 (537KB) / value scale 매핑 / 0x14·0x19 미사용 확정 / ultimate skill diff`
+마지막 commit: `c3fd598f feat:영웅서기4 Round 68+69 — DES key J@IWO8N7 발견 + 407 파일 일괄 복호화 + 게임 catalog 추출` (H3 R65 산출물 흡수)
 
-**Round 65 산출물 = uncommitted**:
-- 신규 doc 1: [`ghidra-round65-trailer-effect-mask-signed-2026-05-19.md`](ghidra-round65-trailer-effect-mask-signed-2026-05-19.md)
-- 신규 recon 스크립트 4: `analyze_trailer_bonus.py` / `decode_skill_effect_mask.py` / `decode_boss_trailer.py` / `verify_signed_values.py`
-- 신규 산출물 (work/h3/recon/, gitignored): `trailer_bonus.{json,log}` / `effect_mask.{json,log}` / `boss_trailer.{json,log}` / `value_sign_verification.{json,log}`
+**Round 66 산출물 = uncommitted**:
+- 신규 doc 1: [`ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md`](ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md)
+- 신규 recon 스크립트 2: `refine_debuff_codes.py` / `decode_skill_effect_v2.py`
+- 수정 스크립트 1: `export_game_balance.py` (v1.1)
+- 신규 산출물 (work/h3/recon/, gitignored): `debuff_codes_refined.{json,log}` / `skill_effect_v2.{json,log}` / `game_balance.json` (582KB v1.1)
 - PROGRESS.md / SESSION_HANDOFF.md / MEMORY.md 갱신
 
 ## 1. 즉시 진행 가능한 작업 (자동, 사용자 입력 불필요)
 
-### 1.1 ⭐⭐⭐ debuff code 정밀 의미 (R66 핵심)
+### 1.1 ⭐⭐⭐ skill header (+0x00..+0x0d) 정밀
 
-R65 발견: skill +0x13 / +0x18 = debuff code, 6 distinct codes 사용:
-- 0x03 = BLEED 가설 (암영/직격 "관통/출혈 유도")
-- 0x06 = ATT2_DEBUFF (망각)
-- 0x08 = M_DEF_DEBUFF (전율) — 또는 P_DEF
-- 0x09 = ACC_DEBUFF (격광, 압도)
-- 0x0a = DOD_DEBUFF (전율 2차)
-- 0x15 = TAUNT (유도) — R63 미식별 코드의 새 의미
-- 0x1c = STUN (참혼/저격) — R63 의 REVIVE 와 다른 enum
+R66 의 skill_effect_v2 schema 에서 effect chain 만 디코드. header (+0x00..+0x0d) 14 bytes 의 정확한 의미는 부분 파악:
+- +0x00..+0x01: LE16 SP cost ✓
+- +0x02..+0x03: pad
+- +0x04..+0x05: byte pair (damage_base?)
+- +0x06..+0x08: pad
+- +0x09..+0x0a: 0x55 0x55 marker (max stat?)
+- +0x0b: byte (range/duration?)
+- +0x0c..+0x0d: subheader
 
-다음 단계: game string table 에서 추가 의미 검색 + i13 디버프 비교로 코드 매핑 강화.
+스크립트: `tools/recon/decode_skill_header.py` (신규)
 
-스크립트: `tools/recon/refine_debuff_codes.py` (신규)
+### 1.2 ⭐⭐⭐ boss skill slot ID → actual skill 매핑
 
-### 1.2 ⭐⭐⭐ game_balance.json schema v1.1 출력
+R65 발견: story boss trailer[2..5] = 4 skill slot ID (1~20 범위). 이 ID 가 어떤 skill_dat 의 actual skill 인지 매핑.
 
-R65 산출물 통합 — skill 에 debuff fields / boss 에 sprite_idx + skill slots / equip 에 parsed trailer.
+가설: ID = skill_dat 의 entry index (0-based)? 또는 별도 boss skill table?
 
-스크립트: `tools/recon/export_game_balance.py` 수정 (v1.1)
+스크립트: `tools/recon/map_boss_skill_id.py` (신규)
 
-### 1.3 ⭐⭐ boss combat_rating (trailer[0]) 의미
+### 1.3 ⭐⭐⭐ i15_dat NDK 복호화 (사용자 환경 계속)
 
-R65 발견: boss trailer[0] 이 lvl 과 비례 안 함. boss-only metric. 추가 분석.
+### 1.4 ⭐⭐ i14 조합 재료 → smith_dat 레시피
 
-### 1.4 ⭐⭐ skill primary_damage_scale weird values
+smith_dat 복호화 시 i14 (조합 재료) → i0~i12 (결과물) 매핑 표 발견 가능.
 
-위협 = 64767 (0xfcff), 망각/전율 = 65279 (0xfeff) — 이상한 값. 의미 추적.
+### 1.5 ⭐⭐ FUN_4f358 본문 ARM disassembly
 
-### 1.5 ⭐⭐ i15_dat NDK runner 처리 (사용자 환경)
+debuff handler dispatch 검증 (R55/R59/R61/R63/R64/R65/R66 보류).
 
-R63-R64 와 동일.
+### 1.6 ⭐ enemy_dat trailer `01 1e` 의미
 
-### 1.6 ⭐ FUN_4f358 본문 ARM disassembly
-
-debuff_code → effect handler 매핑 추적.
+`1e` = 30 = boss spawn flag? Or just constant terminator.
 
 ## 2. 사용자 환경 필요 작업 (보류)
 
-§1.5 DES 8 파일, SMAF→OGG (33 파일), 9,741 unique 대사 LLM 번역 — R64 와 동일.
+§1.3 DES 8 파일, SMAF→OGG (33 파일), 9,741 unique 대사 LLM 번역.
 
-## 3. Round 65 핵심 산출물
+## 3. Round 66 핵심 발견
 
-### 3.1 skill +0x10..+0x1d 14-byte effect block (★★★★★)
+### 3.1 debuff code = stat enum 동일 (R65 가설 정정) ★★★★★
 
-```
-+0x10..+0x11   LE16  primary damage scale
-+0x12          byte  pad
-+0x13          byte  1차 debuff code (0x7f = no debuff)
-+0x14..+0x15   LE16 signed  1차 debuff primary value
-+0x16..+0x17   LE16 signed  1차 debuff secondary value
-+0x18          byte  2차 debuff code
-+0x19..+0x1a   LE16 signed  2차 debuff primary value
-+0x1b..+0x1c   LE16 signed  2차 debuff secondary value
-+0x1d          byte  rank / power class (R63)
-```
+- skill debuff code 와 i13 디버프 effect_type high byte 가 동일 enum 사용
+- value 부호로 buff/debuff 구분
+- 2 컨텍스트 분리: 0x0d (CRI_DEF vs STUN_RESIST), 0x1c (REVIVE vs STUN_TRIGGER)
+- 신규 master enum: 0x15 = TAUNT
+- skill debuff distinct codes: 11 개 (R65 의 6 보다 5개 추가)
 
-24 active_attack skills 중 9 개가 debuff 보유.
-
-### 3.2 debuff code 별도 enum (★★★★)
-
-| code | name | example | i13 의 의미와 비교 |
-|---:|---|---|---|
-| 0x03 | BLEED | 암영/직격 | i13 에선 HP_REGEN |
-| 0x06 | ATT2_DEBUFF | 망각 | i13/equip 와 동일 |
-| 0x08 | M_DEF_DEBUFF | 전율 | i13/equip 와 동일 |
-| 0x09 | ACC_DEBUFF | 격광/압도 | i13/equip 와 동일 |
-| 0x0a | DOD_DEBUFF | 전율 2차 | i13/equip 와 동일 |
-| 0x15 | TAUNT | 유도 | R63 미식별 |
-| 0x1c | STUN | 참혼/저격 | i13 에선 REVIVE |
-
-→ debuff context 는 일부 코드 stat enum 과 공유, 일부 (0x15, 0x1c) 재정의.
-
-### 3.3 0x14 / 0x19 completely unused (★★★)
-
-R64 추정 "equip trailer 에 출현" 도 폐기 — bt 위치 0회.
-
-실제 사용 stat enum = 22 codes (R63 의 24 codes 중 0x14, 0x19 제외).
-
-### 3.4 boss_dat 6B trailer (★★★)
+### 3.2 skill effect block schema v2 (★★★★★)
 
 ```
-[0] combat rating
-[1] sprite/model index (8 distinct)
-[2..5] 4 boss-specific skill slot IDs (0xFF = unused)
+30-byte tail right-justified chain:
+  pos 14..18 = slot1 (code + LE16+LE16 signed)
+  pos 19..23 = slot2
+  pos 24..28 = slot3
+  pos 29 = rank
+  pos 0..13 = header (SP cost + damage scale + pad)
 ```
 
-- 16 story boss (skill slots 사용): 리츠/케이/멜페토/큐
-- 14 misc boss (FF×4): 벨루스/시즈타이탄/아르보르/오르도/홀리가디언
+전율 (s9_dat) = **3-debuff skill** 신규 발견: P_DEF + M_DEF + DOD.
 
-### 3.5 signed int16 통일 가설 정정 (★★★)
+### 3.3 boss combat_rating 공식 (★★★★)
 
-R64 의 "signed int16 통일" 가설 폐기. 실제로는 **단 2곳만 signed**:
-1. i13 effect_value: 5 negative cases (적 대상 디버프)
-2. skill +0x14..+0x17 debuff mask: 9 with-debuff skills
+```
+rating = round(lvl / 2 + 44)  # normal
+rating = round(lvl / 2 + 64)  # hard
+```
 
-그 외 모든 value field 는 unsigned (byte/LE16/BE16).
+30 boss entries 모두 검증 통과. "challenge equivalence level" = boss 의 권장 player level 표시.
 
-## 4. 작업 순서 권장 (Round 66)
+### 3.4 game_balance.json v1.1 (★★★)
 
-1. `git status` + `git log --oneline -5` — 현재 상태 확인
-2. `git add` + `git commit` Round 65 산출물
-3. **debuff code 정밀 매핑** (`tools/recon/refine_debuff_codes.py` 신규)
-4. **game_balance.json v1.1** (export_game_balance.py 수정)
-5. **boss combat_rating 함수 추적**
-6. **skill primary_damage_scale weird values** 의미
-7. **i15_dat NDK runner** (사용자 환경)
-8. Round 66 doc 작성 + PROGRESS.md 갱신 + commit
+537KB → 582KB. R66 enrichment 추가:
+- skills.*.skills[].effect_v2 (slot1/slot2/slot3 + header)
+- bosses.*.trailer_decoded (combat_rating + sprite_idx + skill_slots)
+- combat_rating_formula
+- stat_enum context_split (0x0d, 0x1c) + context_buff (0x0b) + TAUNT (0x15)
+- skill_debuff_codes 11 distinct
 
-목표 진행률 (Round 66 종료): **~97-98%** (debuff code 정밀 +1%p, schema v1.1 통합 +0.5%p).
+## 4. 작업 순서 권장 (Round 67)
+
+1. `git status` + `git log --oneline -5`
+2. `git add` + `git commit` Round 66 산출물
+3. **skill header 정밀** (`tools/recon/decode_skill_header.py` 신규)
+4. **boss skill ID 매핑** (`tools/recon/map_boss_skill_id.py` 신규)
+5. **i15_dat NDK runner** (사용자 환경)
+6. Round 67 doc 작성 + commit
+
+목표 진행률 (Round 67 종료): **~98-99%**.
 
 ## 5. 참고 문서
 
-- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록 (Round 17~65)
-- [Round 65 상세](ghidra-round65-trailer-effect-mask-signed-2026-05-19.md) — ★ 이번 라운드 (skill effect mask + boss trailer + signed 정정)
-- [Round 64](ghidra-round64-balance-export-value-scale-2026-05-19.md) — game_balance.json + value scale + ultimate skill diff
-- [Round 63](ghidra-round63-stat-enum-final-2026-05-18.md) — master stat enum 완전
+- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록
+- [Round 66 상세](ghidra-round66-debuff-codes-combat-rating-v1-1-2026-05-19.md) — ★ 이번 라운드
+- [Round 65](ghidra-round65-trailer-effect-mask-signed-2026-05-19.md) — trailer 재집계 + effect mask + signed (R66 에서 schema 정정)
+- [Round 64](ghidra-round64-balance-export-value-scale-2026-05-19.md) — game_balance.json v1.0 + value scale
+- [Round 63](ghidra-round63-stat-enum-final-2026-05-18.md) — master stat enum 100%
 - [Round 62](ghidra-round62-item-skill-rank-quest-xref-2026-05-18.md) — trailer bonus / rarity / quest xref
 - [Round 61](ghidra-round61-item-skill-body-decode-2026-05-18.md) — item body / i13·i14 / skill body
-- [Round 60](ghidra-round60-skill-item-strings-bosshp-2026-05-18.md) — skill 일괄 / boss HP / string / item 카탈로그
-- [Round 59](ghidra-char-npcg-skill-parsing-2026-05-18.md) — char/npcg/s4 dat
+- [Round 60](ghidra-round60-skill-item-strings-bosshp-2026-05-18.md) — skill / boss HP / string / item
+- [Round 59](ghidra-char-npcg-skill-parsing-2026-05-18.md) — char/npcg/s4
 - [Round 58](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md) — boss/quest + DES variants
 - [Round 57](ghidra-des-system-and-dat-paths-2026-05-18.md) — DES 시스템 식별
 - [reference_h5_des_blocker](../../C:/Users/Ryu/.claude/projects/d--testrepo/memory/reference_h5_des_blocker.md) — H5 NDK runner 정보

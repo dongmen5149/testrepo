@@ -158,9 +158,9 @@ def main() -> None:
     # 1. meta
     out["meta"] = {
         "project": "Hero3 Remake (영웅서기3)",
-        "round": 64,
+        "round": 66,
         "date": "2026-05-19",
-        "round_label": "R64 = R56-R63 통합 game_balance.json",
+        "round_label": "R66 = R56-R65 통합 + skill effect v2 + boss combat_rating + debuff codes refined",
         "stat_enum_count": 24,
         "items_categories": 18,
         "skills_files": 7,
@@ -168,14 +168,59 @@ def main() -> None:
         "bosses_count": 15,
         "quests_files": 4,
         "des_pending": 8,
-        "schema_version": "1.0",
+        "schema_version": "1.1",
+        "v1.1_additions": [
+            "skill effect block v2 (slot1/slot2/slot3 right-justified chain)",
+            "boss combat_rating formula (round(lvl/2 + 44|64))",
+            "debuff_code refined (11 distinct codes, stat enum 공유 + TAUNT/STUN/STUN_RESIST 추가)",
+            "rarity × bt cross-tab",
+        ],
     }
     summary_lines.append("===== Hero3 game_balance.json =====")
     summary_lines.append(f"Generated: Round 64 (2026-05-19), schema v1.0")
 
-    # 2. stat_enum (R63)
+    # 2. stat_enum (R63 + R66 refined — 0x15 TAUNT 추가, 0x1c REVIVE/STUN dual)
     stat_enum_doc = load_json(RECON / "stat_enum.json")
-    out["stat_enum"] = stat_enum_doc.get("stat_enum_master", stat_enum_doc)
+    stat_enum = stat_enum_doc.get("stat_enum_master", stat_enum_doc)
+    # R66 patches
+    stat_enum["0x15"] = {
+        "name": "TAUNT", "from": "skill 유도 0x15 (R66 신규)",
+        "desc": "적의 공격을 자신에게 집중 (taunt/aggro draw)",
+    }
+    stat_enum["0x1c"]["context_split"] = {
+        "i13_buff": "REVIVE (피닉스의숨결, 전투불능 회복)",
+        "skill_debuff": "STUN (참혼/저격, 적을 기절)",
+        "note": "동일 enum 코드, 컨텍스트별 의미 분리",
+    }
+    stat_enum["0x0d"]["context_split"] = {
+        "i13/i16/equip": "CRI_DEF (크리피해 감소)",
+        "skill_debuff": "STUN_RESIST_DEBUFF (위협, 적의 기절저항 감소)",
+        "note": "R66 신규 발견. 동일 enum 코드, 컨텍스트별 의미 분리",
+    }
+    stat_enum["0x0b"]["context_buff"] = {
+        "skill_buff": "BLOCK (자신에게 BLOCK +5, 유도)",
+        "note": "skill 0x0b 가 양수 value 일 때는 자기 buff",
+    }
+    out["stat_enum"] = stat_enum
+
+    # R66: debuff codes distinct usage (skill 디버프 11 codes)
+    out["skill_debuff_codes"] = {
+        "doc": "Round 66: skill effect block 의 11 distinct debuff codes (stat_enum 공유)",
+        "codes": {
+            "0x03": "HP_REGEN (음수 → BLEED)",
+            "0x05": "ATT1 (망각 -)",
+            "0x06": "ATT2 (망각 -)",
+            "0x07": "P_DEF (전율 -)",
+            "0x08": "M_DEF (전율 -)",
+            "0x09": "ACC (압도/격광 -)",
+            "0x0a": "DOD (전율 2차 -)",
+            "0x0b": "BLOCK (유도 양수 → 자기 buff)",
+            "0x0d": "STUN_RESIST_DEBUFF (위협 -)",
+            "0x15": "TAUNT (유도)",
+            "0x1c": "STUN_TRIGGER (참혼/저격 val=0)",
+        },
+        "chain_length_distribution": {"0_debuffs": 14, "1_debuff": 6, "2_debuffs": 3, "3_debuffs": 1},
+    }
     summary_lines.append(f"\nStat enum: {len(out['stat_enum'])} codes")
     for k, v in out["stat_enum"].items():
         summary_lines.append(f"  {k}: {v.get('name'):<20} {v.get('desc','')[:50]}")
@@ -209,7 +254,7 @@ def main() -> None:
         rar_str = ", ".join(f"{r}={c}" for r, c in sorted(rar_count.items()))
         summary_lines.append(f"  {fn} ({p['category']}): {p['n_items']} — {rar_str}")
 
-    # 5. skills (R60-R63)
+    # 5. skills (R60-R66)
     skill_all = load_json(RECON / "skill_dat_all.json")
     skill_ranks = load_json(RECON / "skill_rank_decoded.json")
     weapon_class_map = {
@@ -218,18 +263,40 @@ def main() -> None:
         "s8_dat":  "라이플",        "s9_dat":  "다크석 (흑마법)",
         "s10_dat": "홀리석 (백마법)",
     }
+    # R66: skill effect v2 디코드 결과
+    effect_v2_path = RECON / "skill_effect_v2.json"
+    skill_effects_by_name: dict = {}
+    if effect_v2_path.exists():
+        ev2 = load_json(effect_v2_path)
+        for s in ev2.get("active_attack_skills", []):
+            skill_effects_by_name[(s.get("file", ""), s.get("name", ""))] = {
+                "rank": s.get("rank"),
+                "n_debuffs": s.get("n_debuffs"),
+                "slot1": s.get("slot1"),
+                "slot2": s.get("slot2"),
+                "slot3": s.get("slot3"),
+                "header": s.get("header"),
+            }
     skills_out: dict = {}
     skill_total = 0
     for fn, raw_skills in skill_all.items():
         weapon = weapon_class_map.get(fn, "?")
         rank_info = skill_ranks.get(fn, {})
+        # enrich each skill with R66 effect v2 if available
+        enriched_skills = []
+        for sk in raw_skills:
+            entry = dict(sk)
+            ev2_data = skill_effects_by_name.get((fn, sk.get("name", "")))
+            if ev2_data:
+                entry["effect_v2"] = ev2_data
+            enriched_skills.append(entry)
         skills_out[fn] = {
             "weapon": weapon,
-            "n_skills": len(raw_skills),
+            "n_skills": len(enriched_skills),
             "rank_info": rank_info,
-            "skills": raw_skills,
+            "skills": enriched_skills,
         }
-        skill_total += len(raw_skills)
+        skill_total += len(enriched_skills)
     out["skills"] = skills_out
     summary_lines.append(f"\nSkills: {skill_total} total across {len(skills_out)} weapon classes")
     for fn, s in skills_out.items():
@@ -266,10 +333,43 @@ def main() -> None:
         hps = [e["stats"]["hp_max"] for e in enemies_h if "hp_max" in e["stats"]]
         summary_lines.append(f"  hard   lvl: {min(lvls)}-{max(lvls)}, hp_max: {min(hps)}-{max(hps)}")
 
-    # 7. bosses (R58)
-    bosses_n = parse_dat(EXT / "boss/boss_dat")
-    bosses_h = parse_dat(EXT / "boss/bossh_dat")
-    out["bosses"] = {"normal": bosses_n, "hard": bosses_h}
+    # 7. bosses (R58 + R65 trailer 6B + R66 combat_rating formula)
+    def enrich_boss(b: dict, difficulty: str) -> dict:
+        tr_hex = b.get("trailer_hex", "")
+        try:
+            tb = bytes.fromhex(tr_hex.replace(" ", ""))
+        except ValueError:
+            tb = b""
+        if len(tb) >= 6:
+            combat_rating = tb[0]
+            sprite_idx    = tb[1]
+            skill_slots   = list(tb[2:6])
+            is_misc       = all(x == 0xFF for x in skill_slots)
+            # R66 formula: rating = round(lvl/2 + offset)
+            lvl = b.get("stats", {}).get("lvl") or 0
+            expected_offset = 44 if difficulty == "normal" else 64
+            expected = round(lvl / 2 + expected_offset)
+            b["trailer_decoded"] = {
+                "combat_rating":   combat_rating,
+                "sprite_idx":      sprite_idx,
+                "skill_slots":     skill_slots,
+                "is_misc_boss":    is_misc,
+                "expected_rating": expected,
+                "rating_matches":  combat_rating == expected,
+            }
+        return b
+
+    bosses_n = [enrich_boss(b, "normal") for b in parse_dat(EXT / "boss/boss_dat")]
+    bosses_h = [enrich_boss(b, "hard")   for b in parse_dat(EXT / "boss/bossh_dat")]
+    out["bosses"] = {
+        "normal": bosses_n,
+        "hard":   bosses_h,
+        "combat_rating_formula": {
+            "normal": "round(lvl/2 + 44)",
+            "hard":   "round(lvl/2 + 64)",
+            "note":   "R66 발견. 권장 player level 표시용 challenge equivalence.",
+        },
+    }
     summary_lines.append(f"\nBosses: normal={len(bosses_n)}, hard={len(bosses_h)}")
     for b in bosses_n[:5]:
         summary_lines.append(f"  {b['name']} lvl={b['stats'].get('lvl')}, hp_max={b['stats'].get('hp_max')}")
