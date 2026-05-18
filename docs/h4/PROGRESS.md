@@ -2,11 +2,40 @@
 
 > 다음 세션에서 가장 먼저 읽기. 디테일은 분류별 폴더 / 파일 참조.
 >
-> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 바로 아래 §⚡⚡ 첫 행동 가이드 + §🎯 4-way 셀렉터 보고 분기.
+> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 바로 아래 §🏆 Round 68 결과 + Round 69 가이드.
+
+## 🏆 Round 68+69 (2026-05-18/19) — DES + 게임 데이터 100% 추출
+
+> **상태**: ⚡ **Hero4 모든 DES 자원 (407 파일) 복호화 완료** + **4 캐릭터 × 10 스킬 catalog 완성**. R69 = R68 추가 49 파일 + entry layout 분석. 자세한 사항 [`round68-des-key-discovered.md`](round68-des-key-discovered.md) + [`round69-skill-catalog-and-batch-decrypt.md`](round69-skill-catalog-and-batch-decrypt.md).
+
+**Round 68 (DES 해제)**:
+- DES key = `J@IWO8N7` (binary 0x86edc 의 `J@IWO8N7L0E7E` 첫 8 byte)
+- Cipher = Hero5 `tools/h5_des.py` mx_des_decrypt 변종 (S1[58]=2 + swap+reversed subkey)
+- 발견 경로: Hero3 R57 + Hero5 h5_des.py cross-game 분석 (Ghidra 없이)
+- 복호화: SCN 350 + HDAT-A 8 = 358 파일
+- dialogue corpus 4,078 garbage → **35,752 entries (15,127 unique)**
+
+**Round 69 (게임 데이터 완성)**:
+- 추가 49 파일 (E/BSDAT/ESDAT, ITM/DAT 26, NPC 7, FR 3, HDAT 7) 일괄 복호화 100% 성공
+- Hero4 캐릭터: **티르 (양손검)**, **루레인 (사격/총)** + 2 추가 클래스
+- **40 스킬 catalog** (4 클래스 × 10 스킬 정확 매트릭스)
+- 1,572 아이템 한국어 + 2,427 quest/UI 한국어 entries
+- 통합 `work/h4/converted/h4_catalog.json` 생성 (Android single source of truth)
+
+**누적 407 파일 복호화 = Hero4 전체 DES 자원**.
+
+**Round 70 추천 작업** (다음 세션):
+1. ⭐ **A1 영어 번역** (Claude Haiku, ~$0.30) — corpus + catalog 모두 한국어 진본화 완료
+2. NPC QUEST_0/1_DAT 정밀 파싱 (Hero3 quest_*_dat 동일 패턴 가능)
+3. HDAT-A _H_BH 40B stat block 정밀 (level/HP/SP/ATK/DEF/...)
+4. E/BSDAT, E/ESDAT 6 파일 SCN-like script 분석 (boss/event dialogue)
+5. Phase C (Hero3 KMM 분리) — Hero4 모든 자산 준비 완료, engine wiring 만 남음
+
+---
 
 ## ⚡ 다음 세션 — 시작 전 30초 체크
 
-> **최신 상태 (2026-05-18 후속12) — 🏁 자동 영역 진짜 종결 (옵션 A 완료)**: 누적 **47 건 진전**. **자동 분석 영역 100% 종결**. 다음 차단은 사용자 Ghidra 작업 결과 (DES key 8 bytes) 이외 없음.
+> **최신 상태 (2026-05-18 Round 68) — 🏁 DES 자동 차단 해제**: 누적 **48 건 진전**. SCN+HDAT-A 358 파일 복호화, corpus 35,752 entries. 차단 해제 작업 (E/ITM/NPC 추가 복호화, HDAT-A 파싱, 영어 번역) 모두 Round 69 에서 자동 가능.
 
 ### ⚡⚡ 다음 세션 첫 행동 — "영웅서기4 다음 내용 진행해줘" 즉시 응답 가이드
 
@@ -171,9 +200,44 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 
 ---
 
-## 🚨 핵심 차단 — DES key (다음 세션 1순위)
+## ✅ 핵심 차단 해제 — DES key 발견 (Round 68, 2026-05-18)
 
-Hero4 SCN 348개 (350 중 2개는 plaintext) = **DES ECB 로 암호화** (2026-05-14 100% 확정). 단, **2026-05-18 추가 발견**: `_DAT_DES` 의 S1[58] 1 byte 가 표준 DES 와 다름 (`std=3 → got=2`). 의도적 변형이라면 표준 `Crypto.Cipher.DES` 로는 영원히 풀리지 않고, Ghidra 키 발견 후에도 **custom DES 구현** ([tools/converter/custom_des_h4.py](../../tools/converter/custom_des_h4.py)) 사용 필수. 자동 brute-force 완전 한계 → Ghidra GUI 작업 필수.
+**Hero4 DES key = `J@IWO8N7`** (8-byte ASCII = `4a 40 49 57 4f 38 4e 37`)
+**Cipher = Hero5 `mx_des_decrypt`** (`tools/h5_des.py`) — startDes(mode=0) + reversed subkey + S1[58]=2
+
+발견 경로: Hero3 R57 (`0EP@KO91` + binary 0xac594 위치 패턴) + Hero5 h5_des.py 변종 cross-game 분석. v1-v4 가 cipher 변종을 부분만 모델링 (S1 1 byte) 해서 실패했으나, Hero5 의 풀 변종 (swap + reversed subkey + S1 mod) 적용 즉시 발견. 자세한 R68 분석 [`round68-des-key-discovered.md`](round68-des-key-discovered.md) 참조.
+
+### 즉시 명령 (재현)
+
+```bash
+HERO_GAME=h4 python tools/converter/decrypt_h4_scn.py --key 'J@IWO8N7' --batch
+# → SCN 350 + HDAT-A 8 = 358 파일 일괄 복호화 (~5초)
+
+cp work/h4/extracted/MAP/SC/e0184_scn work/h4/decrypted/SC/   # plaintext 복원
+cp work/h4/extracted/MAP/SC/e0185_scn work/h4/decrypted/SC/
+cp work/h4/decrypted/SC/* work/h4/extracted/MAP/SC/
+
+HERO_GAME=h4 python tools/converter/convert_all.py work/h4/extracted work/h4/converted
+HERO_GAME=h4 python tools/converter/build_dialogue_corpus.py
+HERO_GAME=h4 python tools/converter/prepare_android_assets.py work/h4/converted apps/hero4-android/app/src/main/assets
+
+# 영어 번역 (Round 69 가능):
+export ANTHROPIC_API_KEY=...
+HERO_GAME=h4 python tools/i18n/translate_dialogues.py
+```
+
+### 잔여 작업 (Round 69)
+
+- E/BSDAT 3 + E/ESDAT 3 + ITM/DAT 16 + NPC ~7 + FR ~5 ≈ 30+ 파일은 같은 키로 추가 복호화 가능 (cipher prefix sentinel 공유 확인됨)
+- HDAT-A 8 파일 entry layout 분석 (decrypt 완료, parser 작성 필요)
+
+---
+
+## 🚨 (HISTORY) Round 67 까지 핵심 차단 — DES key
+
+> Round 68 에서 해제됨. 다음 문단은 히스토리 참조용. 
+
+Hero4 SCN 348개 (350 중 2개는 plaintext) = **DES ECB 로 암호화** (2026-05-14 100% 확정). 단, **2026-05-18 추가 발견**: `_DAT_DES` 의 S1[58] 1 byte 가 표준 DES 와 다름 (`std=3 → got=2`). 의도적 변형이라면 표준 `Crypto.Cipher.DES` 로는 영원히 풀리지 않고, Ghidra 키 발견 후에도 **custom DES 구현** ([tools/converter/custom_des_h4.py](../../tools/converter/custom_des_h4.py)) 사용 필수. 자동 brute-force 완전 한계 → Ghidra GUI 작업 필수. **Round 68 에서 Ghidra 없이 Hero5 cross-game 분석으로 해결**.
 
 **바로 시작 명령**:
 ```bash
