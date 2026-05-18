@@ -7,11 +7,12 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 69 종료 시점, uncommitted)**:
-> - 마지막 commit = `daeabed3 feat:영웅서기3 Round 68 — gun marker 0x1f 정밀 (s7 unique) + boss skill table 검색 + FUN_4f358 재확인`
-> - **Round 69 산출물 uncommitted** — 3 신규 recon 스크립트 + 6 json/log + 1 doc
-> - Hero3 분석 진행률 ~99.3%
-> - **자동 분석 완전 한계 도달** — Round 70+ 는 사용자 환경 필수
+> **현재 git 상태 (2026-05-19 Round 70 종료 시점, uncommitted)**:
+> - 마지막 commit = `615cfe5d feat:영웅서기3 Round 69 — i14 ammo 정정 + enemy stat scaling + dialogue translation queue (자동 분석 종료)`
+> - **Round 70 산출물 uncommitted** — 2 신규 doc (MASTER_SPEC.md + R70 round doc)
+> - Hero3 분석 진행률 ~99.5%
+> - **자동 분석 완전 종결** — Round 71+ 는 사용자 환경 필수
+> - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — 즉시 시작 가이드
 
@@ -41,7 +42,9 @@
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 69, uncommitted) — **4IA + 4IB + 4IC = i14 ammo 시스템 정정 + enemy_dat field scaling + dialogue translation queue**. (1) ⭐⭐⭐⭐ **R68 's7 별도 ammo 시스템' 가설 정정**: i14 "탄성제" desc = "권총/라이플의 조합에 사용" 발견 → **권총 (s7) + 라이플 (s8) ammo 시스템 공유**. 0x1f marker (s7) vs 0x01 (s8) = **사거리/조준 모드 표시만**. 단발 권총 = 빠른 다중 타겟, 연발 라이플 = 정확 관통. "스톤/총기" 고대 정령석 = 다크석/홀리석 + 권총/라이플 4 class 공유. "시몬의문장" = 총기 전용 강화 (s7+s8 모두). (2) ⭐⭐⭐⭐ **i14 46 entries 7 카테고리 분류**: 공통 용액 3 / 공정 재료 6 / 원소 속성 4 / 몬스터 드롭 15 / 고대 재료 3 tier × 4 type = 12 / 클래스 강화 문장 5 (아벨=전사, 시몬=총기, 포프=마법, 부폰=방어, 하피=회피). weapon-class crafting map 완전 정리. (3) ⭐⭐⭐ **enemy_dat 19B field scaling 정밀** (161 normal vs hard pairs): hp_max ~2.22x stable (R60 확정), exp_gold ~6.92x median (group별 9.7x or 1.80x), f16 ATK ~2.93x, f17 AGI ~1.21x (+2 constant), f4_5 variant/ID (scaling 없음 1.04x). (4) ⭐⭐⭐ **dialogue corpus 9,740/9,741 meaningful Korean**, 34,043 chars total. 빈도+카테고리+event 별 정렬. **LLM 번역 비용 추정 $4.09** (Claude Sonnet 4.6). (5) **진행률 ~99% → ~99.3%** (+0.3%p, 게임 시스템 모델링 99.7→99.8%). **자동 분석 완전 한계 도달** — Round 70+ 는 모두 사용자 환경 필수. 상세는 [ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md](ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 70, uncommitted) — **4JA + 4JB + 4JC = Hero3 Master Spec 통합 + exp_gold 4 그룹 + enemyg sprite 정정**. (1) ⭐⭐⭐⭐⭐ **`docs/h3/MASTER_SPEC.md` 작성** — R56-R70 의 모든 발견을 단일 reference 로 통합. 15 section 4,700+ lines. Android 리메이크 개발자 entry point. stat enum 24 codes 표 + value scale 규칙 + rarity 7 prefix + 18 item category + 105 skill + enemy/boss/quest/i14 crafting 전체. R70 = 자동 분석 완전 종결 선언. (2) ⭐⭐⭐⭐ **exp_gold 4 그룹 분포 발견**: 9.7x (41 일반 전투, 가드/워리어/템플러) / 1.8x (22 정찰/고급, 로그/체이서/말벌) / **stable (16 보스/특별, `{` prefix 4개 포함 normal≈hard≈2,600)** / other (82 mixed). implicit enemy tier 시스템 — Android 리메이크 spawn 균형용. (3) ⭐⭐⭐ **enemyg_dat 케이 패턴 sprite coincidence 확정** — R68 의 dat 파일 1 hit (enemyg_dat (2,2,1,1) 3 hits) 정밀 검증. 22 byte sprite entry 의 byte 7-10 위치 = animation frame data. boss skill mapping 과 무관 확정. → boss skill ID 매핑은 binary/dat 어디서도 hard-coded 안 됨, H4 가설 confirm but DES 복호화 필수. (4) **진행률 ~99.3% → ~99.5%** (+0.2%p, 게임 시스템 모델링 99.8→99.9%). **분석 완전 종결**. 상세는 [ghidra-round70-master-spec-exp-groups-2026-05-19.md](ghidra-round70-master-spec-exp-groups-2026-05-19.md).
+
+**이전 진행 라운드**: 2026-05-19 (Round 69, committed `615cfe5d`) — **4IA + 4IB + 4IC = i14 ammo 시스템 정정 + enemy_dat field scaling + dialogue translation queue**. (1) ⭐⭐⭐⭐ **R68 's7 별도 ammo 시스템' 가설 정정**: i14 "탄성제" desc = "권총/라이플의 조합에 사용" 발견 → **권총 (s7) + 라이플 (s8) ammo 시스템 공유**. 0x1f marker (s7) vs 0x01 (s8) = **사거리/조준 모드 표시만**. 단발 권총 = 빠른 다중 타겟, 연발 라이플 = 정확 관통. "스톤/총기" 고대 정령석 = 다크석/홀리석 + 권총/라이플 4 class 공유. "시몬의문장" = 총기 전용 강화 (s7+s8 모두). (2) ⭐⭐⭐⭐ **i14 46 entries 7 카테고리 분류**: 공통 용액 3 / 공정 재료 6 / 원소 속성 4 / 몬스터 드롭 15 / 고대 재료 3 tier × 4 type = 12 / 클래스 강화 문장 5 (아벨=전사, 시몬=총기, 포프=마법, 부폰=방어, 하피=회피). weapon-class crafting map 완전 정리. (3) ⭐⭐⭐ **enemy_dat 19B field scaling 정밀** (161 normal vs hard pairs): hp_max ~2.22x stable (R60 확정), exp_gold ~6.92x median (group별 9.7x or 1.80x), f16 ATK ~2.93x, f17 AGI ~1.21x (+2 constant), f4_5 variant/ID (scaling 없음 1.04x). (4) ⭐⭐⭐ **dialogue corpus 9,740/9,741 meaningful Korean**, 34,043 chars total. 빈도+카테고리+event 별 정렬. **LLM 번역 비용 추정 $4.09** (Claude Sonnet 4.6). (5) **진행률 ~99% → ~99.3%** (+0.3%p, 게임 시스템 모델링 99.7→99.8%). **자동 분석 완전 한계 도달** — Round 70+ 는 모두 사용자 환경 필수. 상세는 [ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md](ghidra-round69-ammo-enemy-stat-dialogue-2026-05-19.md).
 
 **이전 진행 라운드**: 2026-05-19 (Round 68, committed `daeabed3`) — **4HA + 4HB + 4HC = boss skill table 검색 + FUN_4f358 재확인 + gun marker 정밀**. (1) ⭐⭐⭐⭐ **gun marker 0x1f 정밀화**: s7 (건/피스톨) 만 unique flag pair (weapon_passive 0x14 + active_attack 0x1f). 라이플 (s8) 등 다른 weapon class 는 standard 0x01 사용. → 단발 권총 (s7) 은 별도 hit/ammo 시스템 보유, 라이플 (s8) 은 standard physical attack. (2) ⭐⭐⭐ **boss skill table 검색 결과**: R67 의 H4 가설 검증. 6 boss skill patterns 모두 binary 직접 매칭 0 hit. dat 파일 매칭은 enemyg_dat 케이 패턴 (2,2,1,1) 3 hits 만 (sprite coincidence 추정). H4 강화 but unresolved → DES 8 파일 복호화 후 재시도 필요. 신규 가설 H5/H6/H7 (tier 별 AI / stat boost / behavior weight). (3) ⭐⭐⭐ **FUN_4f358 본문 ARM disasm 재확인**: R55 의 NPC table multi-lookup 함수 재확인. 0x3c4 row stride + 0x3c element size + task[+0x9e28] NPC table base. **boss skill mapping 과 직접 관련 없음**. Thumb instruction literal pool 분석으로 확정. (4) **진행률 ~98-99% → ~99%** (+0.5%p, 게임 시스템 모델링 99.5→99.7%). **자동 분석 한계 도달** — 남은 작업 거의 DES 복호화 의존. 상세는 [ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md](ghidra-round68-boss-skill-search-gun-marker-fun4f358-2026-05-19.md).
 
