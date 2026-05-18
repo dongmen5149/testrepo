@@ -81,13 +81,14 @@ class NpcDialogueScene(
                 revealedChars = 0
                 if (lineIdx >= ls.size) {
                     val n = npc
-                    if (n?.startsQuestId != null) {
+                    val startsQuestId = n?.startsQuestId
+                    if (startsQuestId != null) {
                         val log = QuestLog(gameState)
-                        val wasActive = log.isActive(n.startsQuestId) || log.isDone(n.startsQuestId)
-                        log.start(n.startsQuestId)
+                        val wasActive = log.isActive(startsQuestId) || log.isDone(startsQuestId)
+                        log.start(startsQuestId)
                         if (!wasActive) {
-                            val q = QuestRegistry.get(n.startsQuestId)
-                            val title = q?.let { settings.lang(it.titleKo, it.titleEn) } ?: n.startsQuestId
+                            val q = QuestRegistry.get(startsQuestId)
+                            val title = q?.let { settings.lang(it.titleKo, it.titleEn) } ?: startsQuestId
                             EventBus.push(settings.lang("퀘스트 시작: $title", "Quest started: $title"))
                         }
                     }
