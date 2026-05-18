@@ -1,187 +1,186 @@
-# Hero3 인수인계 노트 (Round 61 종료 시점, 2026-05-18)
+# Hero3 인수인계 노트 (Round 62 종료 시점, 2026-05-18)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~86-89%**. 게임 데이터 평문 파싱 ~98% 완료 (모든 body 필드 디코드 완료). 게임 시스템 모델링 78% (item/skill/effect 매핑 완전). DES 8 파일만 사용자 환경 (NDK runner) 필요.
+**Hero3 분석 진행률 ~88-91%**. 게임 데이터 평문 파싱 ~98% 완료 (모든 body + trailer 디코드 완료). 게임 시스템 모델링 84% (item/skill/effect/rarity/quest 매핑 완전). DES 8 파일만 사용자 환경 (NDK runner) 필요.
 
-마지막 commit: `7b855de2 feat:영웅서기3 Round 60 — skill 7 파일 일괄 / boss HP 위치 / string table 246 strings / item 17 파일 480+ items + i15_dat 신규 DES`
+마지막 commit: `b8da2617 feat:영웅서기3 Round 61 — item body 정밀 디코드 / i13·i14 카테고리 식별 / skill body 디코드 (105 skills + 480+ items)`
 
-**Round 61 산출물 = uncommitted** (다음 commit 시 일괄 포함):
-- 신규 doc 1: [`ghidra-round61-item-skill-body-decode-2026-05-18.md`](ghidra-round61-item-skill-body-decode-2026-05-18.md)
-- 신규 recon 스크립트 2: `decode_item_body.py` / `decode_skill_body.py`
-- 신규 dump (work/ 폴더, gitignored): `item_decoded.{json,log}` / `skill_decoded.{json,log}`
-- PROGRESS.md 갱신 (Round 61 entry + 다음 세션 가이드)
+**Round 62 산출물 = uncommitted** (다음 commit 시 일괄 포함):
+- 신규 doc 1: [`ghidra-round62-item-skill-rank-quest-xref-2026-05-18.md`](ghidra-round62-item-skill-rank-quest-xref-2026-05-18.md)
+- 신규 recon 스크립트 3: `analyze_item_variants.py` / `decode_skill_rank.py` / `cross_ref_quest_item.py`
+- 신규 dump (work/ 폴더, gitignored): `item_variants.{json,log}` / `skill_rank_decoded.{json,log}` / `quest_item_xref.{json,log}`
+- PROGRESS.md 갱신 (Round 62 entry + 다음 세션 가이드)
 - 이 SESSION_HANDOFF.md 갱신
 
 ## 1. 즉시 진행 가능한 작업 (자동, 사용자 입력 불필요)
 
-### 1.1 ⭐⭐⭐ item body 의 unknown byte 추가 식별
+### 1.1 ⭐⭐⭐ 새 bonus_type code 의미 매핑
 
-R61 에서 20B body 의 주요 필드 (price/tier/variant/lvl/stat1/stat2) 매핑 완료. 미식별:
-- byte +4 (tier index 0~16) 와 game sprite/icon 매핑
-- byte +5 (variant) = color/skin 변형 (0xff=default 외 0x70~0x90 범위 출현)
-- 무기 stat_secondary (sub-damage) 정확한 의미 (속성? 관통? 2nd hit?)
+R62 에서 trailer 51% 가 (bonus_type, value) × 2 쌍을 보유함을 발견. 식별된 미분류 type code 8개:
 
-스크립트 작성: `tools/recon/analyze_item_variants.py` — variant byte 분포 + sprite 매핑 cross-check.
+| code | 가설 |
+|---:|---|
+| 0x01 | ? (드물게 등장 2회) |
+| 0x03 | ? ($세라핌핸드 EVA+15, $썬샤인스톤 HP+15 와 동반) |
+| 0x04 | ? ($메테오스톤+20, $썬샤인스톤+15) |
+| 0x08 | **MATK?** (defenders 에 자주, 마법사용 아이템) |
+| 0x09 | **MDEF 추가?** 또는 정신력 |
+| 0x0b | **마법 회피?** (배리어자켓, 나이트건틀릿) |
+| 0x10 | **카오스류?** (카오스후드/슈트/건틀릿) |
+| 0x11 | **사격류?** (라이오넬/제비우스/데스리미터 = 라이플 전용) |
 
-### 1.2 ⭐⭐⭐ weapon mastery skill body 30B stat block 정밀 디코드
+스크립트: `tools/recon/decode_effect_handler.py` (신규) — binary 의 FUN_4f358 또는 stat_modify 함수 literal pool grep 으로 type → string 매핑 추출.
 
-R61 에서 4-category 식별 완료 (weapon_passive 7 + active_attack 3 + active_buff 2 + passive_bonus 3). 미식별:
-- weapon_passive 7-tier 각 30B 안의 byte +11/+12 = weapon damage 와 i*_dat sub-stat 비교
-- skill rank 별 stat 변화 (rank 1→2→3 의 차이)
-- active skill 의 cooldown / range / status_effect 필드 위치
+### 1.2 ⭐⭐⭐ enchant (i16) tail vs equip trailer 비교
 
-입력: `work/h3/recon/skill_decoded.json` + `tools/recon/decode_skill_body.py` 확장.
+i16 의 4B tail 이 equip trailer (R62 발견) 와 동일 포맷인지 검증. 같다면 enchant = "movable trailer" = base item 의 trailer slot 을 사용자가 자유 부여하는 시스템.
 
-### 1.3 ⭐⭐ i17 퀘스트 아이템 ↔ quest_*_dat cross-reference
+입력: `work/h3/recon/item_decoded.json` 의 i16 layout 과 i0~i11 trailer 비교.
 
-R58 에서 quest_*_dat 44+ quest 평문 파싱 완료. R60에서 i17 21개 퀘스트 아이템 식별. 매핑:
-- 시그널펜던트A/B → 특정 quest?
-- 협곡의성수 → "협곡의 독소" quest
-- 토레즈시민증 → 토레즈 광산도시 quest
-- 등 21개 모두 사용 컨텍스트 추적
+### 1.3 ⭐⭐ rank progression vs req_level 매핑
 
-스크립트: `tools/recon/cross_ref_quest_item.py` — quest 텍스트에서 item 이름 grep + 위치 정렬.
+skill 의 `+0x1d` rank tier (1/2/3) 와 equip 의 req_level (5tier 간격) 의 연결.
 
-### 1.4 ⭐⭐ i15_dat = 8번째 DES 파일 복호 (사용자 환경 필요)
+가설:
+- rank 1 skill ↔ equip req_level 10
+- rank 2 skill ↔ equip req_level 25
+- rank 3 skill ↔ equip req_level 40
 
-7400B = master shop list 또는 master item table 추정. 다른 7 DES 와 함께 NDK runner 일괄 처리.
+스크립트: `tools/recon/correlate_rank_req_level.py` (신규).
 
-8 DES 후보:
-| 파일 | 크기 | entropy |
-|---|---|---|
-| `dat/drop_dat` | 3080B | 7.90 |
-| `dat/droph_dat` | 3080B | 7.79 |
-| `dat/getitem_dat` | 400B | 7.40 |
-| `dat/smith_dat` | 896B | 7.76 |
-| `dat/smithh_dat` | 896B | 7.68 |
-| `dat/shop_dat` | 72B | 5.92 |
-| `dat/shoph_dat` | 72B | 5.89 |
-| `dat/i15_dat` | 7400B | 7.97 |
+### 1.4 ⭐⭐ rarity prefix → 가격 modifier 분석
 
-`tools/ndk_des_runner/des_runner` (armv7 ELF) + key `"0EP@KO91"` + `dat/des_dat` tables. Android AVD armeabi-v7a 또는 qemu-arm.
+R62 의 7-tier rarity (normal / magic / legendary / epic / boss_drop / endgame / quest_reward) 의 price 분포 비교. 가설: magic = base ×1, legendary = ×1.5, epic = ×2, boss_drop = ×3.
 
-### 1.5 ⭐ FUN_4f358 / FUN_3a028 본문 정밀 (Ghidra 보류 작업)
+### 1.5 ⭐ i15_dat = 8번째 DES 파일 복호 (사용자 환경 필요)
 
-R55/R59 의 미해결. R60의 enemy/boss HP 위치 (+0x0a..+0x0b BE16) 와 일치하는지 확인.
+R60/R61 와 동일. 8 DES 파일 일괄 처리 필요.
+
+### 1.6 ⭐ FUN_4f358 본문 정밀 (Ghidra)
+
+R55/R59/R61 보류. **R62 의 bonus_type 매핑 작업과 직접 연결**. R63 1.1 의 prerequisite.
 
 ## 2. 사용자 환경 필요 작업 (보류)
 
-§1.4 DES 8 파일, SMAF→OGG (33 파일), 9,741 unique 대사 LLM 번역 (~$0.66) — R60 와 동일.
+§1.5 DES 8 파일, SMAF→OGG (33 파일), 9,741 unique 대사 LLM 번역 (~$0.66) — R61 과 동일.
 
-## 3. 이미 발견한 Hero3 게임 시스템 (Round 56-61 누적)
+## 3. 이미 발견한 Hero3 게임 시스템 (Round 56-62 누적)
 
-### 3.1 평문 파싱 완료 + body 디코드 (Round 61 시점)
+### 3.1 평문 파싱 완료 + body 디코드 (Round 62 시점)
 
 | 영역 | 파일 / entries | body 디코드 상태 |
 |---|---|---|
 | **전투 데이터** | enemy_dat (161) + enemyh_dat (161) — R56 | ✓ 19B stat block 완전 매핑 (R60) |
 | **보스 데이터** | boss_dat (15) + bossh_dat (15) — R58 | ✓ HP 위치 +0a..+0b BE16 확정 (R60) |
 | **캐릭터/NPC** | char_dat (10 classes) + npcg_dat (78 NPCs) — R59 | ✓ class layout (R59) |
-| **스킬** | s4~s10_dat = 7 파일 × 15 = 105 skills — R60 | ✓ 4-category 디코드 (R61) |
-| **아이템** | i0~i14, i16~i18 = 17 파일 480+ items — R60 | ✓ 5 layout 디코드 (R61) |
-| **퀘스트** | quest_00/01/10/11_dat (44+ quests) — R58 | — (텍스트 기반, body 분석 불필요) |
+| **스킬** | s4~s10_dat = 7 파일 × 15 = 105 skills — R60 | ✓ 4-category (R61) + rank tier @ +0x1d (R62) |
+| **아이템** | i0~i14, i16~i18 = 17 파일 480+ items — R60 | ✓ 5 layout (R61) + **trailer = bonus 쌍** (R62) + rarity prefix (R62) |
+| **퀘스트** | quest_00/01/10/11_dat (44+ quests) — R58 | ✓ **i17 21 items ↔ quest text 20/21 매칭** (R62) |
 | **UI/메뉴** | dat/InGame_txt (196) + menu/*.txt (50) — R60 | ✓ string table format |
 | **DES 시스템** | dat/des_dat (824B) + key `"0EP@KO91"` — R57 | — |
 
 ### 3.2 DES 암호화 (미해결, 8 파일)
 
-§1.4 참고.
+§1.5 참고.
 
-### 3.3 boss/enemy stat block 정밀 layout (R60 확정, R61 그대로)
+### 3.3 boss/enemy stat block 정밀 layout (R60 확정)
 
-19B stat block:
-| Offset | Width | Meaning |
-|---|---|---|
-| +0x00 | byte | **level** |
-| +0x01..+0x03 | 3B | padding |
-| +0x04..+0x05 | BE16 | f4_5 (AI script ID / 무기 ID 추정) |
-| +0x06..+0x07 | BE16 | f6_7 (graphics ID 추정) |
-| +0x08..+0x09 | BE16 | f8_9 (SP / MP 추정) |
-| **+0x0a..+0x0b** | **BE16** | **MaxHP ✓ 확정** |
-| **+0x0c..+0x0d** | **BE16** | **CurrentHP** |
-| **+0x0e..+0x0f** | **BE16** | **EXP / Gold reward** |
-| +0x10 | byte | AGI (추정) |
-| +0x11..+0x12 | 2B | flag / padding |
+19B stat block: (R61 SESSION_HANDOFF 와 동일)
 
-### 3.4 item 20B equip body layout (R61 신규 확정)
+### 3.4 item 20B equip body layout (R62 갱신)
 
 | Offset | Width | Meaning |
 |---|---|---|
 | +0..1 | LE16 | **price** (Gold) |
 | +2..3 | 2B | pad |
 | +4 | byte | **tier index** (0~16, sprite/icon) |
-| +5 | byte | **variant** (color/skin; 0xff=default) |
+| +5 | byte | **variant** (sprite override; 0xff=default tier sprite) |
 | +6..7 | 2B | pad |
 | +8 | byte | **req_level** (단조 +5 per tier) |
 | +9..11 | 3B | pad |
 | +12..13 | LE16 | **stat_primary** (ATK 무기, DEF 방어구) |
 | +14..15 | LE16 | **stat_secondary** (무기 sub-damage) |
-| +16..19 | 4B | trailing pad (zero) |
+| **+16..17** | **2B** | **bonus pair 1** (type + value) — R62 신규 |
+| **+18..19** | **2B** | **bonus pair 2** (type + value) — R62 신규 |
 
-### 3.5 skill body 4-category (R61 신규)
+bonus_type 매핑 (R61 ring + R62 trailer):
+- 0x02 HP, 0x05 STR, 0x06 INT, 0x07 VIT, 0x0a AGI
+- 0x0c DEF?, 0x0d MDEF?, 0x0e HIT, 0x0f EVA, 0x12 ATK
+- 신규 미식별 8개 (§1.1)
 
-| cat | 의미 | 클래스당 갯수 |
-|---:|---|---:|
-| 0 | weapon mastery (passive) | 7 |
-| 1 | active attack | 3 |
-| 2 | active buff | 2 |
-| 3 | passive bonus | 3 |
+### 3.5 item name prefix = rarity class (R62 신규)
+
+| prefix | class | trailer 보너스 패턴 |
+|---|---|---|
+| (none) | normal | 0 0 0 0 |
+| `\|` | magic | 1 쌍 |
+| `'` | legendary | 1~2 쌍 |
+| `$` | epic | 2 쌍 |
+| `{` | boss_drop | 2 쌍 (높은 stat) |
+| `@` | endgame | 2 쌍 (tier≥14, 가격 매우 낮음) |
+| `}` | quest_reward | 0 (보상용) |
+
+### 3.6 skill body 4-category + rank (R62 갱신)
+
+| cat | 의미 | 클래스당 갯수 | rank @ +0x1d |
+|---:|---|---:|---|
+| 0 | weapon mastery (passive) | 7 | 1/2/3 (tier-up) |
+| 1 | active attack | 3 | 1/2/3 |
+| 2 | active buff | 2 | 보통 1 |
+| 3 | passive bonus | 3 | 보통 1 |
 
 SP cost 7-tier: 100/200/300/400/500/600/800.
 
-### 3.6 Ghidra 분석 진척
+weapon mastery base damage @ +0x09/+0x0a:
+| weapon | base | scaling marker @ +0x02 |
+|---|---:|---:|
+| 창 | 3 | 2 |
+| 대검 | 42 | 20 (+0x0b=40 양손 bonus) |
+| 단검 | 41 | 2 |
+| 건 | 45 | 2 (+0x0c=20 burst) |
+| 라이플 | 45 | 20 (+0x0f/+0x11 range) |
+| 다크석 | 64 | 2 |
+| 홀리석 | 64 | 30 (max scale) |
 
-(R59 와 동일, R60/R61 는 데이터 위주, Ghidra 신규 분석 없음. FUN_4f358/3a028 여전히 보류.)
+### 3.7 i17 quest item → quest 매핑 (R62 신규, 20/21)
 
-## 4. Hero3 게임 세계
+| quest 파일 | i17 items |
+|---|---|
+| quest_00_dat | 협곡의성수, 의문의보석, 토레즈시민증, 시크릿카드, 영혼석, 토레즈의서신, 레아의수련목록, 굴베이그의완드 |
+| quest_01_dat | 협곡의성수, 토레즈시민증, 토레즈의서신, 오래된보석함, 로얄윈터하츠, 유리엽서, 유리방패, 테너의유물, 영혼석 |
+| quest_10_dat | 협곡의성수, 토레즈시민증, 시크릿카드, 토레즈의서신, 오래된보석함, 일레느의노트 |
+| quest_11_dat | 시그널펜던트A/B, 협곡의성수, 토레즈시민증, 토레즈의서신, 유리엽서, 유리방패, 운디네의부적, 평화의문장, 총기부속, 영혼사슬 |
+| (unmatched) | 반토막난 지도 — 튜토리얼 추정 |
 
-### 4.1 8 main regions
+## 4. Hero3 게임 세계 (변경 없음, R61 과 동일)
 
-네메시스숲 / 네오솔티아 / 협곡 / 아스크라 / 엔자크사막 / 토레즈 / 로우엔 평원 / 리파이너의유적
+- 8 main regions: 네메시스숲 / 네오솔티아 / 협곡 / 아스크라 / 엔자크사막 / 토레즈 / 로우엔 평원 / 리파이너의유적
+- 2 주인공 (리츠/케이) × 5 클래스 × 7 weapon skill tree
+- 14 item categories (8 weapon × 25 + 4 armor + ring/scroll/material/enchant/quest/consumable) = 480+ items
+- 15 bosses (R60 HP 확정)
 
-### 4.2 2 주인공 + 10 클래스 + 7 weapon skill tree
-
-| 주인공 | 5 클래스 | weapon (i*) | skill (s*) |
-|---|---|---|---|
-| **리츠** (아스크라) | 어썰트워리어 | 창(i4) + 방패(i11) | s4 |
-| | 디스럽터 | 양손검(i5) + 건(i7) | s5+s7 |
-| | 건슬링어 | 단검(i6) + 건(i7) | s6+s7 |
-| | 나이트템플러 | 양손검(i5) + 홀리(i10) | s5+s10 |
-| | 크레이지암즈 | 라이플(i8) + 건(i7) | s7+s8 |
-| **케이** (네오솔티아) | 버서커 | 양손검(i5) + 단검(i6) | s5+s6 |
-| | 데스나이트 | 양손검(i5) + 다크(i9) | s5+s9 |
-| | 섀도우워커 | 단검(i6) + 다크(i9) | s6+s9 |
-| | 가디언나이트 | 방패+홀리? | s10 |
-| | 소울마스터 | 홀리마스터 | s10 |
-
-### 4.3 14 item categories (R61 디코드)
-
-8 weapon types (창/대검/단검/건/라이플/다크석/홀리석) × 25 entries + 4 armor slots (헬멧/갑옷/장갑/신발) + 방패 + 반지 + 패시브 스크롤 + 조합재료 + enchant + 퀘스트 + 소비. 총 480+ items.
-
-### 4.4 15 bosses (HP 확정 R60)
-
-§3.3 참고. 리츠/케이 paired (tier 1-3), 멜페토/큐, 벨루스, 시즈타이탄, 아르보르, 오르도, 홀리가디언 (final).
-
-## 5. 작업 순서 권장 (Round 62)
+## 5. 작업 순서 권장 (Round 63)
 
 1. `git status` + `git log --oneline -5` — 현재 상태 확인
-2. `git add` + `git commit` Round 61 산출물 (이 commit 이후 다음 작업)
-3. **item variant/tier 분석** (`tools/recon/analyze_item_variants.py` 신규)
-4. **skill weapon_passive 30B 정밀** (decode_skill_body.py 확장)
-5. **i17 quest item cross-ref** (`tools/recon/cross_ref_quest_item.py` 신규)
-6. **i15_dat NDK runner 처리** (사용자 환경)
-7. 시간 여유 시 FUN_4f358 / FUN_3a028 (Ghidra 보류)
-8. Round 62 doc 작성 + PROGRESS.md 갱신 + commit
+2. `git add` + `git commit` Round 62 산출물
+3. **새 bonus_type code 매핑** (`tools/recon/decode_effect_handler.py` 신규 + binary literal grep)
+4. **enchant vs trailer 비교** (`tools/recon/compare_enchant_trailer.py` 신규)
+5. **rank ↔ req_level correlation** (`tools/recon/correlate_rank_req_level.py` 신규)
+6. **rarity → price modifier 분석**
+7. **i15_dat NDK runner 처리** (사용자 환경)
+8. 시간 여유 시 FUN_4f358 / FUN_3a028 (Ghidra 보류)
+9. Round 63 doc 작성 + PROGRESS.md 갱신 + commit
 
-목표 진행률 (Round 62 종료 시): **~89-92%** (item variant +1%p, skill rank decode +2%p, quest cross-ref +1%p, i15_dat 평문 시 +5%p).
+목표 진행률 (Round 63 종료 시): **~91-94%** (bonus type 매핑 +2%p, enchant 통합 +1%p, rank/req correlation +0.5%p, i15_dat 평문 시 +3%p).
 
 ## 6. 참고 문서
 
-- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록 (Round 17~61)
-- [Round 61 상세](ghidra-round61-item-skill-body-decode-2026-05-18.md) — ★ 이번 라운드 상세
+- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록 (Round 17~62)
+- [Round 62 상세](ghidra-round62-item-skill-rank-quest-xref-2026-05-18.md) — ★ 이번 라운드 상세
+- [Round 61](ghidra-round61-item-skill-body-decode-2026-05-18.md) — item body / i13·i14 / skill body
 - [Round 60](ghidra-round60-skill-item-strings-bosshp-2026-05-18.md) — skill 일괄 / boss HP / string table / item 카탈로그
 - [Round 59](ghidra-char-npcg-skill-parsing-2026-05-18.md) — char/npcg/s4 dat
 - [Round 58](ghidra-boss-quest-dat-and-des-variants-2026-05-18.md) — boss/quest + DES variants
