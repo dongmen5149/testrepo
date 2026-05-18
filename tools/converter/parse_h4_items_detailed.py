@@ -110,19 +110,27 @@ def parse_dat(data: bytes) -> list[dict]:
             next_i = len(data)
         stats = data[body_start:next_i]
         # Extract first 12 bytes of stat block (typical = price LE16, level/req, atk, def, etc.)
-        # R74: stat block field 확정
-        # LE16[0] = price (R73 confirmed); LE32 변환은 _ITM_15 같은 다른 layout 에서 garbage
+        # R74: stat block field 확정 — LE16[0] = price
         price = (stats[0] | (stats[1] << 8)) if len(stats) >= 2 else 0
         desc_len = stats[4] if len(stats) >= 5 else 0
         description = ''
         if 0 < desc_len <= 60 and 5 + desc_len <= len(stats):
             desc_bytes = stats[5:5+desc_len]
             try:
-                # 첫 byte 가 ASCII printable 또는 EUC-KR 면 description 으로 간주
                 if (0x20 <= desc_bytes[0] <= 0x7e or 0xa1 <= desc_bytes[0] <= 0xfe):
                     description = desc_bytes.decode('euc-kr', errors='replace').replace('\x00', '')
             except Exception:
                 pass
+
+        # R75: weapon stat fields (_ITM_00-06 무기 class 만 의미 — description=='' 일 때만 유효)
+        weapon_stats = None
+        if not description and len(stats) >= 14:
+            weapon_stats = {
+                'property_flag': stats[5],          # 0-7 element/family
+                'level_req':     stats[6],          # 1, 3, 6, 11, 16, ...
+                'atk1':          stats[9],          # main damage
+                'atk2':          stats[13],         # combo damage (dual-wield weapons only)
+            }
 
         entries.append({
             'offset': hex(i),
@@ -132,6 +140,7 @@ def parse_dat(data: bytes) -> list[dict]:
             'name': name,
             'price': price,
             'description': description,
+            'weapon_stats': weapon_stats,
             'stat_len': len(stats),
             'stats_bytes': list(stats[:24]),
             'stats_LE16': [stats[j] | (stats[j+1] << 8) for j in range(0, min(24, len(stats)) - 1, 2)],

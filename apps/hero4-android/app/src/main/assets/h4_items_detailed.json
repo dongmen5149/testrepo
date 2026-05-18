@@ -713,6 +713,12 @@
           "name": "아렌",
           "price": 100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 3,
+            "atk2": 3
+          },
           "stat_len": 21,
           "stats_bytes": [
             100,
@@ -758,6 +764,12 @@
           "name": "비스",
           "price": 200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 3,
+            "atk1": 4,
+            "atk2": 3
+          },
           "stat_len": 21,
           "stats_bytes": [
             200,
@@ -803,6 +815,12 @@
           "name": "챠라",
           "price": 600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 6,
+            "atk1": 5,
+            "atk2": 6
+          },
           "stat_len": 21,
           "stats_bytes": [
             88,
@@ -848,6 +866,12 @@
           "name": "데빈",
           "price": 1800,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 11,
+            "atk1": 8,
+            "atk2": 7
+          },
           "stat_len": 21,
           "stats_bytes": [
             8,
@@ -893,6 +917,12 @@
           "name": "에반",
           "price": 3700,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 16,
+            "atk1": 10,
+            "atk2": 11
+          },
           "stat_len": 21,
           "stats_bytes": [
             116,
@@ -938,6 +968,12 @@
           "name": "플류",
           "price": 6300,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 21,
+            "atk1": 14,
+            "atk2": 12
+          },
           "stat_len": 21,
           "stats_bytes": [
             156,
@@ -983,6 +1019,12 @@
           "name": "게인",
           "price": 9600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 5,
+            "level_req": 26,
+            "atk1": 14,
+            "atk2": 16
+          },
           "stat_len": 21,
           "stats_bytes": [
             128,
@@ -1028,6 +1070,12 @@
           "name": "하웬",
           "price": 13600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 31,
+            "atk1": 19,
+            "atk2": 17
+          },
           "stat_len": 21,
           "stats_bytes": [
             32,
@@ -1073,6 +1121,12 @@
           "name": "이즈",
           "price": 18200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 36,
+            "atk1": 19,
+            "atk2": 22
+          },
           "stat_len": 75,
           "stats_bytes": [
             24,
@@ -1123,6 +1177,12 @@
           "name": "로젠",
           "price": 36500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 51,
+            "atk1": 30,
+            "atk2": 26
+          },
           "stat_len": 21,
           "stats_bytes": [
             148,
@@ -1168,6 +1228,12 @@
           "name": "매츠",
           "price": 44000,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 56,
+            "atk1": 28,
+            "atk2": 33
+          },
           "stat_len": 21,
           "stats_bytes": [
             224,
@@ -1213,6 +1279,12 @@
           "name": "네오",
           "price": 52200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 61,
+            "atk1": 35,
+            "atk2": 31
+          },
           "stat_len": 21,
           "stats_bytes": [
             232,
@@ -1258,6 +1330,12 @@
           "name": "오렌",
           "price": 61100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 66,
+            "atk1": 33,
+            "atk2": 38
+          },
           "stat_len": 21,
           "stats_bytes": [
             172,
@@ -1303,6 +1381,12 @@
           "name": "피아",
           "price": 5164,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 71,
+            "atk1": 41,
+            "atk2": 35
+          },
           "stat_len": 48,
           "stats_bytes": [
             44,
@@ -1353,6 +1437,12 @@
           "name": "레닌",
           "price": 26464,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 81,
+            "atk1": 46,
+            "atk2": 40
+          },
           "stat_len": 21,
           "stats_bytes": [
             96,
@@ -1398,6 +1488,12 @@
           "name": "시온",
           "price": 38064,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 86,
+            "atk1": 42,
+            "atk2": 49
+          },
           "stat_len": 21,
           "stats_bytes": [
             176,
@@ -1443,6 +1539,12 @@
           "name": "테오",
           "price": 50464,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 91,
+            "atk1": 51,
+            "atk2": 45
+          },
           "stat_len": 271,
           "stats_bytes": [
             32,
@@ -1500,6 +1602,12 @@
           "name": "아렌",
           "price": 100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 6,
+            "atk2": 6
+          },
           "stat_len": 21,
           "stats_bytes": [
             100,
@@ -1545,6 +1653,12 @@
           "name": "비스",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 4,
+            "atk1": 7,
+            "atk2": 8
+          },
           "stat_len": 21,
           "stats_bytes": [
             244,
@@ -1590,6 +1704,12 @@
           "name": "챠라",
           "price": 2400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 9,
+            "atk1": 12,
+            "atk2": 10
+          },
           "stat_len": 21,
           "stats_bytes": [
             96,
@@ -1635,6 +1755,12 @@
           "name": "데빈",
           "price": 5600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 14,
+            "atk1": 13,
+            "atk2": 15
+          },
           "stat_len": 21,
           "stats_bytes": [
             224,
@@ -1680,6 +1806,12 @@
           "name": "에반",
           "price": 10200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 19,
+            "atk1": 18,
+            "atk2": 16
+          },
           "stat_len": 21,
           "stats_bytes": [
             216,
@@ -1725,6 +1857,12 @@
           "name": "플류",
           "price": 16200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 24,
+            "atk1": 19,
+            "atk2": 21
+          },
           "stat_len": 21,
           "stats_bytes": [
             72,
@@ -1770,6 +1908,12 @@
           "name": "게인",
           "price": 23600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 5,
+            "level_req": 29,
+            "atk1": 25,
+            "atk2": 21
+          },
           "stat_len": 21,
           "stats_bytes": [
             48,
@@ -1815,6 +1959,12 @@
           "name": "하웬",
           "price": 32500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 34,
+            "atk1": 24,
+            "atk2": 28
+          },
           "stat_len": 21,
           "stats_bytes": [
             244,
@@ -1860,6 +2010,12 @@
           "name": "이즈",
           "price": 42700,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 39,
+            "atk1": 31,
+            "atk2": 27
+          },
           "stat_len": 75,
           "stats_bytes": [
             204,
@@ -1910,6 +2066,12 @@
           "name": "로젠",
           "price": 16164,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 54,
+            "atk1": 35,
+            "atk2": 41
+          },
           "stat_len": 21,
           "stats_bytes": [
             36,
@@ -1955,6 +2117,12 @@
           "name": "매츠",
           "price": 32064,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 59,
+            "atk1": 44,
+            "atk2": 38
+          },
           "stat_len": 21,
           "stats_bytes": [
             64,
@@ -2000,6 +2168,12 @@
           "name": "네오",
           "price": 49264,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 64,
+            "atk1": 41,
+            "atk2": 47
+          },
           "stat_len": 21,
           "stats_bytes": [
             112,
@@ -2045,6 +2219,12 @@
           "name": "오렌",
           "price": 2328,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 69,
+            "atk1": 51,
+            "atk2": 44
+          },
           "stat_len": 21,
           "stats_bytes": [
             24,
@@ -2090,6 +2270,12 @@
           "name": "피아",
           "price": 22328,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 74,
+            "atk1": 47,
+            "atk2": 54
+          },
           "stat_len": 48,
           "stats_bytes": [
             56,
@@ -2140,6 +2326,12 @@
           "name": "레닌",
           "price": 1092,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 84,
+            "atk1": 52,
+            "atk2": 60
+          },
           "stat_len": 21,
           "stats_bytes": [
             68,
@@ -2185,6 +2377,12 @@
           "name": "시온",
           "price": 25292,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 89,
+            "atk1": 64,
+            "atk2": 55
+          },
           "stat_len": 21,
           "stats_bytes": [
             204,
@@ -2230,6 +2428,12 @@
           "name": "테오",
           "price": 50892,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 94,
+            "atk1": 58,
+            "atk2": 67
+          },
           "stat_len": 271,
           "stats_bytes": [
             204,
@@ -2287,6 +2491,12 @@
           "name": "아렌",
           "price": 100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 4,
+            "atk2": 4
+          },
           "stat_len": 21,
           "stats_bytes": [
             100,
@@ -2332,6 +2542,12 @@
           "name": "비스",
           "price": 300,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 4,
+            "atk1": 5,
+            "atk2": 6
+          },
           "stat_len": 21,
           "stats_bytes": [
             44,
@@ -2377,6 +2593,12 @@
           "name": "챠라",
           "price": 600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 7,
+            "atk1": 8,
+            "atk2": 7
+          },
           "stat_len": 21,
           "stats_bytes": [
             88,
@@ -2422,6 +2644,12 @@
           "name": "데빈",
           "price": 1700,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 12,
+            "atk1": 9,
+            "atk2": 11
+          },
           "stat_len": 21,
           "stats_bytes": [
             164,
@@ -2467,6 +2695,12 @@
           "name": "에반",
           "price": 3300,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 17,
+            "atk1": 14,
+            "atk2": 12
+          },
           "stat_len": 21,
           "stats_bytes": [
             228,
@@ -2512,6 +2746,12 @@
           "name": "플류",
           "price": 5400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 22,
+            "atk1": 15,
+            "atk2": 17
+          },
           "stat_len": 21,
           "stats_bytes": [
             24,
@@ -2557,6 +2797,12 @@
           "name": "게인",
           "price": 8100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 5,
+            "level_req": 27,
+            "atk1": 20,
+            "atk2": 17
+          },
           "stat_len": 21,
           "stats_bytes": [
             164,
@@ -2602,6 +2848,12 @@
           "name": "하웬",
           "price": 11400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 32,
+            "atk1": 20,
+            "atk2": 23
+          },
           "stat_len": 21,
           "stats_bytes": [
             136,
@@ -2647,6 +2899,12 @@
           "name": "이즈",
           "price": 15200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 37,
+            "atk1": 26,
+            "atk2": 23
+          },
           "stat_len": 75,
           "stats_bytes": [
             96,
@@ -2697,6 +2955,12 @@
           "name": "로젠",
           "price": 29800,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 52,
+            "atk1": 31,
+            "atk2": 35
+          },
           "stat_len": 21,
           "stats_bytes": [
             104,
@@ -2742,6 +3006,12 @@
           "name": "매츠",
           "price": 35800,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 57,
+            "atk1": 38,
+            "atk2": 33
+          },
           "stat_len": 21,
           "stats_bytes": [
             216,
@@ -2787,6 +3057,12 @@
           "name": "네오",
           "price": 42400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 62,
+            "atk1": 36,
+            "atk2": 41
+          },
           "stat_len": 21,
           "stats_bytes": [
             160,
@@ -2832,6 +3108,12 @@
           "name": "오렌",
           "price": 49500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 67,
+            "atk1": 44,
+            "atk2": 39
+          },
           "stat_len": 21,
           "stats_bytes": [
             92,
@@ -2877,6 +3159,12 @@
           "name": "피아",
           "price": 57100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 72,
+            "atk1": 41,
+            "atk2": 48
+          },
           "stat_len": 48,
           "stats_bytes": [
             12,
@@ -2927,6 +3215,12 @@
           "name": "레닌",
           "price": 8564,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 82,
+            "atk1": 47,
+            "atk2": 54
+          },
           "stat_len": 21,
           "stats_bytes": [
             116,
@@ -2972,6 +3266,12 @@
           "name": "시온",
           "price": 17864,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 87,
+            "atk1": 57,
+            "atk2": 49
+          },
           "stat_len": 21,
           "stats_bytes": [
             200,
@@ -3017,6 +3317,12 @@
           "name": "테오",
           "price": 27664,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 92,
+            "atk1": 52,
+            "atk2": 60
+          },
           "stat_len": 271,
           "stats_bytes": [
             16,
@@ -3074,6 +3380,12 @@
           "name": "아렌",
           "price": 100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 3,
+            "atk2": 3
+          },
           "stat_len": 21,
           "stats_bytes": [
             100,
@@ -3119,6 +3431,12 @@
           "name": "비스",
           "price": 400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 5,
+            "atk1": 5,
+            "atk2": 4
+          },
           "stat_len": 21,
           "stats_bytes": [
             144,
@@ -3164,6 +3482,12 @@
           "name": "챠라",
           "price": 900,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 8,
+            "atk1": 6,
+            "atk2": 6
+          },
           "stat_len": 21,
           "stats_bytes": [
             132,
@@ -3209,6 +3533,12 @@
           "name": "데빈",
           "price": 2100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 13,
+            "atk1": 9,
+            "atk2": 8
+          },
           "stat_len": 21,
           "stats_bytes": [
             52,
@@ -3254,6 +3584,12 @@
           "name": "에반",
           "price": 4000,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 18,
+            "atk1": 10,
+            "atk2": 11
+          },
           "stat_len": 21,
           "stats_bytes": [
             160,
@@ -3299,6 +3635,12 @@
           "name": "플류",
           "price": 6400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 23,
+            "atk1": 14,
+            "atk2": 12
+          },
           "stat_len": 21,
           "stats_bytes": [
             0,
@@ -3344,6 +3686,12 @@
           "name": "게인",
           "price": 9500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 5,
+            "level_req": 28,
+            "atk1": 14,
+            "atk2": 16
+          },
           "stat_len": 21,
           "stats_bytes": [
             28,
@@ -3389,6 +3737,12 @@
           "name": "하웬",
           "price": 13200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 33,
+            "atk1": 19,
+            "atk2": 16
+          },
           "stat_len": 21,
           "stats_bytes": [
             144,
@@ -3434,6 +3788,12 @@
           "name": "이즈",
           "price": 17400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 38,
+            "atk1": 19,
+            "atk2": 21
+          },
           "stat_len": 75,
           "stats_bytes": [
             248,
@@ -3484,6 +3844,12 @@
           "name": "로젠",
           "price": 33800,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 53,
+            "atk1": 29,
+            "atk2": 25
+          },
           "stat_len": 21,
           "stats_bytes": [
             8,
@@ -3529,6 +3895,12 @@
           "name": "매츠",
           "price": 40500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 58,
+            "atk1": 27,
+            "atk2": 31
+          },
           "stat_len": 21,
           "stats_bytes": [
             52,
@@ -3574,6 +3946,12 @@
           "name": "네오",
           "price": 47700,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 7,
+            "level_req": 63,
+            "atk1": 34,
+            "atk2": 29
+          },
           "stat_len": 21,
           "stats_bytes": [
             84,
@@ -3619,6 +3997,12 @@
           "name": "오렌",
           "price": 55600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 68,
+            "atk1": 32,
+            "atk2": 36
+          },
           "stat_len": 21,
           "stats_bytes": [
             48,
@@ -3664,6 +4048,12 @@
           "name": "피아",
           "price": 64000,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 73,
+            "atk1": 39,
+            "atk2": 34
+          },
           "stat_len": 48,
           "stats_bytes": [
             0,
@@ -3714,6 +4104,12 @@
           "name": "레닌",
           "price": 17264,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 83,
+            "atk1": 44,
+            "atk2": 38
+          },
           "stat_len": 21,
           "stats_bytes": [
             112,
@@ -3759,6 +4155,12 @@
           "name": "시온",
           "price": 27464,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 6,
+            "level_req": 88,
+            "atk1": 40,
+            "atk2": 46
+          },
           "stat_len": 21,
           "stats_bytes": [
             72,
@@ -3804,6 +4206,12 @@
           "name": "테오",
           "price": 38364,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 93,
+            "atk1": 49,
+            "atk2": 42
+          },
           "stat_len": 271,
           "stats_bytes": [
             220,
@@ -3861,6 +4269,12 @@
           "name": "아렌",
           "price": 200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 25,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             200,
@@ -3900,6 +4314,12 @@
           "name": "비스",
           "price": 1500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 5,
+            "atk1": 37,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             220,
@@ -3939,6 +4359,12 @@
           "name": "챠라",
           "price": 5600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 10,
+            "atk1": 53,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             224,
@@ -3978,6 +4404,12 @@
           "name": "데빈",
           "price": 12500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 15,
+            "atk1": 69,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             212,
@@ -4017,6 +4449,12 @@
           "name": "에반",
           "price": 22100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 20,
+            "atk1": 85,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             84,
@@ -4056,6 +4494,12 @@
           "name": "플류",
           "price": 34500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 25,
+            "atk1": 101,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             196,
@@ -4095,6 +4539,12 @@
           "name": "게인",
           "price": 49600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 30,
+            "atk1": 117,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             192,
@@ -4134,6 +4584,12 @@
           "name": "하웬",
           "price": 1964,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 35,
+            "atk1": 133,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             172,
@@ -4173,6 +4629,12 @@
           "name": "이즈",
           "price": 22564,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 40,
+            "atk1": 149,
+            "atk2": 0
+          },
           "stat_len": 63,
           "stats_bytes": [
             36,
@@ -4223,6 +4685,12 @@
           "name": "로젠",
           "price": 35428,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 55,
+            "atk1": 197,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             100,
@@ -4262,6 +4730,12 @@
           "name": "매츠",
           "price": 1492,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 60,
+            "atk1": 213,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             212,
@@ -4301,6 +4775,12 @@
           "name": "네오",
           "price": 35892,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 65,
+            "atk1": 229,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             52,
@@ -4340,6 +4820,12 @@
           "name": "오렌",
           "price": 7456,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 70,
+            "atk1": 245,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             32,
@@ -4379,6 +4865,12 @@
           "name": "피아",
           "price": 47356,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 75,
+            "atk1": 5,
+            "atk2": 0
+          },
           "stat_len": 40,
           "stats_bytes": [
             252,
@@ -4429,6 +4921,12 @@
           "name": "레닌",
           "price": 4284,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 85,
+            "atk1": 37,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             188,
@@ -4468,6 +4966,12 @@
           "name": "시온",
           "price": 52384,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 90,
+            "atk1": 53,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             160,
@@ -4507,6 +5011,12 @@
           "name": "테오",
           "price": 37748,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 95,
+            "atk1": 69,
+            "atk2": 0
+          },
           "stat_len": 147,
           "stats_bytes": [
             116,
@@ -4564,6 +5074,12 @@
           "name": "아렌",
           "price": 200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 22,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             200,
@@ -4603,6 +5119,12 @@
           "name": "비스",
           "price": 1400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 5,
+            "atk1": 33,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             120,
@@ -4642,6 +5164,12 @@
           "name": "챠라",
           "price": 5100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 10,
+            "atk1": 47,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             236,
@@ -4681,6 +5209,12 @@
           "name": "데빈",
           "price": 11400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 15,
+            "atk1": 61,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             136,
@@ -4720,6 +5254,12 @@
           "name": "에반",
           "price": 20100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 20,
+            "atk1": 75,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             132,
@@ -4759,6 +5299,12 @@
           "name": "플류",
           "price": 31400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 25,
+            "atk1": 89,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             168,
@@ -4798,6 +5344,12 @@
           "name": "게인",
           "price": 45100,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 30,
+            "atk1": 103,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             44,
@@ -4837,6 +5389,12 @@
           "name": "하웬",
           "price": 61400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 35,
+            "atk1": 117,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             216,
@@ -4876,6 +5434,12 @@
           "name": "이즈",
           "price": 14564,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 40,
+            "atk1": 131,
+            "atk2": 0
+          },
           "stat_len": 63,
           "stats_bytes": [
             228,
@@ -4926,6 +5490,12 @@
           "name": "로젠",
           "price": 20328,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 55,
+            "atk1": 173,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             104,
@@ -4965,6 +5535,12 @@
           "name": "매츠",
           "price": 49028,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 60,
+            "atk1": 187,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             132,
@@ -5004,6 +5580,12 @@
           "name": "네오",
           "price": 14792,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 65,
+            "atk1": 201,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             200,
@@ -5043,6 +5625,12 @@
           "name": "오렌",
           "price": 48492,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 70,
+            "atk1": 215,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             108,
@@ -5082,6 +5670,12 @@
           "name": "피아",
           "price": 19256,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 75,
+            "atk1": 229,
+            "atk2": 0
+          },
           "stat_len": 40,
           "stats_bytes": [
             56,
@@ -5132,6 +5726,12 @@
           "name": "레닌",
           "price": 33720,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 85,
+            "atk1": 1,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             184,
@@ -5171,6 +5771,12 @@
           "name": "시온",
           "price": 11884,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 90,
+            "atk1": 15,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             108,
@@ -5210,6 +5816,12 @@
           "name": "테오",
           "price": 58184,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 95,
+            "atk1": 29,
+            "atk2": 0
+          },
           "stat_len": 147,
           "stats_bytes": [
             72,
@@ -5267,6 +5879,12 @@
           "name": "아렌",
           "price": 200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 1,
+            "atk1": 27,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             200,
@@ -5306,6 +5924,12 @@
           "name": "비스",
           "price": 1600,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 5,
+            "atk1": 41,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             64,
@@ -5345,6 +5969,12 @@
           "name": "챠라",
           "price": 5900,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 10,
+            "atk1": 59,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             12,
@@ -5384,6 +6014,12 @@
           "name": "데빈",
           "price": 13200,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 15,
+            "atk1": 77,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             144,
@@ -5423,6 +6059,12 @@
           "name": "에반",
           "price": 23300,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 20,
+            "atk1": 95,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             4,
@@ -5462,6 +6104,12 @@
           "name": "플류",
           "price": 36400,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 25,
+            "atk1": 113,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             48,
@@ -5501,6 +6149,12 @@
           "name": "게인",
           "price": 52300,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 30,
+            "atk1": 131,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             76,
@@ -5540,6 +6194,12 @@
           "name": "하웬",
           "price": 5664,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 3,
+            "level_req": 35,
+            "atk1": 149,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             32,
@@ -5579,6 +6239,12 @@
           "name": "이즈",
           "price": 27364,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 40,
+            "atk1": 167,
+            "atk2": 0
+          },
           "stat_len": 63,
           "stats_bytes": [
             228,
@@ -5629,6 +6295,12 @@
           "name": "로젠",
           "price": 44528,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 55,
+            "atk1": 221,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             240,
@@ -5668,6 +6340,12 @@
           "name": "매츠",
           "price": 12292,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 60,
+            "atk1": 239,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             4,
@@ -5707,6 +6385,12 @@
           "name": "네오",
           "price": 48592,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 65,
+            "atk1": 1,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             208,
@@ -5746,6 +6430,12 @@
           "name": "오렌",
           "price": 22156,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 70,
+            "atk1": 19,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             140,
@@ -5785,6 +6475,12 @@
           "name": "피아",
           "price": 64256,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 1,
+            "level_req": 75,
+            "atk1": 37,
+            "atk2": 0
+          },
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -5835,6 +6531,12 @@
           "name": "레닌",
           "price": 25984,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 4,
+            "level_req": 85,
+            "atk1": 73,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             128,
@@ -5874,6 +6576,12 @@
           "name": "시온",
           "price": 11148,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 0,
+            "level_req": 90,
+            "atk1": 91,
+            "atk2": 0
+          },
           "stat_len": 17,
           "stats_bytes": [
             140,
@@ -5913,6 +6621,12 @@
           "name": "테오",
           "price": 64848,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 2,
+            "level_req": 95,
+            "atk1": 109,
+            "atk2": 0
+          },
           "stat_len": 147,
           "stats_bytes": [
             80,
@@ -5970,6 +6684,7 @@
           "name": "포션",
           "price": 200,
           "description": "HP를 200까지;천천히 회복",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             200,
@@ -6020,6 +6735,7 @@
           "name": "퀵포션",
           "price": 600,
           "description": "HP를 200까지;단숨에 회복",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             88,
@@ -6070,6 +6786,7 @@
           "name": "하이포션",
           "price": 1000,
           "description": "HP를 800까지;천천히 회복",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             232,
@@ -6120,6 +6837,7 @@
           "name": "과일쥬스",
           "price": 400,
           "description": "SP를;40만큼 회복",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             144,
@@ -6170,6 +6888,7 @@
           "name": "포도주",
           "price": 1000,
           "description": "SP를;80만큼 회복",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             232,
@@ -6220,6 +6939,7 @@
           "name": "상태회복약",
           "price": 200,
           "description": "상태이상을;모두 제거",
+          "weapon_stats": null,
           "stat_len": 34,
           "stats_bytes": [
             200,
@@ -6270,6 +6990,7 @@
           "name": "제련석",
           "price": 300,
           "description": "무기/방어구를;강화하는 재료",
+          "weapon_stats": null,
           "stat_len": 41,
           "stats_bytes": [
             44,
@@ -6320,6 +7041,7 @@
           "name": "배탑승권",
           "price": 1000,
           "description": "다른 섬으로;이동하는;배의 탑승권",
+          "weapon_stats": null,
           "stat_len": 46,
           "stats_bytes": [
             232,
@@ -6370,6 +7092,7 @@
           "name": "퀵포션",
           "price": 1500,
           "description": "HP를 800까지;단숨에 회복",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             220,
@@ -6420,6 +7143,7 @@
           "name": "암즈탄",
           "price": 200,
           "description": "일반타격용;암즈탄",
+          "weapon_stats": null,
           "stat_len": 31,
           "stats_bytes": [
             200,
@@ -6470,6 +7194,7 @@
           "name": "섬광탄",
           "price": 200,
           "description": "명중률을;저하시키는;추가효과의;암즈탄",
+          "weapon_stats": null,
           "stat_len": 51,
           "stats_bytes": [
             200,
@@ -6520,6 +7245,7 @@
           "name": "소이탄",
           "price": 200,
           "description": "적을;발화시키는;추가효과의;암즈탄",
+          "weapon_stats": null,
           "stat_len": 47,
           "stats_bytes": [
             200,
@@ -6570,6 +7296,7 @@
           "name": "체인탄",
           "price": 200,
           "description": "적을;당겨오는;추가효과의;암즈탄",
+          "weapon_stats": null,
           "stat_len": 45,
           "stats_bytes": [
             200,
@@ -6620,6 +7347,7 @@
           "name": "구속탄",
           "price": 200,
           "description": "적의 이동을;방해하는;추가효과의;암즈탄",
+          "weapon_stats": null,
           "stat_len": 72,
           "stats_bytes": [
             200,
@@ -6670,6 +7398,7 @@
           "name": "엘릭서",
           "price": 0,
           "description": "HP/MP/SP를;단숨에;모두 회복",
+          "weapon_stats": null,
           "stat_len": 41,
           "stats_bytes": [
             0,
@@ -6720,6 +7449,7 @@
           "name": "부활의서",
           "price": 0,
           "description": "게임오버;상태에서;완전히 부활",
+          "weapon_stats": null,
           "stat_len": 43,
           "stats_bytes": [
             0,
@@ -6770,6 +7500,7 @@
           "name": "스킬초기화",
           "price": 0,
           "description": "투자된;스킬포인트를;초기화",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -6820,6 +7551,7 @@
           "name": "스탯초기화",
           "price": 0,
           "description": "투자된;스탯포인트를;초기화",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -6870,6 +7602,7 @@
           "name": "여행가방",
           "price": 0,
           "description": "인벤토리를;확장;(최대5가방)",
+          "weapon_stats": null,
           "stat_len": 41,
           "stats_bytes": [
             0,
@@ -6920,6 +7653,7 @@
           "name": "오토루팅",
           "price": 0,
           "description": "10시간동안;아이템을;자동획득",
+          "weapon_stats": null,
           "stat_len": 42,
           "stats_bytes": [
             0,
@@ -6970,6 +7704,7 @@
           "name": "달성의부적",
           "price": 0,
           "description": "오브결합시;제물로;사용하면;확률이 증가",
+          "weapon_stats": null,
           "stat_len": 52,
           "stats_bytes": [
             0,
@@ -7020,6 +7755,7 @@
           "name": "역행의기원",
           "price": 0,
           "description": "장비에서;오브를 분리",
+          "weapon_stats": null,
           "stat_len": 34,
           "stats_bytes": [
             0,
@@ -7070,6 +7806,7 @@
           "name": "소켓확장",
           "price": 0,
           "description": "장비의;오브소켓을;1개 추가",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -7120,6 +7857,7 @@
           "name": "고급제련석",
           "price": 0,
           "description": "무기/방어구를;높은 확률로;강화하는 재료",
+          "weapon_stats": null,
           "stat_len": 53,
           "stats_bytes": [
             0,
@@ -7170,6 +7908,7 @@
           "name": "작은보물함",
           "price": 0,
           "description": "랜덤하게;아이템을 획득",
+          "weapon_stats": null,
           "stat_len": 36,
           "stats_bytes": [
             0,
@@ -7220,6 +7959,7 @@
           "name": "보물함",
           "price": 0,
           "description": "랜덤하게;아이템을 획득",
+          "weapon_stats": null,
           "stat_len": 36,
           "stats_bytes": [
             0,
@@ -7270,6 +8010,7 @@
           "name": "큰보물함",
           "price": 0,
           "description": "랜덤하게;아이템을 획득",
+          "weapon_stats": null,
           "stat_len": 36,
           "stats_bytes": [
             0,
@@ -7320,6 +8061,7 @@
           "name": "오래된보물함",
           "price": 0,
           "description": "랜덤하게;아이템을 획득",
+          "weapon_stats": null,
           "stat_len": 36,
           "stats_bytes": [
             0,
@@ -7370,6 +8112,7 @@
           "name": "초기화세트",
           "price": 0,
           "description": "투자된;스탯포인트와;스킬포인트를;모두 초기화",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             0,
@@ -7427,6 +8170,7 @@
           "name": "투구조형",
           "price": 500,
           "description": "투구를;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 33,
           "stats_bytes": [
             244,
@@ -7477,6 +8221,7 @@
           "name": "갑옷조형",
           "price": 500,
           "description": "갑옷을;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 33,
           "stats_bytes": [
             244,
@@ -7527,6 +8272,7 @@
           "name": "장갑조형",
           "price": 500,
           "description": "장갑을;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 33,
           "stats_bytes": [
             244,
@@ -7577,6 +8323,7 @@
           "name": "신발조형",
           "price": 500,
           "description": "신발을;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 33,
           "stats_bytes": [
             244,
@@ -7627,6 +8374,7 @@
           "name": "검조형",
           "price": 500,
           "description": "검을;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 31,
           "stats_bytes": [
             244,
@@ -7677,6 +8425,7 @@
           "name": "건조형",
           "price": 500,
           "description": "건을;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 31,
           "stats_bytes": [
             244,
@@ -7727,6 +8476,7 @@
           "name": "스태프조형",
           "price": 500,
           "description": "지팡이를;만들기 위한;기본 재료",
+          "weapon_stats": null,
           "stat_len": 35,
           "stats_bytes": [
             244,
@@ -7777,6 +8527,7 @@
           "name": "질긴가죽",
           "price": 200,
           "description": "방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             200,
@@ -7818,6 +8569,7 @@
           "name": "두꺼운가죽",
           "price": 200,
           "description": "방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             200,
@@ -7859,6 +8611,7 @@
           "name": "화약",
           "price": 200,
           "description": "총기의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             200,
@@ -7897,6 +8650,7 @@
           "name": "섬광가루",
           "price": 200,
           "description": "총기의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             200,
@@ -7935,6 +8689,7 @@
           "name": "강철",
           "price": 200,
           "description": "검과;방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 23,
           "stats_bytes": [
             200,
@@ -7983,6 +8738,7 @@
           "name": "구리",
           "price": 200,
           "description": "검과;방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 23,
           "stats_bytes": [
             200,
@@ -8031,6 +8787,7 @@
           "name": "한철",
           "price": 200,
           "description": "검과;방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 23,
           "stats_bytes": [
             200,
@@ -8079,6 +8836,7 @@
           "name": "자수정",
           "price": 200,
           "description": "장신구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             200,
@@ -8120,6 +8878,7 @@
           "name": "사파이어",
           "price": 200,
           "description": "장신구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             200,
@@ -8161,6 +8920,7 @@
           "name": "다이아몬드",
           "price": 200,
           "description": "장신구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             200,
@@ -8202,6 +8962,7 @@
           "name": "강화가죽",
           "price": 400,
           "description": "방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             144,
@@ -8243,6 +9004,7 @@
           "name": "경화가죽",
           "price": 400,
           "description": "방어구의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             144,
@@ -8284,6 +9046,7 @@
           "name": "떡갈나무",
           "price": 400,
           "description": "지팡이의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             144,
@@ -8325,6 +9088,7 @@
           "name": "흑단나무",
           "price": 400,
           "description": "지팡이의 재료",
+          "weapon_stats": null,
           "stat_len": 18,
           "stats_bytes": [
             144,
@@ -8366,6 +9130,7 @@
           "name": "푸른용액",
           "price": 120,
           "description": "과일주스의;재료",
+          "weapon_stats": null,
           "stat_len": 20,
           "stats_bytes": [
             120,
@@ -8410,6 +9175,7 @@
           "name": "붉은용액",
           "price": 120,
           "description": "포션의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             120,
@@ -8448,6 +9214,7 @@
           "name": "녹색용액",
           "price": 120,
           "description": "특수한 용액",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             120,
@@ -8486,6 +9253,7 @@
           "name": "금빛용액",
           "price": 120,
           "description": "포션의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             120,
@@ -8524,6 +9292,7 @@
           "name": "벽조목",
           "price": 800,
           "description": "고급 재료",
+          "weapon_stats": null,
           "stat_len": 14,
           "stats_bytes": [
             32,
@@ -8559,6 +9328,7 @@
           "name": "스타더스트",
           "price": 800,
           "description": "고급 재료",
+          "weapon_stats": null,
           "stat_len": 14,
           "stats_bytes": [
             32,
@@ -8594,6 +9364,7 @@
           "name": "경화웜가죽",
           "price": 800,
           "description": "고급 재료",
+          "weapon_stats": null,
           "stat_len": 14,
           "stats_bytes": [
             32,
@@ -8629,6 +9400,7 @@
           "name": "정련된마석",
           "price": 800,
           "description": "고급 재료",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             32,
@@ -8686,6 +9458,7 @@
           "name": "로크헬름",
           "price": 400,
           "description": "레벨39 투구; 투구조형10; 질긴가죽8; 강철6",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -8736,6 +9509,7 @@
           "name": "배리어슈트",
           "price": 400,
           "description": "레벨40 갑옷; 갑옷조형11; 질긴가죽11; 강철8",
+          "weapon_stats": null,
           "stat_len": 60,
           "stats_bytes": [
             144,
@@ -8786,6 +9560,7 @@
           "name": "블러디크로우",
           "price": 400,
           "description": "레벨37 장갑; 장갑조형9; 경화가죽8; 강철6",
+          "weapon_stats": null,
           "stat_len": 58,
           "stats_bytes": [
             144,
@@ -8836,6 +9611,7 @@
           "name": "그랜드워커",
           "price": 400,
           "description": "레벨38 신발; 신발조형10; 질긴가죽8; 구리6",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -8886,6 +9662,7 @@
           "name": "그라디우스",
           "price": 400,
           "description": "레벨29 검; 검조형11; 구리19; 벽조목7",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             144,
@@ -8936,6 +9713,7 @@
           "name": "블랙로빈",
           "price": 400,
           "description": "레벨29 건; 건조형11; 화약19; 벽조목7",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             144,
@@ -8986,6 +9764,7 @@
           "name": "블러디완드",
           "price": 400,
           "description": "레벨29 지팡이; 스태프조형11; 떡갈나무19; 벽조목7",
+          "weapon_stats": null,
           "stat_len": 66,
           "stats_bytes": [
             144,
@@ -9036,6 +9815,7 @@
           "name": "나이트메어아머",
           "price": 400,
           "description": "레벨68 갑옷; 갑옷조형19; 두꺼운가죽20; 흑철13",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -9086,6 +9866,7 @@
           "name": "엔젤윙아머",
           "price": 400,
           "description": "레벨76 갑옷; 갑옷조형21; 두꺼운가죽22; 구리15",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -9136,6 +9917,7 @@
           "name": "붉은사자갑옷",
           "price": 400,
           "description": "레벨48 갑옷; 갑옷조형13; 강화가죽14; 구리9",
+          "weapon_stats": null,
           "stat_len": 60,
           "stats_bytes": [
             144,
@@ -9186,6 +9968,7 @@
           "name": "라임벨슈트",
           "price": 400,
           "description": "레벨53 갑옷; 갑옷조형15; 강화가죽15; 강철10",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9236,6 +10019,7 @@
           "name": "스톰블링거",
           "price": 400,
           "description": "레벨48 검; 검조형18; 강철32; 스타더스트12",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -9286,6 +10070,7 @@
           "name": "해리어롱바렐",
           "price": 400,
           "description": "레벨48 건; 건조형18; 화약32; 스타더스트12",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -9336,6 +10121,7 @@
           "name": "섀도우완드",
           "price": 400,
           "description": "레벨48 지팡이; 스태프조형18; 떡갈나무32; 스타더스트12",
+          "weapon_stats": null,
           "stat_len": 71,
           "stats_bytes": [
             144,
@@ -9386,6 +10172,7 @@
           "name": "와이어트햇",
           "price": 400,
           "description": "레벨61 투구; 투구조형16; 강화가죽13; 강철10",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9436,6 +10223,7 @@
           "name": "골렘스킨아머",
           "price": 400,
           "description": "레벨62 갑옷; 갑옷조형17; 강화가죽18; 한철12",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9486,6 +10274,7 @@
           "name": "테러글러브",
           "price": 400,
           "description": "레벨59 장갑; 장갑조형15; 질긴가죽12; 한철9",
+          "weapon_stats": null,
           "stat_len": 60,
           "stats_bytes": [
             144,
@@ -9536,6 +10325,7 @@
           "name": "그랜디쉬",
           "price": 400,
           "description": "레벨60 신발; 신발조형15; 두꺼운가죽13; 한철10",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -9586,6 +10376,7 @@
           "name": "붉은사자대검",
           "price": 400,
           "description": "레벨64 검; 검조형24; 한철42; 경화웜가죽16",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -9636,6 +10427,7 @@
           "name": "썬더버드",
           "price": 400,
           "description": "레벨64 건; 건조형24; 섬광가루42; 경화웜가죽16",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -9686,6 +10478,7 @@
           "name": "메테오스틱",
           "price": 400,
           "description": "레벨64 지팡이; 스태프조형24; 흑단나무42; 경화웜가죽16",
+          "weapon_stats": null,
           "stat_len": 71,
           "stats_bytes": [
             144,
@@ -9736,6 +10529,7 @@
           "name": "드래곤본건틀릿",
           "price": 400,
           "description": "레벨74 장갑; 장갑조형19; 경화가죽16; 흑철12",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9786,6 +10580,7 @@
           "name": "드래곤본워커",
           "price": 400,
           "description": "레벨75 신발; 신발조형19; 경화가죽16; 흑철12",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9836,6 +10631,7 @@
           "name": "드래곤본헬름",
           "price": 400,
           "description": "레벨76 투구; 투구조형20; 두꺼운가죽16; 흑철12",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -9886,6 +10682,7 @@
           "name": "드래곤본아머",
           "price": 400,
           "description": "레벨77 갑옷; 갑옷조형22; 경화가죽22; 흑철15",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             144,
@@ -9936,6 +10733,7 @@
           "name": "데몬블레이드",
           "price": 400,
           "description": "레벨70 검; 검조형26; 흑철46; 정련된마석17",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             144,
@@ -9986,6 +10784,7 @@
           "name": "팔켄매그넘",
           "price": 400,
           "description": "레벨70 건; 건조형26; 섬광가루46; 정련된마석17",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -10036,6 +10835,7 @@
           "name": "스타사파이어",
           "price": 400,
           "description": "레벨70 지팡이; 스태프조형26; 흑단나무46; 정련된마석17",
+          "weapon_stats": null,
           "stat_len": 71,
           "stats_bytes": [
             144,
@@ -10086,6 +10886,7 @@
           "name": "스트렝스이어링",
           "price": 400,
           "description": "레벨1 장신구; 양철반지1; 자수정24; 사파이어24",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -10136,6 +10937,7 @@
           "name": "에이밍이어링",
           "price": 400,
           "description": "레벨1 장신구; 양철반지1; 자수정24; 다이아몬드24",
+          "weapon_stats": null,
           "stat_len": 65,
           "stats_bytes": [
             144,
@@ -10186,6 +10988,7 @@
           "name": "스트롱이어링",
           "price": 400,
           "description": "레벨1 장신구; 양철반지1; 사파이어24; 다이아몬드24",
+          "weapon_stats": null,
           "stat_len": 67,
           "stats_bytes": [
             144,
@@ -10236,6 +11039,7 @@
           "name": "컨센트이어링",
           "price": 400,
           "description": "레벨1 장신구; 구리반지1; 자수정24; 사파이어24",
+          "weapon_stats": null,
           "stat_len": 63,
           "stats_bytes": [
             144,
@@ -10286,6 +11090,7 @@
           "name": "디펜스이어링",
           "price": 400,
           "description": "레벨1 장신구; 구리반지1; 자수정24; 다이아몬드24",
+          "weapon_stats": null,
           "stat_len": 65,
           "stats_bytes": [
             144,
@@ -10336,6 +11141,7 @@
           "name": "배리어이어링",
           "price": 400,
           "description": "레벨1 장신구; 구리반지1; 사파이어24; 다이아몬드24",
+          "weapon_stats": null,
           "stat_len": 67,
           "stats_bytes": [
             144,
@@ -10386,6 +11192,7 @@
           "name": "카오스이어링",
           "price": 400,
           "description": "레벨1 장신구; 양철반지1; 자수정24; 정련된마석8",
+          "weapon_stats": null,
           "stat_len": 64,
           "stats_bytes": [
             144,
@@ -10436,6 +11243,7 @@
           "name": "스마트이어링",
           "price": 400,
           "description": "레벨1 장신구; 양철반지1; 사파이어24; 정련된마석8",
+          "weapon_stats": null,
           "stat_len": 66,
           "stats_bytes": [
             144,
@@ -10486,6 +11294,7 @@
           "name": "라이트이어링",
           "price": 400,
           "description": "레벨1 장신구; 구리반지1; 자수정24; 정련된마석8",
+          "weapon_stats": null,
           "stat_len": 64,
           "stats_bytes": [
             144,
@@ -10536,6 +11345,7 @@
           "name": "버서크이어링",
           "price": 400,
           "description": "레벨1 장신구; 구리반지1; 사파이어24; 정련된마석8",
+          "weapon_stats": null,
           "stat_len": 71,
           "stats_bytes": [
             144,
@@ -10593,6 +11403,7 @@
           "name": "뇌제",
           "price": 300,
           "description": "무기 공격력을;높여주는 오브.;모든 무기용",
+          "weapon_stats": null,
           "stat_len": 53,
           "stats_bytes": [
             44,
@@ -10643,6 +11454,7 @@
           "name": "금강",
           "price": 300,
           "description": "물리방어력을;높여주는 오브.;모든 방어구용",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             44,
@@ -10693,6 +11505,7 @@
           "name": "정령",
           "price": 300,
           "description": "마법방어력을;높여주는 오브.;모든 방어구용",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             44,
@@ -10743,6 +11556,7 @@
           "name": "사신",
           "price": 300,
           "description": "명중 능력을;높여주는 오브.;장갑/무기 전용",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             44,
@@ -10793,6 +11607,7 @@
           "name": "영제",
           "price": 300,
           "description": "회피 능력을;높여주는 오브.;신발 전용",
+          "weapon_stats": null,
           "stat_len": 49,
           "stats_bytes": [
             44,
@@ -10843,6 +11658,7 @@
           "name": "속박",
           "price": 300,
           "description": "크리티컬률을;높여주는 오브.;장갑/무기 전용",
+          "weapon_stats": null,
           "stat_len": 55,
           "stats_bytes": [
             44,
@@ -10893,6 +11709,7 @@
           "name": "결의",
           "price": 300,
           "description": "기절확률을;낮춰주는 오브.;투구/갑옷 전용",
+          "weapon_stats": null,
           "stat_len": 53,
           "stats_bytes": [
             44,
@@ -10943,6 +11760,7 @@
           "name": "투신",
           "price": 300,
           "description": "HP최대치를;높여주는 오브.;갑옷 전용",
+          "weapon_stats": null,
           "stat_len": 48,
           "stats_bytes": [
             44,
@@ -10993,6 +11811,7 @@
           "name": "공명",
           "price": 300,
           "description": "HP회복량을;높여주는 오브.;신발 전용",
+          "weapon_stats": null,
           "stat_len": 48,
           "stats_bytes": [
             44,
@@ -11043,6 +11862,7 @@
           "name": "흡혈",
           "price": 300,
           "description": "공격시 HP를;흡수하는 오브.;장갑/무기 전용",
+          "weapon_stats": null,
           "stat_len": 54,
           "stats_bytes": [
             44,
@@ -11093,6 +11913,7 @@
           "name": "현자",
           "price": 300,
           "description": "소모SP를;줄여주는 오브.;투구 전용",
+          "weapon_stats": null,
           "stat_len": 46,
           "stats_bytes": [
             44,
@@ -11143,6 +11964,7 @@
           "name": "마도",
           "price": 300,
           "description": "마법 저항력을;높여주는 오브.;투구 전용",
+          "weapon_stats": null,
           "stat_len": 51,
           "stats_bytes": [
             44,
@@ -11193,6 +12015,7 @@
           "name": "폭풍",
           "price": 300,
           "description": "스킬 쿨타임을;줄여주는 오브.;신발/무기 전용",
+          "weapon_stats": null,
           "stat_len": 61,
           "stats_bytes": [
             44,
@@ -11250,6 +12073,7 @@
           "name": "백련초",
           "price": 0,
           "description": "약 재료로;쓰이는;귀한 풀",
+          "weapon_stats": null,
           "stat_len": 29,
           "stats_bytes": [
             0,
@@ -11300,6 +12124,7 @@
           "name": "매우얇은가죽",
           "price": 0,
           "description": "가면의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             0,
@@ -11338,6 +12163,7 @@
           "name": "아교",
           "price": 0,
           "description": "가면의 재료",
+          "weapon_stats": null,
           "stat_len": 16,
           "stats_bytes": [
             0,
@@ -11376,6 +12202,7 @@
           "name": "가면",
           "price": 0,
           "description": "뒤집어쓰면;다른 사람처럼;보이는 가면",
+          "weapon_stats": null,
           "stat_len": 41,
           "stats_bytes": [
             0,
@@ -11426,6 +12253,7 @@
           "name": "군수물자",
           "price": 0,
           "description": "식량이;들어있는 듯한;상자",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             0,
@@ -11476,6 +12304,7 @@
           "name": "하급통행증",
           "price": 0,
           "description": "공화국 군함;1회용 탑승권",
+          "weapon_stats": null,
           "stat_len": 29,
           "stats_bytes": [
             0,
@@ -11526,6 +12355,7 @@
           "name": "중급통행증",
           "price": 0,
           "description": "공화국 군함;왕복 탑승권",
+          "weapon_stats": null,
           "stat_len": 28,
           "stats_bytes": [
             0,
@@ -11576,6 +12406,7 @@
           "name": "상급통행증",
           "price": 0,
           "description": "공화국 군함;영구 탑승권",
+          "weapon_stats": null,
           "stat_len": 28,
           "stats_bytes": [
             0,
@@ -11626,6 +12457,7 @@
           "name": "타륜",
           "price": 0,
           "description": "배를;움직이는데;필요한 부품",
+          "weapon_stats": null,
           "stat_len": 88,
           "stats_bytes": [
             0,
@@ -11676,6 +12508,7 @@
           "name": "빨간약",
           "price": 0,
           "description": "엘렌이 먹는;정체불명의 약",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             0,
@@ -11726,6 +12559,7 @@
           "name": "마력기관",
           "price": 0,
           "description": "몬스터들의;체내에 있는;특수기관",
+          "weapon_stats": null,
           "stat_len": 36,
           "stats_bytes": [
             0,
@@ -11776,6 +12610,7 @@
           "name": "수호석",
           "price": 0,
           "description": "방어결계를;통과시켜주는;마력의 돌",
+          "weapon_stats": null,
           "stat_len": 38,
           "stats_bytes": [
             0,
@@ -11826,6 +12661,7 @@
           "name": "단열복",
           "price": 0,
           "description": "군수품.;불과 냉기를;막는 옷;",
+          "weapon_stats": null,
           "stat_len": 33,
           "stats_bytes": [
             0,
@@ -11876,6 +12712,7 @@
           "name": "소개장",
           "price": 0,
           "description": "매도우 힐의;복지사에게;전달할 편지",
+          "weapon_stats": null,
           "stat_len": 39,
           "stats_bytes": [
             0,
@@ -11926,6 +12763,7 @@
           "name": "증명서",
           "price": 0,
           "description": "암즈 부품의;구매에;필요한 문서",
+          "weapon_stats": null,
           "stat_len": 35,
           "stats_bytes": [
             0,
@@ -11976,6 +12814,7 @@
           "name": "편지",
           "price": 0,
           "description": "배달을;부탁받은;편지묶음",
+          "weapon_stats": null,
           "stat_len": 72,
           "stats_bytes": [
             0,
@@ -12026,6 +12865,7 @@
           "name": "변장도구",
           "price": 0,
           "description": "다른 사람처럼;꾸밀 수 있는;도구 모음",
+          "weapon_stats": null,
           "stat_len": 41,
           "stats_bytes": [
             0,
@@ -12076,6 +12916,7 @@
           "name": "도면",
           "price": 0,
           "description": "크래드가 만든;암즈의 도면",
+          "weapon_stats": null,
           "stat_len": 135,
           "stats_bytes": [
             0,
@@ -12126,6 +12967,7 @@
           "name": "녹색가루",
           "price": 0,
           "description": "악령이;소멸할 때;남기는;녹색가루",
+          "weapon_stats": null,
           "stat_len": 37,
           "stats_bytes": [
             0,
@@ -12176,6 +13018,7 @@
           "name": "카드키",
           "price": 0,
           "description": "뇌수의 동굴;내부에;잠겨진 문에;사용",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -12226,6 +13069,7 @@
           "name": "열쇠머리",
           "price": 0,
           "description": "열쇠의 조각.;사용하려면;열쇠몸통 필요",
+          "weapon_stats": null,
           "stat_len": 42,
           "stats_bytes": [
             0,
@@ -12276,6 +13120,7 @@
           "name": "열쇠몸통",
           "price": 0,
           "description": "열쇠의 조각.;사용하려면;열쇠머리 필요",
+          "weapon_stats": null,
           "stat_len": 201,
           "stats_bytes": [
             0,
@@ -12326,6 +13171,7 @@
           "name": "마석",
           "price": 0,
           "description": "무기의 제조에;필요한 재료",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             0,
@@ -12376,6 +13222,7 @@
           "name": "감옥열쇠",
           "price": 0,
           "description": "포로수용소;수감실;개방용 열쇠",
+          "weapon_stats": null,
           "stat_len": 81,
           "stats_bytes": [
             0,
@@ -12426,6 +13273,7 @@
           "name": "아눈신전열쇠",
           "price": 0,
           "description": "아눈섬 리온의;신전 출입가능",
+          "weapon_stats": null,
           "stat_len": 32,
           "stats_bytes": [
             0,
@@ -12476,6 +13324,7 @@
           "name": "연구소열쇠",
           "price": 0,
           "description": "매도우 힐;지하로 가는;통로개방 열쇠",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -12526,6 +13375,7 @@
           "name": "계급장",
           "price": 0,
           "description": "인간족 상인을;이용 가능",
+          "weapon_stats": null,
           "stat_len": 28,
           "stats_bytes": [
             0,
@@ -12576,6 +13426,7 @@
           "name": "만능열쇠",
           "price": 0,
           "description": "대부분의;금고를;개방 가능",
+          "weapon_stats": null,
           "stat_len": 30,
           "stats_bytes": [
             0,
@@ -12626,6 +13477,7 @@
           "name": "좋은책",
           "price": 0,
           "description": "크래드의;소장품",
+          "weapon_stats": null,
           "stat_len": 59,
           "stats_bytes": [
             0,
@@ -12676,6 +13528,7 @@
           "name": "보고서",
           "price": 0,
           "description": "포로수용소;근처의;시체에서;발견된 문서",
+          "weapon_stats": null,
           "stat_len": 43,
           "stats_bytes": [
             0,
@@ -12726,6 +13579,7 @@
           "name": "배표",
           "price": 0,
           "description": "군선의;1회용 탑승권",
+          "weapon_stats": null,
           "stat_len": 24,
           "stats_bytes": [
             0,
@@ -12776,6 +13630,7 @@
           "name": "오토마톤부품",
           "price": 0,
           "description": "비싸보이는;기계부품",
+          "weapon_stats": null,
           "stat_len": 65,
           "stats_bytes": [
             0,
@@ -12826,6 +13681,7 @@
           "name": "금형",
           "price": 0,
           "description": "암즈 부품을;제작하는데;필요한 장비",
+          "weapon_stats": null,
           "stat_len": 39,
           "stats_bytes": [
             0,
@@ -12876,6 +13732,7 @@
           "name": "달펜던트",
           "price": 0,
           "description": "하얀돌로 만든;달모양의;펜던트",
+          "weapon_stats": null,
           "stat_len": 34,
           "stats_bytes": [
             0,
@@ -12926,6 +13783,7 @@
           "name": "군사문서",
           "price": 0,
           "description": "인간군의;명령서.",
+          "weapon_stats": null,
           "stat_len": 21,
           "stats_bytes": [
             0,
@@ -12971,6 +13829,7 @@
           "name": "유품",
           "price": 0,
           "description": "전사한 병사의;물건",
+          "weapon_stats": null,
           "stat_len": 97,
           "stats_bytes": [
             0,
@@ -13021,6 +13880,7 @@
           "name": "기밀문서",
           "price": 0,
           "description": "인간군의;중요한 문서",
+          "weapon_stats": null,
           "stat_len": 25,
           "stats_bytes": [
             0,
@@ -13071,6 +13931,7 @@
           "name": "기폭장치",
           "price": 0,
           "description": "마력 폭탄의;핵심 부품",
+          "weapon_stats": null,
           "stat_len": 80,
           "stats_bytes": [
             0,
@@ -13128,6 +13989,7 @@
           "name": "네트워크전용",
           "price": 0,
           "description": "네트워크 전용 아이템입니다.",
+          "weapon_stats": null,
           "stat_len": 40,
           "stats_bytes": [
             0,
@@ -13191,6 +14053,12 @@
           "name": "뇌격",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 179,
+            "level_req": 240,
+            "atk1": 59,
+            "atk2": 197
+          },
           "stat_len": 28,
           "stats_bytes": [
             244,
@@ -13241,6 +14109,12 @@
           "name": "맹독",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 176,
+            "level_req": 221,
+            "atk1": 59,
+            "atk2": 182
+          },
           "stat_len": 71,
           "stats_bytes": [
             244,
@@ -13291,6 +14165,12 @@
           "name": "뇌격",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 193,
+            "level_req": 246,
+            "atk1": 177,
+            "atk2": 59
+          },
           "stat_len": 32,
           "stats_bytes": [
             244,
@@ -13341,6 +14221,12 @@
           "name": "되돌리기",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 176,
+            "level_req": 221,
+            "atk1": 59,
+            "atk2": 231
+          },
           "stat_len": 78,
           "stats_bytes": [
             244,
@@ -13391,6 +14277,12 @@
           "name": "뇌격",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 183,
+            "level_req": 161,
+            "atk1": 198,
+            "atk2": 59
+          },
           "stat_len": 32,
           "stats_bytes": [
             244,
@@ -13441,6 +14333,12 @@
           "name": "슬로우",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 176,
+            "level_req": 221,
+            "atk1": 59,
+            "atk2": 206
+          },
           "stat_len": 78,
           "stats_bytes": [
             244,
@@ -13491,6 +14389,12 @@
           "name": "뇌격",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 196,
+            "level_req": 191,
+            "atk1": 59,
+            "atk2": 197
+          },
           "stat_len": 28,
           "stats_bytes": [
             244,
@@ -13541,6 +14445,12 @@
           "name": "스턴",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 176,
+            "level_req": 221,
+            "atk1": 59,
+            "atk2": 207
+          },
           "stat_len": 72,
           "stats_bytes": [
             244,
@@ -13591,6 +14501,12 @@
           "name": "회복",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 192,
+            "level_req": 204,
+            "atk1": 176,
+            "atk2": 59
+          },
           "stat_len": 30,
           "stats_bytes": [
             244,
@@ -13641,6 +14557,12 @@
           "name": "실드",
           "price": 500,
           "description": "",
+          "weapon_stats": {
+            "property_flag": 186,
+            "level_req": 185,
+            "atk1": 59,
+            "atk2": 253
+          },
           "stat_len": 77,
           "stats_bytes": [
             244,
