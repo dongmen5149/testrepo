@@ -48,6 +48,46 @@ var _cooldowns: Dictionary = {}
 
 const FRAME_PER_TURN := 1   # 1 turn = 1 second equiv (간소화)
 
+# === Round 74: ProcHeroSkill JT1 case helper signals (R72 발견) ===
+#
+# 원본 HERO::ProcHeroSkill (@0x99278) JT1 5 case 가 호출하는 helper 의 Godot 대응
+# signal — battle_system 외부 (UI, monster_ai, particle) 에서 캐치 가능.
+#
+# JT1 매핑 (R72 발견):
+#   case 0 (NO_HIT)  = HERO::IncreaseSP(skill_info[+0x4a])    → 이미 sp_delta 처리
+#   case 1+2         = BATTLER::AddCurseSkill (@0x4b134)      → curse_applied signal
+#   case 3+5         = BATTLER::AddBuffSkill  (@0x4b198)      → buff_applied signal
+#   case 4           = HERO::AddStanceSkill   (@0x91d7c)      → stance_applied signal (R70 heal+buff 정정)
+#
+# 공통 패턴: 2회 Formula::calc(skill_info[+0x3c] formula_id_1, skill_info[+0x3d] formula_id_2)
+# → 결과 r0/r7 을 helper 의 인자로 전달. Godot 측은 signal 발화만 — 실 buff/debuff
+# 시스템 통합은 별도 라운드 (R75+).
+signal curse_applied(target: Node, dispatch_byte: int, formula_1: int, formula_2: int)
+signal buff_applied(target: Node, dispatch_byte: int, formula_1: int, formula_2: int)
+signal stance_applied(target: Node, dispatch_byte: int, formula_1: int, formula_2: int)
+
+
+## Round 75: 3 helper signals 를 GameState 의 active_* list 에 자동 연결.
+##
+## monster_ai 또는 다른 entity 가 target 일 때는 별도 처리 필요하지만, 현재는
+## hero (= self) 만 GameState 추적. R76+ 에서 BATTLER ref 별 active effect 분리.
+func _ready() -> void:
+	curse_applied.connect(_on_curse_applied)
+	buff_applied.connect(_on_buff_applied)
+	stance_applied.connect(_on_stance_applied)
+
+
+func _on_curse_applied(_target: Node, dispatch: int, f1: int, f2: int) -> void:
+	GameState.add_active_effect("curse", dispatch, f1, f2)
+
+
+func _on_buff_applied(_target: Node, dispatch: int, f1: int, f2: int) -> void:
+	GameState.add_active_effect("buff", dispatch, f1, f2)
+
+
+func _on_stance_applied(_target: Node, dispatch: int, f1: int, f2: int) -> void:
+	GameState.add_active_effect("stance", dispatch, f1, f2)
+
 
 func start_battle(monster_id: int = 0) -> void:
 	_monster_id = monster_id
@@ -218,12 +258,55 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 				var dmg_pct = int(skill_data.get("damage_pct", 150))
 				var base_atk = 10 + (skill_id % 5)
 				dmg = base_atk * dmg_pct / 100 + randi() % 5
+			# Round 74: GUNNER (class_id=2) skill slot 5 사용 시 combo multiplier 적용.
+			#   원본 HERO::ProcHeroSkill class 2 path @0x9a564 (R72 발견):
+			#     damage = base * (combo_state * 0x14 + 0x1e) / 100
+			#   combo 1=50% / 2=70% / 3=90% / 4=110% — 매 hit 마다 +20% bonus.
+			if GameState.class_id == 2 and skill_id == 5 and GameState.gunner_combo > 0:
+				var mult: int = GameState.gunner_combo * 20 + 30
+				dmg = dmg * mult / 100
+				GameState.gunner_combo += 1
+				if GameState.gunner_combo > GameState.gunner_max_combo:
+					GameState.gunner_combo = 0   # combo 도달 시 reset
+			# Round 74: ProcHeroSkill JT2 case 0/2/4/6 (R73 발견) — Formula 4 부가 호출로 SP delta.
+			#   원본 의 0x99950 의 IncreaseSP(formula_4_result).
+			#   Formula 4 = (V[6]+magic+V[151]) × (100+V[24]) / 100 = SP 회복량 (양수).
+			# 0 인 경우 fallback (현재 skill_data 의 sp_recover 미정 → skip).
+			var sp_delta: int = _calc_player_damage(4, _enemy_ctx(), skill_data)
+			if sp_delta > 0:
+				player_mp = mini(player_max_mp, player_mp + sp_delta)
 			enemy_hp = max(0, enemy_hp - dmg)
+			# Round 75: GameData.skill_info(class_id, skill_id) 의 effect_type 기반 자동
+			# dispatch — R72 의 4 helper (curse/buff/stance/IncreaseSP) 를 자동 발화.
+			#   effect_type 0 (NO_HIT)         → no-op (위 sp_delta 가 이미 처리)
+			#   effect_type 1·2 (curse)        → curse_applied signal
+			#   effect_type 3·5 (buff)         → buff_applied signal
+			#   effect_type 4 (stance)         → stance_applied signal
+			# skill_info 가 비어있거나 effect_type 0 이면 자동 dispatch 안 함.
+			var skill_meta = GameData.skill_info(GameState.class_id, skill_id) if GameData.has_method("skill_info") else {}
+			var effect_type: int = int(skill_meta.get("effect_type", 0))
+			if effect_type != 0:
+				var dispatch: int = int(skill_meta.get("special_dispatch", 0))
+				var f_id_1: int = int(skill_meta.get("formula_id_1", 0))
+				var f_id_2: int = int(skill_meta.get("formula_id_2", 0))
+				apply_skill_effect(self, effect_type, dispatch, f_id_1, f_id_2, skill_data)
 			var skill_name = skill_data.get("name", "스킬")
 			# cooldown 적용
 			var cd = int(skill_data.get("cooldown", 0))
 			if cd > 0: _cooldowns[skill_id] = cd
-			log_message.emit("[%s]! %d 피해 (MP -%d) [F:%d]" % [skill_name, dmg, mp_cost, formula_id])
+			var combo_str = ""
+			if GameState.class_id == 2 and skill_id == 5:
+				combo_str = " (combo %d)" % GameState.gunner_combo
+			var sp_str = ""
+			if sp_delta > 0:
+				sp_str = " +%dSP" % sp_delta
+			var fx_str = ""
+			if effect_type != 0:
+				match effect_type:
+					1, 2: fx_str = " +저주"
+					3, 5: fx_str = " +버프"
+					4: fx_str = " +자세"
+			log_message.emit("[%s]! %d 피해%s%s%s (MP -%d) [F:%d]" % [skill_name, dmg, combo_str, sp_str, fx_str, mp_cost, formula_id])
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -258,6 +341,9 @@ func _enemy_turn(player_defending: bool) -> void:
 	# 모든 cooldown 1 감소
 	for k in _cooldowns.keys():
 		_cooldowns[k] = max(0, _cooldowns[k] - 1)
+	# Round 76: active effect (R75) 의 remaining_turns 1 감소 + 만료 자동 제거.
+	# tick_active_effects 가 state_changed signal 발화 → status_panel 자동 갱신.
+	GameState.tick_active_effects()
 	if player_hp == 0:
 		log_message.emit("플레이어 패배...")
 		_finish(false)
@@ -508,6 +594,29 @@ func _equipped_weapon_ctx() -> Dictionary:
 		"def_value": def_v,
 		"stats": [atk, def_v, 0, 0],
 	}
+
+
+## Round 74: R72 의 JT1 helper (AddCurseSkill/AddBuffSkill/AddStanceSkill) 대응.
+##
+## skill_data 에 R73 의 신규 fields 가 있을 때 effect_type 별 signal 발화.
+##   - effect_type (skill_info[+0x28]) 값 0..5 분류
+##   - dispatch_byte (skill_info[+0x3a]) 가 0x34/0x37 일 때 special path (R72 미해결, R75+)
+##   - formula_id_1 (skill_info[+0x3c]) / formula_id_2 (skill_info[+0x3d]) 호출 결과
+##
+## 현재 GameData 의 skills.json 에 +0x28/+0x3a/+0x3c/+0x3d field 가 명시 안 됨 —
+## 추후 GameData 확장 시 자동 호출 가능. 현재는 manual invocation 만.
+func apply_skill_effect(target: Node, effect_type: int, dispatch_byte: int, formula_id_1: int, formula_id_2: int, skill_data: Dictionary = {}) -> void:
+	var f1: int = _calc_player_damage(formula_id_1, _enemy_ctx(), skill_data) if formula_id_1 > 0 else 0
+	var f2: int = _calc_player_damage(formula_id_2, _enemy_ctx(), skill_data) if formula_id_2 > 0 else 0
+	match effect_type:
+		1, 2:
+			curse_applied.emit(target, dispatch_byte, f1, f2)
+		3, 5:
+			buff_applied.emit(target, dispatch_byte, f1, f2)
+		4:
+			stance_applied.emit(target, dispatch_byte, f1, f2)
+		_:
+			pass   # case 0 (NO_HIT) 또는 unknown → no-op
 
 
 ## 25% 확률로 drop_table 에서 1 ~ 2 개 아이템 결정.

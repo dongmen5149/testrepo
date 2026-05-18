@@ -44,6 +44,58 @@ var unlocked_skills: Array[int] = [0]  # 첫 스킬 (basic attack) 시작부터
 ## 기본값: {0: 1} (basic attack LV1) — unlocked_skills [0] 와 매칭.
 var skill_levels: Dictionary = {0: 1}
 
+## Round 74: GUNNER class (class_id=2) 의 combo state.
+##
+## 원본 HERO+0x269 (R72 발견): GUNNER skill slot 5 (combo shot) 사용 시 누적되는 hit counter.
+## damage 공식: `(combo_state * 0x14 + 0x1e) * X / 100` = `(combo*20+30)% × base`
+##   combo 1 → 50% damage / 2 → 70% / 3 → 90% / 4 → 110% — 매 hit 마다 +20% bonus
+## HERO+0x248 (s16) = ammo/charge counter, skill_info[+0x48] (s16) = max combo limit
+##   combo 가 max 도달 시 reset → 다음 skill 사용 또는 hit 까지 0
+var gunner_combo: int = 0
+var gunner_max_combo: int = 4   # default; skill 별로 다름 (skill_info[+0x48])
+var gunner_ammo: int = 0         # HERO+0x248 대응 — GUNNER 가 사용하는 ammo counter
+
+## Round 75: R72 의 helper signal (curse_applied/buff_applied/stance_applied) 캐치용
+## active effect list. battle_system 이 emit 하면 GameState 가 entry 추가/만료 처리.
+##
+## 원본 BATTLER::AddCurseSkill / AddBuffSkill / HERO::AddStanceSkill 의 Godot 대응 —
+## 실제 효과 (stat modifier, DoT, regen 등) 는 후속 라운드 (R76+) 에서 통합.
+##
+## entry layout: {dispatch_byte: int, formula_1: int, formula_2: int, remaining_turns: int}
+##   dispatch_byte = skill_info[+0x3a] (R72 special path key, 0x34/0x37 등)
+##   formula_1/2  = Formula::calc(+0x3c/+0x3d) 평가 결과 (intensity 값)
+##   remaining_turns = 5 default (UI 시각화용; 후속 라운드에서 정확한 turn count 반영)
+var active_curses: Array = []     # [{dispatch, f1, f2, turns}, ...] — case 1+2
+var active_buffs: Array = []      # [{dispatch, f1, f2, turns}, ...] — case 3+5
+var active_stances: Array = []    # [{dispatch, f1, f2, turns}, ...] — case 4
+
+
+## Round 75: active effect 추가 (battle_system signal 캐치).
+func add_active_effect(kind: String, dispatch: int, f1: int, f2: int, turns: int = 5) -> void:
+	var entry := {"dispatch": dispatch, "f1": f1, "f2": f2, "turns": turns}
+	match kind:
+		"curse": active_curses.append(entry)
+		"buff": active_buffs.append(entry)
+		"stance": active_stances.append(entry)
+	state_changed.emit()
+
+
+## Round 75: 매 turn 종료 시 호출 — 모든 active effect 의 remaining_turns 감소 + 만료 제거.
+func tick_active_effects() -> void:
+	var changed := false
+	for arr_name in ["active_curses", "active_buffs", "active_stances"]:
+		var arr: Array = get(arr_name)
+		var keep: Array = []
+		for entry in arr:
+			entry["turns"] = int(entry["turns"]) - 1
+			if entry["turns"] > 0:
+				keep.append(entry)
+			else:
+				changed = true
+		set(arr_name, keep)
+	if changed:
+		state_changed.emit()
+
 var inventory: Array = []
 var flags: Dictionary = {}
 
@@ -309,15 +361,51 @@ func allocate_stat(stat_name: String, points: int = 1) -> bool:
 	return true
 
 
-## 캐릭터 총 ATK = base STR-derived + equipment bonus.
+## 캐릭터 총 ATK = base STR-derived + equipment bonus + active effect modifier (R76).
+##
+## Round 76: active_buffs / active_curses 가 stat 에 영향:
+##   - active_buffs (R72 case 3+5 / +0x3c-3d formula result) → ATK % bonus
+##     entry["f1"] 을 % 가중치로 누적 (예: f1=20 → +20% ATK)
+##   - active_stances (R72 case 4 / KNIGHT 방어 stance 등) → ATK 변동 없음 (DEF 만)
+##   - active_curses (R72 case 1+2) → ATK 변동 없음 (DEF 감소만, 적용처는 별도)
+##
+## 공식: `atk_total = (base + equip_bonus) × (100 + buff_atk_pct) / 100`
+##   buff_atk_pct = Σ entry["f1"] for entry in active_buffs (clamp 0..200)
 func total_attack() -> int:
 	var base = stat_str * 2 + level * 3
-	return base + int(equipment_bonus().get("attack", 0))
+	var equip = int(equipment_bonus().get("attack", 0))
+	var raw = base + equip
+	var buff_pct = 0
+	for entry in active_buffs:
+		buff_pct += int(entry.get("f1", 0))
+	buff_pct = clamp(buff_pct, 0, 200)
+	return raw * (100 + buff_pct) / 100
 
 
+## 캐릭터 총 DEF = base CON-derived + equipment bonus + active stance/curse modifier (R76).
+##
+## Round 76: active_stances / active_curses 가 stat 에 영향:
+##   - active_stances (R72 case 4) → DEF % bonus (KNIGHT 방어 stance +50% 등)
+##   - active_curses (R72 case 1+2) → DEF % reduction (debuff 의 강도)
+##   - active_buffs 는 DEF 영향 없음 (ATK 전용)
+##
+## 공식: `def_total = (base + equip_bonus) × (100 + stance_pct - curse_pct) / 100`
+##   stance_pct = Σ entry["f1"] for entry in active_stances (clamp 0..150)
+##   curse_pct  = Σ entry["f1"] for entry in active_curses (clamp 0..80)
 func total_defense() -> int:
 	var base = stat_con + level * 2
-	return base + int(equipment_bonus().get("defense", 0))
+	var equip = int(equipment_bonus().get("defense", 0))
+	var raw = base + equip
+	var stance_pct = 0
+	for entry in active_stances:
+		stance_pct += int(entry.get("f1", 0))
+	stance_pct = clamp(stance_pct, 0, 150)
+	var curse_pct = 0
+	for entry in active_curses:
+		curse_pct += int(entry.get("f1", 0))
+	curse_pct = clamp(curse_pct, 0, 80)
+	var net_pct = 100 + stance_pct - curse_pct
+	return raw * net_pct / 100
 
 var verbose: bool = true
 

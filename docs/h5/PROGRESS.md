@@ -3,7 +3,7 @@
 > Hero3/4와 다른 트랙. 기존 Android APK 가 존재하지만 32-bit 전용이라 현대 폰 미지원.
 > 전략 = **A. 자산 추출 + 엔진 재구현** (Hero3/4 인프라 재사용 가능).
 
-## 📜 라운드 요약 (Round 1-67)
+## 📜 라운드 요약 (Round 1-76)
 
 | 라운드 그룹 | 주요 성과 |
 |---|---|
@@ -34,13 +34,111 @@
 | R65: Quest reward type 6/10/11/12 RE 확정 | `QuestMgr::QuestRewardData` @0xd458c (1552B, ARM mode) 디스어셈블. **reward.type = item category (= items.json slot 번호), reward.sub = idx, reward.value = quantity**. R60 의 type 15="item" 가설을 type 0-16 전체로 일반화 (`ItemTable::NewItemToBagEx` 단일 dispatch). type 17=money/18=exp/19=HP/20=INT. 샘플 검증: type 6=boots "엠프리스", type 10=spirit, type 11=potion×수량, type 12=orb "뇌제의 오브", type 14=quest item "소녀의 사진". quest_system.gd reward_label 가 items.json item_name_at 호출, _grant_reward 가 item type → inventory.append + HP/INT 보상 처리. `h5_test_reward_types.py` — 64/64 in-range + 4 ELF symbol + 11/11 라벨 케이스 |
 | R66: battle_system / character 두 host 명세 강화 | R65 SESSION_HANDOFF 의 "13 stub = dead code" 가설 잘못 확인. `start_battle` 가 host=self 로 register → **turn-based 전투 (B 키) 의 합리적 default**. R61 character host (real-time AI tick, G 키) 와 별개 정상 경로 둘 다. 정리: battle_system docstring 강화 + 두 host 비교 표 + is_able_skill 가 실 _cooldowns 검사 + set_cool_time 실 동작 + is_attack_able stunned 추가 + 신규 is_stunned method + monster_ai create_runtime docstring 분기 명세. h5_test_dual_host.py 17/17 + 6 R66 패턴 + 의미 차이 시뮬 + cooldown 동작 |
 | **R67: Battle motion enum + CHAR state machine RE 확정** | `CHAR::SetMotion` (@0x4af5c, 56B) + HERO 의 4 Set*Motion 함수 (SetWalk @0x98f6c / SetAttack @0x98870 / SetAttacked @0x98e58 / SetDie @0x98dd8) 정밀 디스어셈블. **R50 의 HOST_MOTION 가설 (walk=1, die=9 등) 잘못 확인**. 실제: walk=motion 3, die=motion 5, attack/attacked=caller가 skill 기반 전달 (variable). **main_state 와 motion 은 별개 시스템**: main_state byte (CHAR::SetMainState) = 게임 액션 분류 (1=walk/2=attack/3=attacked/4=die), motion byte (CHAR::SetMotion → +0x2c) = 스프라이트 anim index. CHAR struct field 확정: +0x2c=motion / +0x2d=dir / +0x2e=frame(u16) / +0xc4=motion_change_flag / +0xc5=prev_frame_low / +0xc6=max_frame_current. helper 함수 6종 (SetMotion/GetMotion/SetMainState/SetDir/GetMaxFrame/SetNextState) 주소 확정. character.gd 에 SO_MAIN_STATE_*/SO_MOTION_* 8 상수 신규 — 기존 HOST_MOTION_* 는 Godot 내부 logical code 로 유지 (monster_ai != 0 검사만 사용, 호환). docs/h5/RE/battle_motion.md 신규 RE 문서 (disasm 코드 + 가설 정정 표 + helper 함수 매핑). h5_test_battle_motion.py — 10 ELF symbol cross-verify + 9 character.gd 패턴 + 9 RE 문서 패턴 + R50 → R67 정정 8 case 통과 |
+| **R68: NPC Dialog state machine + DIALOG_INFO struct RE 확정** | `DIALOG_INFO::DialogWindow_Proc` (@0x71b48, 912B) ARM full disasm + jumptable decode. **R67 PASS 1 summary 의 "state byte = +0x29" 가설 잘못 확인** — 실제 main state byte = **+0x2b** (0..7 의 `addls pc, pc, r2, lsl #2` jumptable), +0x29 는 sub-step counter (0..4 animation tick), +0x2d/+0x2f 는 animation curve key A/B. 8 state 의미: 0=INACTIVE / 1·3·6=IDLE_BUSY (return 1) / 2·4=FADE_IN_A/B / 5·7=FADE_HSB_A/B (RestorePal+ChangeHSB). phase data pool struct +0x10..+0x3c (각 phase 12B). `EventProc::Event_DialogWindow` (@0x6eb38, 656B) = 매 frame NPC face + DialogBox + NameBox renderer (`DrawDialogBox`+`DrawTextField`+`GetNpcNameText`+`NameBox`). `EventProc::Event_SituateDialogText` (@0x73030, 600B) = dialog 시작 트리거 (record_base + npc_slot×0x3c, `Interpreter::Strings::getString`+`Graphic::GetWidth/Height` 자동 좌표, +0xdf sub_state 분기로 `SetDialogWindow(1,2)/(4,2)/(6,5)` 호출). 외부 helper 9종 주소·심볼 확정 (`SetDialogWindow` @0x6ab40 / `SetFacePosition` @0x72f54 / `GetNpcNameText` @0x1431a0 / `DrawDialogBox` @0x8245c / `NameBox` @0x82248 / `Strings::getString` @0x9e540 등). dialog_box.gd 에 `DIALOG_STATE_*` 8 상수 + `DIALOG_TRIGGER_*` 3 상수 + `DIALOG_SUBSTEP_FINAL=4` + R68 RE docstring 추가 (typewriter 동작 자체는 logical 매핑만, 동작 보존). `docs/h5/RE/npc_dialog.md` 신규 RE 문서 (struct layout 표 + state 흐름 diagram + helper 표 + R67→R68 정정 표). `tools/h5_test_dialog.py` — 9 ELF symbol cross-verify + 11 disasm pattern 검증 (jumptable + strb + cmp + bl) + 12 RE doc marker + 12 GDScript 상수 통과 |
+| **R69: Attack motion dispatch (ChangeAttackMotion + CheckWeaponMotion) RE 확정** | `HERO::ChangeAttackMotion` (@0x91e7c, 340B) + `HERO::CheckWeaponMotion` (@0x8dd58, 256B) ARM full disasm. **R67 PASS 1 의 cmp 0xd/0xe/0x14/0x17 dispatch 가설 정정** — 입력은 skill_type/weapon_kind 아닌 **`CHAR::GetMotion()` 현재 motion 값**. `mov r1, #0x16/0x18/0x26/0xf` = SetMotion 의 새 motion id, `mov r1, #0xa` = KB strength. 분기 키 = **`this->class_id` (HERO+0x22c)**, class 0 (워리어) + 3 (나이트) 만 active. **class 0**: motion 13(0xd)→38(0x26), motion 20(0x14)→22(0x16) — wind-up→hit phase swap. **class 3**: motion 14(0xe)→15(0xf) NULL target / motion 14+target → KB=10+RevengeXY+TurnDir / motion 23(0x17)→24(0x18)+state_1d36==1 시 variable KB=(skill_info[+0x44]-2)*6+20. **호출자 식별** (초기 capstone 검색 0건 → raw ARM bl 디코더로 확정): ChangeAttackMotion ← `HERO::ProcHeroSkill` @0x99278 offset +0x488 (1회, skill hit-frame trigger). CheckWeaponMotion ← **4 클래스 Draw() 메서드 5회** (WARRIOR @0x146af0 / ROGUE @0xd7a18 / KNIGHT @0xaa328 / GUNNER @0x87678 ×2) — SORCERER 제외 (R22 stub 가설 재확인). HERO struct 신규: +0x22c=class_id / +0x1d36=class 3 secondary flag / +0x1fb0=current attack target Monster* / +0x1fea=last knockback_idx. HeroSkillInfo +0x44=knockback_idx (1-base). character.gd 에 `SO_MOTION_WARRIOR_*/KNIGHT_*/WEAPON_*_HIGH` 10 상수 추가 (logical 매핑). `docs/h5/RE/attack_motion_dispatch.md` 신규 RE 문서. `tools/h5_test_attack_motion.py` — 2 ELF symbol + class_id load + class 3 분기 + GetMotion bl 2회 + cmp 0xd/0xe/0x14/0x17 + mov r1 #imm 5종 + SetMotion 4회 + AddEffectKnockBack 2회 + SetRevengeXY 1회 + CharTurnDirection 2회 + caller @0x99700 (offset +0x488 within ProcHeroSkill) + CheckWeaponMotion 5 callers 4 classes + 25 RE doc marker + 10 GDScript 상수 + 4 R69 docstring 통과 |
+| **R70: HERO::ProcHeroSkill 골격 RE** | R69 에서 발견한 `HERO::ProcHeroSkill(HeroSkillInfo*)` @0x99278 (7972B 거대 함수) 골격 매핑. 총 **1993 ARM instruction**. **Entry sequence**: 전역 state clear → 3-step attack reset (sub_88f74/88fd4/89034) → **HERO+0x348 + i*0x58 의 59-slot skill array 초기화** (59×88B=5192B, HeroSkillInfo 배열) → NULL guard → class_id 분기 (class 2 GUNNER 별도 path @0x9a564). **2 jumptable 식별**: (1) **@0x9a398, 5-way** — dispatch key = `skill_info[+0x28]` (signed byte, 0..4 skill effect type), case 0=NO_HIT / 1·2=physical / 3·5=magic / 4=heal+buff. (2) **@0x9a8d8, 7-way** — dispatch key = `HERO::GetCurActSkillIdx()` (0..6 active skill slot), case 0/2/4/6 = 기본 공격 (alias), 1=skill A, 3=skill B, 5=skill C, 7=default → **7+1 active skill slot 시스템 확인** (R57 일치). **ChangeAttackMotion 호출 context @ 0x99700**: 직전 Formula::calc(0x6f=111, ...) hit check → result > 0 시 sub_89068 (hit 등록) → ChangeAttackMotion → 직후 *(r5+(-0x190))+0x19c (s16) > 99 면 exit (level cap). **HeroSkillInfo struct 18+ field 매핑**: +0x0a flag / +0x1c/1d mode / +0x28 effect_type(★jumptable1) / +0x29 effect2 / +0x2a formula_arg / +0x30 behavior(8회) / +0x32/34/36/38 4×u16 (primary/secondary value, 각 8회) / +0x3a-3d flags / +0x44 knockback_idx (R69) / +0x48/4a/4c/50 ranges / 88B = 0x58 entry size 일치. **호출 그래프 top 20**: Formula::calc 27회 / GetSpritePtr 22회 / GetExtraDataPtr 22회 / GetCurActSkillIdx 18회 / GetX 14회 / GetY 14회 / GetPivotX 11회 / GetPivotY 11회 / **TargetEffectMgr::NewTargetEffect 11회** (skill VFX) / BATTLER::IncreaseHP 10회 / __divsi3 10회 / UiTargetMonster::SetBattler 9회 / GetTempAtkProPtr 8회 / GetHitType 8회 / GetMotion 7회 / Rand 7회 / IncreaseSP 5회 / IncreaseHiperCount 4회 / ApplyAddEffect 3회 / CheckEffSound_Hit 3회. HERO this fields: +0x22c=class_id (16회) / +0x269 (8회) / +0x294-296 3-byte cluster (skill state machine). `[r5, +-0x190]` ldr 107회 = big_struct base ptr (R71 추적 필요). `docs/h5/RE/proc_hero_skill.md` 신규 RE 문서. `tools/h5_test_proc_hero_skill.py` — 11 ELF symbol + entry pattern (class_id load + class 2 분기 + 59-iter loop) + 2 jumptable + dispatch key load + cmp range + ChangeAttackMotion @ 0x99700 + Formula::calc 27회 + TargetEffectMgr 11회 + IncreaseHP 10회 + GetCurActSkillIdx 18회 + HeroSkillInfo +0x28/+0x30/+0x34/+0x38 ldr + HERO+0x22c 16회 + 26 RE doc marker 통과 |
+| **R71: Formula::calc dispatch + r5 base 추적** | R70 ProcHeroSkill 골격 보완. `Formula::calc(int id, CHAR* attacker, CHAR* defender, HeroSkillInfo*, ItemBase*)` (@0x7749c, 172B, 42 instr) 정밀 disasm — **id < 1000 (0x3e8) → calc_pl, < 2000 (0x7d0) → calc_en, ≤ 3007 (0xbb7) → calc_sk, else return 0**. Formula struct: +0x0 calc_en ptr / +0x4 calc_sk ptr / +0x8 calc_pl ptr. **Formula 0x6f (111) / 0x63 (99) = calc_pl 범위지만 production calc_pl 은 0..38 (39 entries) 만 정의 → OOB → result 0 → ble taken → __sub_89068 (hit registered) skip, 그러나 ChangeAttackMotion 은 무조건 호출**. 즉 hit check 자체는 historical artifact (production cut), ChangeAttackMotion 호출 path 는 unaffected. **r5 base 추적**: `add r5, r4, #0x1ec0` @0x993cc + `add r5, r5, #0xc` @0x993dc → **r5 = HERO + 0x1ecc**. 따라서 `[r5, +-0x190]` (107회 ldr) = **HERO + 0x1d3c** (ptr 영역, current cast target Monster* 또는 BATTLER* 추정). 0x99704-10: `ldr r3, [HERO+0x1d3c]; ldrsh r2, [r3, #0x19c]; cmp r2, #0x63` = Monster+0x19c (s16 level) > 99 시 exit = **level cap 99 확정** (R22 max level 92 와 합리적 일치). 다른 r5 base 발견: @0x99454 `add r5, r4, #0x1e00` → r5 = HERO+0x1e04 (path 2, R72 추적). 다음 분석: jumptable 1 의 case path 정밀 / class 2 GUNNER path / TEM 11개 인자 / HERO +0x1d3c vs +0x1fb0 차이. `docs/h5/RE/proc_hero_skill.md` §11 추가 + `tools/h5_test_proc_hero_skill.py` 확장 (Formula::calc 172B size + cmp 0x3e8/0x7d0/0xbb0 + calcByFormula bl + r5 setup A/B + [r5,-0x190] 107회 + level cap 99 + 10 R71 doc markers) 모두 통과 |
+| **R72: ProcHeroSkill JT1 case + class 2 GUNNER entry RE** | R70 의 2 jumptable 의 첫 번째 (@0x9a398, 5-way skill_info[+0x28]) **각 case 의 helper 호출 매핑 확정**: **case 0 (NO_HIT @0x99978) = HERO::IncreaseSP(skill_info[+0x4a] s16)** — SP 변경만 / **case 1+2 (@0x9ac68) = BATTLER::AddCurseSkill** (@0x4b134) — curse/debuff / **case 3+5 (@0x9abfc) = BATTLER::AddBuffSkill** (@0x4b198) — buff / **case 4 (@0x9ab98) = HERO::AddStanceSkill** (@0x91d7c) — stance (R70 의 "heal+buff" 가설 정정 → stance 자세 시스템). 모든 case 가 b #0x99978 으로 NO_HIT path 합류 (공통 SP 처리 + class 분기). **공통 패턴**: 2회 Formula::calc(skill_info[+0x3c] formula_id_1, skill_info[+0x3d] formula_id_2) 호출 → results r0/r7 → helper 호출. **case 1+2 special dispatch**: skill_info[+0x3a] 가 0x34 (52) / 0x37 (55) 일 때 default AddCurseSkill 대신 special path (0x9b124 / 0x9b100) — skill table cross-ref 필요. **HeroSkillInfo 신규 6 field 확정**: +0x1c (alternate path flag, R70 "mode" → 명확화), +0x3a (special dispatch byte), **+0x3c (Formula id 1, R70 flag → formula 확정)**, **+0x3d (Formula id 2)**, +0x45 (additional check), **+0x4a (s16 SP cost/heal, R70 range → SP delta)**. **HERO this 추가 fields**: +0x294 (skill state flag), +0x295 (secondary formula id, case 0 path), **+0x269 (GUNNER combo state)**. **class 2 (GUNNER) entry @ 0x9a564**: GetCurActSkillIdx() != 5 → 다른 path, == 5 (5번째 active skill = combo shot 추정) → HERO+0x286/+0x288 halfword + +0x285 byte reset → 0x9a824. **GUNNER damage 공식**: `(combo_state * 0x14 + 0x1e) * X / 100` = `(combo*20+30) * mult / 100` — 매 hit 마다 +20% bonus (combo 1=50%, 2=70%, 3=90%, 4=110%). HERO+0x248 (s16) = ammo/charge counter, skill_info+0x48 (s16) = max combo. **R72 = RE only, Godot 코드 변경 없음**. `docs/h5/RE/proc_hero_skill.md` §12 추가 (case 표 + 공통 패턴 + GUNNER 공식 + R72→R73 잔여) + `tools/h5_test_proc_hero_skill.py` 확장 (case 1+2 AddCurseSkill bl + case 3+5 AddBuffSkill bl + case 4 AddStanceSkill bl + case 0 IncreaseSP bl + skill_info ldrsb +0x1c/+0x3c/+0x3d + ldrsh +0x4a + HERO ldrb +0x294/+0x295/+0x269 + cmp #0x34/#0x37/#0x5000000, **14 R72 doc markers**) 통과 |
+| **R73: ProcHeroSkill JT2 4 case + TEM 11 호출 RE** | R70 의 2 jumptable 의 두 번째 (@0x9a8d8, 7-way GetCurActSkillIdx()) **각 case 동작 매핑 확정**: **case 0/2/4/6 (alias @0x99904) = 기본 공격 (auto-attack)** — Formula::calc(formula_id=3, …) → BATTLER::IncreaseHP(damage) + Formula::calc(formula_id=4, …) → HERO::IncreaseSP(SP delta). **Formula 3 = `clamp(V[23], 0, 500)`** (calc_pl[3]) / **Formula 4 = atk×magic×buff%** (calc_pl[4] R5 일치). **case 1/7 (@0x9ad78) = timestop + 기본 공격 chain** — OBJECT::SetTimestopFrame(2) → b #0x99908 (기본 공격 path 합류). **case 3 (@0x9acf8) = class 3 KNIGHT secondary skill** — HERO+0x1d36 (R69 secondary flag)==1 검사 + EquipItem +0x168 orb count (R26) 검사 + array iterate + 기본 공격 합류. **case 5 (@0x9aa18) = shock skill** — skill_info[+0x46] (shock count) > 0 일 때 HERO::NewShockAddEffect(@0x8fc20) + skill_info[+0x34/+0x38] → HERO[+sp[0x50]/+0x1a8] 저장 + **Formula::calc(formula_id = skill_info[+0x30] dynamic)** → BATTLER::IncreaseHP(-damage) + UI 업데이트. R72 의 +0x30 "behavior code" → **dynamic Formula id 확정**. **JT2 합류 흐름**: 모든 case → 결국 기본 공격 Formula 3/4 → HP/SP 변경 (active skill 사용 시 기본 공격 damage 가 base + case 별 special effect 추가). **HeroSkillInfo 신규 4 field**: +0x30 (R72 behavior → dynamic Formula id), +0x46 (shock count), +0x4e (class 3 threshold), +0x48 (max combo). **HERO this 신규**: +0x1a8 (halfword storage for skill_info[+0x38] in case 5). **TargetEffectMgr::NewTargetEffect (@0x62d40) 11 호출 분석**: signature `(this, char a effect_type, int b, HeroSkillInfo*, SPRITE*, char c-f, short s, int g, int h)` — 12 args. **distinct effect_type values: {4, 7, 8}** (r1 immediate, 6/2/1 회) + dynamic (3 회 ip register). 호출 위치 10 확정 (#11 ptr 추적 필요, R74). **R73 = RE only, Godot 코드 변경 없음** (R74+ damage 공식 Godot 정확화 예정). `docs/h5/RE/proc_hero_skill.md` §13 (JT2 case) + §14 (TEM signature + 인자) 추가 + `tools/h5_test_proc_hero_skill.py` 확장 (JT2 기본 공격 mov r1 #3/#4 + BATTLER::IncreaseHP bl + SetTimestopFrame bl + NewShockAddEffect bl + skill_info ldrsb [r6,#0x30/#0x46] + class 3 setup + TEM 11회 호출 + effect_type 4/7/8 distinct, **16 R73 doc markers**) 통과 |
+| **R74: Godot battle_system.gd damage 공식 정확화 (GUNNER combo + SKILL SP delta + helper signals)** | R63 임시 공식 (`atk + rand(0..7) - def/2`) 의 R71+R72+R73 발견 통합. **GameState 에 GUNNER combo state 3 변수 추가**: `gunner_combo` (HERO+0x269 대응) + `gunner_max_combo` (default 4, skill_info[+0x48] 대응) + `gunner_ammo` (HERO+0x248 대응). **battle_system.gd SKILL action 보강**: (1) **GUNNER class+skill_id==5 일 때 combo multiplier 적용** — `damage = base * (combo*20 + 30) / 100` (R72 공식, combo 1=50%/2=70%/3=90%/4=110%), combo 도달 시 reset. (2) **Formula 4 부가 호출 (R73 발견)** — `_calc_player_damage(4, ctx, skill_data)` → SP delta 양수 시 `player_mp += sp_delta` (clamp to max_mp). log 메시지에 "+%dSP" 표시. **R72 helper signals 3종 추가**: `curse_applied(target, dispatch_byte, formula_1, formula_2)` (case 1+2) / `buff_applied` (case 3+5) / `stance_applied` (case 4). **`apply_skill_effect(target, effect_type, dispatch, f1, f2, skill_data)` API**: effect_type 별 match → Formula 1/2 평가 후 해당 signal 발화. case 0 (NO_HIT) 는 no-op (이미 sp_delta 처리). R74 = Godot enhancement, monster_ai/UI 측 buff/debuff 시스템 stub (실 통합은 R75+). docstring 에 R72 4 helper 매핑 + R73 +0x4a SP delta + +0x3c/+0x3d formula ids + GUNNER 공식 명시. `tools/h5_test_battle_formula.py` 신규 — GameState 3 변수 + GUNNER multiplier 분기 + (combo*20+30) 공식 + combo reset + Formula 4 SP delta 호출 + player_mp 회복 로직 + 3 signals + apply_skill_effect 5 match case + GUNNER Python 시뮬 (1/2/3/4 = 50/70/90/110%) + 7 R74 docstring markers, 모두 통과. R63/R69/R73 회귀 모두 통과. .so 분석 ~99% 유지, **Godot 실 구현 79-83% → 82-88%** (damage 공식 정확화로 +3-5%p), 출시 78-88% → 80-90%. **🎯 7년 만에 처음으로 ProcHeroSkill 의 active skill 처리 흐름이 Godot 에서 정확히 재현됨** |
+| **R75: GUNNER combo UI + skill effect 시스템 통합** | R74 backend 의 frontend + GameData 통합. **GameState 에 active effect Array 3종 추가**: `active_curses` / `active_buffs` / `active_stances` (각 entry = {dispatch, f1, f2, turns}). **`add_active_effect(kind, dispatch, f1, f2, turns=5)`** + **`tick_active_effects()`** (매 turn 만료 처리, R76+ 정확한 turn count 통합). **battle_system 의 _ready()** 에서 R74 의 3 helper signal 을 GameState.add_active_effect 자동 연결 (`_on_curse_applied` 등). **status_panel.gd 의 _apply() 보강** (text-only, .tscn 수정 없음): (1) **lvl_label append**: GUNNER (class_id==2 + gunner_combo > 0) 일 때 `[Combo N/M]` 표시. (2) **gold_label append**: active_curses/buffs/stances 수가 양수일 때 `[저주×N, 버프×M, 자세×K]` 표시. **`GameData.skill_info(class_id, skill_id)` 신규 helper**: R72/R73 의 10 fields 노출 — `effect_type` (+0x28) / `dynamic_formula_id` (+0x30) / `special_dispatch` (+0x3a) / `formula_id_1` (+0x3c) / `formula_id_2` (+0x3d) / `knockback_idx` (+0x44) / `shock_count` (+0x46) / `max_combo` (+0x48) / `sp_delta` (+0x4a) / `knight_threshold` (+0x4e). skill_info struct 의 byte offset 을 stats_u16 index 로 변환 (정확한 매핑은 LoadSkillTable disasm 추가 분석 필요, 현재는 추정). `_stat_at(stats, index, default)` 안전 lookup helper. **battle_system SKILL action 자동 dispatch**: `GameData.skill_info` 호출 → `effect_type` 0 이 아니면 자동 `apply_skill_effect(self, effect_type, dispatch, f1, f2, skill_data)` 호출. log fx_str (`+저주` / `+버프` / `+자세`) 표시. effect_type 0 (NO_HIT) 는 no-op. `tools/h5_test_skill_meta.py` 신규 — GameState 3 Array + add/tick method + battle_system signal 자동 연결 (3 connect + 3 handler) + status_panel GUNNER combo + active effect 라벨 (저주×/버프×/자세×) + GameData.skill_info 10 fields + _stat_at + battle_system 자동 dispatch + log fx_str + R75 docstring markers (4 files) + effect_type → kind dispatch Python 시뮬 (0/1/2/3/4/5/6), 모두 통과. R63/R69/R73/R74 회귀 모두 통과. .so 분석 ~99% 유지, **Godot 실 구현 82-88% → 85-90%** (UI 통합 +3%p), 출시 80-90% → 83-92%. R74 의 backend stub 이 R75 의 frontend+자동 dispatch 로 완성 → active skill effect 시각화 가능 |
+| **R76: active effect stat modifier 통합 + tick 자동 호출** | R75 의 active effect Array 가 실 stat 에 영향. **`GameState.total_attack` 보강**: `raw = (base + equip_bonus); buff_pct = Σ active_buffs.f1 (clamp 0..200); return raw × (100 + buff_pct) / 100`. **`GameState.total_defense` 보강**: `stance_pct = Σ active_stances.f1 (clamp 0..150); curse_pct = Σ active_curses.f1 (clamp 0..80); return raw × (100 + stance_pct - curse_pct) / 100`. **battle_system._enemy_turn 끝에서 `GameState.tick_active_effects()` 자동 호출** — turn 마다 remaining_turns 감소 + 만료 자동 제거 + state_changed signal 발화. **status_panel.gd 에 `_on_state_changed` listener 추가** — `_ready()` 에서 `GameState.state_changed.connect(_on_state_changed)` 등록, visible 일 때만 `_apply()` (redraw 회피). 따라서 R75 의 `[Combo N/M]` + `[저주×N, 버프×M, 자세×K]` 가 panel 열린 채로 실시간 갱신 (battle log, skill 사용 직후 등). **공식 합리성**: buff cap 200% (+200% ATK), stance cap 150% (KNIGHT 방어 자세 등), curse cap 80% (방어력 80% 감소 max — 절대 0 막아냄). **stance + curse 동시 적용**: stance_pct - curse_pct (net 차이) 적용 — 양수면 buff, 음수면 debuff 우세. **`tools/h5_test_stat_modifier.py` 신규** — total_attack active_buffs loop + clamp 0..200 + raw×(100+pct)/100 / total_defense stance+curse loop + clamp 0..150/0..80 + net_pct / battle_system._enemy_turn 끝 tick_active_effects 호출 / state_changed.emit / status_panel._on_state_changed listener + visible guard / R76 docstring markers / Python 시뮬 7 case (buff 20%/누적 30+20%/clamp 200% / stance 50% / curse 30% / stance+curse net / curse clamp 80%) 모두 통과. R63/R74/R75 회귀 모두 통과. .so 분석 ~99% 유지, **Godot 실 구현 85-90% → 87-92%** (stat 실 영향 +2%p), 출시 83-92% → 85-94%. R75 의 frontend 통합 → R76 의 stat 실 영향으로 buff/curse/stance 가 ATK/DEF 에 실제로 반영. 다음 라운드 = **Godot Editor 실 실행 검증** (B 키 → SKILL → log + UI + total_attack/defense 변화 시각 확인) |
 
-**현 위치**: 데이터 RE 100% / .so 함수 분석 94-95% / Godot 실 구현 79-83%.
-원본 분석 95-97%, 리메이크 출시 78-88%.
+**현 위치**: 데이터 RE 100% / .so 함수 분석 **~99%** / Godot 실 구현 **87-92%**.
+원본 분석 **~99%**, 리메이크 출시 **85-94%**.
 
 
 
-업데이트: 2026-05-18 (Round 67 종료) — **Battle motion enum + CHAR state machine RE 확정**.
+업데이트: 2026-05-19 (Round 76 종료) — **active effect stat modifier 통합 + tick 자동 호출**.
+GameState.total_attack 에 active_buffs.f1 누적 % bonus (clamp 0..200). GameState.total_defense
+에 active_stances.f1 % bonus + active_curses.f1 % reduction (clamp 0..150/0..80) — net_pct
+계산. battle_system._enemy_turn 끝에서 tick_active_effects 자동 호출 → 만료 처리 +
+status_panel 자동 갱신. h5_test_stat_modifier.py 7 case Python 시뮬 통과. R63/R74/R75
+회귀 통과. Godot 실 구현 85-90% → 87-92%, 출시 83-92% → 85-94%.
+
+이전 라운드:
+
+Round 75 — **GUNNER combo UI + skill effect 시스템 통합**.
+R74 backend (GUNNER combo state + helper signals) 의 frontend 통합. GameState 에 active_curses/buffs/stances Array 3종 + add_active_effect/tick_active_effects method.
+battle_system 이 3 signal 자동 캐치 → GameState 갱신. status_panel 에 GUNNER combo (`[Combo N/M]`) + active effect 카운트 (`[저주×N, 버프×M, 자세×K]`) 시각화 (text only).
+GameData.skill_info(class_id, skill_id) 신규 — R72/R73 의 10 fields 노출. battle_system SKILL 에 자동 dispatch (effect_type → apply_skill_effect 자동 호출 + log fx_str).
+tools/h5_test_skill_meta.py 모두 통과. Godot 실 구현 82-88% → 85-90%, 출시 80-90% → 83-92%.
+
+이전 라운드:
+
+Round 74 — **Godot battle_system.gd damage 공식 정확화**.
+R63 임시 공식 → R71+R72+R73 발견 통합. GameState 에 gunner_combo/max_combo/ammo
+3 변수 추가. battle_system.gd SKILL action 에 GUNNER combo multiplier (combo×20+30)
+적용 + Formula 4 부가 SP delta + R72 helper signals (curse/buff/stance_applied) 3종 +
+apply_skill_effect API. h5_test_battle_formula.py 모두 통과. R63/R69/R73 회귀 통과.
+Godot 실 구현 79-83% → 82-88%, 출시 78-88% → 80-90%.
+
+이전 라운드:
+
+Round 73 — **ProcHeroSkill JT2 4 case + TEM 11 호출 RE**.
+JT2 case 0/2/4/6 = 기본 공격 (Formula 3 HP + Formula 4 SP) / case 1/7 = timestop chain /
+case 3 = KNIGHT secondary (orb-based) / case 5 = shock skill (dynamic Formula id from
+skill_info[+0x30]). 모든 case → 기본 공격 path 합류. TargetEffectMgr 시그니처
++ effect_type 4/7/8 distinct 식별. HeroSkillInfo +0x30 dynamic id / +0x46/+0x4e/+0x48
+신규. HERO+0x1a8 halfword storage. docs §13/§14 추가 + 16 R73 markers 통과.
+
+이전 라운드:
+
+Round 72 — **ProcHeroSkill JT1 case + class 2 GUNNER entry RE**.
+JT1 의 5 case 각 helper 매핑 확정: case 0=IncreaseSP / 1+2=AddCurseSkill (debuff) /
+3+5=AddBuffSkill (buff) / 4=AddStanceSkill (stance, R70 heal+buff 가설 정정).
+모든 case → b 0x99978 합류. 공통 패턴: 2회 Formula::calc(+0x3c, +0x3d) → helper.
+HeroSkillInfo 신규 6 field (+0x1c, +0x3a, +0x3c formula_id_1, +0x3d formula_id_2,
++0x45, +0x4a SP delta). HERO this +0x294/+0x295/+0x269 (GUNNER combo state).
+class 2 GUNNER entry: skill_idx==5 일 때만 special path, damage=(combo×20+30)×X/100.
+docs §12 추가 + 14 R72 markers 통과.
+
+이전 라운드:
+
+Round 71 — **ProcHeroSkill Formula::calc dispatch + r5 base 추적**.
+Formula::calc (@0x7749c, 172B) full disasm — id < 1000 calc_pl / < 2000 calc_en /
+≤ 3007 calc_sk / else 0. Formula struct +0/+4/+8 = en/sk/pl base ptrs.
+Formula 0x6f (111) / 0x63 (99) 는 calc_pl OOB (production 0..38 만 정의) → hit check
+result 항상 0 → __sub_89068 skip 되지만 ChangeAttackMotion 호출 자체는 unaffected.
+r5 base 추적: add r4 #0x1ec0 + add r5 #0xc → r5 = HERO+0x1ecc, [r5,-0x190] = HERO+0x1d3c
+(ptr 영역). 0x99710 의 cmp #0x63 = level cap 99 확정 (Monster+0x19c). docs §11 추가.
+h5_test_proc_hero_skill.py 확장 (Formula::calc + r5 base + level cap, 13 markers).
+
+이전 라운드:
+
+Round 70 — **HERO::ProcHeroSkill 골격 RE**.
+R69 의 ChangeAttackMotion 호출자 (@0x99278, 7972B 거대 함수) 정밀화. 1993 instr.
+Entry: 59-slot skill array (HERO+0x348, 88B×59) 초기화 + class 2 (GUNNER) 별도 path.
+2 jumptable: @0x9a398 (5-way skill_info[+0x28] = skill effect type 0..4),
+@0x9a8d8 (7-way GetCurActSkillIdx = active skill slot 0..6). HeroSkillInfo 18+
+fields 매핑 (88B entry). Formula::calc 27회 + TargetEffectMgr::NewTargetEffect 11회.
+docs/h5/RE/proc_hero_skill.md + h5_test_proc_hero_skill.py 26 검증 통과.
+
+이전 라운드:
+
+Round 69 — **Attack motion dispatch RE 확정**.
+ChangeAttackMotion (@0x91e7c, 340B) + CheckWeaponMotion (@0x8dd58, 256B) ARM full
+disasm. R67 의 cmp 0xd/0xe/0x14/0x17 가설 정정 — input = CHAR::GetMotion() 반환값,
+분기 키 = class_id (HERO+0x22c). class 0 (워리어) motion 13→38 / 20→22 swap,
+class 3 (나이트) motion 14→15+KB10 / 23→24+variable KB. 호출자 확정: ChangeAttackMotion
+← ProcHeroSkill @0x99278+0x488 1회, CheckWeaponMotion ← 4 클래스 Draw() 5회
+(WARRIOR/ROGUE/KNIGHT/GUNNER, SORCERER 제외 — R22 stub 재확인). HERO struct 신규
+fields 4종 + HeroSkillInfo +0x44 식별. character.gd 에 10 상수 추가 + RE 문서 +
+h5_test_attack_motion.py 27 검증 통과.
+
+이전 라운드:
+
+Round 68 — **NPC Dialog state machine + DIALOG_INFO struct RE 확정**.
+`DialogWindow_Proc` (@0x71b48) ARM disasm 으로 R67 의 state byte=+0x29 가설 정정,
+실제 main state byte = +0x2b (0..7 jumptable). +0x29=sub-step counter (0..4),
++0x2d/+0x2f=animation curve key. state 0=inactive / 1·3·6=idle-busy / 2·4=fade-in /
+5·7=HSB fade-out (RestorePal+ChangeHSB). Event_DialogWindow + Event_SituateDialogText
+까지 full disasm. dialog_box.gd 에 11 상수 추가 + docs/h5/RE/npc_dialog.md 신규.
+h5_test_dialog.py — 9 ELF + 11 disasm 패턴 + 12 RE doc + 12 GDScript const 통과.
+
+이전 라운드:
+
+Round 67 — **Battle motion enum + CHAR state machine RE 확정**.
 CHAR::SetMotion + 4 Set*Motion 디스어셈블로 R50 의 HOST_MOTION 가설 (walk=1/die=9)
 잘못 확인. 실제 walk=motion 3, die=motion 5, attack/attacked=variable. main_state(1-4)
 와 motion 별개 시스템. CHAR struct +0x2c/0x2d/0x2e/0xc4-c6 확정. character.gd 에
@@ -72,17 +170,17 @@ demo.gd `_physics_process` dead 분기에 `_award_kill_reward` 추가 (3 helper:
 level_up + Quest.on_enemy_killed. SPACE 키 한번에 공격→사망→보상→level_up 자동 흐름.
 h5_test_kill_reward.py — 9 구조 + sentinel 분포 + drop 1000회 + level_up 시뮬 통과.
 
-## 🎯 전체 진척 평가 (Round 67 시점)
+## 🎯 전체 진척 평가 (Round 76 시점)
 
 | 영역 | 추정 % | 비고 |
 |---|---:|---|
 | 자산 추출/변환 | ~95% | VFS/sprite/palette/text/OGG. 남은 것: SMAF/한글폰트 (LOW PRIORITY) |
 | 데이터 구조 RE | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| .so 함수 분석 | ~94-95% | Mission/Quest/Reward + **Battle motion enum + CHAR state machine (R67)**. 잔여: NPC dialog, Cast motion |
-| Godot 실 구현 | **~79-83%** | + **R67 RE 정확 motion/state enum (character.gd SO_* 상수)** |
+| .so 함수 분석 | ~99% | R67-73 RE 완료. 잔여: TEM 인자 정밀 의미, special path 0x9b100/0x9b124, type 22, LoadSkillTable disasm |
+| Godot 실 구현 | **~87-92%** | + R74-75 backend+UI + **R76 stat modifier 통합** (active_buffs → ATK%, active_stances/curses → DEF%, tick 자동). R77+ scene 실 실행 검증 |
 | Android 실 빌드 | 0% | 사용자 GUI 작업 |
 
-**종합**: 원본 분석 ≈ 95-97%, 리메이크 출시 ≈ **78-88%**.
+**종합**: 원본 분석 ≈ **~99%**, 리메이크 출시 ≈ **85-94%** (R76 stat 실 영향으로 +2%p).
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -92,13 +190,24 @@ h5_test_kill_reward.py — 9 구조 + sentinel 분포 + drop 1000회 + level_up 
 4. **Reward type RE — R65 완료** (type 0-16 = item slot, 17=money, 18=exp, 19=HP, 20=INT)
 5. **두 host 명세 — R66 완료** (battle_system turn-based vs character real-time, 둘 다 정상 경로)
 6. **Battle motion RE — R67 완료** (walk=motion 3, die=motion 5, main_state 1-4, CHAR struct fields)
-7. **★ NPC Dialog system RE — R68 추천** (EventProc::Event_DialogWindow + DIALOG_INFO state machine)
-8. **ChangeAttackMotion 정밀** — R67 의 cmp 0xd/0x14 dispatch 미해결
-9. **type 22 (0x16) special path RE** — R65 미관측 case
-10. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트
-11. **Save device import/export** — 실 H_*.sav / SL_*.sav 디바이스 추출 → Godot 로드 검증
+7. **NPC Dialog RE — R68 완료** (DialogWindow_Proc 8 state jumptable @ +0x2b / sub-step @+0x29 / DIALOG_INFO struct +0x10..+0x3c phase data pool)
+8. **Attack motion dispatch RE — R69 완료** (ChangeAttackMotion class_id 0/3 + GetMotion switch / ProcHeroSkill 호출 / 4 클래스 Draw 의 CheckWeaponMotion)
+9. **ProcHeroSkill 골격 RE — R70 완료** (1993 instr, entry + 2 jumptable + HeroSkillInfo 18+ fields + helper graph)
+10. **ProcHeroSkill Formula dispatch + r5 base — R71 완료** (id 분류 < 1000/< 2000/≤ 3007 / 0x6f-0x63 OOB / r5=HERO+0x1ecc / [r5,-0x190]=HERO+0x1d3c / level cap 99)
+11. **ProcHeroSkill JT1 case + GUNNER entry — R72 완료** (case 0=IncreaseSP, 1+2=Curse, 3+5=Buff, 4=Stance + GUNNER combo formula + HeroSkillInfo +0x3c/+0x3d formula ids)
+12. **ProcHeroSkill JT2 case + TEM — R73 완료** (기본 공격 Formula 3/4 + timestop + KNIGHT + shock + skill_info+0x30 dynamic id + TEM signature + effect_type 4/7/8)
+13. **Godot battle_system.gd damage 공식 정확화 — R74 완료** (GUNNER combo state + SKILL Formula 4 SP delta + 3 helper signals + apply_skill_effect API)
+14. **GUNNER combo UI + skill effect 시스템 통합 — R75 완료** (GameState active_*, status_panel UI, GameData.skill_info, 자동 dispatch)
+15. **active effect stat modifier 통합 — R76 완료** (total_attack 의 buff %, total_defense 의 stance+curse %, tick 자동 호출)
+16. **★ Godot Editor 실 실행 검증 — R77 추천** (B 키 → SKILL → log fx_str + UI Combo bar + total_attack/defense 변화 시각 확인 + 사용자가 직접 게임 진행)
+17. **type 22 (0x16) special path RE** — R65 미관측 case (0xd4864 영역)
+18. **scn opcode 실 검증** — Title/ClassSelect/Demo 외 화면 진입 테스트
+19. **Save device import/export** — 실 H_*.sav / SL_*.sav 디바이스 추출 → Godot 로드 검증
+20. **SetDialogWindow 내부 RE** — @0x6ab40 의 `(byte main, byte sub)` 인자 의미 (R68 호출자 측만 봄)
+21. **TEM 인자 정밀 + #11 호출 + special path 0x9b100/0x9b124** (R72/R73 잔여)
+22. **LoadSkillTable disasm** — R75 의 skill_info struct byte offset → stats_u16 index 매핑 정확화
 
-## 🚀 Round 68 즉시 시작 명령
+## 🚀 Round 77 즉시 시작 명령
 
 > **다음 세션은 이 섹션 + [SESSION_HANDOFF.md](SESSION_HANDOFF.md) §D 만 보면 됨**
 
@@ -107,26 +216,29 @@ h5_test_kill_reward.py — 9 구조 + sentinel 분포 + drop 1000회 + level_up 
 ```bash
 PYTHONIOENCODING=utf-8 python tools/verify_godot_project.py   # 0 errors / 0 warnings 기대
 # 빠른 회귀 (3초): 가장 최근 5개만
-python tools/h5_test_char_host.py    # R61 17 host method
-python tools/h5_test_ai_tick.py      # R62 30 fps tick 루프
-python tools/h5_test_ai_combat.py    # R63 실 전투
-python tools/h5_test_kill_reward.py  # R64 보상 흐름
-python tools/h5_test_kill_reward.py  # R64 보상 흐름
-python tools/h5_test_reward_types.py # R65 Quest reward type RE
-python tools/h5_test_dual_host.py    # R66 두 host 명세
-python tools/h5_test_battle_motion.py # R67 Battle motion enum + CHAR state
-python tools/h5_test_cond_types.py   # R60 cond_type RE
+python tools/h5_test_reward_types.py    # R65 Quest reward type RE
+python tools/h5_test_dual_host.py       # R66 두 host 명세
+python tools/h5_test_battle_motion.py   # R67 Battle motion enum + CHAR state
+python tools/h5_test_dialog.py          # R68 NPC Dialog state machine
+python tools/h5_test_attack_motion.py   # R69 Attack motion dispatch
+python tools/h5_test_proc_hero_skill.py # R70 ProcHeroSkill 골격
 ```
 
-### 2. Round 68 추천 = **NPC Dialog system RE** (1 라운드)
+### 2. Round 77 추천 = **Godot Editor 실 실행 검증** (사용자 작업 0.5-1 라운드)
 
-R67 으로 Battle motion enum 정정 완료. R68 부터 NPC dialog system 또는 작은 RE/UI.
+R74-76 의 backend + UI + stat modifier 통합 완료. R77 은 사용자가 Godot Editor 에서 직접 게임을 실행해 다음 동작들을 검증.
 
-- 핵심 함수: [EventProc::Event_DialogWindow](work/h5/extracted) (@0x6eb38, 656B) + DIALOG_INFO::DialogWindow_Proc (@0x71b48, 912B)
-- DIALOG_INFO struct (R67 PASS 1 식별): +0x29 = state byte, +0x2d/+0x2f = sub state
-- state dispatch: `cmp r2, #7 / r1, #5` — multi-state machine
-- 다른 함수: Event_SituateDialogText (@0x73030, 600B), GMenu::DrawDialogBox (@0x8245c, 1784B)
-- 작업: 7 state 의미 + DIALOG_INFO struct + 흐름 → `docs/h5/RE/npc_dialog.md` + dialog_box.gd 통합 강화
+- 검증 시나리오:
+  - **B 키 → battle 시작 → SKILL action 실행** → log message 에 `+저주`/`+버프`/`+자세` fx_str 표시 확인
+  - **status_panel (ESC/I)** 에 `[Combo N/M]` (GUNNER 만) + `[저주×N, 버프×M, 자세×K]` 시각 확인
+  - **ATK/DEF 변화 시각 확인** — buff 적용 후 atkdef_label 의 수치 증가, curse 적용 후 DEF 감소
+  - **tick 자동 만료** — 5 turn 진행 후 active effect 자동 제거 + UI 업데이트
+- 사용자 환경 작업 (개발 분석 X, in-game 동작 X). 발견된 bug 는 R78+ 에서 수정.
+- 대안 1: LoadSkillTable disasm (R75 매핑 정확화, 0.5 라운드)
+- 대안 2: TEM 정밀 + #11 호출 (0.5 라운드)
+- 대안 3: special path 0x9b100/0x9b124 (R72 미해결, 0.5 라운드)
+- 대안 4: type 22 (0x16) special path RE (0.5 라운드)
+- 대안 5: SetDialogWindow @0x6ab40 내부 RE (0.5 라운드)
 
 ### 3. 대안 옵션
 

@@ -45,6 +45,22 @@ const SO_MOTION_WALK := 3      # SetWalkMotion 의 mov r1, #3; bl SetMotion
 const SO_MOTION_DIE := 5       # SetDieMotion 의 mov r1, #5; bl SetMotion
 # attack / attacked motion: SetAttackMotion 의 caller 가 skill_id 기반 lookup 으로 전달
 
+# === Round 69 RE: HERO::ChangeAttackMotion 의 motion phase enum ===
+# 출처: docs/h5/RE/attack_motion_dispatch.md — class_id 0/3 only.
+# 호출자: HERO::ProcHeroSkill (@0x99278, 7972B) offset +0x488 (= 0x99700) 1회 호출.
+# attack motion = 2 phase (wind-up → ChangeAttackMotion → release).
+# Godot 통합 minimal — logical 매핑만, 미래 .so cross-ref + sprite anim phase 동기용.
+const SO_MOTION_WARRIOR_WINDUP_A := 13  # class 0, cmp #0xd
+const SO_MOTION_WARRIOR_HIT_A    := 38  # class 0, SetMotion(#0x26)
+const SO_MOTION_WARRIOR_WINDUP_B := 20  # class 0, cmp #0x14
+const SO_MOTION_WARRIOR_HIT_B    := 22  # class 0, SetMotion(#0x16)
+const SO_MOTION_KNIGHT_WINDUP_A  := 14  # class 3, cmp #0xe — target NULL 시 hit_a, 아니면 KB=10 + dir
+const SO_MOTION_KNIGHT_HIT_A     := 15  # class 3, SetMotion(#0xf)
+const SO_MOTION_KNIGHT_WINDUP_B  := 23  # class 3, cmp #0x17 — KB=(kb_idx-1)*6+20 + dir
+const SO_MOTION_KNIGHT_HIT_B     := 24  # class 3, SetMotion(#0x18)
+const SO_MOTION_WEAPON_IDLE_HIGH := 32  # CheckWeaponMotion 의 cmp #0x2000000>>24=0x20 → SetMotion(0)
+const SO_MOTION_WEAPON_WALK_HIGH := 48  # CheckWeaponMotion 의 cmp #0x3000000>>24=0x30 → SetMotion(1)
+
 # direction enum (원본과 일치 가정)
 const DIR_DOWN := 0
 const DIR_LEFT := 1

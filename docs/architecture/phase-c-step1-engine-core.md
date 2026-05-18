@@ -68,7 +68,27 @@ JAVA_HOME=".../jdk-21" ./gradlew :engine-core:build :app:assembleDebug :app:test
 
 ## 다음 단계
 
-### Step 2 — Quest.kt + ShopRegistry.kt 이전 (interface 추출)
+### Step 2 — ✅ 완료 (commit `5e511839`, 2026-05-19)
+
+`engine-core/src/main/kotlin/com/hero3/remake/engine/GameStateView.kt` 신설:
+
+```kotlin
+interface GameStateView {
+    var activeQuestIds: Set<String>
+    var doneQuestIds: Set<String>
+    var gold: Int
+    fun isBossDefeated(id: String): Boolean
+    fun saveInventory(inv: Inventory)
+}
+```
+
+`GameState.kt` 가 implement (5 멤버에 `override` 추가). `Quest.kt` + `ShopRegistry.kt` 의 `GameState` 참조 → `GameStateView`. 두 파일 engine-core 로 이전. `QuestScene.kt` cross-module smart cast 우회.
+
+빌드 검증: `:engine-core:build` (15 main files) + `:app:assembleDebug` + `:app:testDebugUnitTest` 통과.
+
+**현재 engine-core 15 main + 4 test files** (총 ~1,344 lines). 잔류 in android/app: GameState, GameView, Scene, Settings, Strings, UiKit, VirtualKeypadView (7 files).
+
+### Step 2 — (HISTORY) interface 설계 가이드
 
 현재:
 ```kotlin
@@ -105,11 +125,38 @@ class QuestLog(private val state: GameStateView) { ... }
 - `isBossDefeated(id: String): Boolean`
 - `saveInventory(): Unit`
 
-### Step 3 — KMM 변환
+### Step 3 — ✅ 완료 (commit `4b5e056d`, 2026-05-19)
 
-`engine-core/` 의 build script 를 `org.jetbrains.kotlin.multiplatform` 으로 전환, `src/main/kotlin` → `src/commonMain/kotlin` 으로 이동. expect/actual 필요 항목:
-- 없음 (지금 12 파일은 순수 Kotlin)
-- Step 2 에서 추출한 interface 도 commonMain
+`engine-core/build.gradle.kts` 를 `org.jetbrains.kotlin.multiplatform` 으로 전환:
+
+```kotlin
+plugins {
+    id("org.jetbrains.kotlin.multiplatform")
+    id("com.android.library")
+}
+kotlin {
+    androidTarget { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
+    jvm()
+    sourceSets {
+        commonTest { dependencies { implementation(kotlin("test")) } }
+    }
+}
+android {
+    namespace = "com.hero3.remake.engine"
+    compileSdk = 35
+    defaultConfig { minSdk = 24 }
+}
+```
+
+- `src/main/kotlin` → `src/commonMain/kotlin` (15 main files)
+- `src/test/kotlin` → `src/commonTest/kotlin` (4 test files)
+- JUnit 4 → kotlin.test 마이그레이션 (signature 호환, 본문 무변경)
+- root `android/build.gradle.kts` 에 plugin 등록 (kotlin.multiplatform 2.0.20 + com.android.library 8.7.2)
+- expect/actual 필요 없음 (현재 15 main 파일 모두 순수 Kotlin)
+
+빌드 검증: `:engine-core:build` 83 tasks 통과 (androidDebug + androidRelease + jvm 컴파일 + 테스트 모두) + `:app:assembleDebug`.
+
+### Step 3 — (HISTORY) 가이드
 
 ### Step 4 — Compose Multiplatform UI
 

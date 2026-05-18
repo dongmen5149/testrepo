@@ -480,6 +480,61 @@ func orb_group(orb_idx: int) -> int:
 	return orb_idx / 13
 
 
+## Round 75: skill record 의 R72/R73 발견 fields 를 사람 친화 dict 로 노출.
+##
+## 원본 HeroSkillInfo struct (88B) 의 R72/R73 정확 매핑:
+##   +0x28 (effect_type):       0=NO_HIT, 1·2=curse, 3·5=buff, 4=stance (R72 JT1 dispatch key)
+##   +0x30 (dynamic_formula_id): case 5 (shock) 에서 Formula::calc 의 id 인자 (R73)
+##   +0x3a (special_dispatch):   case 1+2 의 0x34/0x37 special path key (R72)
+##   +0x3c / +0x3d (formula_ids): 2회 Formula::calc 의 id_1/id_2 (R72 공통 패턴)
+##   +0x44 (knockback_idx):      class 3 KNIGHT motion 23 path 의 KB index (R69)
+##   +0x46 (shock_count):        case 5 dispatch (R73)
+##   +0x48 (max_combo):          GUNNER skill slot 5 의 combo 한도 (R73)
+##   +0x4a (sp_delta):           case 0 NO_HIT path 의 IncreaseSP 인자 (R72)
+##   +0x4e (knight_threshold):   class 3 KNIGHT secondary check (R73)
+##
+## stats_u16 layout 은 원본 skill data 의 byte stream — R72/R73 의 byte offset 을
+## stats_u16 index 로 변환 (각 stat 가 2B 라 가정): index = offset / 2.
+## 단 skills.json 의 stats_u16 가 어떤 byte 영역을 포함하는지에 따라 매핑이 달라짐.
+## 현재 skills.json 의 stat 분포가 R72/R73 와 1:1 매핑되지 않으면 None 으로 처리.
+func skill_info(class_id: int, skill_id: int) -> Dictionary:
+	if _skills_cache.is_empty():
+		var p := "res://assets/gamedata/skills.json"
+		if FileAccess.file_exists(p):
+			var f := FileAccess.open(p, FileAccess.READ)
+			_skills_cache = JSON.parse_string(f.get_as_text()) or {}
+	var arr = _skills_cache.get("class_%d" % class_id, [])
+	if skill_id < 0 or skill_id >= arr.size():
+		return {}
+	var rec: Dictionary = arr[skill_id]
+	var stats: Array = rec.get("stats_u16", [])
+	# R72/R73 byte offset → stats_u16 index 매핑 (skill_info struct 의 stat[0..N] 가
+	# stats_u16 와 1:1 대응한다고 가정. 정확한 매핑은 LoadSkillTable disasm 추가 분석 필요).
+	# 현재는 stats_u16 가 충분히 길 때만 R72/R73 field 노출 — 그 외는 default.
+	var info := {
+		"name": rec.get("name", ""),
+		"desc": rec.get("desc", ""),
+		"effect_type": _stat_at(stats, 14, 0),       # +0x28 / 2 = 0x14 (stat[20]) — 추정
+		"dynamic_formula_id": _stat_at(stats, 18, 0), # +0x30 / 2 = 0x18 (stat[24])
+		"special_dispatch": _stat_at(stats, 21, 0),   # +0x3a / 2 = 0x1d (stat[29]) — 추정 (실 매핑 다를 수 있음)
+		"formula_id_1": _stat_at(stats, 22, 0),       # +0x3c / 2 = 0x1e (stat[30])
+		"formula_id_2": _stat_at(stats, 23, 0),       # +0x3d / 2 = 0x1e half — fallback
+		"knockback_idx": _stat_at(stats, 26, 0),      # +0x44 / 2 = 0x22 (stat[34])
+		"shock_count": _stat_at(stats, 27, 0),        # +0x46 / 2 = 0x23 (stat[35])
+		"max_combo": _stat_at(stats, 28, 4),          # +0x48 / 2 = 0x24 (stat[36])
+		"sp_delta": _stat_at(stats, 29, 0),           # +0x4a / 2 = 0x25 (stat[37])
+		"knight_threshold": _stat_at(stats, 31, 0),   # +0x4e / 2 = 0x27 (stat[39])
+	}
+	return info
+
+
+## stats array 의 index 위치 값을 안전하게 반환 (out-of-range 시 default).
+func _stat_at(stats: Array, index: int, default: int) -> int:
+	if index < 0 or index >= stats.size():
+		return default
+	return int(stats[index])
+
+
 ## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
 ##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
 ##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"

@@ -45,6 +45,11 @@ signal item_used(item_name: String)
 
 func _ready() -> void:
 	visible = false
+	# Round 76: GameState.state_changed (R75 의 active effect Array 변화 + R76 의 tick 만료)
+	# 발생 시 visible 인 패널 자동 갱신. R75 의 GUNNER combo bar 와 R75-76 의 active
+	# effect 카운트 / total_attack-defense 가 panel 열린 채로 실시간 반영.
+	if GameState.has_signal("state_changed"):
+		GameState.state_changed.connect(_on_state_changed)
 	inv_list.item_activated.connect(_on_item_activated)
 	inv_list.item_selected.connect(_on_item_hover)
 	str_btn.pressed.connect(func(): GameState.allocate_stat("str"))
@@ -255,11 +260,36 @@ func set_state(s: Dictionary) -> void:
 	if visible: _apply()
 
 
+## Round 76: GameState.state_changed signal handler (R75 active effect + R76 tick).
+## panel 이 visible 일 때만 _apply() 호출 — 불필요한 redraw 회피.
+func _on_state_changed() -> void:
+	if visible: _apply()
+
+
 func _apply() -> void:
 	hp_label.text = "HP %d / %d" % [_state["hp"], _state["max_hp"]]
 	sp_label.text = "SP %d / %d" % [_state["sp"], _state["max_sp"]]
-	lvl_label.text = "Lv %d  EXP %d" % [_state["level"], _state["exp"]]
-	gold_label.text = "Gold %d" % _state["gold"]
+	# Round 75: GUNNER (class_id=2) 의 combo state 시각화. lvl_label 에 append.
+	#   원본 HERO+0x269 (R72) — skill slot 5 (combo shot) 사용 시 누적 hit counter.
+	#   GUNNER 가 아닐 때는 표시 안 함.
+	var lvl_text := "Lv %d  EXP %d" % [_state["level"], _state["exp"]]
+	if GameState.class_id == 2 and GameState.gunner_combo > 0:
+		lvl_text += "  [Combo %d/%d]" % [GameState.gunner_combo, GameState.gunner_max_combo]
+	lvl_label.text = lvl_text
+	# Round 75: active effect (curse/buff/stance) 수 시각화. gold_label 에 append.
+	#   battle_system 의 helper signal (R74) 가 GameState.active_* 에 entry 추가.
+	#   효과 자체는 R76+ 에서 stat modifier 통합 예정 — 현재는 count 만.
+	var gold_text := "Gold %d" % _state["gold"]
+	var n_curse := GameState.active_curses.size()
+	var n_buff := GameState.active_buffs.size()
+	var n_stance := GameState.active_stances.size()
+	if n_curse + n_buff + n_stance > 0:
+		var parts: Array = []
+		if n_curse > 0: parts.append("저주×%d" % n_curse)
+		if n_buff > 0:  parts.append("버프×%d" % n_buff)
+		if n_stance > 0: parts.append("자세×%d" % n_stance)
+		gold_text += "  [%s]" % ", ".join(parts)
+	gold_label.text = gold_text
 	if atkdef_label:
 		var bonus = GameState.equipment_bonus()
 		var atk_total = GameState.total_attack()

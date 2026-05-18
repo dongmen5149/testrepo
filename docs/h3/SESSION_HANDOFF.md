@@ -1,136 +1,268 @@
-# Hero3 인수인계 노트 (Round 73 종료 시점, 2026-05-19)
+# Hero3 인수인계 노트 (Round 73 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.95%**. 🏆 **R73 DES 8/8 파일 복호화 성공** (Hero5 mx_des_decrypt 변종 + key 0EP@KO91). R58 의 "NDK runner 필수" 가설 폐기. **i15_dat = master shop catalog** 한글 텍스트 발견. SMAF pipeline 작성 (외부 도구 부재 graceful detection).
+**Hero3 분석 진행률 ~99.95%**. 🏆 **R73 DES 8/8 파일 복호화 성공** (Hero5 mx_des_decrypt 변종). i15_dat = master shop catalog 확정. **남은 작업은 사실상 두 가지**: (A) **R73 의 8 평문 파일 정밀 파서** (자동 가능, 즉시 진행), (B) **SMAF→OGG 변환** (사용자 신뢰도 정책 — 도구 설치 승인 대기).
 
-마지막 commit: `54e14071 feat:영웅서기4 Round 72 — E/BSDAT + ESDAT 6 파일 정밀 파싱 (559 entries)` (H3 R72 흡수)
+마지막 commit: **`55c5dc59 feat:영웅서기3 Round 73 — 🎉 DES 8/8 파일 복호화 성공`** (working tree clean for h3)
 
-**Round 73 산출물 = uncommitted**:
-- 신규 doc 2: [`smaf_conversion_guide.md`](smaf_conversion_guide.md) + [`ghidra-round73-des-success-smaf-pipeline-2026-05-19.md`](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md)
-- 신규 스크립트 2: `tools/converter/decrypt_h3_mx_des.py` + `convert_h3_smaf_pipeline.py`
-- 신규 복호화 산출물 (work/h3/decrypted/, gitignored): `i15_dat.plain` + 7 others
-- MASTER_SPEC §10 갱신 (DES 0 pending)
-- PROGRESS.md / SESSION_HANDOFF.md / MEMORY.md 갱신
+## 1. 다음 세션 즉시 시작 가이드 (R74)
 
-## 1. 즉시 진행 가능한 작업 (R74)
+### 1.1 ⭐⭐⭐⭐⭐ Phase A: DES 평문 정밀 파서 (자동, 권장 우선)
 
-### 1.1 ⭐⭐⭐⭐ DES 평문 데이터 정밀 파싱
+R73 의 8 plain 파일 (`work/h3/decrypted/*.plain`) 을 typed Kotlin object 로 디코드.
+**도구 설치 불필요, 즉시 진행 가능.**
 
-R73 의 8 plain 파일을 typed Kotlin object 로 디코드:
+#### A-1. i15_dat parser (master shop catalog)
+- 평문 7,400B, 한글 description 직접 포함
+- entry 구조: `[size:1B][reserved:1B][name_len:1B][name:EUC-KR][body:desc text]`
+- body 예: `"레벨 10 투구; 머리띠; 보스용도 15년; "`
+- 신규: `tools/recon/parse_h3_i15_dat.py`
+- 결과: `work/h3/recon/i15_shop_catalog.json` (shop entry list)
 
-1. **i15_dat parser** — master shop catalog text DB
-   - entry = (size, name, description text)
-   - body 가 "레벨 10 투구; 머리띠; 보스용도 15년;" 같은 자연어
-   - 텍스트 → 구조화 (level / category / desc 분리)
+#### A-2. drop_dat / droph_dat parser (enemy 별 drop table)
+- 평문 3,080B, 18-byte stride entry + `11 00` separator
+- 가설: enemy_id (1B?) + drop items[N] × (item_id + drop_rate%)
+- normal vs hard 비교로 enemy_id ↔ R56 의 161 enemies 매칭 가능
+- 신규: `tools/recon/parse_h3_drop_dat.py`
+- 결과: `work/h3/recon/drop_table.json`
 
-2. **drop_dat / droph_dat parser** — 18-byte stride entry
-   - `11 00` separator 의 의미 (drop_count 또는 entry header)
-   - enemy_id ↔ drop item_id + drop_rate% 매핑
+#### A-3. smith_dat / smithh_dat parser (조합 레시피)
+- 평문 896B, entropy 3.84 (매우 낮음)
+- 가설: input items (i14 조합재료) + output item (i0~i12 결과물) + cost(gold)
+- R69 의 i14 7 카테고리와 매칭
+- 신규: `tools/recon/parse_h3_smith_dat.py`
 
-3. **smith_dat / smithh_dat parser** — i14 → i0~i12 레시피
-   - input items + output item + cost(gold) 구조 추정
+#### A-4. shop_dat / shoph_dat parser (상점 NPC 별 판매 목록)
+- 평문 1,008B
+- 가설: NPC_id + items[] × (item_id + price modifier)
+- R57 의 8 main regions 와 매칭 (네오솔티아 / 토레즈 / 엔자크 등)
+- 신규: `tools/recon/parse_h3_shop_dat.py`
 
-4. **shop_dat / shoph_dat parser** — 상점 NPC 별 판매 목록
-   - price 정보 + item_id 표
+#### A-5. getitem_dat parser (fixed drops)
+- 평문 400B (작음, 50 entries × 8B)
+- 가설: quest 보상 / scripted drop 의 fixed item table
 
-5. **boss skill ID H4 가설 검증** — R67/R68 의 결론. drop_dat 또는 신규 dat 안에 boss AI table 있는지 확인
+#### A-6. boss skill ID H4 가설 최종 검증 (R67/R68 후속)
+- R67 H4 (별도 boss skill table) 가설.
+- DES 평문 데이터에서 boss skill ID (1..20 range) 검색
+- distinct IDs: {1, 2, 3, 5, 7, 8, 9, 10, 13, 14, 19, 20}
+- 패턴 (3,2,1,2), (19,13,9,9) 등을 drop_dat / smith_dat / shop_dat 안에서 검색
+- 가능성: drop_dat 의 18-byte stride entry 가 사실 boss skill encounter table
 
-### 1.2 ⭐⭐⭐ Hero3Catalog 확장
+#### A-7. Hero3Catalog 확장
+- R71 의 Hero3Catalog 에 다음 data class 추가:
+  - `Hero3ShopEntry(name, level, category, description, classRestriction, ...)`
+  - `Hero3DropEntry(enemyId, drops: List<Hero3DropItem>)`
+  - `Hero3DropItem(itemId, ratePercent)`
+  - `Hero3Recipe(inputs: List<ItemRef>, output: ItemRef, goldCost)`
+  - `Hero3ShopCatalog(npcId, region, sellsItems: List<ShopItemRef>)`
 
-R73 산출물 → R71 Hero3Catalog 에 통합:
-- Hero3ShopEntry / Hero3DropEntry / Hero3Recipe data class 추가
-- game_balance.json v1.2 (582KB → ~700KB 예상)
+#### A-8. game_balance.json v1.2 출력
+- export_game_balance.py 수정 → DES 평문 데이터 통합
+- 예상 크기: 582KB → ~700KB
 
-### 1.3 ⭐⭐ Compose MP UI 마이그레이션 (Phase C Step 4d)
+### 1.2 ⭐⭐⭐ Phase B: SMAF→OGG 변환 (사용자 신뢰도 정책 대기)
 
-엔진 코드 분리의 마지막 단계.
+**상태**: R73 에서 pipeline 스크립트 + 설치 가이드 작성 완료. 외부 도구 부재로 변환 미실행.
 
-## 2. 사용자 환경 필수 작업
+**사용자 정책**: "신뢰도 높은 것만 다운로드" → smaf-converter.jar (개인 GitHub) 와 FluidR3_GM.sf2 (비공식 미러) 보류.
 
-### 2.1 ⭐⭐ SMAF → OGG 변환
+**신뢰도 높은 도구만 진행 가능한 경로**:
 
-R73 의 pipeline 스크립트 + 가이드 작성 완료. 외부 도구 4종 설치만 하면 즉시 33 파일 변환:
-1. smaf-converter.jar (https://github.com/antanas-vasiliauskas/smaf-converter)
-2. TiMidity++ 또는 FluidSynth
-3. FluidR3_GM.sf2 (130MB SoundFont)
-4. FFmpeg (`winget install Gyan.FFmpeg`)
+| 도구 | 신뢰도 | 출처 | 설치 명령 |
+|---|---|---|---|
+| FFmpeg | 🟢 매우 높음 | winget 공식 | `winget install Gyan.FFmpeg` |
+| FluidSynth | 🟢 매우 높음 | winget 공식 | `winget install FluidSynth.FluidSynth` |
+| `mido` | 🟢 높음 | PyPI 공식 | `pip install mido` |
+| `pyFluidSynth` | 🟢 높음 | PyPI 공식 | `pip install pyFluidSynth` |
+| `pydub` | 🟢 높음 | PyPI 공식 | `pip install pydub` |
+| Windows `gm.dls` | 🟢 매우 높음 | OS 동봉 (`C:\Windows\System32\drivers\gm.dls`) | (이미 있음) |
+| smaf-converter.jar | 🔴 낮음 | 개인 GitHub repo | (보류) |
+| FluidR3_GM.sf2 | 🟡 보통 | 비공식 미러 | (보류) |
 
-설치 후:
-```bash
-python tools/converter/convert_h3_smaf_pipeline.py
+**대안 전략 (R74 Phase B)**:
+1. winget + PyPI 만 사용해서 도구 설치
+2. **SMAF→MIDI 변환을 Pure Python 자체 구현** (third-party JAR 회피)
+   - SMAF format spec 기반 직접 작성
+   - score chunk → MIDI events 변환
+   - 음색 정확도 낮음 but 멜로디/리듬 100% 보존
+   - 코드 review 가능 (repo 안)
+3. MIDI+gm.dls → WAV (FluidSynth 또는 pyFluidSynth)
+4. WAV → OGG (FFmpeg)
+
+**다음 세션에서 결정 필요**:
+- 사용자가 winget + pip 설치 승인하면 → R74 Phase B 진행
+- 보류하면 → R74 Phase A (DES 평문 파서) 만 진행 후 R75 이후에 Phase B
+
+### 1.3 ⭐⭐ Phase C: Dialogue LLM 번역
+
+- 9,740 entries, $4.09 추정 (Claude Sonnet 4.6)
+- R69 의 `work/h3/translation_queue.json` 사용
+- 사용자가 LLM API key 또는 Claude API 직접 호출 가능 시 자동 진행
+
+## 2. 작업 순서 권장 (다음 세션)
+
 ```
-
-자세한 가이드: [smaf_conversion_guide.md](smaf_conversion_guide.md).
-
-### 2.2 ⭐⭐ Dialogue LLM 번역
-
-9,740 entries, $4.09 추정 (Claude Sonnet 4.6). R69 의 `work/h3/translation_queue.json` 사용.
-
-## 3. Round 73 핵심 발견
-
-### 3.1 DES 8/8 복호화 성공 (🏆)
-
+1. git status + git log --oneline -5   (현재 상태 확인)
+2. 이 문서 + MASTER_SPEC.md 확인
+3. Phase A 의 8 parser 작업 시작 (즉시):
+   - A-1 i15_dat parser
+   - A-2 drop_dat parser
+   - A-3 smith_dat parser
+   - A-4 shop_dat parser
+   - A-5 getitem_dat parser
+4. A-6 boss skill ID H4 가설 검증
+5. A-7 Hero3Catalog 확장 + 12 unit tests 갱신
+6. A-8 game_balance.json v1.2
+7. (사용자 승인 시) Phase B SMAF
+8. Round 74 doc + commit
 ```
-algorithm:  Hero5 mx_des_decrypt 변종 (startDes mode=0 + swap halves)
-key:        "0EP@KO91" (Hero3 R57 확정)
-python port: tools/h5_des.py
-```
-
-| 파일 | 검증 |
-|---|---|
-| i15_dat | 한글 "붉은머리띠 / 레벨 10 투구" 발견 = master shop catalog 확정 |
-| getitem_dat / smith_dat / smithh_dat / shop_dat / shoph_dat | entropy 3.6-4.1 = binary table 평문 |
-| drop_dat / droph_dat | 18-byte stride + `11 00` separator binary drop table |
-
-**핵심 lesson**: 벤더 공통 cipher = cross-game 1순위 시도. R58 의 1년 묵은 "NDK 필수" 가설이 30분에 해결됨.
-
-### 3.2 i15_dat = master shop catalog (★★★★★)
-
-평문 첫 entry:
-```
-@0x0008  size=52  nl=26  name=(...붉은머리띠...)
-                          body=" 레벨 10 투구; 머리띠; 보스용도 15년; "
-```
-
-→ shop NPC 가 표시하는 item description 텍스트 직접 포함.
-
-### 3.3 SMAF pipeline (★★★)
-
-33/33 SMAF 헤더 검증 통과. 외부 도구 설치 후 자동 33 파일 변환 가능.
-
-## 4. 작업 순서 권장 (R74)
-
-1. `git status` + `git log --oneline -5`
-2. `git add` + `git commit` Round 73 산출물
-3. **i15_dat parser 작성** (R74 핵심):
-   - entry 디코드 + description 텍스트 분리
-   - shop catalog → Hero3Catalog 확장
-4. **drop_dat parser**:
-   - 18-byte stride entry 디코드
-   - enemy_id ↔ drop item 매핑
-5. **smith_dat parser**:
-   - 조합 레시피 매핑
-6. **사용자 환경 진행** (병행):
-   - SMAF 도구 설치 → OGG 변환
-   - Dialogue LLM 번역
 
 목표 진행률 (R74 종료): **~99.98%**.
 
-## 5. 참고 문서
+## 3. R73 까지의 핵심 발견 요약 (참고용)
 
-- ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (§10 DES 0 pending)
+### 3.1 R56-R63 — 데이터 모델링
+
+- R56: enemy_dat (161×2) 19B stat block 발견
+- R57: DES 시스템 식별 (key `"0EP@KO91"`)
+- R58: standard 5 변종 모두 실패 (→ R73 에서 정정)
+- R59: char_dat (10 playable classes)
+- R60: skill 7 파일 (105 skills) + boss HP 위치 + 17 item 파일
+- R61: item body 정밀 디코드 (i12 ring, i13/i14, i16 enchant)
+- R62: trailer bonus pair (177/346 equip) + rarity 7 prefix
+- R63: master stat enum 24 codes 100% (i16 enchant Rosetta Stone)
+
+### 3.2 R64-R69 — 정밀화
+
+- R64: game_balance.json v1.0 + value scale + 0x14/0x19 미사용
+- R65: skill effect mask + boss 6B trailer + signed 검증
+- R66: debuff codes 정밀 + skill effect v2 (3-debuff 발견) + boss combat_rating 공식
+- R67: skill header 14B + enemy 2B trailer + boss skill 가설 H1-H4
+- R68: gun marker 0x1f + FUN_4f358 재확인
+- R69: i14 ammo system + enemy stat scaling + dialogue queue ($4.09)
+
+### 3.3 R70-R73 — 통합 + Android
+
+- R70: MASTER_SPEC 4,700 lines + exp_gold 4 그룹
+- R71: Hero3Catalog 19 data classes + Loader + 12 unit tests
+- R72: Android scene 통합 (CatalogViewerScene + BestiaryScene boss rating)
+- R73: 🏆 DES 8/8 파일 복호화 성공 + SMAF pipeline 가이드
+
+## 4. 산출물 위치
+
+### 4.1 핵심 reference (Android 리메이크 개발자가 가장 자주 봐야 할 것)
+
+- ★★★★★ [`MASTER_SPEC.md`](MASTER_SPEC.md) — 15 sections, 4,700+ lines
+- ★★★★ `work/h3/game_balance.json` (582KB v1.1, gitignored regenerable)
+- ★★★ `android/app/src/main/assets/game_balance.json` (582KB, Android assets 배포본)
+
+### 4.2 R73 신규 평문 (작업 대기)
+
+- `work/h3/decrypted/i15_dat.0EP@KO91.plain` (7,400B, master shop catalog)
+- `work/h3/decrypted/drop_dat.0EP@KO91.plain` (3,080B, drop table)
+- `work/h3/decrypted/droph_dat.0EP@KO91.plain`
+- `work/h3/decrypted/smith_dat.0EP@KO91.plain` (896B, recipe)
+- `work/h3/decrypted/smithh_dat.0EP@KO91.plain`
+- `work/h3/decrypted/shop_dat.0EP@KO91.plain` (1,008B)
+- `work/h3/decrypted/shoph_dat.0EP@KO91.plain`
+- `work/h3/decrypted/getitem_dat.0EP@KO91.plain` (400B)
+
+### 4.3 R71-R72 Android 통합 코드
+
+- `android/app/src/main/java/com/hero3/remake/catalog/Hero3Catalog.kt` (19 data classes)
+- `android/app/src/main/java/com/hero3/remake/platform/AndroidAssetReader.kt`
+- `android/app/src/main/java/com/hero3/remake/scene/CatalogViewerScene.kt` (R72 신규)
+- `android/app/src/test/java/com/hero3/remake/catalog/Hero3CatalogLoaderTest.kt` (12 tests)
+
+### 4.4 R73 신규 도구
+
+- `tools/converter/decrypt_h3_mx_des.py` — DES batch (Hero5 변종)
+- `tools/converter/convert_h3_smaf_pipeline.py` — SMAF 자동 pipeline (도구 가용 시)
+- [smaf_conversion_guide.md](smaf_conversion_guide.md) — 외부 도구 설치 가이드
+
+## 5. SMAF 변환 정책 정리 (사용자 의사 반영)
+
+R73 종료 시 사용자 정책 확인: **"신뢰도 높은 것만 다운로드"**.
+
+### 5.1 사용 가능한 도구만으로 진행 시 (R74 Phase B 권장 경로)
+
+```
+신뢰도 높음:
+  ✓ winget Gyan.FFmpeg
+  ✓ winget FluidSynth.FluidSynth
+  ✓ pip mido / pyFluidSynth / pydub
+  ✓ Windows 내장 gm.dls (System32/drivers)
+  ✓ Pure Python SMAF→MIDI 변환 (제가 작성, repo 안에 commit)
+
+보류 (사용자 정책):
+  ✗ smaf-converter.jar (개인 GitHub)
+  ✗ FluidR3_GM.sf2 (비공식 미러)
+```
+
+### 5.2 SMAF→MIDI Pure Python 구현 방향 (R74+)
+
+SMAF format 의 score chunk (track data) 만 파싱:
+- magic `MMMD` + chunk size
+- `CNTI` (Contents Info)
+- `MTR` (Score Track) — 핵심: note events
+  - `SETD` (sequence setup) — instrument, channel
+  - `MTSQ` (sequence data) — note on/off events with timing
+  - `MTSP` (instrument param) — FM synth params (변환 시 무시)
+
+→ MTSQ 의 note events 를 표준 MIDI 1.0 (SMF format) 으로 mapping.
+
+장점:
+- 신뢰도 100% (자체 코드)
+- third-party JAR 의존 없음
+
+단점:
+- Yamaha FM 합성 음색 ≠ GM SoundFont — 음색 정확도 ↓
+- 멜로디 / 리듬 / 길이는 100% 보존
+
+### 5.3 다음 세션 결정 사항
+
+R74 Phase B 시작 시 사용자 확인:
+1. winget + pip 설치 진행 (FFmpeg + FluidSynth + Python packages) — 승인?
+2. Pure Python SMAF parser 작성 진행 — 승인?
+3. Windows 내장 gm.dls 사용 — 승인?
+
+## 6. 참고 문서
+
+- ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (R73 §10 갱신)
 - [PROGRESS.md](PROGRESS.md) — 전체 진행 기록
-- [Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) — ★ 이번 라운드 (DES success + SMAF)
+- [Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) — DES 8/8 + SMAF
 - [smaf_conversion_guide.md](smaf_conversion_guide.md) — SMAF 외부 도구 가이드
 - [Round 72](ghidra-round72-scene-integration-2026-05-19.md) — Android scene 통합
-- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Hero3Catalog data layer
+- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Catalog data layer
 - [Round 70](ghidra-round70-master-spec-exp-groups-2026-05-19.md) — Master Spec
 - (R56-R69) — see MASTER_SPEC §14
-- `tools/converter/decrypt_h3_mx_des.py` — R73 DES batch
-- `tools/converter/convert_h3_smaf_pipeline.py` — R73 SMAF pipeline
-- `tools/h5_des.py` — Hero5 mx_des_decrypt Python 포팅 (Hero5 R68)
+- `tools/h5_des.py` — Hero5 mx_des_decrypt Python 포팅 (R68 산출, R73 적용)
 - 모든 round docs: `docs/h3/ghidra-*-2026-05-1[0-9].md`
 - 모든 recon scripts: `tools/recon/`
+- 모든 converter scripts: `tools/converter/`
+
+## 7. 빠른 시작 (다음 세션 첫 5 분)
+
+```bash
+# 1. 현재 git 상태 확인
+git status
+git log --oneline -3
+
+# 2. DES 평문 파일 확인 (R73 산출)
+ls work/h3/decrypted/
+
+# 3. Phase A 시작 — i15_dat parser 작성
+# 새 파일: tools/recon/parse_h3_i15_dat.py
+# 입력: work/h3/decrypted/i15_dat.0EP@KO91.plain
+# 출력: work/h3/recon/i15_shop_catalog.json
+```
+
+또는 사용자가 SMAF 진행 의사가 있으면 Phase B 도구 설치부터 시작.
+
+---
+
+**다음 세션 시작 시 가장 먼저 할 일**: 이 문서 §1 의 Phase A 또는 Phase B 중 선택. **기본 권장 = Phase A** (도구 설치 불필요, 즉시 진행).
