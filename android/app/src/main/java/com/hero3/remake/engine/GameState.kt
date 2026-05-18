@@ -14,7 +14,7 @@ import org.json.JSONObject
  *  - 퀘스트 플래그
  *  - 게임 시간/일자
  */
-class GameState(context: Context, slotId: Int = 0) {
+class GameState(context: Context, slotId: Int = 0) : GameStateView {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("hero3_gamestate_slot$slotId", Context.MODE_PRIVATE)
     val slotId: Int = slotId
@@ -51,11 +51,11 @@ class GameState(context: Context, slotId: Int = 0) {
         set(v) = edit { putInt(KEY_PARTY_LEADER, v) }
 
     /** 활성/완료 퀘스트 id 집합 (StringSet 영구). */
-    var activeQuestIds: Set<String>
+    override var activeQuestIds: Set<String>
         get() = stringSet(KEY_QUESTS_ACTIVE)
         set(v) = edit { putStringSet(KEY_QUESTS_ACTIVE, v) }
 
-    var doneQuestIds: Set<String>
+    override var doneQuestIds: Set<String>
         get() = stringSet(KEY_QUESTS_DONE)
         set(v) = edit { putStringSet(KEY_QUESTS_DONE, v) }
 
@@ -115,14 +115,14 @@ class GameState(context: Context, slotId: Int = 0) {
         get() = stringSet(KEY_BOSSES)
         set(v) = edit { putStringSet(KEY_BOSSES, v) }
 
-    fun isBossDefeated(id: String): Boolean = id in bossesDefeated
+    override fun isBossDefeated(id: String): Boolean = id in bossesDefeated
 
     fun markBossDefeated(id: String) {
         bossesDefeated = bossesDefeated + id
     }
 
     /** 소지금. 새 게임 = 200G. */
-    var gold: Int
+    override var gold: Int
         get() = prefs.getInt(KEY_GOLD, 200)
         set(v) = edit { putInt(KEY_GOLD, v) }
 
@@ -180,7 +180,7 @@ class GameState(context: Context, slotId: Int = 0) {
         }
     }
 
-    fun saveInventory(inv: Inventory) {
+    override fun saveInventory(inv: Inventory) {
         val arr = JSONArray()
         for (s in inv.all()) {
             arr.put(JSONObject().put("itemId", s.itemId).put("count", s.count))

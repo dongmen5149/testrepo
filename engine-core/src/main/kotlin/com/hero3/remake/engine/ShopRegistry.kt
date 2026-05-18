@@ -7,7 +7,7 @@ package com.hero3.remake.engine
  */
 object ShopRegistry {
     /** 매도가 (NPC → 플레이어). gameState=null 이면 base 재고만. */
-    fun stock(npcId: String, gameState: GameState? = null): List<Item> = when (npcId) {
+    fun stock(npcId: String, gameState: GameStateView? = null): List<Item> = when (npcId) {
         "merchant_bo" -> {
             val base = listOf("potion_s", "potion_m", "ether_s", "sword_iron", "armor_lthr", "herb")
             val tier2 = if (gameState?.isBossDefeated("boss_guardian") == true)

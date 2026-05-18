@@ -83,17 +83,19 @@ class QuestScene(
             canvas.drawText(desc, 14f, virtualHeight - 72f, UiKit.body)
             // 진행도
             if (q != null && isActive) {
+                val requiredItemId = q.requiredItemId
+                val defeatBossId = q.defeatBossId
                 val progress = when {
-                    q.requiredItemId != null -> {
+                    requiredItemId != null -> {
                         val owned = gameState.loadInventory().all()
-                            .filter { it.itemId == q.requiredItemId }.sumOf { it.count }
-                        val nm = ItemRegistry.get(q.requiredItemId)?.let {
+                            .filter { it.itemId == requiredItemId }.sumOf { it.count }
+                        val nm = ItemRegistry.get(requiredItemId)?.let {
                             if (isEn) it.nameEn else it.nameKo
-                        } ?: q.requiredItemId
+                        } ?: requiredItemId
                         "$nm: $owned/${q.requiredItemCount}"
                     }
-                    q.defeatBossId != null -> {
-                        val done = gameState.isBossDefeated(q.defeatBossId)
+                    defeatBossId != null -> {
+                        val done = gameState.isBossDefeated(defeatBossId)
                         if (isEn) (if (done) "Boss: defeated" else "Boss: alive")
                         else      (if (done) "보스: 처치" else "보스: 미처치")
                     }

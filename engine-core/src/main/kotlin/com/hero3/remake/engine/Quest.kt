@@ -82,7 +82,7 @@ object QuestRegistry {
  *  - SharedPreferences StringSet 두 개 (active / done) 사용
  *  - 보스 처치 자동 완료 + 보상 지급은 `tickAutoComplete()` 가 처리
  */
-class QuestLog(private val gameState: GameState) {
+class QuestLog(private val gameState: GameStateView) {
 
     fun isActive(id: String): Boolean = gameState.activeQuestIds.contains(id)
     fun isDone(id: String): Boolean = gameState.doneQuestIds.contains(id)
