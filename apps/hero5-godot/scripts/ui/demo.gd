@@ -30,6 +30,11 @@ var _blacksmith: CanvasLayer
 var _skill_book: CanvasLayer
 var _mission: CanvasLayer
 
+## Round 62: 활성 monster 목록 — _physics_process 가 매 frame AI tick.
+var _monsters: Array = []   # Array[H5Character], 각각 meta("ai_runtime") 보유 가능
+var _ai_tick_accum: float = 0.0
+const AI_TICK_PERIOD := 1.0 / 30.0   # 원본 Monster::Ai_Process 가 30 fps frame-tick 가정
+
 
 func _ready() -> void:
 	_map = MapRenderer.new()
@@ -350,6 +355,7 @@ func spawn_monster(monster_id: int, pos: Vector2, ai_type_id: int = -1) -> Sprit
 	var stats = GameData.enemy_stats(monster_id)
 	c.max_hp = int(stats.get("hp", 50))
 	c.hp = c.max_hp
+	c.set_meta("monster_id", monster_id)
 	add_child(c)
 	# AI 가 skill 발동 시 demo 가 처리 (현재는 toast 만)
 	c.ai_skill_cast.connect(func(skill_id, source):
@@ -359,7 +365,39 @@ func spawn_monster(monster_id: int, pos: Vector2, ai_type_id: int = -1) -> Sprit
 		var rt = MonsterAI.create_runtime(c, ai_type_id)
 		# rt 는 caller 가 보관 (process 호출 책임 분리). 일단 노드 meta 에 저장.
 		if rt: c.set_meta("ai_runtime", rt)
+	_monsters.append(c)
 	return c
+
+
+## Round 62: 매 frame AI tick — active monster 의 runtime.process() + cooldown_tick.
+##
+## 30 fps tick (원본 Monster::Ai_Process 가 frame-driven). dead monster 는 즉시
+## 제거 + mission monster_kill 이벤트 emit. Hero AI 통합 시 동일 루프에 추가 가능.
+func _physics_process(delta: float) -> void:
+	_ai_tick_accum += delta
+	if _ai_tick_accum < AI_TICK_PERIOD: return
+	_ai_tick_accum = 0.0
+	if _monsters.is_empty(): return
+	var to_remove: Array = []
+	for c in _monsters:
+		if c == null or not is_instance_valid(c):
+			to_remove.append(c); continue
+		if c.dead:
+			to_remove.append(c)
+			# mission monster_kill 이벤트 (monster_id 는 sprite_dir 에서 복원 불가 — meta 사용)
+			var mid = c.get_meta("monster_id", -1)
+			if mid >= 0:
+				Mission.bump_progress(Mission.EVENT_MONSTER_KILL, mid)
+			continue
+		# AI runtime 가 있으면 process
+		if c.has_meta("ai_runtime"):
+			MonsterAI.process(c.get_meta("ai_runtime"))
+		# cooldown 감소 (skill_id 별 frame counter)
+		c.cooldown_tick()
+	for c in to_remove:
+		_monsters.erase(c)
+		if c != null and is_instance_valid(c):
+			c.queue_free()
 
 
 func _input(event: InputEvent) -> void:
@@ -445,6 +483,14 @@ func _input(event: InputEvent) -> void:
 			KEY_B:
 				# B: 랜덤 전투 시작
 				_battle_ui.start(_scene_idx % 5, {"hp": 100, "max_hp": 100})
+			KEY_G:
+				# G: hero 주변에 random monster 스폰 (Round 62 — AI tick 테스트)
+				var mid = randi() % 75
+				var offset = Vector2(randi_range(-160, 160), randi_range(-100, 100))
+				var ai_type = mid % 48   # 48 AI defs (Round 50)
+				spawn_monster(mid, _hero.position + offset, ai_type)
+				preload("res://scripts/ui/toast.gd").show_msg(self,
+					"monster #%d (AI %d) spawn (총 %d)" % [mid, ai_type, _monsters.size()])
 			KEY_F9:
 				# F9: 빠른 로드
 				if GameState.quick_load(0):

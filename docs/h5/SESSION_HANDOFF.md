@@ -2,9 +2,9 @@
 
 > 한 페이지로 정리한 현재 상태 + 빠른 재개 가이드. 상세 진행은 [PROGRESS.md](PROGRESS.md).
 
-업데이트: 2026-05-18 (Round 61 — **character.gd host CHAR interface 구현**. Round 50 의 host CHAR 17 method (13 base + 4 추가) 를 character.gd 에 실 구현 — battle_system 의 turn-based stub 대체. monster 가 map 위에 있을 때 map 좌표 기반 정확한 거리(Chebyshev)/방향/모션 반환. 신규 fields: `is_hero` / `target_hero` / `hp/max_hp/dead/stunned` / `_cooldowns` / `_forced_host_motion`. signal `ai_skill_cast(skill_id, source)` — demo 가 receive. HOST_MOTION_* 상수 (Round 50 원본 motion enum). demo.gd `spawn_monster(monster_id, pos, ai_type_id)` helper + MonsterAI runtime 자동 연결. `h5_test_char_host.py` — 17 method 시그니처 검증 (17/17 ✓) + monster_ai cross-check + 8 Python 시뮬 (Chebyshev 거리 / 방향 turn 4 케이스 / is_able_skill cd-dead-stunned). Godot 실 구현 65-69% → 68-72%, 출시 64-74% → 66-76%.)
+업데이트: 2026-05-18 (Round 62 — **Monster spawner + AI tick 루프**. demo.gd 에 `_monsters: Array` + `_physics_process` 추가 — `AI_TICK_PERIOD = 1.0/30.0` (원본 `Monster::Ai_Process` frame 일치) 마다 active monster 의 `MonsterAI.process(rt)` + `cooldown_tick` 호출. dead monster 자동 제거 + `Mission.bump_progress(EVENT_MONSTER_KILL, monster_id)` 트리거 (Round 58 mission hook 자동 연결). spawn_monster 가 `monster_id` meta 저장 → dead 시 정확한 mission 매칭. KEY_G 바인딩 — hero 주변 ±160/±100 px 위치 random spawn + 48 AI defs (monster_id%48). `h5_test_ai_tick.py` — 11 구조 패턴 + 30 fps tick 확인 + Python 시뮬 (3 spawn / 30 frame=15 tick / dead 정리 / cooldown 30→14→0). **UI R51-58 + RE R59-60 + character R61 + AI tick R62 통합 완료** — Godot 게임 루프 first-pass 가능. Godot 실 구현 68-72% → 71-75%, 출시 66-76% → 70-80%.)
 
-## 📜 Round 1-61 한 줄 요약
+## 📜 Round 1-62 한 줄 요약
 
 | 라운드 | 한 줄 |
 |---|---|
@@ -28,13 +28,14 @@
 | R58 | Mission 진척 UI 구현 — Round 37/38 mission.json 105 missions + MissionSystem autoload + 7 event API + 6 panel hook 자동 연결 + type 분포 검증 + 3 case 시뮬 |
 | R59 | Mission/Quest type 의미 RE — 23 함수 디스어셈블 + mission_type 0-5 의미 확정 + type 3 sub_type 정밀 매핑 |
 | R60 | Quest cond_type 의미 RE — QuestCheck 5-way jumptable + cond_type 13/14=bag item count, 17=monster kill, 18=quest switch + quest_system 정확 라벨링 |
-| **R61** | **character.gd host CHAR interface 구현 — Round 50 의 17 method 실 구현 + battle_system turn-based stub 대체 + map 좌표 기반 distance/dir/motion + demo.spawn_monster helper + ai_skill_cast signal** |
+| R61 | character.gd host CHAR interface 구현 — Round 50 의 17 method 실 구현 + map 좌표 기반 distance/dir/motion |
+| **R62** | **Monster spawner + AI tick 루프 — demo `_physics_process` 30fps tick + MonsterAI.process + cooldown_tick + dead 정리 + Mission.bump 자동 + KEY_G 테스트 spawn** |
 
 
 
 ---
 
-## 🎯 전체 진척 평가 (Round 61 시점)
+## 🎯 전체 진척 평가 (Round 62 시점)
 
 영역별 추정 진척률 — 단일 % 로 답하기 어려움, 영역별 차이 큼:
 
@@ -42,13 +43,13 @@
 |---|---:|---|
 | **자산 추출/변환** | ~95% | VFS/sprite/palette/text/OGG 완료. 남은 것: SMAF, 한글 비트맵 폰트 (LOW PRIORITY) |
 | **데이터 구조 RE** (csv/dat layout) | ~100% | 모든 데이터 파일 식별 + decoder + struct 매핑 완료 |
-| **.so 함수 분석** (game logic) | ~90-92% | Mission/Quest 완전 RE. 잔여: Battle motion, NPC dialog, Reward type 6/10-12 (rare) |
-| **Godot 실 구현** | **~68-72%** | + **character host CHAR interface 실 구현** (17 method). UI R51-58 + RE 통합 진행 |
+| **.so 함수 분석** (game logic) | ~90-92% | Mission/Quest 완전 RE. 잔여: Battle motion, NPC dialog, Reward type 6/10-12 |
+| **Godot 실 구현** | **~71-75%** | + **monster AI 30fps tick 루프 + spawner 통합**. UI+RE+character+AI 통합 완료 |
 | **Android 실 빌드 검증** | 0% | 사용자 GUI 작업 |
 
 **종합**:
 - **"원본 분석"** (RE+자산) 으로 보면 ~93-96%
-- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **66-76%** (RE 결과 host method 코드 통합)
+- **"리메이크 출시 가능"** (Godot+Android) 으로 보면 **70-80%** (게임 루프 first-pass 가능)
 
 ## 📦 미완 큰 덩어리 (우선순위 순)
 
@@ -61,7 +62,7 @@
 
 ---
 
-## 🚀 다음 세션 즉시 시작 (Round 62)
+## 🚀 다음 세션 즉시 시작 (Round 63)
 
 ### A. 환경 복원 한 줄 (assets/ 비어있는 새 클론)
 
@@ -89,6 +90,7 @@ python tools/h5_test_mission.py        # 105 missions + 3 case 시뮬
 python tools/h5_test_re_types.py       # Round 59 RE: ELF symbol verify + sub_type 분포
 python tools/h5_test_cond_types.py     # Round 60 RE: cond_type 13/14/17 + reward 15/17/18
 python tools/h5_test_char_host.py      # Round 61: 17 host CHAR method 시그니처 + 8 Python 시뮬
+python tools/h5_test_ai_tick.py        # Round 62: spawner + 30fps AI tick 루프
 ```
 
 ### C. Godot Editor 에서 게임 실행
@@ -105,6 +107,7 @@ python tools/h5_test_char_host.py      # Round 61: 17 host CHAR method 시그니
 | **Q** | 퀘스트 패널 토글 (R56 detail card + 난이도 토글) | R20 (R56 강화) |
 | **L** | 스킬북 학습(Learn) 패널 토글 | **R57** |
 | **,** | 미션 진척 패널 토글 | **R58** |
+| **G** | hero 주변에 random monster 스폰 (AI tick 테스트) | **R62** |
 | S | 상점 열기 | R8 |
 | H | 도움말 토글 | R10 |
 | X | 설정 토글 | R10 |
@@ -116,14 +119,14 @@ python tools/h5_test_char_host.py      # Round 61: 17 host CHAR method 시그니
 | P / C / V | NPC 마커 / collision / tile attr 디버그 | R5 |
 | T | dialog 테스트 | R5 |
 
-### D. Round 62 추천 작업 (자율 가능, 임팩트 순)
+### D. Round 63 추천 작업 (자율 가능, 임팩트 순)
 
-> R51-58 = UI 시스템 / R59-60 = Mission/Quest 완전 RE / R61 = character host CHAR 통합.
+> R62 까지 게임 루프 first-pass 완성. R63 부터는 실제 battle 통합 + 잔여 RE.
 
-**1순위 — 실제 monster spawner + AI tick 루프** (1 라운드)
-- Round 61 의 spawn_monster 가 character 만 생성. AI runtime 의 process() 가 호출되지 않음
-- demo.gd 에 _physics_process / Timer 로 active monster 들의 AI tick + cooldown_tick 처리
-- spawn_monster 가 random walk 패턴 확인 + 시야 진입 시 hero 추격 동작 검증
+**1순위 — Monster ↔ Hero 실 전투 처리** (1 라운드)
+- 현재 spawn_monster + AI tick 은 동작하지만 `ai_skill_cast` 가 toast 만 표시
+- demo 에 hero 의 HP 차감 + monster 가 hero attack 범위 진입 시 turn-based battle 트리거 처리
+- (또는 real-time 데미지 — character.gd 의 take_damage 활용)
 
 **2순위 — Reward type 6/10/11/12 의미 RE** (0.5 라운드)
 - Round 56 sweep: reward type 6(1), 10(1), 11(3), 12(1) 미해석 (rare)
