@@ -28,12 +28,17 @@ const STATUS_ACTIVE := 1
 const STATUS_COMPLETED := 2
 const STATUS_FAILED := 3
 
-# Reward type codes (phase2 byte 0) — Round 40 검증
+# Reward type codes (phase2 byte 0) — Round 40 검증 + Round 56/60 sweep 확장
 const REWARD_TYPE_MONEY := 17
 const REWARD_TYPE_EXP := 18
+const REWARD_TYPE_ITEM := 15      # Round 56 sweep (15 entries) — item reward 가설
 const REWARD_TYPE_UNUSED := 255
 
-# Condition type codes (phase1 byte 0)
+# Condition type codes (phase1 byte 0) — Round 60 RE 확정 (docs/h5/RE/quest_cond_types.md)
+const COND_TYPE_ITEM_HOLD_A := 13     # bag item count (variant A) — 8 quests
+const COND_TYPE_ITEM_HOLD_B := 14     # bag item count (variant B) — 38 quests, default handler
+const COND_TYPE_MONSTER_KILL := 17    # kill N of monster_id (QuestCheck event 0x11)
+const COND_TYPE_QUEST_SWITCH := 18    # quest switch state (Event_QuestSwitch arg)
 const COND_TYPE_UNUSED := 255
 
 # 어느 difficulty 로 quest detail 표시할지 (0/1/2 = easy/normal/hard).
@@ -129,22 +134,28 @@ func quest_rewards(qid: int) -> Array:
 ## 사람이 읽을 수 있는 reward 라벨 (UI 표시용).
 func reward_label(reward: Dictionary) -> String:
 	var t = int(reward.get("type", 255))
+	var s = int(reward.get("sub", 0))
 	var v = int(reward.get("value", 0))
 	match t:
 		REWARD_TYPE_MONEY: return "💰 골드 +%d" % v
 		REWARD_TYPE_EXP:   return "⭐ 경험치 +%d" % v
+		REWARD_TYPE_ITEM:  return "🎁 아이템 #%d × %d" % [s, v]
 		REWARD_TYPE_UNUSED: return ""
-	return "보상[type=%d, sub=%d, val=%d]" % [t, int(reward.get("sub", 0)), v]
+	return "보상[type=%d, sub=%d, val=%d]" % [t, s, v]
 
 
 ## 사람이 읽을 수 있는 objective 라벨 (UI 표시용).
-## type/sub 의 의미는 Round 40 시점 미해석 — 일단 numeric 라벨.
+## Round 60 RE 확정 매핑 (docs/h5/RE/quest_cond_types.md).
 func objective_label(obj: Dictionary) -> String:
 	var t = int(obj.get("type", 255))
 	var s = int(obj.get("sub", 0))
 	var v = int(obj.get("value", 0))
-	if t == COND_TYPE_UNUSED: return ""
-	# 가설: type 17 / sub 가 monster_id 또는 quest_target_id, value 가 target count.
+	match t:
+		COND_TYPE_UNUSED: return ""
+		COND_TYPE_ITEM_HOLD_A: return "[수집A] 아이템 #%d × %d개 보유" % [s, v]
+		COND_TYPE_ITEM_HOLD_B: return "[수집B] 아이템 #%d × %d개 보유" % [s, v]
+		COND_TYPE_MONSTER_KILL: return "[사냥] 몬스터 #%d × %d 처치" % [s, v]
+		COND_TYPE_QUEST_SWITCH: return "[퀘스트 스위치] slot %d → state %d" % [s, v]
 	return "조건 [type=%d, sub=%d] → 목표 %d" % [t, s, v]
 
 
