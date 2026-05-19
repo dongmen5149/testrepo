@@ -169,6 +169,20 @@ class Hero3CatalogLoaderTest {
     }
 
     @Test
+    fun r84_catalog_quests_loaded_115_entries_across_4_files() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        assertEquals(4, catalog.questFiles.size)
+        val total = catalog.questFiles.sumOf { it.nEntries }
+        // R58/R62: 37 + 7 + 38 + 33 = 115 quests
+        assertEquals(115, total)
+        // First quest of quest_00_dat = 노력의 증명1
+        val q00 = catalog.questFiles.firstOrNull { it.file == "quest_00_dat" }
+        assertNotNull(q00)
+        assertTrue(q00!!.entries.isNotEmpty())
+        assertEquals("노력의 증명1", q00.entries[0].name)
+    }
+
+    @Test
     fun r74_shop_catalog_and_fixed_drops_populated() {
         val catalog = Hero3CatalogLoader.load(reader())
         val d = catalog.r74Data!!

@@ -119,6 +119,21 @@ data class Hero3Boss(
     val trailerDecoded: Hero3BossTrailerDecoded?,
 )
 
+// ─── R84: catalog quests (R58/R62, 115 entries) ────────────────────────────
+
+data class Hero3CatalogQuestEntry(
+    val file: String,    // quest_00_dat / quest_01_dat / quest_10_dat / quest_11_dat
+    val pos: Int,
+    val name: String,
+)
+
+data class Hero3CatalogQuestFile(
+    val file: String,
+    val sizeBytes: Int,
+    val nEntries: Int,
+    val entries: List<Hero3CatalogQuestEntry>,
+)
+
 data class Hero3DesPendingFile(
     val path: String,
     val role: String,
@@ -248,6 +263,7 @@ data class Hero3Catalog(
     val combatRatingFormulaHard: String,
     val desStatus: Hero3DesStatus,
     val r74Data: Hero3R74Data? = null,
+    val questFiles: List<Hero3CatalogQuestFile> = emptyList(),  // R84 — 115 catalog quests
 ) {
     val totalItems: Int get() = items.sumOf { it.nItems }
     val totalSkills: Int get() = skills.sumOf { it.nSkills }
@@ -443,6 +459,9 @@ object Hero3CatalogLoader {
         // R75: r74_des_data — recipes / region_shops / drops / fixed_drops / shop_catalog
         val r74Data = root.optJSONObject("r74_des_data")?.let { parseR74Data(it) }
 
+        // R84: catalog quests (R58/R62)
+        val questFiles = parseQuestFiles(root.optJSONObject("quests"))
+
         return Hero3Catalog(
             schemaVersion = schemaVersion,
             round = round,
@@ -458,7 +477,34 @@ object Hero3CatalogLoader {
             combatRatingFormulaHard = crfHard,
             desStatus = desStatus,
             r74Data = r74Data,
+            questFiles = questFiles,
         )
+    }
+
+    private fun parseQuestFiles(obj: JSONObject?): List<Hero3CatalogQuestFile> {
+        val out = mutableListOf<Hero3CatalogQuestFile>()
+        val files = obj?.optJSONObject("files") ?: return out
+        val keys = files.keys()
+        while (keys.hasNext()) {
+            val fn = keys.next()
+            val o = files.optJSONObject(fn) ?: continue
+            val entriesArr = o.optJSONArray("entries") ?: JSONArray()
+            val entries = (0 until entriesArr.length()).mapNotNull { i ->
+                val e = entriesArr.optJSONObject(i) ?: return@mapNotNull null
+                Hero3CatalogQuestEntry(
+                    file = fn,
+                    pos = e.optInt("pos"),
+                    name = e.optString("name"),
+                )
+            }
+            out += Hero3CatalogQuestFile(
+                file = fn,
+                sizeBytes = o.optInt("size_bytes"),
+                nEntries = o.optInt("n_entries", entries.size),
+                entries = entries,
+            )
+        }
+        return out
     }
 
     private fun parseR74Data(obj: JSONObject): Hero3R74Data {

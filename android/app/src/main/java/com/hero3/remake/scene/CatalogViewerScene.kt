@@ -43,6 +43,7 @@ class CatalogViewerScene(
         SHOP_CATALOG("상점 카탈로그", "Shop Catalog"),  // R80: R74 i15 38 entries
         RECIPES("단조 레시피", "Forge Recipes"),       // R80: R74 smith 80 entries
         REGION_SHOPS("지역 상점", "Region Shops"),     // R80: R74 5 region shops
+        QUESTS("퀘스트 목록", "Quests"),                // R84: catalog 115 quests
         DES("DES 상태", "DES Status"),
     }
 
@@ -100,6 +101,10 @@ class CatalogViewerScene(
                 val items = catalog.resolveShopItems(s).joinToString(", ") { it.name }
                 "shop[$i]  lv ${s.lvMin}-${s.lvMax}  items=[$items]"
             } ?: listOf("(R74 data not loaded)")
+            Tab.QUESTS -> catalog.questFiles.flatMap { qf ->
+                listOf("=== ${qf.file} (${qf.nEntries} entries, ${qf.sizeBytes}B) ===") +
+                qf.entries.map { e -> "  pos=${e.pos.toString().padStart(4)}  ${e.name}" }
+            }.ifEmpty { listOf("(no catalog quests parsed)") }
             Tab.DES -> catalog.desStatus.pendingFiles.map { f ->
                 "${f.path.padEnd(20)}  ${f.role}"
             }.ifEmpty { listOf("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)") }
@@ -124,6 +129,7 @@ class CatalogViewerScene(
         "R74 recipes: ${catalog.r74Data?.recipes?.size ?: 0} entries",
         "R74 region shops: ${catalog.r74Data?.regionShops?.size ?: 0} entries",
         "R74 drop tables: ${catalog.r74Data?.dropTable?.size ?: 0} records",
+        "R84 catalog quests: ${catalog.questFiles.sumOf { it.nEntries }} entries across ${catalog.questFiles.size} files",
         if (isEn) "" else "",
         if (isEn) "R71-R80 — Android remake data layer + bridge." else "R71-R80 — Android 리메이크 데이터 계층 + bridge.",
     )
