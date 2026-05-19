@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 77 (2026-05-19) — BSDAT 49B stat field mapping
+
+> 49B 보스 body (13 entries × 3 stages) stat layout 추정. 상세: [round77-bsdat-stat-fields.md](round77-bsdat-stat-fields.md).
+>
+> 핵심: pos[4]=level_req, pos[17-18]=EXP, pos[29-30]=MP_max, **pos[31-34]=HP max/current 페어**, pos[35-38]=DEF 페어, pos[40-41]=gold reward (×4.5 stage scaling).
+
+---
+
 ## 🏆 Round 76 (2026-05-19) — Weapon class 매핑 + BSDAT stat block 확정
 
 ### Track A: Weapon class × Character class 매핑
