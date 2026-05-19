@@ -307,6 +307,13 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 					3, 5: fx_str = " +버프"
 					4: fx_str = " +자세"
 			log_message.emit("[%s]! %d 피해%s%s%s (MP -%d) [F:%d]" % [skill_name, dmg, combo_str, sp_str, fx_str, mp_cost, formula_id])
+			# Round 88: spirit (Sorcerer) skill 발동 시 한국어 desc 첫 segment 노출.
+			# desc 는 EUC-KR 디코딩된 멀티라인 (";" 구분). 첫 줄만 짧게.
+			var desc_str: String = str(skill_data.get("desc", ""))
+			if GameState.class_id == 4 and not desc_str.is_empty():
+				var first_line: String = desc_str.split(";")[0].strip_edges()
+				if not first_line.is_empty():
+					log_message.emit("  ▸ %s" % first_line)
 			if enemy_hp == 0:
 				_finish(true)
 				return
@@ -371,9 +378,13 @@ func flee_chance() -> int:
 ## 의 SKILL action 도 워리어 데이터 사용. 이제 GameState.class_id 따라 정확히.
 ## Sorcerer (class_id=4) 는 active skill 데이터 부재 (c_csv_skill_04 없음) →
 ## spirit skills (class_5, 16 개) 로 fallback 시도, 그것도 없으면 generic stub.
+##
+## Round 88: spirit skill 의 desc (EUC-KR 디코딩 완료, c_csv_skill_05.json 의
+## desc_text 가 game_data._ensure_spirit_skills_loaded() 에서 entry["desc"] 로
+## 채워짐). 반환 dict 에 "desc" 추가 (배틀 로그에 첫 라인 노출 + 외부 UI 조회용).
 func _skill_data(skill_id: int) -> Dictionary:
 	if skill_id < 0 or skill_id >= skill_names.size():
-		return {"name": "?", "mp_cost": 0, "cooldown": 0, "damage_pct": 100}
+		return {"name": "?", "mp_cost": 0, "cooldown": 0, "damage_pct": 100, "desc": ""}
 	var name = skill_names[skill_id]
 	# Round 83: class_id 기반 lookup. class 4 (Sorcerer) 는 spirit (class_5) 로 fallback.
 	var cid: int = GameState.class_id
@@ -383,7 +394,8 @@ func _skill_data(skill_id: int) -> Dictionary:
 		sk_arr = GameData._skills_cache.get("class_5", [])
 	# stats[9] = cooldown(초), stats[5] = damage % (관습, R57 검증)
 	if skill_id < sk_arr.size():
-		var stats: Array = sk_arr[skill_id].get("stats_u16", [])
+		var rec: Dictionary = sk_arr[skill_id]
+		var stats: Array = rec.get("stats_u16", [])
 		var mp = stats[7] if stats.size() > 7 else 0
 		var cd = stats[9] if stats.size() > 9 else 0
 		var dpct = stats[5] if stats.size() > 5 else 100
@@ -396,11 +408,12 @@ func _skill_data(skill_id: int) -> Dictionary:
 			"mp_cost": min(int(mp), 30),
 			"cooldown": min(int(cd), 5),
 			"damage_pct": clamp(int(dpct), 50, 300),
+			"desc": str(rec.get("desc", "")),
 		}
 	# 최종 fallback (모든 lookup 실패) — Sorcerer 의 stub active skill 안내
 	if cid == 4:
-		return {"name": "[미구현] " + name, "mp_cost": 5, "cooldown": 1, "damage_pct": 100}
-	return {"name": name, "mp_cost": 5, "cooldown": 1, "damage_pct": 150}
+		return {"name": "[미구현] " + name, "mp_cost": 5, "cooldown": 1, "damage_pct": 100, "desc": ""}
+	return {"name": name, "mp_cost": 5, "cooldown": 1, "damage_pct": 150, "desc": ""}
 
 
 var _monster_id: int = 0

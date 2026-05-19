@@ -571,6 +571,9 @@ func resolve_skill_desc(class_id: int, skill_id: int) -> String:
 		if FileAccess.file_exists(p):
 			var f := FileAccess.open(p, FileAccess.READ)
 			_skills_cache = JSON.parse_string(f.get_as_text()) or {}
+	# Round 88: class_5 (spirit) 호출 시 별도 c_csv_skill_05.json 도 로드.
+	if class_id == 5 and not _skills_cache.has("class_5"):
+		_ensure_spirit_skills_loaded()
 	var arr = _skills_cache.get("class_%d" % class_id, [])
 	if skill_id < 0 or skill_id >= arr.size():
 		return ""
@@ -588,11 +591,17 @@ func resolve_skill_desc(class_id: int, skill_id: int) -> String:
 ## Round 83: spirit skills (class_5, 16 entries) 를 별도 c_csv_skill_05.json 에서 load.
 ##
 ## skills.json 은 class_0..3 만 포함 (Sorcerer = class_4 부재). spirit 은 별개 raw csv
-## 형식 (count + records[{name, extra_hex}]). 본 함수가 첫 호출 시 _skills_cache["class_5"]
-## 채움 (stats_u16 는 빈 array — extra_hex 파싱은 추후, name + 기본 lookup 만 활성화).
+## 형식 (count + records[{name, extra_hex, desc_text}]). 본 함수가 첫 호출 시
+## _skills_cache["class_5"] 채움.
+##
+## Round 88: `desc_text` 필드 (EUC-KR 디코딩 완료, tools/converter/decode_h5_skill_desc.py)
+## 를 entry["desc"] 에 채워 — Sorcerer 의 spirit 스킬 설명이 한국어로 노출됨.
+##   spirit #0 암흑탄: "거대한 암흑탄을 발사하여;정령마력 }#05%|의;피해를 준다.;..."
+##   spirit #7 정신감응: "패시브 스킬.;전투시 정령 게이지가;..."
+## `;` 는 줄바꿈, `}#NN%|` 는 stat placeholder (spirit layout 다르므로 R89+ 정밀화).
 ##
 ## 이로써 battle_system._skill_data 의 Sorcerer fallback (`class_5`) 이 정상 동작:
-##   `_skills_cache.get("class_5", [])` 가 16 spirit skill 의 name list 반환.
+##   `_skills_cache.get("class_5", [])` 가 16 spirit skill 의 name + desc list 반환.
 func _ensure_spirit_skills_loaded() -> void:
 	if _skills_cache.has("class_5"):
 		return
@@ -618,10 +627,12 @@ func _ensure_spirit_skills_loaded() -> void:
 			stats_u16.append((bytes[i + 1] << 8) | bytes[i])
 		# R77 명시적 field (bytes.size() ≥ 48 일 때만)
 		var has_stats = bytes.size() >= 48
+		# R88: desc_text (decode_h5_skill_desc.py 후처리, EUC-KR → UTF-8) 를 desc 로.
+		var desc_text = str(r.get("desc_text", ""))
 		var entry: Dictionary = {
 			"name": str(r.get("name", "정령%d" % converted.size())),
 			"stats_u16": stats_u16,
-			"desc": "",
+			"desc": desc_text,
 			"_raw_bytes_size": bytes.size(),
 		}
 		if has_stats:
