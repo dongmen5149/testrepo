@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 80 (2026-05-19) — ESDAT 73B phase 6B link 구조
+
+> R79 정밀화. 상세: [round80-esdat-phase-link.md](round80-esdat-phase-link.md).
+>
+> Outlier layout 확정: `encounter = N × 73B phase + 67B final-phase`. 6B link = `[0x47][0x00][LE16 phase_id][LE16 transition_marker]`. transition = `bf fa` continue / `b1 bc` final. 오토마톤 phase ID sequential (654→658) = encounter chain.
+
+---
+
 ## 🏆 Round 79 (2026-05-19) — ESDAT outlier (multi-phase boss) 구조
 
 > 5 outlier ESDAT entries (72B/140B/213B/432B) 분석. 상세: [round79-esdat-outliers.md](round79-esdat-outliers.md).
