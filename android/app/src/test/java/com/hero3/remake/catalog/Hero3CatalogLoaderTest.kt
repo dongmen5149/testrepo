@@ -179,4 +179,50 @@ class Hero3CatalogLoaderTest {
         // Fixed drops all type=2 (R74 finding)
         assertTrue(d.fixedDrops.all { it.type == 2 })
     }
+
+    // ─── R76: recipe input/output resolution + i15 catalog xref ─────────────
+
+    @Test
+    fun r76_recipe_outputs_resolve_to_real_catalog_items() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        // Recipe 0: bytes[9]=18, bytes[10]=0 → i18_dat[0] = "포션"
+        val r0 = d.recipes[0]
+        assertEquals(18, r0.outputCat)
+        assertEquals(0, r0.outputId)
+        val out0 = catalog.resolveItem(r0.output)
+        assertNotNull(out0)
+        assertEquals("포션", out0!!.cleanName)
+        // Recipe 3: bytes[9]=0, bytes[10]=3 → i0_dat[3] = "강화가죽모자"
+        val r3 = d.recipes[3]
+        assertEquals(0, r3.outputCat)
+        assertEquals(3, r3.outputId)
+        val out3 = catalog.resolveItem(r3.output)
+        assertNotNull(out3)
+        assertEquals("강화가죽모자", out3!!.cleanName)
+    }
+
+    @Test
+    fun r76_recipe_inputs_filter_out_empty_slots() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        // Recipe 0: bytes[2,3]=(255,0)=empty, bytes[4,5]=(0,2), bytes[6,7]=(255,0)=empty
+        // → 1 real input (i0_dat[2])
+        val r0 = d.recipes[0]
+        assertEquals(1, r0.inputs.size)
+        assertEquals(0, r0.inputs[0].cat)
+        assertEquals(2, r0.inputs[0].id)
+        // Recipe 3: bytes[2,3]=(0,1), bytes[4,5]=(8,10), bytes[6,7]=(1,5) → 3 inputs
+        val r3 = d.recipes[3]
+        assertEquals(3, r3.inputs.size)
+    }
+
+    @Test
+    fun r76_i15_38_entries_all_resolve_to_catalog() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        // R76 finding: 38/38 i15 names match catalog clean_names exactly
+        val matched = d.shopCatalog.count { catalog.resolveShopCatalogEntry(it) != null }
+        assertEquals(38, matched)
+    }
 }

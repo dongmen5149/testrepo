@@ -149,10 +149,17 @@ data class Hero3DropRecord(
     val bytes: List<Int>,
 )
 
-/** smith_dat 의 한 11B recipe.
- *  byte map: [0]=0x09 const, [1]=0x00, [2..5]=4 input items (cat,id pair?),
- *  [6,7]=output? [8]=0x64 success rate%, [9]=output_cat, [10]=output_id.
+/** smith_dat 의 한 11B recipe. R76 field map 확정:
+ *  byte[0]=0x09 const, byte[1]=0x00, byte[2,3]=(input1_cat, input1_id),
+ *  byte[4,5]=(input2_cat, input2_id), byte[6,7]=(input3_cat, input3_id),
+ *  byte[8]=0x64 (100% success rate), byte[9]=output_cat, byte[10]=output_id.
+ *  cat 값 0xff(255) = slot unused.
  */
+data class Hero3ItemRef(val cat: Int, val id: Int) {
+    val isEmpty: Boolean get() = cat == 0xff
+    val catalogFile: String get() = "i${cat}_dat"
+}
+
 data class Hero3Recipe(
     val offset: Int,
     val bytes: List<Int>,
@@ -160,6 +167,12 @@ data class Hero3Recipe(
     val successRate: Int get() = bytes.getOrNull(8) ?: 0
     val outputCat:   Int get() = bytes.getOrNull(9) ?: 0
     val outputId:    Int get() = bytes.getOrNull(10) ?: 0
+    val output: Hero3ItemRef get() = Hero3ItemRef(outputCat, outputId)
+    val inputs: List<Hero3ItemRef> get() = listOf(
+        Hero3ItemRef(bytes.getOrNull(2) ?: 0xff, bytes.getOrNull(3) ?: 0),
+        Hero3ItemRef(bytes.getOrNull(4) ?: 0xff, bytes.getOrNull(5) ?: 0),
+        Hero3ItemRef(bytes.getOrNull(6) ?: 0xff, bytes.getOrNull(7) ?: 0),
+    ).filterNot { it.isEmpty }
 }
 
 /** shop_dat 의 한 10B region shop entry.
@@ -223,6 +236,23 @@ data class Hero3Catalog(
 
     /** R74 가설 검증: drop_dat 98/161 records 가 BSKILL set 과 ≥3 hits → confirmed. */
     fun bossSkillIdsResolved(): Boolean = r74Data != null && r74Data.dropTable.isNotEmpty()
+
+    /** R76: ItemRef → 실제 카탈로그 item lookup. cat 의 i{N}_dat 안에서 pos==id (또는 list index)
+     *  중 first 매칭 반환. cat=0xff 또는 미존재 카탈로그/id 일 경우 null. */
+    fun resolveItem(ref: Hero3ItemRef): Hero3Item? {
+        if (ref.isEmpty) return null
+        val cat = items.firstOrNull { it.file == ref.catalogFile } ?: return null
+        // 우선: list 의 N번째 entry (smith out_id 가 작은 값일 때 정확)
+        return cat.items.getOrNull(ref.id)
+    }
+
+    /** R76: i15_dat 의 38 entries 중 name 으로 catalog item 찾기. 38/38 exact match 확인됨. */
+    fun resolveShopCatalogEntry(entry: Hero3ShopCatalogEntry): Hero3Item? {
+        for (cat in items) {
+            cat.items.firstOrNull { it.cleanName == entry.name || it.name == entry.name }?.let { return it }
+        }
+        return null
+    }
 }
 
 object Hero3CatalogLoader {
