@@ -1,16 +1,43 @@
-# Hero3 인수인계 노트 (Round 73 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 74 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.95%**. 🏆 **R73 DES 8/8 파일 복호화 성공** (Hero5 mx_des_decrypt 변종). i15_dat = master shop catalog 확정. **남은 작업은 사실상 두 가지**: (A) **R73 의 8 평문 파일 정밀 파서** (자동 가능, 즉시 진행), (B) **SMAF→OGG 변환** (사용자 신뢰도 정책 — 도구 설치 승인 대기).
+**Hero3 분석 진행률 ~99.97%**. 🎯 **R74 DES 평문 8파일 모두 JSON 파싱 + boss skill H4 가설 confirmed** (drop_dat 98/161 records ≥3 BSKILL hits). drop_dat = **정확히 161 entries** (R56 161 enemies 와 1:1). **남은 작업**: (A) **R75 - 17B drop record field map / i15 trailer 6B / Hero3Recipe Kotlin class / game_balance v1.2** (자동), (B) **SMAF→OGG 변환** (사용자 신뢰도 정책 대기).
 
-마지막 commit: **`55c5dc59 feat:영웅서기3 Round 73 — 🎉 DES 8/8 파일 복호화 성공`** (working tree clean for h3)
+마지막 commit: R74 산출물 pending — 본 라운드에서 commit 예정.
 
-## 1. 다음 세션 즉시 시작 가이드 (R74)
+## 1. 다음 세션 즉시 시작 가이드 (R75)
 
-### 1.1 ⭐⭐⭐⭐⭐ Phase A: DES 평문 정밀 파서 (자동, 권장 우선)
+### 1.0 R74 결과 (참고)
+
+- `tools/recon/parse_h3_des_plain.py` 실행 시 8 파일 모두 JSON 출력
+- 핵심 카운트: i15=38, drop=161, droph=161, smith=80, smithh=80, shop=5, shoph=5, getitem=96
+- drop_dat 161 = R56 enemy_dat 161 1:1 확정
+- BSKILL set hit: 98/161 records (H4 confirmed)
+- 자세히: [ghidra-round74-des-plain-parsers-2026-05-19.md](ghidra-round74-des-plain-parsers-2026-05-19.md)
+
+### 1.1 ⭐⭐⭐⭐⭐ Phase A2: 17B drop record / i15 6B trailer 정밀 (R75 권장 우선)
+
+1. **drop_dat 17B field map**:
+   - byte 0-1: low-frequency = enemy_id? (0..160) 또는 drop count
+   - byte 5/9/13 = boss skill ID 위치 후보 (98/161 ≥3 hits)
+   - byte N (gold?) 변동 폭 정밀 측정
+   - droph_dat 대비 normal: scaling factor 추출
+
+2. **i15 6B trailer**:
+   - 38 entries 의 마지막 6B (예: `00 00 00 0f ff 00`, `04 02 02 0f ff 00`, ...)
+   - 5번째 byte `0f` 고정, 다른 byte 들이 stat (ATK/DEF/MP?)
+   - i0~i12 catalog 의 stat block 과 cross-check
+
+3. **smith → Hero3Recipe data class**: Hero3Catalog.kt 확장 + Loader + 12 unit tests 갱신
+
+4. **shop → Hero3RegionShop data class**: 5 regions × level tier + item slot
+
+5. **export_game_balance.py** → game_balance.json v1.2 (예상 ~700KB)
+
+### 1.x (구) Phase A: DES 평문 정밀 파서 (자동, 권장 우선)
 
 R73 의 8 plain 파일 (`work/h3/decrypted/*.plain`) 을 typed Kotlin object 로 디코드.
 **도구 설치 불필요, 즉시 진행 가능.**
