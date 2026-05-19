@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 78 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 79 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
-## 0. 현재 상태 한 줄 (⚠️ 솔직 재평가 포함)
+## 0. 현재 상태 한 줄
 
-**분석 진행률 ~99.998%**. 그러나 **실제 Android remake 완성도는 ~65-70%**. R78에서 i15 trailer 36/37 추출 + getitem 96 categorized + (133,153) sentinel 검증 (63 secondary, 0 primary). **24/24 tests pass**. **핵심 발견**: R56~R78의 분석 데이터가 ShopScene/BattleScene/InventoryScene/QuestScene에 거의 통합되지 않은 상태 — 모든 registry가 placeholder hardcoded. **R79+ 권장 방향 전환**: "더 깊은 분석" → "데이터→게임 통합". 자세한 audit은 [ghidra-round78-...progress-audit-2026-05-19.md](ghidra-round78-trailer-sentinel-getitem-progress-audit-2026-05-19.md) 참조.
+**분석 ~99.998% / Catalog ~92% / 실제 remake ~70-72%**. R79: **Hero3CatalogBridge** 신규 모듈로 데이터-게임 통합 layer 완성. 161×2 enemies / 5 region shops / 80 recipes를 engine-core 타입(EnemyDef/Item)으로 변환. **29/29 tests pass** (24 Loader + 5 Bridge). engine-core 비파괴 + opt-in 통합 설계. R80 권장: BattleScene/ShopScene/InventoryScene 를 Bridge API 로 전환 (Hero3CatalogProvider singleton + scene 단계적 전환).
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

@@ -1,0 +1,90 @@
+package com.hero3.remake.catalog
+
+import com.hero3.remake.engine.AssetNotFound
+import com.hero3.remake.engine.AssetReader
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+/**
+ * Hero3CatalogBridge unit test — R79 "데이터→게임 통합" 검증.
+ *
+ * 161×2 enemies / 5 region shops / 80 recipes 가 engine-core 타입으로 정상 변환되는지.
+ */
+class Hero3CatalogBridgeTest {
+
+    private class FileAssetReader(private val baseDir: File) : AssetReader {
+        override fun readText(path: String): String = try {
+            File(baseDir, path).readText(Charsets.UTF_8)
+        } catch (e: Exception) { throw AssetNotFound(path, e) }
+        override fun readBytes(path: String): ByteArray = try {
+            File(baseDir, path).readBytes()
+        } catch (e: Exception) { throw AssetNotFound(path, e) }
+    }
+
+    private fun catalog(): Hero3Catalog =
+        Hero3CatalogLoader.load(FileAssetReader(File("src/main/assets")))
+
+    @Test
+    fun bridge_converts_161_normal_enemies() {
+        val c = catalog()
+        val enemies = Hero3CatalogBridge.enemiesFromCatalog(c, hardMode = false)
+        assertEquals(161, enemies.size)
+        val first = enemies[0]
+        // R56: enemy[0] = 아스크란가드 lvl 15 hp 41
+        assertEquals("아스크란가드", first.nameKo)
+        assertTrue(first.hpMax >= 1)
+        assertTrue(first.atk >= 1)
+        assertTrue(first.spriteDir.startsWith("enemy/e"))
+    }
+
+    @Test
+    fun bridge_converts_161_hard_enemies() {
+        val c = catalog()
+        val enemies = Hero3CatalogBridge.enemiesFromCatalog(c, hardMode = true)
+        assertEquals(161, enemies.size)
+    }
+
+    @Test
+    fun bridge_shop_stock_resolves_for_5_region_shops() {
+        val c = catalog()
+        // R74: 5 region shops × i15 catalog
+        // shop[0] (lv 1-15) has 2 items: 얼음비늘장갑, 바람가죽모자
+        val shop0 = Hero3CatalogBridge.shopStockFromCatalog(c, 0)
+        assertEquals(2, shop0.size)
+        assertEquals("얼음비늘장갑", shop0[0].nameKo)
+        // shop[4] (lv 26-40) has 5 items
+        val shop4 = Hero3CatalogBridge.shopStockFromCatalog(c, 4)
+        assertEquals(5, shop4.size)
+    }
+
+    @Test
+    fun bridge_forge_recipes_resolve_to_real_items() {
+        val c = catalog()
+        val recipes = Hero3CatalogBridge.forgeRecipesFromCatalog(c)
+        assertEquals(80, recipes.size)
+        // Recipe 0: output → i18[0] = 포션
+        val r0 = recipes[0]
+        assertNotNull(r0.output)
+        assertEquals("포션", r0.output!!.cleanName)
+        // Recipe 0 has 1 valid input (others are 0xff empty)
+        assertEquals(1, r0.inputs.size)
+        // Recipe 3 has 3 inputs all real
+        val r3 = recipes[3]
+        assertEquals(3, r3.inputs.size)
+    }
+
+    @Test
+    fun bridge_drop_table_excludes_common_pool_sentinel() {
+        val c = catalog()
+        val enemies = Hero3CatalogBridge.enemiesFromCatalog(c)
+        // 63 records have common-pool secondary — those should NOT add a secondary drop
+        val totalDropEntries = enemies.sumOf { it.dropTable.size }
+        // Expected: 161 primary minus those that are also (133,153)=0 primary (R78: 0)
+        //         + 161 secondary minus 63 common-pool = 98 secondary
+        // total = 161 + 98 = 259
+        assertEquals(259, totalDropEntries)
+    }
+}
