@@ -4,13 +4,21 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
-## 🏆 Round 76 (2026-05-19) — Weapon class × Character class 매핑
+## 🏆 Round 76 (2026-05-19) — Weapon class 매핑 + BSDAT stat block 확정
+
+### Track A: Weapon class × Character class 매핑
 
 > R75 의 7 weapon classes 와 R69 의 4 character classes 매핑 완료. 상세: [round76-weapon-class-mapping.md](round76-weapon-class-mapping.md).
 >
 > 핵심: dual-ATK 4종 (`_ITM_00..03`) = 검류 (S000/S002/S003 + 잉여 1), single-ATK 3종 (`_ITM_04..06`) = S001 사격 sub-types. `_ITM_01` (avg dmg 65.0) = **티르 양손검**, `_ITM_04..06` = **루레인 권총/저화력총/중화기**.
 >
 > 남은 미해결: `_ITM_03` 사용자 (4번째 영웅 또는 NPC class), `_H_BH` 4번째 stat block 캐릭터.
+
+### Track B: BSDAT body = boss stat block 확정
+
+> R72 가설 정정. 상세: [round76-track-b-bsdat-stat-block.md](round76-track-b-bsdat-stat-block.md).
+>
+> 3 `_BSDAT_{0,1,2}` = **같은 88 boss 의 난이도/단계 3 버전**. 같은 보스 이름이 동일 body 길이로 등장 (루칸=105B, 브리안=49B). LE16 overflow 패턴 (82/317/797) = HP-like 지수 증가. SCN bytecode 가 아님 (op_0x01 reference 0회). ESDAT 는 별개 (`0x3f` opcode 빈도 + ff separator 1.7/entry → script-like).
 
 ---
 
