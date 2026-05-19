@@ -1,9 +1,58 @@
-# Hero4 Session Handoff — Round 75 종료, Round 76 즉시 시작 가이드
+# Hero4 Session Handoff — Round 86 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), 라운드별 상세는 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R86 은 각 round 문서.
 
-## 30초 요약
+## 🏆 Round 76-R86 누적 (2026-05-19, 11 라운드 연속 자동 분석)
+
+| R | 핵심 발견 | 문서 |
+|---|---|---|
+| R76A | weapon class × character mode 매핑 (7 → 4 dual + 3 single) | [round76-weapon-class-mapping.md](round76-weapon-class-mapping.md) |
+| R76B | BSDAT body = stat block (R72 SCN bytecode 가설 정정) | [round76-track-b-bsdat-stat-block.md](round76-track-b-bsdat-stat-block.md) |
+| R77 | BSDAT 49B stat field (HP/MP/lvl/gold 위치) | [round77-bsdat-stat-fields.md](round77-bsdat-stat-fields.md) |
+| R78 | ESDAT 67B encounter layout + `0xff 0x3f` section marker | [round78-esdat-encounter-layout.md](round78-esdat-encounter-layout.md) |
+| R79 | ESDAT outlier = multi-phase boss encounters | [round79-esdat-outliers.md](round79-esdat-outliers.md) |
+| R80 | 73B phase + 6B inter-phase link (`0x47` signature + phase_id chain) | [round80-esdat-phase-link.md](round80-esdat-phase-link.md) |
+| R81 | `_H_BH` = **2 영웅 × 2 mode** (R76 미해결 `_ITM_03` 사용자 해소) | [round81-hero-bh-resolved.md](round81-hero-bh-resolved.md) |
+| R82 | 트랙 C: ITEMDROP + BASIC_SM + SD 상점 (101 tiered items) | [round82-itemdrop-shop.md](round82-itemdrop-shop.md) |
+| R83 | REPAY/Q_REPAY/CASH 보상 테이블 6 파일 stride 식별 | [round83-reward-tables.md](round83-reward-tables.md) |
+| R84 | `_ITM_OPTION` enchantment pool **51종** (클래스 보완 affix) | [round84-enchantment-pool.md](round84-enchantment-pool.md) |
+| R85 | Quest reward 분리: Q_REPAY_0 = EXP, Q_REPAY_1 = gold (~11배) | [round85-quest-reward-distribution.md](round85-quest-reward-distribution.md) |
+| **R86** | **★ `_H_SS` 환수(소환수) 시스템 발견** (베놈/헤지호그/그래비티/쇼커/세이프가드) | [round86-summon-system.md](round86-summon-system.md) |
+
+**Hero4 게임 데이터 자동 분석 ~99% 종결**. 미해결은 정밀화 트랙 (보스 phase stat 정량, `_H_BS`/`_H_SA` 정밀, 환수 stat block) 만 남음.
+
+## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
+
+### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
+
+1. ⭐ **`_H_SS` 환수 stat block 정밀** (R86 후속) — 환수별 능력치 entry 구조
+2. **`_H_BS` 17 레벨 stat increment** (R86 동반 발견) — 8B × 17 records
+3. **`_H_SA` 24 slot ability mapping** (R86 동반 발견) — 40B × 24
+4. **Q_REPAY idx ↔ R70 quest name 매핑** (R85 후속) — 200 - 128 = 72 차이 해소
+5. **보스 phase stat 강화율 정량** (R80 후속) — 오토마톤 5 phase 비교
+
+### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
+
+- **트랙 D: A1 영어 번역** — `ANTHROPIC_API_KEY` 필요, Claude Sonnet 4.6, ~$4 견적
+- **트랙 E: Phase C Step 4d** — Compose MP UI 마이그레이션, 1-2주 큰 작업
+- **트랙 F**: SMAF→OGG, Ghidra stat 정밀, iOS Mac
+
+### Hero4 게임 메카닉 모델 (R86 까지 누적)
+
+- **2 영웅 × 2 mode** = 4 character class slots
+  - 티르: mode 0 (S000 양손검) / mode 1 (S002 마검)
+  - 루레인: mode 0 (S001 사격 + `_ITM_03` 검 변종) / mode 1 (S003 단도+마법)
+- **5+ 환수** (베놈/헤지호그/그래비티/쇼커/세이프가드 + 망각의저주?)
+- **51 enchantments** (HP/SP, 공격/방어, proc, 시스템, 클래스 보완)
+- **128 quests** (R70: 메인 62 + 사이드 66) + **400+ reward records** (Q_REPAY EXP/gold)
+- **88 boss + 471 일반 인카운터** (BSDAT 3-stage + ESDAT 67B/73B/multi-phase)
+- **349 items / 129 weapons / 7 weapon classes / 17 tier levels**
+- **35,752 dialogue lines** (R68 corpus)
+
+---
+
+## (R75 시점 이전 내용 — history) 30초 요약
 
 **🏆 Round 75 종료 (2026-05-19)** — Hero4 자동 데이터 분석 거의 종결:
 - **DES key 발견** = `J@IWO8N7` (R68, Hero5 mx_des_decrypt 변종)
