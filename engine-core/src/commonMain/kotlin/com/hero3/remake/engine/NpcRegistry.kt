@@ -396,7 +396,41 @@ object NpcRegistry {
         ),
     )
 
-    private val all: List<Npc> = map0Npcs + map1Npcs + map10Npcs + map11Npcs + map12Npcs
+    /** R81 — Hero3 5 region shop NPCs (R74 catalog `region_shops` lv tier 매핑).
+     *  - region_shop_0: lv 1-15  (Neosoltia tutorial 지역)
+     *  - region_shop_1: lv 8-22  (Forest)
+     *  - region_shop_2: lv 16-30 (Canyon/Askra)
+     *  - region_shop_3: lv 21-35 (Enzak desert)
+     *  - region_shop_4: lv 26-40 (Toreze/Lowen — final tier)
+     *  map 배치는 임시 (R82+ map encounter trigger 와 통합 예정).
+     */
+    private val regionShopNpcs = listOf(
+        Npc(id = "region_shop_0", mapId = 0,  x = 22, y = 12, spriteDir = "npc/npc0010_bm",
+            nameKo = "솔티아 상인", nameEn = "Soltia Merchant",
+            dialoguesKo = listOf("어서 오십시오. 초보 모험가용 장비입니다."),
+            dialoguesEn = listOf("Welcome. Gear for novice adventurers.")),
+        Npc(id = "region_shop_1", mapId = 1,  x = 18, y = 12, spriteDir = "npc/npc0011_bm",
+            nameKo = "숲의 상인", nameEn = "Forest Merchant",
+            dialoguesKo = listOf("숲을 누비는 자에게 필요한 물건이지."),
+            dialoguesEn = listOf("Goods for forest-runners.")),
+        Npc(id = "region_shop_2", mapId = 10, x = 20, y = 14, spriteDir = "npc/npc0012_bm",
+            nameKo = "협곡 상인", nameEn = "Canyon Merchant",
+            dialoguesKo = listOf("협곡 너머의 위험에 대비하시오."),
+            dialoguesEn = listOf("Prepare for dangers beyond the canyon.")),
+        Npc(id = "region_shop_3", mapId = 11, x = 22, y = 16, spriteDir = "npc/npc0013_bm",
+            nameKo = "엔자크 상인", nameEn = "Enzak Merchant",
+            dialoguesKo = listOf("사막에서 살아남으려면 이게 필요하지."),
+            dialoguesEn = listOf("Survive the desert with these.")),
+        Npc(id = "region_shop_4", mapId = 12, x = 24, y = 18, spriteDir = "npc/npc0014_bm",
+            nameKo = "토레즈 상인", nameEn = "Toreze Merchant",
+            dialoguesKo = listOf("최상급 장비. 가격은 만만치 않소.",
+                                  "운명의 갈림길에 선 자에게 어울리지."),
+            dialoguesEn = listOf("Top-tier gear, hefty price.",
+                                  "Fit for one at destiny's crossroads.")),
+    )
+
+    private val all: List<Npc> = map0Npcs + map1Npcs + map10Npcs + map11Npcs + map12Npcs +
+        regionShopNpcs
 
     fun forMap(mapId: Int): List<Npc> = all.filter { it.mapId == mapId }
 

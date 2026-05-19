@@ -20,6 +20,7 @@ import com.hero3.remake.platform.AndroidAssetReader
 import com.hero3.remake.scene.CatalogViewerScene
 import com.hero3.remake.scene.DialogueDemoScene
 import com.hero3.remake.scene.EndingScene
+import com.hero3.remake.scene.ForgeScene
 import com.hero3.remake.scene.EventViewerScene
 import com.hero3.remake.scene.InventoryScene
 import com.hero3.remake.scene.MainMenuScene
@@ -133,6 +134,7 @@ class MainActivity : ComponentActivity() {
         data object Records : SceneRequest()
         data object EventViewer : SceneRequest()
         data object CatalogViewer : SceneRequest()
+        data object Forge : SceneRequest()  // R81 — 단조 (forge recipes)
         data object Travel : SceneRequest()
         data class NpcDialogue(val npcId: String) : SceneRequest()
         data class Shop(val npcId: String) : SceneRequest()
@@ -169,6 +171,7 @@ class MainActivity : ComponentActivity() {
             SceneRequest.Records      -> pushScene(RecordsScene(ctx, input, settings, gameState, cb))
             SceneRequest.EventViewer  -> pushScene(EventViewerScene(ctx, input, cb))
             SceneRequest.CatalogViewer -> pushScene(CatalogViewerScene(ctx, input, settings, catalog, cb))
+            SceneRequest.Forge        -> pushScene(ForgeScene(ctx, input, settings, gameState, cb))
             SceneRequest.Travel       -> pushScene(TravelScene(ctx, input, settings, gameState, cb))
             SceneRequest.Battle       -> pushScene(BattleScene(ctx, input, settings, gameState, cb))
             is SceneRequest.NpcDialogue -> pushScene(NpcDialogueScene(ctx, input, settings, gameState, req.npcId, cb))

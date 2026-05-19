@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 80 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 81 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.998% / Catalog ~94% / 실제 remake ~74-76%**. R80: **Hero3CatalogProvider** singleton + MainActivity 자동 install + **BattleScene/ShopScene/CatalogViewerScene 3개 scene 을 catalog-fed 로 전환** (h3_n_/h3_h_ enemy ID, region_shop_N npcId, 3 신규 viewer tab). **33/33 tests + APK BUILD SUCCESSFUL**. 처음으로 R56-R78 데이터가 실제 scene 코드 경로에서 사용. R81 권장: InventoryScene 단조 메뉴 / combat formula 정교화 / EncounterTable drop archetype / QuestRegistry catalog-fed.
+**분석 ~99.998% / Catalog ~95% / 실제 remake ~77-79%**. R81: **ForgeScene 신규** (80 R74 recipes UI + 실제 crafting transaction) + NpcRegistry 에 **region_shop_0..4 5개 NPCs** 추가 → R80 의 region_shop pattern 실제 발화. **67/67 tests** (33 app + 34 engine-core) + APK BUILD SUCCESSFUL. R82 권장: BattleScene combat formula (24 stat enum) / EncounterTable drop archetype / ItemRegistry 확장 (15 → 50+) / QuestRegistry catalog-fed.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

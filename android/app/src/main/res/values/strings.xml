@@ -14,6 +14,7 @@
     <string name="scene_records">Records</string>
     <string name="scene_event_viewer">Event Viewer</string>
     <string name="scene_catalog_viewer">Catalog Viewer</string>
+    <string name="scene_forge">Forge</string>
     <string name="scene_travel">Fast Travel</string>
     <string name="hint_dpad_navigate">&lt;&gt;^v Navigate</string>
     <string name="hint_ok_select">OK Select</string>
