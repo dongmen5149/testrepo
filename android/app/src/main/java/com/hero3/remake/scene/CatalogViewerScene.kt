@@ -40,6 +40,9 @@ class CatalogViewerScene(
         ITEMS("아이템 카테고리", "Item Categories"),
         SKILLS("스킬셋", "Skill Sets"),
         BOSSES("보스 명단", "Boss Roster"),
+        SHOP_CATALOG("상점 카탈로그", "Shop Catalog"),  // R80: R74 i15 38 entries
+        RECIPES("단조 레시피", "Forge Recipes"),       // R80: R74 smith 80 entries
+        REGION_SHOPS("지역 상점", "Region Shops"),     // R80: R74 5 region shops
         DES("DES 상태", "DES Status"),
     }
 
@@ -85,9 +88,21 @@ class CatalogViewerScene(
                 val slots = td?.skillSlots?.joinToString(",") ?: "?"
                 "${b.name.padEnd(10)}  lvl=${b.stats.lvl}  HP=${b.stats.hpMax}  rating=$rating  slots=[$slots]"
             }
+            Tab.SHOP_CATALOG -> catalog.r74Data?.shopCatalog?.map { e ->
+                "[${e.nlen.toString().padStart(2)}] ${e.name.padEnd(10)}  ${e.body.take(50)}"
+            } ?: listOf("(R74 data not loaded)")
+            Tab.RECIPES -> catalog.r74Data?.recipes?.mapIndexed { i, r ->
+                val out = catalog.resolveItem(r.output)?.cleanName ?: "?"
+                val inN = r.inputs.size
+                "[${i.toString().padStart(2)}] in=$inN → out=i${r.outputCat}[${r.outputId}] = $out"
+            } ?: listOf("(R74 data not loaded)")
+            Tab.REGION_SHOPS -> catalog.r74Data?.regionShops?.mapIndexed { i, s ->
+                val items = catalog.resolveShopItems(s).joinToString(", ") { it.name }
+                "shop[$i]  lv ${s.lvMin}-${s.lvMax}  items=[$items]"
+            } ?: listOf("(R74 data not loaded)")
             Tab.DES -> catalog.desStatus.pendingFiles.map { f ->
                 "${f.path.padEnd(20)}  ${f.role}"
-            }
+            }.ifEmpty { listOf("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)") }
         }
     }
 
@@ -104,8 +119,13 @@ class CatalogViewerScene(
         "combat rating (hard): ${catalog.combatRatingFormulaHard}",
         "DES pending: ${catalog.desStatus.pendingFiles.size} files (key: ${catalog.desStatus.key})",
         "boss skill IDs resolved: ${catalog.bossSkillIdsResolved()}",
+        // R80: R74 data 통합 현황
+        "R74 shop catalog: ${catalog.r74Data?.shopCatalog?.size ?: 0} entries",
+        "R74 recipes: ${catalog.r74Data?.recipes?.size ?: 0} entries",
+        "R74 region shops: ${catalog.r74Data?.regionShops?.size ?: 0} entries",
+        "R74 drop tables: ${catalog.r74Data?.dropTable?.size ?: 0} records",
         if (isEn) "" else "",
-        if (isEn) "R71/R72 — Android remake data layer." else "R71/R72 — Android 리메이크 데이터 계층.",
+        if (isEn) "R71-R80 — Android remake data layer + bridge." else "R71-R80 — Android 리메이크 데이터 계층 + bridge.",
     )
 
     override fun render(canvas: Canvas) {

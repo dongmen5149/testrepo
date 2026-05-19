@@ -67,8 +67,20 @@ class BattleScene(
     private val inventory: Inventory = gameState.loadInventory()
 
     private val enemy: EnemyInstance = run {
-        val def = forcedEnemyId?.let { EnemyRegistry.get(it) } ?: EnemyRegistry.random(party.first().level)
+        // R80: forcedEnemyId 가 "h3_n_NNN" / "h3_h_NNN" 패턴이면 Hero3Catalog 의 161 enemies 사용.
+        // 그 외는 기존 EnemyRegistry (placeholder 13 entries).
+        val def = forcedEnemyId?.let { id ->
+            catalogEnemy(id) ?: EnemyRegistry.get(id)
+        } ?: EnemyRegistry.random(party.first().level)
         EnemyInstance(def, def.hpMax)
+    }
+
+    private fun catalogEnemy(id: String): com.hero3.remake.engine.EnemyDef? {
+        if (!id.startsWith("h3_n_") && !id.startsWith("h3_h_")) return null
+        val catalog = com.hero3.remake.catalog.Hero3CatalogProvider.get() ?: return null
+        val hard = id.startsWith("h3_h_")
+        val list = com.hero3.remake.catalog.Hero3CatalogBridge.enemiesFromCatalog(catalog, hard)
+        return list.firstOrNull { it.id == id }
     }
 
     private var phase: Phase = Phase.COMMAND

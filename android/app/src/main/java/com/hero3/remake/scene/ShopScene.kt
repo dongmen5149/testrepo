@@ -37,8 +37,17 @@ class ShopScene(
     private var message: String = ""
     private var messageTtl = 0L
 
-    private val stock: List<Item> = ShopRegistry.stock(npcId, gameState)
+    // R80: "region_shop_N" 패턴 시 R74 의 5 catalog shops 사용. 그 외는 기존 ShopRegistry.
+    private val stock: List<Item> = regionShopStock(npcId) ?: ShopRegistry.stock(npcId, gameState)
     private val inventory: Inventory = gameState.loadInventory()
+
+    private fun regionShopStock(id: String): List<Item>? {
+        if (!id.startsWith("region_shop_")) return null
+        val idx = id.removePrefix("region_shop_").toIntOrNull() ?: return null
+        val catalog = com.hero3.remake.catalog.Hero3CatalogProvider.get() ?: return null
+        val items = com.hero3.remake.catalog.Hero3CatalogBridge.shopStockFromCatalog(catalog, idx)
+        return items.takeIf { it.isNotEmpty() }
+    }
     private val npc = NpcRegistry.forMap(0).firstOrNull { it.id == npcId }
         ?: NpcRegistry.forMap(1).firstOrNull { it.id == npcId }
 

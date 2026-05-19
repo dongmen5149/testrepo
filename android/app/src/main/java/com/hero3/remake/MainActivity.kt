@@ -50,9 +50,12 @@ class MainActivity : ComponentActivity() {
     private val sceneStack = ArrayDeque<Scene>()
 
     /** R71 산출물 — game_balance.json v1.1 (582KB) 의 typed Kotlin 표현.
-     *  Lazy 로딩 — 첫 사용 시점 (CatalogViewerScene / BestiaryScene boss section 등) 에 한 번만 파싱. */
+     *  Lazy 로딩 — 첫 사용 시점 (CatalogViewerScene / BestiaryScene boss section 등) 에 한 번만 파싱.
+     *  R80: Hero3CatalogProvider 로도 process-scoped 노출 (scene 들이 catalog 인자 없이 접근). */
     val catalog: Hero3Catalog by lazy {
-        Hero3CatalogLoader.load(AndroidAssetReader(this))
+        Hero3CatalogLoader.load(AndroidAssetReader(this)).also {
+            com.hero3.remake.catalog.Hero3CatalogProvider.installCatalog(it)
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
