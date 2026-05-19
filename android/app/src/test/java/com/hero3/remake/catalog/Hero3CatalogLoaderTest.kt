@@ -429,4 +429,80 @@ class Hero3CatalogLoaderTest {
         assertEquals(palette[2], idx.colorOf("quest_10_dat"))
         assertEquals(palette[3], idx.colorOf("quest_11_dat"))
     }
+
+    // ─── R89: Hero3CatalogSkillIndex ────────────────────────────────────────
+
+    @Test
+    fun r89_skill_index_builds_with_seven_weapon_files() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // R71: 7 weapon skill files (s4..s10_dat).
+        assertEquals(7, idx.fileCount)
+        val expected = setOf("s4_dat", "s5_dat", "s6_dat", "s7_dat", "s8_dat", "s9_dat", "s10_dat")
+        assertEquals(expected, idx.byFile.keys)
+        // 평탄화 합계 = byFile 합계 = idx.size.
+        val total = idx.byFile.values.sumOf { it.size }
+        assertEquals(idx.size, total)
+        // n_skills 합이 totalSkills 와 일치.
+        assertEquals(catalog.totalSkills, idx.size)
+    }
+
+    @Test
+    fun r89_skill_index_groups_by_weapon_label() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // weapon 라벨이 비어있지 않고, 모든 entry 의 weapon 이 byWeapon 키와 일치.
+        assertTrue(idx.byWeapon.isNotEmpty())
+        for ((weapon, list) in idx.byWeapon) {
+            assertTrue(weapon.isNotBlank())
+            assertTrue(list.all { it.weapon == weapon })
+        }
+        // 알려진 weapon 라벨이 인덱싱 되어야 함.
+        val labels = idx.byWeapon.keys
+        assertTrue(labels.any { it.contains("창") })
+        assertTrue(labels.any { it.contains("단검") })
+    }
+
+    @Test
+    fun r89_skill_index_colorOf_distinct_and_stable() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        val colors = idx.fileColors()
+        assertEquals(idx.fileCount, colors.size)
+        // 7 파일 색이 distinct (팔레트 7 슬롯).
+        assertEquals(colors.values.toSet().size, colors.size)
+        // 같은 입력에 같은 색.
+        assertEquals(idx.colorOf("s4_dat"), idx.colorOf("s4_dat"))
+        // 미지 파일은 fallback (alpha=0xFF).
+        val unknown = idx.colorOf("s99_dat")
+        assertEquals(0xFF.toInt(), (unknown ushr 24) and 0xFF)
+    }
+
+    @Test
+    fun r89_skill_index_lookupByName_finds_known_skill() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // R71 s4 (창) 의 첫 active_attack = "섬광".
+        val hits = idx.lookupByName("섬광")
+        assertTrue(hits.isNotEmpty())
+        assertTrue(hits.all { it.skill.name.contains("섬광") })
+    }
+
+    @Test
+    fun r89_skill_index_effectSummary_handles_null_and_empty() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // 적어도 1개 skill 은 effectV2 가 있을 것 (s4 active_attack 그룹).
+        val withEffect = idx.entries.firstOrNull { it.skill.effectV2 != null }
+        if (withEffect != null) {
+            val summary = idx.effectSummary(withEffect.skill)
+            assertNotNull(summary)
+            assertTrue(summary!!.startsWith("rank="))
+        }
+        // effectV2=null 인 skill 은 summary=null.
+        val withoutEffect = idx.entries.firstOrNull { it.skill.effectV2 == null }
+        if (withoutEffect != null) {
+            assertEquals(null, idx.effectSummary(withoutEffect.skill))
+        }
+    }
 }

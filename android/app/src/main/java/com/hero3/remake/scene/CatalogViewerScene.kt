@@ -93,9 +93,7 @@ class CatalogViewerScene(
             Tab.ITEMS -> catalog.items.map { c ->
                 Row("${c.file.padEnd(8)}  ${c.category.padEnd(10)}  n=${c.nItems}")
             }
-            Tab.SKILLS -> catalog.skills.map { ws ->
-                Row("${ws.file.padEnd(8)}  ${ws.weapon.padEnd(20)}  n=${ws.nSkills}")
-            }
+            Tab.SKILLS -> skillRows()
             Tab.BOSSES -> catalog.bossesNormal.map { b ->
                 val td = b.trailerDecoded
                 val rating = td?.combatRating ?: 0
@@ -134,6 +132,35 @@ class CatalogViewerScene(
                 Row("${f.path.padEnd(20)}  ${f.role}")
             }.ifEmpty { listOf(Row("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)")) }
         }
+    }
+
+    /**
+     * R89 — Skills 탭 행 생성. [Hero3CatalogSkillIndex] 의 byFile 그룹화 +
+     * 파일별 색상 hint 를 사용해 7 weapon set 을 색으로 구분.
+     * 각 weapon 헤더 (`=== sX_dat (weapon) ===`) 다음에 skills 가 같은 색으로 이어진다.
+     * skill 행에는 카테고리 + rank + effectV2 첫 슬롯 요약 (있을 때) 까지 한 줄로 표시.
+     */
+    private fun skillRows(): List<Row> {
+        if (catalog.skills.isEmpty()) return listOf(Row("(no skill data)"))
+        val index = com.hero3.remake.catalog.Hero3CatalogSkillIndex.build(catalog)
+        val fileColors = index.fileColors()
+        val header = Row(
+            "loaded=${index.size}  weapons=${index.weaponCount}  files=${index.fileCount}"
+        )
+        val body = catalog.skills.flatMap { ws ->
+            val paint = fileColors[ws.file]?.let { paintForArgb(it) }
+            listOf(Row("=== ${ws.file.padEnd(7)}  ${ws.weapon}  (n=${ws.nSkills}) ===", paint)) +
+            ws.skills.map { sk ->
+                val effSum = index.effectSummary(sk)
+                val tail = if (effSum != null) "  · $effSum" else ""
+                Row(
+                    " pos=${sk.pos.toString().padStart(3)}  " +
+                    "${sk.name.padEnd(10)}  [${sk.categoryName}]  r=${sk.rankOrLevel}$tail",
+                    paint,
+                )
+            }
+        }
+        return listOf(header) + body
     }
 
     /**
