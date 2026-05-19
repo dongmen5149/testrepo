@@ -101,10 +101,23 @@ class CatalogViewerScene(
                 val items = catalog.resolveShopItems(s).joinToString(", ") { it.name }
                 "shop[$i]  lv ${s.lvMin}-${s.lvMax}  items=[$items]"
             } ?: listOf("(R74 data not loaded)")
-            Tab.QUESTS -> catalog.questFiles.flatMap { qf ->
-                listOf("=== ${qf.file} (${qf.nEntries} entries, ${qf.sizeBytes}B) ===") +
-                qf.entries.map { e -> "  pos=${e.pos.toString().padStart(4)}  ${e.name}" }
-            }.ifEmpty { listOf("(no catalog quests parsed)") }
+            Tab.QUESTS -> {
+                // R85 — quest index 기반 중복 표시 및 통계 헤더.
+                val index = com.hero3.remake.catalog.Hero3CatalogQuestIndex.build(catalog)
+                val dupNames = index.duplicates().keys
+                val header = listOf(
+                    "loaded=${index.size}  distinct=${index.distinctCanonicalNames}  duplicates=${dupNames.size}"
+                )
+                val body = catalog.questFiles.flatMap { qf ->
+                    listOf("=== ${qf.file} (n_entries=${qf.nEntries}, loaded=${qf.entries.size}, ${qf.sizeBytes}B) ===") +
+                    qf.entries.map { e ->
+                        val canon = com.hero3.remake.catalog.Hero3CatalogQuestIndex.canonicalize(e.name)
+                        val mark = if (canon in dupNames) "★" else " "
+                        "$mark pos=${e.pos.toString().padStart(4)}  ${e.name}"
+                    }
+                }
+                if (catalog.questFiles.isEmpty()) listOf("(no catalog quests parsed)") else header + body
+            }
             Tab.DES -> catalog.desStatus.pendingFiles.map { f ->
                 "${f.path.padEnd(20)}  ${f.role}"
             }.ifEmpty { listOf("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)") }

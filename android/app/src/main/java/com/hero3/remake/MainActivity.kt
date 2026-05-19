@@ -64,6 +64,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** R85 — Catalog quest 한국어 이름 인덱스 (QuestRegistry 캐논 매칭 + CatalogViewer 표시용). */
+    val questIndex: com.hero3.remake.catalog.Hero3CatalogQuestIndex by lazy {
+        com.hero3.remake.catalog.Hero3CatalogQuestIndex.build(catalog)
+    }
+
     override fun attachBaseContext(newBase: Context) {
         val s = Settings(newBase)
         super.attachBaseContext(applyLocale(newBase, s.language))

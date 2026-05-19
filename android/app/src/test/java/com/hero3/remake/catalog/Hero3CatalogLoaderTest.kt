@@ -182,6 +182,55 @@ class Hero3CatalogLoaderTest {
         assertEquals("노력의 증명1", q00.entries[0].name)
     }
 
+    // ─── R85: catalog quest index ───────────────────────────────────────────
+
+    @Test
+    fun r85_quest_index_builds_and_indexes_all_loaded_entries() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        val flatCount = catalog.questFiles.sumOf { it.entries.size }
+        assertEquals(flatCount, idx.size)
+        // distinct canonical names ≤ total (= total when no duplicates).
+        assertTrue(idx.distinctCanonicalNames in 1..idx.size)
+    }
+
+    @Test
+    fun r85_quest_index_canonicalize_strips_trailing_digit() {
+        // "노력의 증명1" / "노력의 증명2" 가 같은 캐논 이름을 가지도록.
+        assertEquals("노력의 증명",
+            Hero3CatalogQuestIndex.canonicalize("노력의 증명1"))
+        assertEquals("노력의 증명",
+            Hero3CatalogQuestIndex.canonicalize("  노력의   증명  "))
+    }
+
+    @Test
+    fun r85_quest_index_lookup_finds_first_known_entry() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        // "노력의 증명1" → canonical "노력의 증명" — quest_00_dat 의 첫 entry 와 매칭.
+        val hits = idx.lookupExact("노력의 증명1")
+        assertTrue(hits.isNotEmpty())
+        assertEquals("quest_00_dat", hits[0].file)
+        assertEquals(0, hits[0].pos)
+        // Contains search should also work.
+        val partial = idx.lookupContains("증명")
+        assertTrue(partial.isNotEmpty())
+    }
+
+    @Test
+    fun r85_quest_index_detects_known_duplicate_chaos_continent() {
+        // "혼돈의 대륙" appears in both quest_01_dat and quest_11_dat.
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        val dups = idx.duplicates()
+        val chaos = dups["혼돈의 대륙"]
+        assertNotNull(chaos)
+        assertTrue(chaos!!.size >= 2)
+        val files = chaos.map { it.file }.toSet()
+        assertTrue(files.contains("quest_01_dat"))
+        assertTrue(files.contains("quest_11_dat"))
+    }
+
     @Test
     fun r74_shop_catalog_and_fixed_drops_populated() {
         val catalog = Hero3CatalogLoader.load(reader())

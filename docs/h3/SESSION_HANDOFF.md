@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 84 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 85 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.998% / Catalog ~98% / 실제 remake ~85-87%**. R84: **catalog 115 quests** (R58/R62 의 quest_00/01/10/11_dat × 37/7/38/33 entries) 가 Hero3Catalog.questFiles 에 정식 로딩 + CatalogViewer **Quests tab 신규** + overview 카운트. **71/71 tests** + APK BUILD SUCCESSFUL. R85 권장: QuestRegistry catalog-fed (한국어 이름 매칭) / R66 skill effect_v2 BattleScene 통합 / CatalogViewer Skills detail panel / R62 item_xref 21 매핑 / ForgeScene gold cost.
+**분석 ~99.96% / Catalog ~98% / 실제 remake ~85-87%**. R85: `Hero3CatalogQuestIndex` 신규 — questFiles 평탄화 + 캐논화 (꼬리 숫자 제거) + lookupExact/Contains/duplicates. **8 cross-file duplicates 발견** (quest_01/11 dat 7개 + 전장으로 quest_00/10). 67 entries / 59 distinct. CatalogViewer Quests tab 에 통계 헤더 + ★ 마커. **75/75 tests** (29 catalog, R85 4 신규) + APK BUILD SUCCESSFUL. **신규 finding**: quest_01 ↔ quest_11 모두 캐논 일치 → 둘이 동일 데이터 변형 가능성 / n_entries(115) vs loaded(67) 차이 = export script truncation (R86 수정 권장). R86 권장: export truncation fix → 115 entries 복구 / QuestRegistry catalogKey 필드 / CatalogViewer Skills detail panel / R66 effect_v2 BattleScene / item_xref 21 / ForgeScene gold.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 
