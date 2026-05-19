@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 78 (2026-05-19) — ESDAT 67B encounter layout + R76 가설 정정
+
+> 3 ESDAT = 157 일반 적의 난이도 3 stage. 67B body (152/157 = 97%) 분석. 상세: [round78-esdat-encounter-layout.md](round78-esdat-encounter-layout.md).
+>
+> **R76 의 "0x3f opcode 274회" 정정**: opcode 가 아니라 **section boundary marker** (0xff 0x3f at pos[42-43], 125/150 entries). ESDAT 도 BSDAT 와 동일 부류의 stat block, script bytecode 아님.
+>
+> 67B layout: pos[0]=enemy class, pos[2-3]=EXP base, pos[23-25]=HP, pos[29-32]=stat pair, pos[35-40]=ATK/DEF, pos[44-55]=drop, pos[57-60]=gold/EXP reward.
+
+---
+
 ## 🏆 Round 77 (2026-05-19) — BSDAT 49B stat field mapping
 
 > 49B 보스 body (13 entries × 3 stages) stat layout 추정. 상세: [round77-bsdat-stat-fields.md](round77-bsdat-stat-fields.md).
