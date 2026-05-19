@@ -366,25 +366,40 @@ func flee_chance() -> int:
 
 
 ## skill_id → {name, mp_cost, cooldown, damage_pct} 메타.
+##
+## Round 83: class-aware lookup. 이전엔 class_0 (워리어) 하드코딩이라 다른 class
+## 의 SKILL action 도 워리어 데이터 사용. 이제 GameState.class_id 따라 정확히.
+## Sorcerer (class_id=4) 는 active skill 데이터 부재 (c_csv_skill_04 없음) →
+## spirit skills (class_5, 16 개) 로 fallback 시도, 그것도 없으면 generic stub.
 func _skill_data(skill_id: int) -> Dictionary:
-	# 직접 skills.json 에서 stats_u16 읽음 (class_0 임시)
 	if skill_id < 0 or skill_id >= skill_names.size():
 		return {"name": "?", "mp_cost": 0, "cooldown": 0, "damage_pct": 100}
 	var name = skill_names[skill_id]
-	# stats[9] = cooldown(초), stats[5] = damage % (관습)
-	# 실제 skill 의 stat 추출 — GameData 의 _skills_cache 통해
-	var sk_arr = GameData._skills_cache.get("class_0", [])
+	# Round 83: class_id 기반 lookup. class 4 (Sorcerer) 는 spirit (class_5) 로 fallback.
+	var cid: int = GameState.class_id
+	var sk_arr: Array = GameData._skills_cache.get("class_%d" % cid, [])
+	if sk_arr.is_empty() and cid == 4:
+		# Sorcerer: active skill 데이터 부재 → spirit (class_5) 첫 N 개로 fallback
+		sk_arr = GameData._skills_cache.get("class_5", [])
+	# stats[9] = cooldown(초), stats[5] = damage % (관습, R57 검증)
 	if skill_id < sk_arr.size():
 		var stats: Array = sk_arr[skill_id].get("stats_u16", [])
 		var mp = stats[7] if stats.size() > 7 else 0
 		var cd = stats[9] if stats.size() > 9 else 0
 		var dpct = stats[5] if stats.size() > 5 else 100
+		# Sorcerer + spirit skill 사용 시 이름 prefix 로 표시
+		var disp_name: String = name
+		if cid == 4 and sk_arr == GameData._skills_cache.get("class_5", []):
+			disp_name = "[정령] " + name
 		return {
-			"name": name,
+			"name": disp_name,
 			"mp_cost": min(int(mp), 30),
 			"cooldown": min(int(cd), 5),
 			"damage_pct": clamp(int(dpct), 50, 300),
 		}
+	# 최종 fallback (모든 lookup 실패) — Sorcerer 의 stub active skill 안내
+	if cid == 4:
+		return {"name": "[미구현] " + name, "mp_cost": 5, "cooldown": 1, "damage_pct": 100}
 	return {"name": name, "mp_cost": 5, "cooldown": 1, "damage_pct": 150}
 
 

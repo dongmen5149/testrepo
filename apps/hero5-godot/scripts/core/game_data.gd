@@ -480,50 +480,77 @@ func orb_group(orb_idx: int) -> int:
 	return orb_idx / 13
 
 
-## Round 75: skill record 의 R72/R73 발견 fields 를 사람 친화 dict 로 노출.
+## Round 75 → R77: skill record 의 R72/R73 발견 fields 를 사람 친화 dict 로 노출.
 ##
-## 원본 HeroSkillInfo struct (88B) 의 R72/R73 정확 매핑:
-##   +0x28 (effect_type):       0=NO_HIT, 1·2=curse, 3·5=buff, 4=stance (R72 JT1 dispatch key)
-##   +0x30 (dynamic_formula_id): case 5 (shock) 에서 Formula::calc 의 id 인자 (R73)
-##   +0x3a (special_dispatch):   case 1+2 의 0x34/0x37 special path key (R72)
-##   +0x3c / +0x3d (formula_ids): 2회 Formula::calc 의 id_1/id_2 (R72 공통 패턴)
-##   +0x44 (knockback_idx):      class 3 KNIGHT motion 23 path 의 KB index (R69)
+## R77 (HERO::LoadResSkillInfo @0x8bba4 full disasm) 결과 정정:
+## - file-loaded 영역 (+0x00..+0x43): R72/R73 의 5 field 정확 매핑 확정
+## - runtime 영역 (+0x44..+0x57): LoadResSkillInfo 가 file 에서 채우지 않음
+##   → kb_idx/shock_count/max_combo/sp_delta/knight_threshold 는
+##     skills.json 의 stats_u16 와 무관 (별도 init source 추적 필요, R78+)
+##
+## 정확 매핑 (file-loaded only, R77 검증 완료):
+##   +0x28 (effect_type):       stats sub-rel 0x1a — 0=NO_HIT, 1·2=curse, 3·5=buff, 4=stance
+##   +0x30 (dynamic_formula_id): stats sub-rel 0x26 — case 5 (shock) Formula::calc id
+##   +0x3a (special_dispatch):   stats sub-rel 0x2b — case 1+2 의 0x34/0x37 special path key
+##   +0x3c (formula_id_1):       stats sub-rel 0x2d — 1st Formula::calc id
+##   +0x3d (formula_id_2):       stats sub-rel 0x2e — 2nd Formula::calc id
+##
+## 잠정 (runtime 영역, R78+ 정확화 필요):
+##   +0x44 (knockback_idx):      class 3 KNIGHT motion 23 path KB index (R69)
 ##   +0x46 (shock_count):        case 5 dispatch (R73)
-##   +0x48 (max_combo):          GUNNER skill slot 5 의 combo 한도 (R73)
+##   +0x48 (max_combo):          GUNNER skill slot 5 combo 한도 (R73)
 ##   +0x4a (sp_delta):           case 0 NO_HIT path 의 IncreaseSP 인자 (R72)
 ##   +0x4e (knight_threshold):   class 3 KNIGHT secondary check (R73)
 ##
-## stats_u16 layout 은 원본 skill data 의 byte stream — R72/R73 의 byte offset 을
-## stats_u16 index 로 변환 (각 stat 가 2B 라 가정): index = offset / 2.
-## 단 skills.json 의 stats_u16 가 어떤 byte 영역을 포함하는지에 따라 매핑이 달라짐.
-## 현재 skills.json 의 stat 분포가 R72/R73 와 1:1 매핑되지 않으면 None 으로 처리.
+## stats_u16 layout 은 skills.json 의 byte stream — 각 stat 가 2B 라 가정 시
+## index = offset / 2. stats_u16 길이가 충분치 않으면 default 반환.
 func skill_info(class_id: int, skill_id: int) -> Dictionary:
 	if _skills_cache.is_empty():
 		var p := "res://assets/gamedata/skills.json"
 		if FileAccess.file_exists(p):
 			var f := FileAccess.open(p, FileAccess.READ)
 			_skills_cache = JSON.parse_string(f.get_as_text()) or {}
+		_ensure_spirit_skills_loaded()
 	var arr = _skills_cache.get("class_%d" % class_id, [])
 	if skill_id < 0 or skill_id >= arr.size():
 		return {}
 	var rec: Dictionary = arr[skill_id]
+	# Round 87: class_5 (spirit) 는 _ensure_spirit_skills_loaded 가 R77 sub-rel offset
+	# 으로 explicit field 채워둠 → stats_u16 추정 매핑 안 거치고 직접 사용.
+	if class_id == 5 and rec.has("effect_type"):
+		return {
+			"name": rec.get("name", ""),
+			"desc": rec.get("desc", ""),
+			"effect_type": int(rec.get("effect_type", 0)),
+			"dynamic_formula_id": int(rec.get("dynamic_formula_id", 0)),
+			"special_dispatch": int(rec.get("special_dispatch", 0)),
+			"formula_id_1": int(rec.get("formula_id_1", 0)),
+			"formula_id_2": int(rec.get("formula_id_2", 0)),
+			"primary_u16": int(rec.get("primary_u16", 0)),
+			"secondary_u16": int(rec.get("secondary_u16", 0)),
+			# R79 dead reads — spirit data 에도 부재이지만 호환 위해 0 반환
+			"knockback_idx": 0,
+			"shock_count": 0,
+			"max_combo": 4,
+			"sp_delta": 0,
+			"knight_threshold": 0,
+		}
 	var stats: Array = rec.get("stats_u16", [])
-	# R72/R73 byte offset → stats_u16 index 매핑 (skill_info struct 의 stat[0..N] 가
-	# stats_u16 와 1:1 대응한다고 가정. 정확한 매핑은 LoadSkillTable disasm 추가 분석 필요).
-	# 현재는 stats_u16 가 충분히 길 때만 R72/R73 field 노출 — 그 외는 default.
+	# 다른 class (0..3): R72/R73 byte offset → stats_u16 index 매핑 (추정).
+	# skills.json 의 stats_u16 가 8 entries 만이라 OOB 시 default 0 반환 (R79 dead reads).
 	var info := {
 		"name": rec.get("name", ""),
 		"desc": rec.get("desc", ""),
-		"effect_type": _stat_at(stats, 14, 0),       # +0x28 / 2 = 0x14 (stat[20]) — 추정
-		"dynamic_formula_id": _stat_at(stats, 18, 0), # +0x30 / 2 = 0x18 (stat[24])
-		"special_dispatch": _stat_at(stats, 21, 0),   # +0x3a / 2 = 0x1d (stat[29]) — 추정 (실 매핑 다를 수 있음)
-		"formula_id_1": _stat_at(stats, 22, 0),       # +0x3c / 2 = 0x1e (stat[30])
+		"effect_type": _stat_at(stats, 14, 0),       # +0x28 / 2 = 0x14 — 추정
+		"dynamic_formula_id": _stat_at(stats, 18, 0), # +0x30 / 2 = 0x18
+		"special_dispatch": _stat_at(stats, 21, 0),   # +0x3a / 2 = 0x1d — 추정
+		"formula_id_1": _stat_at(stats, 22, 0),       # +0x3c / 2 = 0x1e
 		"formula_id_2": _stat_at(stats, 23, 0),       # +0x3d / 2 = 0x1e half — fallback
-		"knockback_idx": _stat_at(stats, 26, 0),      # +0x44 / 2 = 0x22 (stat[34])
-		"shock_count": _stat_at(stats, 27, 0),        # +0x46 / 2 = 0x23 (stat[35])
-		"max_combo": _stat_at(stats, 28, 4),          # +0x48 / 2 = 0x24 (stat[36])
-		"sp_delta": _stat_at(stats, 29, 0),           # +0x4a / 2 = 0x25 (stat[37])
-		"knight_threshold": _stat_at(stats, 31, 0),   # +0x4e / 2 = 0x27 (stat[39])
+		"knockback_idx": _stat_at(stats, 26, 0),      # R79 dead
+		"shock_count": _stat_at(stats, 27, 0),        # R79 dead
+		"max_combo": _stat_at(stats, 28, 4),          # R79 dead
+		"sp_delta": _stat_at(stats, 29, 0),           # R79 dead
+		"knight_threshold": _stat_at(stats, 31, 0),   # R79 dead
 	}
 	return info
 
@@ -556,3 +583,72 @@ func resolve_skill_desc(class_id: int, skill_id: int) -> String:
 		result = result.replace("}#%02d" % i, "}%d" % stats[i])
 		result = result.replace("#%02d" % i, str(stats[i]))
 	return result
+
+
+## Round 83: spirit skills (class_5, 16 entries) 를 별도 c_csv_skill_05.json 에서 load.
+##
+## skills.json 은 class_0..3 만 포함 (Sorcerer = class_4 부재). spirit 은 별개 raw csv
+## 형식 (count + records[{name, extra_hex}]). 본 함수가 첫 호출 시 _skills_cache["class_5"]
+## 채움 (stats_u16 는 빈 array — extra_hex 파싱은 추후, name + 기본 lookup 만 활성화).
+##
+## 이로써 battle_system._skill_data 의 Sorcerer fallback (`class_5`) 이 정상 동작:
+##   `_skills_cache.get("class_5", [])` 가 16 spirit skill 의 name list 반환.
+func _ensure_spirit_skills_loaded() -> void:
+	if _skills_cache.has("class_5"):
+		return
+	var p := "res://assets/gamedata/c_csv_skill_05.json"
+	if not FileAccess.file_exists(p):
+		_skills_cache["class_5"] = []
+		return
+	var f := FileAccess.open(p, FileAccess.READ)
+	var raw = JSON.parse_string(f.get_as_text()) or {}
+	var records: Array = raw.get("records", [])
+	var converted: Array = []
+	for r in records:
+		var bytes = _hex_to_bytes(str(r.get("extra_hex", "")))
+		# Round 84: extra_hex hex string → bytes → little-endian u16 stride 24 entries.
+		# Round 87: R77 LoadResSkillInfo file layout 의 정확한 sub-rel offset 으로
+		# explicit field 추출. R84 의 stats_u16 24 entries (u16 stride) 는 보조용
+		# 으로 유지하되, R72/R73 의 5 critical field 는 직접 명시.
+		# 16 spirit 분석 결과: effect_type 0/2/7 분포, formula_id_1 대부분 57,
+		# 다양한 special_dispatch (curse/debuff 류 다수).
+		var stats_u16: Array = []
+		var n = min(48, bytes.size())
+		for i in range(0, n - 1, 2):
+			stats_u16.append((bytes[i + 1] << 8) | bytes[i])
+		# R77 명시적 field (bytes.size() ≥ 48 일 때만)
+		var has_stats = bytes.size() >= 48
+		var entry: Dictionary = {
+			"name": str(r.get("name", "정령%d" % converted.size())),
+			"stats_u16": stats_u16,
+			"desc": "",
+			"_raw_bytes_size": bytes.size(),
+		}
+		if has_stats:
+			# R77 sub-rel offset → HeroSkillInfo entry field 정확 매핑.
+			entry["effect_type"] = bytes[0x1a]              # → entry+0x28 (R70/R72 JT1 key)
+			entry["dynamic_formula_id"] = bytes[0x26]       # → entry+0x30 (R73 case 5)
+			entry["special_dispatch"] = bytes[0x2b]         # → entry+0x3a (R72 0x34/0x37 분기)
+			entry["formula_id_1"] = bytes[0x2d]             # → entry+0x3c (R72)
+			entry["formula_id_2"] = bytes[0x2e]             # → entry+0x3d (R72)
+			entry["primary_u16"] = bytes[0x22] | (bytes[0x23] << 8)  # → entry+0x32
+			entry["secondary_u16"] = bytes[0x24] | (bytes[0x25] << 8)  # → entry+0x36
+			entry["desc_len"] = bytes[0x2f]                 # description string length
+			# R57 관습 호환: stats[5]=damage% / stats[7]=mp / stats[9]=cooldown
+			# R77 의 sub-rel: 0x0a (idx 5 of 0..0x2f bytes?) — 단순 byte index 사용
+			# 실제 spirit data 에서 mp/cd/damage 위치는 추후 R88+ 정밀화
+			entry["mp_cost"] = bytes[0x07] if bytes.size() > 7 else 0   # 추정 (sub-rel 0x07 = 0 in spirit 0)
+			entry["cooldown"] = bytes[0x0d] if bytes.size() > 0xd else 0  # 추정 (sub-rel 0x0d = 0x5d in spirit 0)
+			entry["damage_pct"] = bytes[0x00] if bytes.size() > 0 else 100  # placeholder
+		converted.append(entry)
+	_skills_cache["class_5"] = converted
+
+
+## hex string ("00abef...") → PackedByteArray.
+func _hex_to_bytes(hex: String) -> PackedByteArray:
+	var out := PackedByteArray()
+	var n := hex.length() - (hex.length() % 2)
+	for i in range(0, n, 2):
+		var byte_str = hex.substr(i, 2)
+		out.append(byte_str.hex_to_int())
+	return out

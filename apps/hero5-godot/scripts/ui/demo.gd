@@ -168,6 +168,10 @@ func _ready() -> void:
 	Audio.play_bgm(0)
 	_apply_scene()
 	SceneFader.fade_in(self)
+	# Round 83: Sorcerer (class_id=4) 진입 시 active skill 부재 안내 (1회)
+	if GameState.class_id == 4:
+		await get_tree().create_timer(0.5).timeout
+		_dialog.show_dialog("System", "소서러: active skill 데이터 부재 — 일반 공격 + 정령 스킬 (16개) 사용 가능. INT × 2 magic bonus 적용.")
 
 
 func _on_dialog_text(args: PackedByteArray) -> void:
@@ -261,11 +265,21 @@ func _trigger_random_encounter() -> void:
 	})
 
 
+var _warping: bool = false
+
+
 func _on_warp(target_scene: int) -> void:
 	if target_scene < 0 or target_scene >= _scene_index.size(): return
-	_scene_idx = target_scene
-	_apply_scene()
-	_dialog.show_dialog("System", "이동: scene #%d" % target_scene)
+	if _warping: return   # Round 84: 중복 warp 방지 (fade 진행 중 재트리거)
+	_warping = true
+	# Round 84: warp 시 fade 전환 — 검정 페이드아웃 → _apply_scene + dialog → 페이드인.
+	# 시각적으로 instant 한 map_id/hero position 변경이 검정 화면에서 일어남.
+	await SceneFader.warp_fade(self, func():
+			_scene_idx = target_scene
+			_apply_scene()
+			_dialog.show_dialog("System", "이동: scene #%d" % target_scene),
+		0.25, 0.25)
+	_warping = false
 
 
 func _on_level_up(new_level: int, gained_skills: Array) -> void:
@@ -431,13 +445,11 @@ func _on_monster_skill_cast(skill_id: int, source: Node2D, monster_id: int) -> v
 	# 몬스터 위에 스킬 이름
 	preload("res://scripts/ui/toast.gd").show_msg(self,
 		"#%d → skill %d (-%d HP)" % [monster_id, skill_id, dmg])
-	# 사망 처리
+	# 사망 처리 (Round 82): silent quick_load → 명시적 GameOver scene 전환.
+	# 사용자에게 Continue / Title 선택지 제공.
 	if GameState.hp == 0:
-		_dialog.show_dialog("System", "쓰러졌다... (slot 0 자동 로드)")
-		# F9 와 동일 — 슬롯 0 빠른 로드
-		if GameState.quick_load(0):
-			_scene_idx = GameState.current_scene_id
-			_apply_scene()
+		var reason := "monster #%d 의 skill %d 에 쓰러졌습니다" % [monster_id, skill_id]
+		SceneRouter.to_game_over(self, reason)
 
 
 ## Hero 의 SPACE 공격 — Chebyshev ATTACK_RANGE_TILES 이내의 monster 중 가장 가까운 것 1마리 처리.
@@ -558,6 +570,9 @@ func _input(event: InputEvent) -> void:
 			KEY_ESCAPE, KEY_I:
 				# ESC/I: 상태창 토글
 				_status.toggle()
+			KEY_F10:
+				# F10: 타이틀로 (확인 popup) — Round 82 SceneRouter
+				SceneRouter.quit_to_title(self, true)
 			KEY_F5:
 				# F5: 빠른 저장 (slot 0) — GameState 통해
 				GameState.current_scene_id = _scene_idx

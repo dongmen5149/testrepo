@@ -30,7 +30,22 @@ func _ready() -> void:
 	flee_btn.pressed.connect(func(): _do(H5Battle.Action.FLEE))
 
 
+## Round 85: battle 진입 시 fade transition — 검정 페이드아웃 → battle data
+## setup + visible=true → 페이드인. 사용자 시각적 신호로 turn-based 영역 진입.
+##
+## 이전 (R63-R84): visible=true instant 토글. 사용자가 갑작스럽게 battle UI 등장
+## 으로 느끼는 disorientation 해소.
+const SceneFaderRef = preload("res://scripts/ui/scene_fader.gd")
+
 func start(monster_id: int, player_state: Dictionary) -> void:
+	if visible: return   # Round 85: 이미 battle 중이면 무시 (중복 진입 방지)
+	await SceneFaderRef.warp_fade(self, func():
+			_setup_and_show(monster_id, player_state),
+		0.25, 0.25)
+
+
+## start() 의 mid-callback 으로 분리 — 검정 화면 동안 battle 데이터 setup 후 visible=true.
+func _setup_and_show(monster_id: int, player_state: Dictionary) -> void:
 	GameState.in_combat = true
 	_battle = H5Battle.new()
 	add_child(_battle)
@@ -120,12 +135,16 @@ func _on_ended(victory: bool, exp_gain: int, gold_gain: int, items: Array) -> vo
 		await _show_victory_popup(exp_gain, gold_gain, items)
 	else:
 		await _show_defeat_popup()
-	visible = false
-	GameState.in_combat = false
+	# Round 85: battle 종료 시 fade-out — 페이드아웃 → visible=false + cleanup → 페이드인.
+	# 사용자 시각적 신호로 turn-based 영역 이탈 + map 으로 복귀.
+	await SceneFaderRef.warp_fade(self, func():
+			visible = false
+			GameState.in_combat = false
+			if _battle:
+				_battle.queue_free()
+				_battle = null,
+		0.25, 0.25)
 	battle_completed.emit(victory, exp_gain, gold_gain, items)
-	if _battle:
-		_battle.queue_free()
-		_battle = null
 
 
 ## 승리 popup — EXP/Gold/획득 아이템 요약 + 확인 버튼.

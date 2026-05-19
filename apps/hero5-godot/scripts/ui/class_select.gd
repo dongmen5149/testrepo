@@ -3,9 +3,12 @@
 ## class.dat 의 5 클래스 (워리어/로그/건슬링어/나이트/소서러) + 능력치
 ## 표시. 선택하면 GameState.class_id 설정 후 demo 씬으로.
 ##
-## Round 22 (2026-05-10): 소서러 (class_id=4) 는 미구현 stub —
+## Round 22 (2026-05-10): 소서러 (class_id=4) 는 active skill 데이터 부재 stub.
 ## c_csv_skill_04 부재, .so 에 SORCERER class object 없음, class_stats unk1..14
-## 모두 placeholder 1. UI 라벨에 "(미구현)" 표시.
+## 모두 placeholder 1.
+## Round 83 (2026-05-19): 부분 활성화 — class_stats (STR/DEX/CON/INT) 데이터는
+## 정상 존재 + spirit skills (class_5) 16 개 공유 사용 가능 + INT 기반 magic
+## 공격력 보너스. active skill (slot 0..N) 만 부재 (선택 시 안내 메시지).
 extends Control
 
 @onready var info_label: Label = $Info
@@ -44,7 +47,8 @@ func _populate() -> void:
 		var cls = _classes[i]
 		var label: String = cls.get("name", "?")
 		if i == 4:
-			label += " (미구현)"
+			# Round 83: active skill 데이터 부재이지만 기본 + 정령 스킬은 사용 가능
+			label += " (매직 — 기본+정령 스킬만)"
 		class_list.add_item(label)
 
 
@@ -73,4 +77,4 @@ func _on_start() -> void:
 	GameState.hp = GameState.max_hp
 	GameState.max_sp = 30 + GameState.stat_int * 2
 	GameState.sp = GameState.max_sp
-	SceneFader.change_scene(self, "res://scenes/demo.tscn")
+	SceneRouter.to_demo(self)

@@ -369,10 +369,17 @@ func allocate_stat(stat_name: String, points: int = 1) -> bool:
 ##   - active_stances (R72 case 4 / KNIGHT 방어 stance 등) → ATK 변동 없음 (DEF 만)
 ##   - active_curses (R72 case 1+2) → ATK 변동 없음 (DEF 감소만, 적용처는 별도)
 ##
-## 공식: `atk_total = (base + equip_bonus) × (100 + buff_atk_pct) / 100`
+## 공식: `atk_total = (base + equip_bonus + magic_bonus) × (100 + buff_atk_pct) / 100`
 ##   buff_atk_pct = Σ entry["f1"] for entry in active_buffs (clamp 0..200)
+##
+## Round 83: Sorcerer (class_id=4) 는 INT × 2 를 base 에 추가로 더함 (magic 클래스
+## 특화). 다른 클래스는 STR 기반만. 원본 c_csv_skill_04 부재 stub 의 대응 — Sorcerer
+## active skill 없는 대신 일반 공격이 INT scaling 으로 강화. 다른 클래스의 STR 기반
+## 과 동등한 effective 공격력 유지.
 func total_attack() -> int:
 	var base = stat_str * 2 + level * 3
+	if class_id == 4:
+		base += stat_int * 2   # Sorcerer: INT magic bonus (active skill 부재 보상)
 	var equip = int(equipment_bonus().get("attack", 0))
 	var raw = base + equip
 	var buff_pct = 0

@@ -68,6 +68,12 @@ func _refresh() -> void:
 	_filtered_books.clear()
 
 	var class_books = GameData.skill_books_for_class(GameState.class_id)
+	# Round 83: Sorcerer (class_id=4) 는 active skill 데이터 부재 → 스킬북 0 권.
+	# 안내 메시지를 list 상단에 표시.
+	if GameState.class_id == 4 and class_books.is_empty():
+		book_list.add_item("(소서러: active skill 데이터 부재 — 정령 스킬은 spirit slot 으로)")
+		book_list.set_item_disabled(0, true)
+		book_list.set_item_custom_fg_color(0, Color(0.7, 0.7, 0.9, 1))
 	for rec in class_books:
 		if _filter_inventory_only:
 			var name = str(rec.get("name", ""))

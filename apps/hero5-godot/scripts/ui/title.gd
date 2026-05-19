@@ -36,7 +36,7 @@ func _on_new_game() -> void:
 	GameState.gold = 1000
 	GameState.inventory = []
 	GameState.flags = {}
-	SceneFader.change_scene(self, "res://scenes/class_select.tscn")
+	SceneRouter.to_class_select(self)
 
 
 var _selected_slot: int = -1
@@ -45,9 +45,7 @@ var _selected_slot: int = -1
 func _on_continue() -> void:
 	# 가장 최근 저장 자동 선택 (없으면 0)
 	var slot = _selected_slot if _selected_slot >= 0 else 0
-	if GameState.quick_load(slot):
-		SceneFader.change_scene(self, "res://scenes/demo.tscn")
-	else:
+	if not SceneRouter.to_demo_with_load(self, slot):
 		slots.text = "슬롯 %d 비어있음" % slot
 
 
@@ -91,8 +89,7 @@ func _refresh_slots() -> void:
 
 func _on_slot_selected(slot: int) -> void:
 	_selected_slot = slot
-	if GameState.quick_load(slot):
-		SceneFader.change_scene(self, "res://scenes/demo.tscn")
+	SceneRouter.to_demo_with_load(self, slot)
 
 
 func _confirm_delete(slot: int) -> void:
