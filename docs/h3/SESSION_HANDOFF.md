@@ -6,147 +6,90 @@
 
 **분석 ~99.98% / Catalog ~99% / 실제 remake ~87-88%**. R89: Hero3CatalogSkillIndex 신설 (R88 quest 인덱스 패턴 그대로) — entries / byWeapon / byFile / colorOf / fileColors / FILE_PALETTE 7색 (sky/orange/mint/magenta/gold/ivory/violet) + lookupByName / lookupByWeapon / effectSummary. CatalogViewerScene 의 SKILLS 탭이 7-줄 weapon-요약 → ~115 줄 per-skill drill-down (name / category / rank / effectV2 첫 슬롯 요약) + weapon-색 구분. **finding**: 7 weapon files (s4..s10_dat) 정렬 순으로 palette slot[0..6] 1:1, effectV2 가 살아있는 slot 1개 이상이면 `rank=N (deb=M)  CODE+x/y | …` 한 줄 요약. 86/86 tests (catalog 35→40, +5) + APK 14M BUILD SUCCESSFUL. R90 권장: SkillScene 에 catalog effectSummary 표시 (engine ↔ catalog fuzzy bridge) / R66 effect_v2 BattleScene / QuestRegistry catalogKey / ForgeScene recipe bytes[0..1] / Hero3CatalogItemIndex.
 
-## 1. 다음 세션 즉시 시작 가이드 (R75)
+## 1. 다음 세션 즉시 시작 가이드 (R90)
 
-### 1.0 R74 결과 (참고)
+R73 시점에 분석/DES 는 끝났고, R74~R89 는 catalog 데이터를 Android 리메이크 안으로 끌어들이는 통합 라운드들. **R90 부터는 “catalog 통합의 마지막 마무리” 가 메인 트랙.** 분석 진척은 거의 0 — 통합/UI 완성도가 진행률의 거의 전부.
 
-- `tools/recon/parse_h3_des_plain.py` 실행 시 8 파일 모두 JSON 출력
-- 핵심 카운트: i15=38, drop=161, droph=161, smith=80, smithh=80, shop=5, shoph=5, getitem=96
-- drop_dat 161 = R56 enemy_dat 161 1:1 확정
-- BSKILL set hit: 98/161 records (H4 confirmed)
-- 자세히: [ghidra-round74-des-plain-parsers-2026-05-19.md](ghidra-round74-des-plain-parsers-2026-05-19.md)
+### 1.0 R88-R89 결과 (참고)
 
-### 1.1 ⭐⭐⭐⭐⭐ Phase A2: 17B drop record / i15 6B trailer 정밀 (R75 권장 우선)
+- R88: `Hero3CatalogQuestIndex` 에 byFile/fileColors/colorOf 추가 + `CatalogViewerScene` rowsForTab 을 `List<Row>` 로 작은 리팩터. Quests 탭 quest_00/01/10/11_dat 4 파일 색 구분. commit `9b1de921`.
+- R89: `Hero3CatalogSkillIndex` 신설 (Quest 패턴 그대로) + Skills 탭 ~115 줄 per-skill drill-down + 7 weapon 색 구분 + lookupByName/lookupByWeapon/effectSummary. commit `92752a1f`.
+- 두 라운드 공통 패턴: `byFile` + `colorOf(file)` + `fileColors()` + `FILE_PALETTE: IntArray` + hash fallback (각 채널 ≥ 0x80). 어두운 배경(rgb(10,14,28))에서 모두 가독성 OK.
 
-1. **drop_dat 17B field map**:
-   - byte 0-1: low-frequency = enemy_id? (0..160) 또는 drop count
-   - byte 5/9/13 = boss skill ID 위치 후보 (98/161 ≥3 hits)
-   - byte N (gold?) 변동 폭 정밀 측정
-   - droph_dat 대비 normal: scaling factor 추출
+### 1.1 ⭐⭐⭐⭐⭐ R90 권장 우선: SkillScene 에 catalog effectSummary 표시
 
-2. **i15 6B trailer**:
-   - 38 entries 의 마지막 6B (예: `00 00 00 0f ff 00`, `04 02 02 0f ff 00`, ...)
-   - 5번째 byte `0f` 고정, 다른 byte 들이 stat (ATK/DEF/MP?)
-   - i0~i12 catalog 의 stat block 과 cross-check
+**작업 위치**: `android/app/src/main/java/com/hero3/remake/scene/SkillScene.kt`
 
-3. **smith → Hero3Recipe data class**: Hero3Catalog.kt 확장 + Loader + 12 unit tests 갱신
+엔진 SkillRegistry 의 한 스킬 (`강타 / 메가 크러쉬 / 정조준 / 영혼 노바` 등) 을 선택했을 때, 하단 상세 패널에 `Hero3CatalogSkillIndex.lookupByName(nameKo)` 으로 fuzzy 매칭된 catalog skill 의 `effectSummary` 를 추가로 노출.
 
-4. **shop → Hero3RegionShop data class**: 5 regions × level tier + item slot
+- engine "연사" → catalog "연사" 정확 매칭 (1건 확인됨, R89 finding).
+- 다른 engine 스킬은 부분 매칭 없음 → "(no catalog match)" 한 줄.
+- engine 의 `descKo` 비어있을 때 fallback 으로 사용 가능.
 
-5. **export_game_balance.py** → game_balance.json v1.2 (예상 ~700KB)
+세부:
+- Hero3CatalogProvider.get() null 가능 → null 일 때 동작 변화 없음.
+- 매칭 hits 가 여러 개면 `rank` 가장 높은 1개 (또는 첫 hit).
+- effectSummary 형식은 R89 그대로 (`rank=N (deb=M)  CODE+x/y | …`).
 
-### 1.x (구) Phase A: DES 평문 정밀 파서 (자동, 권장 우선)
+### 1.2 ⭐⭐⭐⭐ R66 effect_v2 를 BattleScene 데미지 공식에 반영
 
-R73 의 8 plain 파일 (`work/h3/decrypted/*.plain`) 을 typed Kotlin object 로 디코드.
-**도구 설치 불필요, 즉시 진행 가능.**
+**작업 위치**: `android/app/src/main/java/com/hero3/remake/scene/BattleScene.kt`
 
-#### A-1. i15_dat parser (master shop catalog)
-- 평문 7,400B, 한글 description 직접 포함
-- entry 구조: `[size:1B][reserved:1B][name_len:1B][name:EUC-KR][body:desc text]`
-- body 예: `"레벨 10 투구; 머리띠; 보스용도 15년; "`
-- 신규: `tools/recon/parse_h3_i15_dat.py`
-- 결과: `work/h3/recon/i15_shop_catalog.json` (shop entry list)
+현재 데미지 = `effectiveAtk * powerMul + flatBonus` (engine Skill). R66 분석에서 발견한 effect_v2 살아있는 slot 의 `primarySigned / secondarySigned` 를 ATK/DEF/회복/디버프 modifier 로 적용.
 
-#### A-2. drop_dat / droph_dat parser (enemy 별 drop table)
-- 평문 3,080B, 18-byte stride entry + `11 00` separator
-- 가설: enemy_id (1B?) + drop items[N] × (item_id + drop_rate%)
-- normal vs hard 비교로 enemy_id ↔ R56 의 161 enemies 매칭 가능
-- 신규: `tools/recon/parse_h3_drop_dat.py`
-- 결과: `work/h3/recon/drop_table.json`
+- catalog 매칭이 없으면 현재 식 그대로.
+- 매칭이 있고 slot1.codeName 이 `ATT1` / `DEF` / `HP_HEAL_INSTANT` 등 이면 해당 stat 에 가산/곱 적용.
+- 디버프 nDebuffs > 0 일 때 target 에 상태이상 부여 (engine 측 상태 enum 신설 필요할 수 있음 — 미존재 시 로그만).
 
-#### A-3. smith_dat / smithh_dat parser (조합 레시피)
-- 평문 896B, entropy 3.84 (매우 낮음)
-- 가설: input items (i14 조합재료) + output item (i0~i12 결과물) + cost(gold)
-- R69 의 i14 7 카테고리와 매칭
-- 신규: `tools/recon/parse_h3_smith_dat.py`
+작업량 중급. SkillScene (1.1) 이 먼저 → engine 측 stat code 매핑 정리 → BattleScene 적용 순.
 
-#### A-4. shop_dat / shoph_dat parser (상점 NPC 별 판매 목록)
-- 평문 1,008B
-- 가설: NPC_id + items[] × (item_id + price modifier)
-- R57 의 8 main regions 와 매칭 (네오솔티아 / 토레즈 / 엔자크 등)
-- 신규: `tools/recon/parse_h3_shop_dat.py`
+### 1.3 ⭐⭐⭐ Hero3CatalogItemIndex (R88-R89 패턴 3번째)
 
-#### A-5. getitem_dat parser (fixed drops)
-- 평문 400B (작음, 50 entries × 8B)
-- 가설: quest 보상 / scripted drop 의 fixed item table
+**작업 위치**: 신규 `android/app/src/main/java/com/hero3/remake/catalog/Hero3CatalogItemIndex.kt`
 
-#### A-6. boss skill ID H4 가설 최종 검증 (R67/R68 후속)
-- R67 H4 (별도 boss skill table) 가설.
-- DES 평문 데이터에서 boss skill ID (1..20 range) 검색
-- distinct IDs: {1, 2, 3, 5, 7, 8, 9, 10, 13, 14, 19, 20}
-- 패턴 (3,2,1,2), (19,13,9,9) 등을 drop_dat / smith_dat / shop_dat 안에서 검색
-- 가능성: drop_dat 의 18-byte stride entry 가 사실 boss skill encounter table
+18 item categories (i0..i18) × N items 를 같은 byFile/colorOf 패턴으로 인덱싱. CatalogViewerScene 의 ITEMS 탭이 18-줄 카테고리 요약 → ~수백 줄 per-item drill-down 으로 확장.
 
-#### A-7. Hero3Catalog 확장
-- R71 의 Hero3Catalog 에 다음 data class 추가:
-  - `Hero3ShopEntry(name, level, category, description, classRestriction, ...)`
-  - `Hero3DropEntry(enemyId, drops: List<Hero3DropItem>)`
-  - `Hero3DropItem(itemId, ratePercent)`
-  - `Hero3Recipe(inputs: List<ItemRef>, output: ItemRef, goldCost)`
-  - `Hero3ShopCatalog(npcId, region, sellsItems: List<ShopItemRef>)`
+- R71 의 `Hero3Catalog.items` 그대로 사용 (이미 모든 데이터 적재됨).
+- 18 카테고리 ≥ 6-슬롯 팔레트 → palette 확장 또는 hash fallback 의 사용 비율 ↑.
+- Quest/Skill 인덱스 코드 거의 그대로 복사 → diff 작음.
 
-#### A-8. game_balance.json v1.2 출력
-- export_game_balance.py 수정 → DES 평문 데이터 통합
-- 예상 크기: 582KB → ~700KB
+### 1.4 ⭐⭐⭐ QuestRegistry catalogKey
 
-### 1.2 ⭐⭐⭐ Phase B: SMAF→OGG 변환 (사용자 신뢰도 정책 대기)
+**작업 위치**: `engine-core/src/commonMain/kotlin/com/hero3/remake/engine/Quest.kt`
 
-**상태**: R73 에서 pipeline 스크립트 + 설치 가이드 작성 완료. 외부 도구 부재로 변환 미실행.
+engine 의 4 quest 는 catalog 의 115 quest 와 narrative 가 다른 bespoke 안. 그러나 향후 catalog 안 quest 이름 → engine quest 매핑을 위한 슬롯 자리만 남겨놓는 것은 의미 있음.
 
-**사용자 정책**: "신뢰도 높은 것만 다운로드" → smaf-converter.jar (개인 GitHub) 와 FluidR3_GM.sf2 (비공식 미러) 보류.
+- `Quest` data class 에 `val catalogKey: String? = null` 추가 (4 entries 는 모두 null 그대로).
+- QuestScene 에서 catalog 인덱스 lookup hook 자리만 추가 (실제 매칭은 사용자가 narrative 정의 시).
 
-**신뢰도 높은 도구만 진행 가능한 경로**:
+작업량 매우 작음. R90 의 “덤” 으로 같이 묶을 만함.
 
-| 도구 | 신뢰도 | 출처 | 설치 명령 |
-|---|---|---|---|
-| FFmpeg | 🟢 매우 높음 | winget 공식 | `winget install Gyan.FFmpeg` |
-| FluidSynth | 🟢 매우 높음 | winget 공식 | `winget install FluidSynth.FluidSynth` |
-| `mido` | 🟢 높음 | PyPI 공식 | `pip install mido` |
-| `pyFluidSynth` | 🟢 높음 | PyPI 공식 | `pip install pyFluidSynth` |
-| `pydub` | 🟢 높음 | PyPI 공식 | `pip install pydub` |
-| Windows `gm.dls` | 🟢 매우 높음 | OS 동봉 (`C:\Windows\System32\drivers\gm.dls`) | (이미 있음) |
-| smaf-converter.jar | 🔴 낮음 | 개인 GitHub repo | (보류) |
-| FluidR3_GM.sf2 | 🟡 보통 | 비공식 미러 | (보류) |
+### 1.5 ⭐⭐ ForgeScene recipe bytes[0..1] 정밀화
 
-**대안 전략 (R74 Phase B)**:
-1. winget + PyPI 만 사용해서 도구 설치
-2. **SMAF→MIDI 변환을 Pure Python 자체 구현** (third-party JAR 회피)
-   - SMAF format spec 기반 직접 작성
-   - score chunk → MIDI events 변환
-   - 음색 정확도 낮음 but 멜로디/리듬 100% 보존
-   - 코드 review 가능 (repo 안)
-3. MIDI+gm.dls → WAV (FluidSynth 또는 pyFluidSynth)
-4. WAV → OGG (FFmpeg)
+**작업 위치**: `tools/recon/` + `Hero3Catalog.kt`
 
-**다음 세션에서 결정 필요**:
-- 사용자가 winget + pip 설치 승인하면 → R74 Phase B 진행
-- 보류하면 → R74 Phase A (DES 평문 파서) 만 진행 후 R75 이후에 Phase B
+R74 의 11-byte recipe 중 bytes[0..1] 은 미해석. gold cost 후보. 변동 폭 + 정렬 패턴 정밀 측정 후 확정 시 `Hero3Recipe.goldCost` 추가, ForgeScene 행에 가격 표시.
 
-### 1.3 ⭐⭐ Phase C: Dialogue LLM 번역
+분석성 작업 — recipe.json 변동량 측정 + 가설 검증 1-2일치. 필수는 아님.
 
-- 9,740 entries, $4.09 추정 (Claude Sonnet 4.6)
-- R69 의 `work/h3/translation_queue.json` 사용
-- 사용자가 LLM API key 또는 Claude API 직접 호출 가능 시 자동 진행
+### 1.6 ⭐ Phase C: Dialogue LLM 번역 (사용자 API key 필요)
 
-## 2. 작업 순서 권장 (다음 세션)
+- 9,740 entries, $4.09 추정 (Claude Sonnet 4.6).
+- R69 의 `work/h3/translation_queue.json` 사용.
+- 사용자가 LLM API key 또는 Claude API 직접 호출 가능 시 자동 진행.
+
+## 2. 작업 순서 권장 (R90)
 
 ```
-1. git status + git log --oneline -5   (현재 상태 확인)
-2. 이 문서 + MASTER_SPEC.md 확인
-3. Phase A 의 8 parser 작업 시작 (즉시):
-   - A-1 i15_dat parser
-   - A-2 drop_dat parser
-   - A-3 smith_dat parser
-   - A-4 shop_dat parser
-   - A-5 getitem_dat parser
-4. A-6 boss skill ID H4 가설 검증
-5. A-7 Hero3Catalog 확장 + 12 unit tests 갱신
-6. A-8 game_balance.json v1.2
-7. (사용자 승인 시) Phase B SMAF
-8. Round 74 doc + commit
+1. git status + git log --oneline -5   (R89 commit 92752a1f 확인)
+2. SkillScene §1.1 — catalog effectSummary 표시
+3. (선택) QuestRegistry catalogKey §1.4 — 작은 덤
+4. Hero3CatalogLoaderTest 갱신 + 새 unit tests
+5. assembleDebug + 86+/86+ tests
+6. Round 90 doc + SESSION_HANDOFF/PROGRESS 갱신 + commit
 ```
 
-목표 진행률 (R74 종료): **~99.98%**.
+목표 진행률 (R90 종료): **분석 ~99.98% 동일, 리메이크 ~88-89%**. (분석 트랙은 사실상 종료, UI/UX/통합이 메인 트랙)
 
 ## 3. R73 까지의 핵심 발견 요약 (참고용)
 
@@ -258,12 +201,14 @@ R74 Phase B 시작 시 사용자 확인:
 ## 6. 참고 문서
 
 - ★★★★★ [MASTER_SPEC.md](MASTER_SPEC.md) — Hero3 single reference (R73 §10 갱신)
-- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록
-- [Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) — DES 8/8 + SMAF
-- [smaf_conversion_guide.md](smaf_conversion_guide.md) — SMAF 외부 도구 가이드
-- [Round 72](ghidra-round72-scene-integration-2026-05-19.md) — Android scene 통합
-- [Round 71](ghidra-round71-catalog-loader-2026-05-19.md) — Catalog data layer
-- [Round 70](ghidra-round70-master-spec-exp-groups-2026-05-19.md) — Master Spec
+- [PROGRESS.md](PROGRESS.md) — 전체 진행 기록 (R89 최신)
+- [Round 89](ghidra-round89-catalog-skill-index-2026-05-19.md) — SkillIndex + SKILLS 탭 drill-down (이번 라운드)
+- [Round 88](ghidra-round88-quest-tab-file-color-2026-05-19.md) — Quests 탭 file-색상 + QuestIndex byFile API
+- [Round 87](ghidra-round87-quest-item-xref-2026-05-19.md) — R62 Quest Item Xref 21 통합
+- [Round 86](ghidra-round86-quest-export-truncation-fix-2026-05-19.md) — Quest export truncation 수정 (67→115)
+- [Round 85](ghidra-round85-catalog-quest-index-2026-05-19.md) — Hero3CatalogQuestIndex 신설
+- [Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) — DES 8/8 + SMAF (분석 트랙 종료)
+- [smaf_conversion_guide.md](smaf_conversion_guide.md) — SMAF 외부 도구 가이드 (대기 중)
 - (R56-R69) — see MASTER_SPEC §14
 - `tools/h5_des.py` — Hero5 mx_des_decrypt Python 포팅 (R68 산출, R73 적용)
 - 모든 round docs: `docs/h3/ghidra-*-2026-05-1[0-9].md`
@@ -275,19 +220,20 @@ R74 Phase B 시작 시 사용자 확인:
 ```bash
 # 1. 현재 git 상태 확인
 git status
-git log --oneline -3
+git log --oneline -5
+# 마지막 commit 기대값: 92752a1f feat:영웅서기3 Round 89 — Hero3CatalogSkillIndex + SKILLS 탭 drill-down
 
-# 2. DES 평문 파일 확인 (R73 산출)
-ls work/h3/decrypted/
+# 2. 이 문서 §1.1 (SkillScene 에 catalog effectSummary 표시) 부터 시작
+#    - 읽기: android/app/src/main/java/com/hero3/remake/scene/SkillScene.kt
+#    - 읽기: android/app/src/main/java/com/hero3/remake/catalog/Hero3CatalogSkillIndex.kt (R89 신규)
+#    - 변경: SkillScene render() 의 하단 detail panel 에 lookupByName + effectSummary 추가
 
-# 3. Phase A 시작 — i15_dat parser 작성
-# 새 파일: tools/recon/parse_h3_i15_dat.py
-# 입력: work/h3/decrypted/i15_dat.0EP@KO91.plain
-# 출력: work/h3/recon/i15_shop_catalog.json
+# 3. 테스트 (R89 = 86 tests, R90 추가 시 90+ 기대)
+./android/gradlew.bat -p android :app:testDebugUnitTest :engine-core:testDebugUnitTest :app:assembleDebug
 ```
 
-또는 사용자가 SMAF 진행 의사가 있으면 Phase B 도구 설치부터 시작.
+JDK 경로: `C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot` (현재 PC). 집 PC 는 `C:\Program Files\Eclipse Adoptium\jdk-21*` 일 수 있음 — 빌드 전 JAVA_HOME 확인 필요.
 
 ---
 
-**다음 세션 시작 시 가장 먼저 할 일**: 이 문서 §1 의 Phase A 또는 Phase B 중 선택. **기본 권장 = Phase A** (도구 설치 불필요, 즉시 진행).
+**다음 세션 시작 시 가장 먼저 할 일**: 이 문서 §1.1 (SkillScene catalog 매칭) — 작업량 작고 R88-R89 패턴 그대로 활용 가능. §1.4 (QuestRegistry catalogKey) 를 덤으로 같이 묶어도 됨.

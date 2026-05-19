@@ -7,58 +7,34 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 73 종료, committed)**:
-> - 마지막 commit = `55c5dc59 feat:영웅서기3 Round 73 — 🎉 DES 8/8 파일 복호화 성공 (Hero5 mx_des_decrypt 변종) + SMAF pipeline`
-> - Hero3 분석 진행률 **~99.95%**
-> - 🏆 **DES 8 pending → 0** (R73 완료)
-> - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (다음 세션 결정)
-> - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R74 Phase A/B 가이드
+> **현재 git 상태 (2026-05-19 Round 89 종료, committed)**:
+> - 마지막 commit = `92752a1f feat:영웅서기3 Round 89 — Hero3CatalogSkillIndex + SKILLS 탭 drill-down`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R89 는 catalog 통합 라운드)
+> - Hero3 리메이크 진행률 **~87-88%** (UI/UX/통합이 메인 트랙)
+> - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R90 즉시 시작 가이드 (§1.1 권장)
+> - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R74 즉시 시작 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R90 즉시 시작 가이드
 
-남은 작업이 **두 Phase 로 분리**:
+`SESSION_HANDOFF.md §1` 참조 — R90 후보 6종 (별 갯수 순):
 
-#### Phase A — DES 평문 정밀 파서 (⭐⭐⭐⭐⭐ 자동, 즉시 진행 권장)
+| ⭐ | 작업 | 위치 | 비고 |
+|---|---|---|---|
+| ⭐⭐⭐⭐⭐ | **SkillScene 에 catalog effectSummary 표시** | `scene/SkillScene.kt` | R89 lookupByName 이미 준비됨. fuzzy 매칭 1건 (연사) + null fallback. |
+| ⭐⭐⭐⭐ | R66 effect_v2 BattleScene 데미지 공식 반영 | `scene/BattleScene.kt` | R90 §1.2. 중급 작업. |
+| ⭐⭐⭐ | Hero3CatalogItemIndex (R88-R89 패턴 3번째) | `catalog/Hero3CatalogItemIndex.kt` 신규 | 18 카테고리 × N items, ITEMS 탭 drill-down. |
+| ⭐⭐⭐ | QuestRegistry catalogKey 슬롯 추가 | `engine-core/.../Quest.kt` | 작음, R90 의 “덤”. |
+| ⭐⭐ | ForgeScene recipe bytes[0..1] = gold cost? | `tools/recon/` 분석 | 가설 검증성. |
+| ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
-R73 의 8 plain 파일 (`work/h3/decrypted/*.plain`) 을 typed Kotlin object 로 디코드. **도구 설치 불필요**.
-
-1. ⭐⭐⭐⭐⭐ **i15_dat parser** — master shop catalog (한글 description text DB)
-2. ⭐⭐⭐⭐ **drop_dat / droph_dat parser** — enemy 별 drop table (18B stride + `11 00` separator)
-3. ⭐⭐⭐⭐ **smith_dat parser** — i14 조합 재료 → i0~i12 결과물 레시피
-4. ⭐⭐⭐ **shop_dat parser** — 상점 NPC 별 판매 목록
-5. ⭐⭐⭐ **getitem_dat parser** — fixed quest/scripted drops
-6. ⭐⭐⭐ **boss skill ID H4 가설 최종 검증** — R67/R68 의 distinct IDs {1,2,3,5,7,8,9,10,13,14,19,20} 매핑
-7. ⭐⭐⭐ **Hero3Catalog 확장** — Hero3ShopEntry / Hero3DropEntry / Hero3Recipe data class
-8. ⭐⭐ **game_balance.json v1.2** 출력 (582KB → ~700KB)
-
-#### Phase B — SMAF→OGG 변환 (⭐⭐⭐ 사용자 신뢰도 정책 대기)
-
-**상태**: R73 에서 pipeline 스크립트 + 설치 가이드 작성 완료, 외부 도구 부재로 변환 미실행.
-
-**사용자 정책 (R73 종료)**: "**신뢰도 높은 것만 다운로드**" — 개인 GitHub JAR / 비공식 SoundFont 미러 보류.
-
-**신뢰도 정책 준수 경로**:
-- 🟢 `winget install Gyan.FFmpeg` (공식)
-- 🟢 `winget install FluidSynth.FluidSynth` (공식)
-- 🟢 `pip install mido pyFluidSynth pydub` (PyPI 공식)
-- 🟢 Windows 내장 `gm.dls` (OS 동봉 GM SoundFont)
-- 🟢 **Pure Python SMAF→MIDI 자체 구현** (제가 작성, repo 코드, third-party JAR 불필요)
-- 🔴 smaf-converter.jar (개인 GitHub) — 보류
-- 🟡 FluidR3_GM.sf2 (비공식 미러) — 보류 (gm.dls 로 대체)
-
-**다음 세션 결정 사항**:
-- 사용자가 winget + pip 설치 승인 → Phase B 진행 가능
-- 보류 시 → Phase A 만 진행, Phase B 는 R75+ 로
-
-#### Phase C — Dialogue LLM 번역 (⭐⭐ 사용자 API key 필요)
-
-9,740 entries, $4.09 추정. R69 의 `work/h3/translation_queue.json` 사용.
-
-**작업 후 수행**:
-- 새 `docs/h3/ghidra-round74-*.md` 작성
-- `PROGRESS.md` + `SESSION_HANDOFF.md` + `MEMORY.md` 갱신
-- commit: `feat:영웅서기3 Round 74 — DES 평문 8 파일 파싱 / Hero3Catalog 확장`
+**R90 권장 시작 순서** (SESSION_HANDOFF §2 참조):
+1. `git status` + `git log --oneline -5` → R89 commit `92752a1f` 확인.
+2. **§1.1 SkillScene** — `lookupByName(nameKo)` + `effectSummary` 하단 패널 노출.
+3. (덤) **§1.4 QuestRegistry catalogKey** — `val catalogKey: String? = null` 슬롯.
+4. Hero3CatalogLoaderTest 갱신.
+5. `:app:testDebugUnitTest` + `:engine-core:testDebugUnitTest` + `:app:assembleDebug`.
+6. `docs/h3/ghidra-round90-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
 
 ---
 
