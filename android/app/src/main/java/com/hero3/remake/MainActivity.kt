@@ -56,6 +56,11 @@ class MainActivity : ComponentActivity() {
     val catalog: Hero3Catalog by lazy {
         Hero3CatalogLoader.load(AndroidAssetReader(this)).also {
             com.hero3.remake.catalog.Hero3CatalogProvider.installCatalog(it)
+            // R82 — catalog 의 핵심 items 를 ItemRegistry 에 추가 등록.
+            // ForgeScene 의 recipe matching / Inventory display 범위 확장.
+            com.hero3.remake.engine.ItemRegistry.registerExtra(
+                com.hero3.remake.catalog.Hero3CatalogBridge.catalogItemPool(it)
+            )
         }
     }
 
@@ -86,6 +91,10 @@ class MainActivity : ComponentActivity() {
         settings = Settings(this)
         gameState = GameState(this)
         input = InputController()
+
+        // R82 — catalog lazy 강제 트리거 (provider install + ItemRegistry extra 등록).
+        // MapWalkScene 의 encounter 가 카탈로그 161 enemies 사용 가능하도록.
+        try { catalog } catch (_: Throwable) { /* asset 미존재 시 등 — graceful */ }
 
         gameView = GameView(this, input)
         keypad = VirtualKeypadView(this, input)

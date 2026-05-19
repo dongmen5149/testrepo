@@ -62,6 +62,60 @@ object Hero3CatalogBridge {
         }
     }
 
+    /** R82 — catalog 의 핵심 items 를 engine-core Item 으로 변환하여 ItemRegistry 에 추가 등록.
+     *  i0-i12 (장비) + i14 (재료) + i17-i18 (액세서리/소비) 의 일부를 가져와 ID `h3_item_<file>_<pos>`.
+     *  ForgeScene 의 recipe matching 범위를 ItemRegistry 15 → 100+ 로 확장.
+     */
+    fun catalogItemPool(catalog: Hero3Catalog, maxPerCategory: Int = 30): List<Item> {
+        val pool = mutableListOf<Item>()
+        for (cat in catalog.items) {
+            val kind = inferKind(cat.file)
+            for (it in cat.items.take(maxPerCategory)) {
+                val id = "h3_item_${cat.file.removeSuffix("_dat")}_${it.pos}"
+                pool.add(Item(
+                    id = id,
+                    nameKo = it.cleanName,
+                    nameEn = it.cleanName,
+                    kind = kind,
+                    descKo = "[${cat.category}] tier=${it.tier} lvl=${it.reqLevel}",
+                    descEn = "[${cat.category}] tier=${it.tier} lvl=${it.reqLevel}",
+                    price = it.price,
+                    power = (it.statPrimary + it.statSecondary).coerceAtLeast(0),
+                ))
+            }
+        }
+        return pool
+    }
+
+    private fun inferKind(file: String): ItemKind = when (file) {
+        "i0_dat", "i1_dat", "i3_dat" -> ItemKind.ARMOR        // 머리/몸/발 방어구
+        "i2_dat", "i11_dat"           -> ItemKind.ARMOR        // 장갑/특수
+        "i4_dat", "i5_dat", "i6_dat", "i7_dat", "i8_dat",
+        "i9_dat", "i10_dat"           -> ItemKind.WEAPON
+        "i12_dat", "i13_dat"          -> ItemKind.ACCESSORY    // 반지/펜던트
+        "i14_dat"                     -> ItemKind.MATERIAL
+        "i15_dat"                     -> ItemKind.MATERIAL     // shop catalog 의 mixed
+        "i17_dat"                     -> ItemKind.ACCESSORY
+        "i18_dat"                     -> ItemKind.CONSUMABLE
+        else                          -> ItemKind.MATERIAL
+    }
+
+    /** R82 — catalog 161 enemies 중 player level 근처 archetype 의 random 1마리 ID 반환.
+     *  MapWalkScene 의 encounter 트리거가 사용. catalog 미설치 시 null.
+     */
+    fun randomCatalogEnemyId(catalog: Hero3Catalog, playerLevel: Int, hardMode: Boolean = false): String? {
+        val list = if (hardMode) catalog.enemiesHard else catalog.enemiesNormal
+        if (list.isEmpty()) return null
+        // playerLevel ±5 범위 enemies 우선
+        val candidates = list.indices.filter { i ->
+            val l = list[i].stats.lvl
+            l in (playerLevel - 5)..(playerLevel + 5)
+        }
+        val idx = if (candidates.isNotEmpty()) candidates.random() else list.indices.random()
+        val mode = if (hardMode) "h" else "n"
+        return "h3_${mode}_${idx.toString().padStart(3, '0')}"
+    }
+
     /** 80 recipes → resolved (inputs, output) Hero3Item lists. */
     data class ResolvedRecipe(
         val recipe: Hero3Recipe,

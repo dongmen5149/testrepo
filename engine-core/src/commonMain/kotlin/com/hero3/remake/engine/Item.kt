@@ -61,8 +61,19 @@ object ItemRegistry {
         Item("ring_dest",  "운명반지",    "Ring of Destiny", ItemKind.ACCESSORY,
              descKo = "STR +8",      descEn = "STR +8",           price = 3500, power = 8),
     )
+    /** R82 — catalog 등 외부에서 추가 등록되는 items. registerExtra() 로 갱신. */
+    private val extras: MutableMap<String, Item> = mutableMapOf()
     private val byId = all.associateBy { it.id }
-    fun get(id: String): Item? = byId[id]
+
+    fun get(id: String): Item? = byId[id] ?: extras[id]
+
+    /** [extra] items 를 추가 등록. 동일 id 는 마지막 등록이 우선. R82 — Hero3CatalogBridge 사용. */
+    fun registerExtra(items: List<Item>) {
+        for (it in items) extras[it.id] = it
+    }
+
+    /** R82 — base + extras 합친 전체 (UI/forge name 매칭용). */
+    fun allWithExtras(): List<Item> = all + extras.values
 }
 
 /** 단일 파티 인벤토리 (가방). 슬롯 순서 유지. */

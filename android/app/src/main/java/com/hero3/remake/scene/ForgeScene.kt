@@ -81,7 +81,7 @@ class ForgeScene(
             showMsg(lang("이 레시피는 출력 미정.", "Recipe output missing."), error = true); return
         }
         // engine-core ItemRegistry 의 동일 이름 item id 매핑
-        val outItem = ItemRegistry.all.firstOrNull { it.nameKo == output.cleanName }
+        val outItem = ItemRegistry.allWithExtras().firstOrNull { it.nameKo == output.cleanName }
         if (outItem == null) {
             showMsg(lang("출력 '${output.cleanName}' 가 인벤토리 정의에 없음.",
                           "Output '${output.cleanName}' not in inventory registry."), error = true)
@@ -90,7 +90,7 @@ class ForgeScene(
         // 입력 인벤토리 확인
         val inv = gameState.loadInventory()
         val inputIds = r.inputs.mapNotNull { ref ->
-            ItemRegistry.all.firstOrNull { it.nameKo == ref.cleanName }?.id
+            ItemRegistry.allWithExtras().firstOrNull { it.nameKo == ref.cleanName }?.id
         }
         if (inputIds.size != r.inputs.size) {
             showMsg(lang("재료가 인벤토리 정의에 없음.", "Inputs not in inventory registry."), error = true)

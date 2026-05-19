@@ -247,10 +247,16 @@ class MapWalkScene(
             }
             if (encounterGraceMs <= 0 && settings.encounterMultiplier > 0f &&
                 EncounterTable.shouldEncounter(m.id, Random.nextFloat() / settings.encounterMultiplier)) {
-                val enemy = EncounterTable.rollEnemy(m.id)
-                if (enemy != null) {
+                // R82: catalog 설치되어 있고 party leader 가 있으면 catalog 161 enemies 풀 사용.
+                // fallback: EncounterTable (placeholder 13).
+                val catalog = com.hero3.remake.catalog.Hero3CatalogProvider.get()
+                val leaderLvl = gameState.loadParty().firstOrNull()?.level ?: 1
+                val enemyId = catalog
+                    ?.let { com.hero3.remake.catalog.Hero3CatalogBridge.randomCatalogEnemyId(it, leaderLvl) }
+                    ?: EncounterTable.rollEnemy(m.id)?.id
+                if (enemyId != null) {
                     encounterGraceMs = 3000L
-                    onRequest(MainActivity.SceneRequest.BattleEnemy(enemy.id))
+                    onRequest(MainActivity.SceneRequest.BattleEnemy(enemyId))
                 }
             }
         }

@@ -77,6 +77,27 @@ class Hero3CatalogBridgeTest {
     }
 
     @Test
+    fun r82_catalog_item_pool_extends_inventory_registry() {
+        val c = catalog()
+        val pool = Hero3CatalogBridge.catalogItemPool(c)
+        // 18 categories × min 1 entry → at least 50 items
+        assertTrue(pool.size >= 50)
+        // 모든 entry 가 unique id
+        assertEquals(pool.size, pool.map { it.id }.toSet().size)
+        // id prefix
+        assertTrue(pool.all { it.id.startsWith("h3_item_") })
+    }
+
+    @Test
+    fun r82_random_catalog_enemy_id_matches_h3_n_pattern() {
+        val c = catalog()
+        val id = Hero3CatalogBridge.randomCatalogEnemyId(c, playerLevel = 10)
+        assertNotNull(id)
+        assertTrue(id!!.startsWith("h3_n_"))
+        // level-band 가 비어 있으면 fallback random 이라 ID 자체는 항상 valid
+    }
+
+    @Test
     fun bridge_drop_table_excludes_common_pool_sentinel() {
         val c = catalog()
         val enemies = Hero3CatalogBridge.enemiesFromCatalog(c)
