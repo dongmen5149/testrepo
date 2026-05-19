@@ -1,7 +1,7 @@
 {
   "meta": {
     "game": "Hero4 (영웅서기4 - 환영의검)",
-    "round": "R68 + R69 + R70 + R71 + R72 + R73 + R74 + R75",
+    "round": "R68 + R69 + R70 + R71 + R72 + R73 + R74 + R75 + R86 + R87",
     "date": "2026-05-19",
     "key": "J@IWO8N7",
     "cipher": "Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)",
@@ -1006,6 +1006,13 @@
       ]
     },
     {
+      "file": "_ITM_CASH_RANOMBOX",
+      "size": 368,
+      "first_byte": 14,
+      "korean_count": 0,
+      "unique_names": []
+    },
+    {
       "file": "_ITM_OPTION",
       "size": 1928,
       "first_byte": 4,
@@ -1052,8 +1059,22 @@
       ]
     },
     {
+      "file": "_ITM_Q_REPAY_0",
+      "size": 4000,
+      "first_byte": 18,
+      "korean_count": 0,
+      "unique_names": []
+    },
+    {
       "file": "_ITM_Q_REPAY_1",
       "size": 4000,
+      "first_byte": 18,
+      "korean_count": 0,
+      "unique_names": []
+    },
+    {
+      "file": "_ITM_Q_REPAY_2",
+      "size": 3984,
       "first_byte": 18,
       "korean_count": 0,
       "unique_names": []
@@ -2565,6 +2586,236 @@
       "level_candidate": "stats byte[1] 후보 — 티르 11/6, 루레인 10/5 (스토리 진행 단계?)",
       "equip_slot_candidate": "stats byte[14..20] = 10/20/40 패턴 — 시작 장비 ID 후보",
       "note": "정확한 field 매핑은 Ghidra 분석 필요. 이 파일은 구조만 추출."
+    }
+  },
+  "summon_system": {
+    "summon_count": 5,
+    "logical_skills_per_summon": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "global_passive_count": 4,
+    "global_passive_skill_ids": [
+      "5b",
+      "5c",
+      "5d",
+      "5e"
+    ],
+    "summons": [
+      {
+        "id": 0,
+        "name": "베놈",
+        "summon_id_byte": 0,
+        "skills": [
+          {
+            "kind": "basic_attack",
+            "descriptor_name": "베놈의;기본공격력;강화",
+            "active_name": "뇌격",
+            "stat_block_hex": "1400002c01020035780004000000000000000000000000"
+          },
+          {
+            "kind": "ranged_status",
+            "descriptor_name": "베놈의;원거리 뇌격;강화",
+            "active_name": "맹독",
+            "stat_block_hex": "0000000000070055010001000000000000000000000000"
+          },
+          {
+            "kind": "effect_boost",
+            "descriptor_name": "뇌격의;중독 효과;강화",
+            "active_name": null,
+            "stat_block_hex": "3d00"
+          },
+          {
+            "kind": "aura",
+            "descriptor_name": null,
+            "active_name": "저주의 오러",
+            "stat_block_hex": "00000000000b0219010001000000000000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "소환시;소환자의;저주 증가",
+            "active_name": null,
+            "stat_block_hex": "3c00"
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "name": "헤지호그",
+        "summon_id_byte": 1,
+        "skills": [
+          {
+            "kind": "basic_attack",
+            "descriptor_name": "헤지호그의;기본공격력;강화",
+            "active_name": "뇌격",
+            "stat_block_hex": "140000c800020035640004000000000000000000000000"
+          },
+          {
+            "kind": "ranged_status",
+            "descriptor_name": "헤지호그의;원거리 뇌격;강화",
+            "active_name": "되돌리기",
+            "stat_block_hex": "0000000000070356010001000000000000000000000000"
+          },
+          {
+            "kind": "effect_boost",
+            "descriptor_name": "뇌격의;반사화 저주;효과 강화",
+            "active_name": null,
+            "stat_block_hex": "3d00"
+          },
+          {
+            "kind": "aura",
+            "descriptor_name": null,
+            "active_name": "강화의 오러",
+            "stat_block_hex": "00000000000b0202010001060100010000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "소환시;소환자의;HP/SP증가",
+            "active_name": null,
+            "stat_block_hex": "3c00"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "그래비티",
+        "summon_id_byte": 2,
+        "skills": [
+          {
+            "kind": "basic_attack",
+            "descriptor_name": "그래비티의;기본공격력;강화",
+            "active_name": "뇌격",
+            "stat_block_hex": "1400009001020035a00005000000000000000000000000"
+          },
+          {
+            "kind": "ranged_status",
+            "descriptor_name": "그래비티의;원거리 뇌격;강화",
+            "active_name": "슬로우",
+            "stat_block_hex": "000000000007004b010001000000000000000000000000"
+          },
+          {
+            "kind": "effect_boost",
+            "descriptor_name": "뇌격의;슬로우 저주;효과 강화",
+            "active_name": null,
+            "stat_block_hex": "3d00"
+          },
+          {
+            "kind": "aura",
+            "descriptor_name": null,
+            "active_name": "마법의 오러",
+            "stat_block_hex": "00000000000b020f0100011e0100010000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "소환시;소환자의;저항 증가",
+            "active_name": null,
+            "stat_block_hex": "3800"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "쇼커",
+        "summon_id_byte": 3,
+        "skills": [
+          {
+            "kind": "basic_attack",
+            "descriptor_name": "쇼커의;기본공격력;강화",
+            "active_name": "뇌격",
+            "stat_block_hex": "1400002c010200358c0005000000000000000000000000"
+          },
+          {
+            "kind": "ranged_status",
+            "descriptor_name": "쇼커의;원거리 뇌격;강화",
+            "active_name": "스턴",
+            "stat_block_hex": "000000000007004c010001000000000000000000000000"
+          },
+          {
+            "kind": "effect_boost",
+            "descriptor_name": "뇌격의;스턴 효과;강화",
+            "active_name": null,
+            "stat_block_hex": "3e00"
+          },
+          {
+            "kind": "aura",
+            "descriptor_name": null,
+            "active_name": "마력의 오러",
+            "stat_block_hex": "00000000000b0208020002000000000000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "소환시;소환자의;SP회복증가",
+            "active_name": null,
+            "stat_block_hex": "3c00"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "세이프가드",
+        "summon_id_byte": 4,
+        "skills": [
+          {
+            "kind": "basic_attack",
+            "descriptor_name": "세이프가드;기본공격력;강화",
+            "active_name": "회복",
+            "stat_block_hex": "140000f40102023d640014000000000000000000000000"
+          },
+          {
+            "kind": "paired_skill",
+            "descriptor_name": "세이프가드;회복 효과;강화",
+            "active_name": "실드",
+            "stat_block_hex": "000000000006023f320005110200020000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "회복시;마법방어;증가 효과",
+            "active_name": null,
+            "stat_block_hex": "3f00"
+          },
+          {
+            "kind": "aura",
+            "descriptor_name": null,
+            "active_name": "보호의 오러",
+            "stat_block_hex": "00000000000b0210010001110100010000000000000000"
+          },
+          {
+            "kind": "on_summon_buff",
+            "descriptor_name": "소환시;소환자의;방어력 증가",
+            "active_name": null,
+            "stat_block_hex": "3700"
+          }
+        ]
+      }
+    ],
+    "global_passives": [
+      {
+        "short_name": "마법력강화",
+        "long_name": "소환수의;마법력 강화",
+        "skill_id": "5b"
+      },
+      {
+        "short_name": "교감도강화",
+        "long_name": "소환수의;방어력 강화",
+        "skill_id": "5c"
+      },
+      {
+        "short_name": "체력강화",
+        "long_name": "소환수의;체력 강화",
+        "skill_id": "5d"
+      },
+      {
+        "short_name": "정신강화",
+        "long_name": "소환수의;교감도 강화",
+        "skill_id": "5e"
+      }
+    ],
+    "special_entries": {
+      "boss_like_name": "망각의 저주",
+      "section_a_divider_name": "환수A공격"
     }
   }
 }

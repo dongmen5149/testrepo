@@ -4,7 +4,17 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
-## 🏆 Round 86 (2026-05-19) — `_H_SS` 환수(소환수) 시스템 발견 ★
+## 🏆 Round 87 (2026-05-19) — `_H_SS` 환수 시스템 stat block 정밀화 ★
+
+> R86 후속 정밀화 라운드. 상세: [round87-summon-stat-detail.md](round87-summon-stat-detail.md).
+>
+> `_H_SS` 전체 layout 6 section 분해. **5 환수 × 5 logical skills (raw 7 entries 매핑)** + 4 global passive (**skill_id 91-94**) + 1 boss-tier "망각의 저주". 23B stat block field 5종 의미 식별 (type/damage/element/strength/animation).
+>
+> Active skill type catalog 초안: 0x14=basic_attack, 0x07=status proc, 0x0c=passive. 되돌리기 reflect flag 위치도 확정. `parse_h4_summon_system.py` 신규 + `h4_summon_system.json` 26KB. catalog 74.9KB 로 업데이트.
+
+---
+
+## 🏆 Round 86 (2026-05-19) — `_H_SS` 환수(소환수) 시스템 발견
 
 > 신규 게임 시스템 발견. 상세: [round86-summon-system.md](round86-summon-system.md).
 >

@@ -109,7 +109,7 @@ def main():
     catalog: dict = {
         'meta': {
             'game': 'Hero4 (영웅서기4 - 환영의검)',
-            'round': 'R68 + R69 + R70 + R71 + R72 + R73 + R74 + R75',
+            'round': 'R68 + R69 + R70 + R71 + R72 + R73 + R74 + R75 + R86 + R87',
             'date': '2026-05-19',
             'key': 'J@IWO8N7',
             'cipher': 'Hero5 mx_des_decrypt (S1[58]=2 + swap + reversed subkey)',
@@ -229,6 +229,48 @@ def main():
             print(f'\nHero stats: {len(hsdata.get("entries", []))} entries (R71)')
         except Exception as e:
             print(f'  WARN: failed to load hero_stats: {e}', file=sys.stderr)
+
+    # Summon system (R87) — separately parsed in h4_summon_system.json
+    summon_path = CONVERTED / 'h4_summon_system.json'
+    if summon_path.exists():
+        try:
+            sdata = json.loads(summon_path.read_text(encoding='utf-8'))
+            catalog['summon_system'] = {
+                'summon_count': sdata['meta']['summon_count'],
+                'logical_skills_per_summon': sdata['meta']['logical_skills_per_summon'],
+                'global_passive_count': sdata['meta']['global_passive_count'],
+                'global_passive_skill_ids': sdata['meta']['global_passive_skill_ids'],
+                'summons': [
+                    {
+                        'id': s['id'],
+                        'name': s['name'],
+                        'summon_id_byte': s['summary']['summon_id'] if s.get('summary') else None,
+                        'skills': [
+                            {
+                                'kind': sk['kind'],
+                                'descriptor_name': sk['descriptor']['name'] if sk.get('descriptor') else None,
+                                'active_name': sk['active']['name'] if sk.get('active') else None,
+                                'stat_block_hex': (sk['active']['data_hex'] if sk.get('active')
+                                                    else sk['descriptor']['data_hex'] if sk.get('descriptor') else None),
+                            } for sk in s['skills']
+                        ],
+                    } for s in sdata['summons']
+                ],
+                'global_passives': [
+                    {
+                        'short_name': p['short_name'],
+                        'long_name': p['long_name'],
+                        'skill_id': p['short_entry']['data_hex'][14:16] if p.get('short_entry') else None,
+                    } for p in sdata['global_passives']
+                ],
+                'special_entries': {
+                    'boss_like_name': sdata['boss_entry']['name'],
+                    'section_a_divider_name': sdata['section_a_divider']['name'],
+                },
+            }
+            print(f'\nSummon system: {len(sdata["summons"])} 환수 + {len(sdata["global_passives"])} global passives (R87)')
+        except Exception as e:
+            print(f'  WARN: failed to load summon_system: {e}', file=sys.stderr)
 
     # Quests (R70) — separately parsed in h4_quests.json
     quests_path = CONVERTED / 'h4_quests.json'

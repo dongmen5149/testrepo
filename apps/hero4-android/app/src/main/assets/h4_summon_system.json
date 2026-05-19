@@ -1,0 +1,985 @@
+{
+  "file": "_H_SS",
+  "size": 1624,
+  "boss_entry": {
+    "offset": 2,
+    "file_header_2b": "2500",
+    "nlen": 11,
+    "name": "망각의 저주",
+    "data_offset": 14,
+    "data_size": 23,
+    "data_hex": "0000050000070042000000000000000000000000000000"
+  },
+  "summary_entries": [
+    {
+      "offset": 37,
+      "flag": 1,
+      "cost": 45,
+      "size_marker": 30,
+      "sep": 0,
+      "nlen": 4,
+      "name": "베놈",
+      "tail_offset": 46,
+      "tail_len": 23,
+      "tail_hex": "0000000000090329000000000000000000000000000000",
+      "summon_id": 0,
+      "summon_id_offset": 54,
+      "entry_total": 32
+    },
+    {
+      "offset": 69,
+      "flag": 1,
+      "cost": 45,
+      "size_marker": 34,
+      "sep": 0,
+      "nlen": 8,
+      "name": "헤지호그",
+      "tail_offset": 82,
+      "tail_len": 23,
+      "tail_hex": "0000000000090329010000000000000000000000000000",
+      "summon_id": 1,
+      "summon_id_offset": 90,
+      "entry_total": 36
+    },
+    {
+      "offset": 105,
+      "flag": 1,
+      "cost": 45,
+      "size_marker": 34,
+      "sep": 0,
+      "nlen": 8,
+      "name": "그래비티",
+      "tail_offset": 118,
+      "tail_len": 23,
+      "tail_hex": "0000000000090329020000000000000000000000000000",
+      "summon_id": 2,
+      "summon_id_offset": 126,
+      "entry_total": 36
+    },
+    {
+      "offset": 141,
+      "flag": 1,
+      "cost": 45,
+      "size_marker": 30,
+      "sep": 0,
+      "nlen": 4,
+      "name": "쇼커",
+      "tail_offset": 150,
+      "tail_len": 23,
+      "tail_hex": "0000000000090329030000000000000000000000000000",
+      "summon_id": 3,
+      "summon_id_offset": 158,
+      "entry_total": 32
+    },
+    {
+      "offset": 173,
+      "flag": 1,
+      "cost": 45,
+      "size_marker": 36,
+      "sep": 0,
+      "nlen": 10,
+      "name": "세이프가드",
+      "tail_offset": 188,
+      "tail_len": 27,
+      "tail_hex": "0000000000090329040000000000000000000000000000012d3800",
+      "summon_id": 4,
+      "summon_id_offset": 196,
+      "entry_total": 42
+    }
+  ],
+  "section_a_divider": {
+    "offset": 215,
+    "nlen": 9,
+    "name": "환수A공격",
+    "data_offset": 225,
+    "data_size": 23,
+    "data_hex": "0a0000c800020035780003000000000000000000000000",
+    "pre_padding_hex": "0000000000000000000000000000012d3800"
+  },
+  "summons": [
+    {
+      "id": 0,
+      "name": "베놈",
+      "summary": {
+        "offset": 37,
+        "flag": 1,
+        "cost": 45,
+        "size_marker": 30,
+        "sep": 0,
+        "nlen": 4,
+        "name": "베놈",
+        "tail_offset": 46,
+        "tail_len": 23,
+        "tail_hex": "0000000000090329000000000000000000000000000000",
+        "summon_id": 0,
+        "summon_id_offset": 54,
+        "entry_total": 32
+      },
+      "skill_count": 5,
+      "skills_raw": [
+        {
+          "offset": 248,
+          "nlen": 22,
+          "name": "베놈의;기본공격력;강화",
+          "data_offset": 271,
+          "data_size": 2,
+          "data_hex": "3400"
+        },
+        {
+          "offset": 273,
+          "nlen": 4,
+          "name": "뇌격",
+          "data_offset": 278,
+          "data_size": 23,
+          "data_hex": "1400002c01020035780004000000000000000000000000"
+        },
+        {
+          "offset": 301,
+          "nlen": 23,
+          "name": "베놈의;원거리 뇌격;강화",
+          "data_offset": 325,
+          "data_size": 2,
+          "data_hex": "3200"
+        },
+        {
+          "offset": 327,
+          "nlen": 4,
+          "name": "맹독",
+          "data_offset": 332,
+          "data_size": 23,
+          "data_hex": "0000000000070055010001000000000000000000000000"
+        },
+        {
+          "offset": 355,
+          "nlen": 21,
+          "name": "뇌격의;중독 효과;강화",
+          "data_offset": 377,
+          "data_size": 2,
+          "data_hex": "3d00"
+        },
+        {
+          "offset": 379,
+          "nlen": 11,
+          "name": "저주의 오러",
+          "data_offset": 391,
+          "data_size": 23,
+          "data_hex": "00000000000b0219010001000000000000000000000000"
+        },
+        {
+          "offset": 414,
+          "nlen": 25,
+          "name": "소환시;소환자의;저주 증가",
+          "data_offset": 440,
+          "data_size": 2,
+          "data_hex": "3c00"
+        }
+      ],
+      "skills": [
+        {
+          "kind": "basic_attack",
+          "descriptor": {
+            "offset": 248,
+            "nlen": 22,
+            "name": "베놈의;기본공격력;강화",
+            "data_offset": 271,
+            "data_size": 2,
+            "data_hex": "3400"
+          },
+          "active": {
+            "offset": 273,
+            "nlen": 4,
+            "name": "뇌격",
+            "data_offset": 278,
+            "data_size": 23,
+            "data_hex": "1400002c01020035780004000000000000000000000000"
+          }
+        },
+        {
+          "kind": "ranged_status",
+          "descriptor": {
+            "offset": 301,
+            "nlen": 23,
+            "name": "베놈의;원거리 뇌격;강화",
+            "data_offset": 325,
+            "data_size": 2,
+            "data_hex": "3200"
+          },
+          "active": {
+            "offset": 327,
+            "nlen": 4,
+            "name": "맹독",
+            "data_offset": 332,
+            "data_size": 23,
+            "data_hex": "0000000000070055010001000000000000000000000000"
+          }
+        },
+        {
+          "kind": "effect_boost",
+          "descriptor": {
+            "offset": 355,
+            "nlen": 21,
+            "name": "뇌격의;중독 효과;강화",
+            "data_offset": 377,
+            "data_size": 2,
+            "data_hex": "3d00"
+          },
+          "active": null
+        },
+        {
+          "kind": "aura",
+          "descriptor": null,
+          "active": {
+            "offset": 379,
+            "nlen": 11,
+            "name": "저주의 오러",
+            "data_offset": 391,
+            "data_size": 23,
+            "data_hex": "00000000000b0219010001000000000000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 414,
+            "nlen": 25,
+            "name": "소환시;소환자의;저주 증가",
+            "data_offset": 440,
+            "data_size": 2,
+            "data_hex": "3c00"
+          },
+          "active": null
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "헤지호그",
+      "summary": {
+        "offset": 69,
+        "flag": 1,
+        "cost": 45,
+        "size_marker": 34,
+        "sep": 0,
+        "nlen": 8,
+        "name": "헤지호그",
+        "tail_offset": 82,
+        "tail_len": 23,
+        "tail_hex": "0000000000090329010000000000000000000000000000",
+        "summon_id": 1,
+        "summon_id_offset": 90,
+        "entry_total": 36
+      },
+      "skill_count": 5,
+      "skills_raw": [
+        {
+          "offset": 475,
+          "nlen": 26,
+          "name": "헤지호그의;기본공격력;강화",
+          "data_offset": 502,
+          "data_size": 2,
+          "data_hex": "3800"
+        },
+        {
+          "offset": 504,
+          "nlen": 4,
+          "name": "뇌격",
+          "data_offset": 509,
+          "data_size": 23,
+          "data_hex": "140000c800020035640004000000000000000000000000"
+        },
+        {
+          "offset": 532,
+          "nlen": 27,
+          "name": "헤지호그의;원거리 뇌격;강화",
+          "data_offset": 560,
+          "data_size": 2,
+          "data_hex": "3d00"
+        },
+        {
+          "offset": 562,
+          "nlen": 8,
+          "name": "되돌리기",
+          "data_offset": 571,
+          "data_size": 23,
+          "data_hex": "0000000000070356010001000000000000000000000000"
+        },
+        {
+          "offset": 594,
+          "nlen": 28,
+          "name": "뇌격의;반사화 저주;효과 강화",
+          "data_offset": 623,
+          "data_size": 2,
+          "data_hex": "3d00"
+        },
+        {
+          "offset": 625,
+          "nlen": 11,
+          "name": "강화의 오러",
+          "data_offset": 637,
+          "data_size": 23,
+          "data_hex": "00000000000b0202010001060100010000000000000000"
+        },
+        {
+          "offset": 660,
+          "nlen": 25,
+          "name": "소환시;소환자의;HP/SP증가",
+          "data_offset": 686,
+          "data_size": 2,
+          "data_hex": "3c00"
+        }
+      ],
+      "skills": [
+        {
+          "kind": "basic_attack",
+          "descriptor": {
+            "offset": 475,
+            "nlen": 26,
+            "name": "헤지호그의;기본공격력;강화",
+            "data_offset": 502,
+            "data_size": 2,
+            "data_hex": "3800"
+          },
+          "active": {
+            "offset": 504,
+            "nlen": 4,
+            "name": "뇌격",
+            "data_offset": 509,
+            "data_size": 23,
+            "data_hex": "140000c800020035640004000000000000000000000000"
+          }
+        },
+        {
+          "kind": "ranged_status",
+          "descriptor": {
+            "offset": 532,
+            "nlen": 27,
+            "name": "헤지호그의;원거리 뇌격;강화",
+            "data_offset": 560,
+            "data_size": 2,
+            "data_hex": "3d00"
+          },
+          "active": {
+            "offset": 562,
+            "nlen": 8,
+            "name": "되돌리기",
+            "data_offset": 571,
+            "data_size": 23,
+            "data_hex": "0000000000070356010001000000000000000000000000"
+          }
+        },
+        {
+          "kind": "effect_boost",
+          "descriptor": {
+            "offset": 594,
+            "nlen": 28,
+            "name": "뇌격의;반사화 저주;효과 강화",
+            "data_offset": 623,
+            "data_size": 2,
+            "data_hex": "3d00"
+          },
+          "active": null
+        },
+        {
+          "kind": "aura",
+          "descriptor": null,
+          "active": {
+            "offset": 625,
+            "nlen": 11,
+            "name": "강화의 오러",
+            "data_offset": 637,
+            "data_size": 23,
+            "data_hex": "00000000000b0202010001060100010000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 660,
+            "nlen": 25,
+            "name": "소환시;소환자의;HP/SP증가",
+            "data_offset": 686,
+            "data_size": 2,
+            "data_hex": "3c00"
+          },
+          "active": null
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "그래비티",
+      "summary": {
+        "offset": 105,
+        "flag": 1,
+        "cost": 45,
+        "size_marker": 34,
+        "sep": 0,
+        "nlen": 8,
+        "name": "그래비티",
+        "tail_offset": 118,
+        "tail_len": 23,
+        "tail_hex": "0000000000090329020000000000000000000000000000",
+        "summon_id": 2,
+        "summon_id_offset": 126,
+        "entry_total": 36
+      },
+      "skill_count": 5,
+      "skills_raw": [
+        {
+          "offset": 721,
+          "nlen": 26,
+          "name": "그래비티의;기본공격력;강화",
+          "data_offset": 748,
+          "data_size": 2,
+          "data_hex": "3800"
+        },
+        {
+          "offset": 750,
+          "nlen": 4,
+          "name": "뇌격",
+          "data_offset": 755,
+          "data_size": 23,
+          "data_hex": "1400009001020035a00005000000000000000000000000"
+        },
+        {
+          "offset": 778,
+          "nlen": 27,
+          "name": "그래비티의;원거리 뇌격;강화",
+          "data_offset": 806,
+          "data_size": 2,
+          "data_hex": "3b00"
+        },
+        {
+          "offset": 808,
+          "nlen": 6,
+          "name": "슬로우",
+          "data_offset": 815,
+          "data_size": 23,
+          "data_hex": "000000000007004b010001000000000000000000000000"
+        },
+        {
+          "offset": 838,
+          "nlen": 28,
+          "name": "뇌격의;슬로우 저주;효과 강화",
+          "data_offset": 867,
+          "data_size": 2,
+          "data_hex": "3d00"
+        },
+        {
+          "offset": 869,
+          "nlen": 11,
+          "name": "마법의 오러",
+          "data_offset": 881,
+          "data_size": 23,
+          "data_hex": "00000000000b020f0100011e0100010000000000000000"
+        },
+        {
+          "offset": 904,
+          "nlen": 25,
+          "name": "소환시;소환자의;저항 증가",
+          "data_offset": 930,
+          "data_size": 2,
+          "data_hex": "3800"
+        }
+      ],
+      "skills": [
+        {
+          "kind": "basic_attack",
+          "descriptor": {
+            "offset": 721,
+            "nlen": 26,
+            "name": "그래비티의;기본공격력;강화",
+            "data_offset": 748,
+            "data_size": 2,
+            "data_hex": "3800"
+          },
+          "active": {
+            "offset": 750,
+            "nlen": 4,
+            "name": "뇌격",
+            "data_offset": 755,
+            "data_size": 23,
+            "data_hex": "1400009001020035a00005000000000000000000000000"
+          }
+        },
+        {
+          "kind": "ranged_status",
+          "descriptor": {
+            "offset": 778,
+            "nlen": 27,
+            "name": "그래비티의;원거리 뇌격;강화",
+            "data_offset": 806,
+            "data_size": 2,
+            "data_hex": "3b00"
+          },
+          "active": {
+            "offset": 808,
+            "nlen": 6,
+            "name": "슬로우",
+            "data_offset": 815,
+            "data_size": 23,
+            "data_hex": "000000000007004b010001000000000000000000000000"
+          }
+        },
+        {
+          "kind": "effect_boost",
+          "descriptor": {
+            "offset": 838,
+            "nlen": 28,
+            "name": "뇌격의;슬로우 저주;효과 강화",
+            "data_offset": 867,
+            "data_size": 2,
+            "data_hex": "3d00"
+          },
+          "active": null
+        },
+        {
+          "kind": "aura",
+          "descriptor": null,
+          "active": {
+            "offset": 869,
+            "nlen": 11,
+            "name": "마법의 오러",
+            "data_offset": 881,
+            "data_size": 23,
+            "data_hex": "00000000000b020f0100011e0100010000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 904,
+            "nlen": 25,
+            "name": "소환시;소환자의;저항 증가",
+            "data_offset": 930,
+            "data_size": 2,
+            "data_hex": "3800"
+          },
+          "active": null
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "쇼커",
+      "summary": {
+        "offset": 141,
+        "flag": 1,
+        "cost": 45,
+        "size_marker": 30,
+        "sep": 0,
+        "nlen": 4,
+        "name": "쇼커",
+        "tail_offset": 150,
+        "tail_len": 23,
+        "tail_hex": "0000000000090329030000000000000000000000000000",
+        "summon_id": 3,
+        "summon_id_offset": 158,
+        "entry_total": 32
+      },
+      "skill_count": 5,
+      "skills_raw": [
+        {
+          "offset": 965,
+          "nlen": 22,
+          "name": "쇼커의;기본공격력;강화",
+          "data_offset": 988,
+          "data_size": 2,
+          "data_hex": "3400"
+        },
+        {
+          "offset": 990,
+          "nlen": 4,
+          "name": "뇌격",
+          "data_offset": 995,
+          "data_size": 23,
+          "data_hex": "1400002c010200358c0005000000000000000000000000"
+        },
+        {
+          "offset": 1018,
+          "nlen": 23,
+          "name": "쇼커의;원거리 뇌격;강화",
+          "data_offset": 1042,
+          "data_size": 2,
+          "data_hex": "3200"
+        },
+        {
+          "offset": 1044,
+          "nlen": 4,
+          "name": "스턴",
+          "data_offset": 1049,
+          "data_size": 23,
+          "data_hex": "000000000007004c010001000000000000000000000000"
+        },
+        {
+          "offset": 1072,
+          "nlen": 21,
+          "name": "뇌격의;스턴 효과;강화",
+          "data_offset": 1094,
+          "data_size": 2,
+          "data_hex": "3e00"
+        },
+        {
+          "offset": 1096,
+          "nlen": 11,
+          "name": "마력의 오러",
+          "data_offset": 1108,
+          "data_size": 23,
+          "data_hex": "00000000000b0208020002000000000000000000000000"
+        },
+        {
+          "offset": 1131,
+          "nlen": 26,
+          "name": "소환시;소환자의;SP회복증가",
+          "data_offset": 1158,
+          "data_size": 2,
+          "data_hex": "3c00"
+        }
+      ],
+      "skills": [
+        {
+          "kind": "basic_attack",
+          "descriptor": {
+            "offset": 965,
+            "nlen": 22,
+            "name": "쇼커의;기본공격력;강화",
+            "data_offset": 988,
+            "data_size": 2,
+            "data_hex": "3400"
+          },
+          "active": {
+            "offset": 990,
+            "nlen": 4,
+            "name": "뇌격",
+            "data_offset": 995,
+            "data_size": 23,
+            "data_hex": "1400002c010200358c0005000000000000000000000000"
+          }
+        },
+        {
+          "kind": "ranged_status",
+          "descriptor": {
+            "offset": 1018,
+            "nlen": 23,
+            "name": "쇼커의;원거리 뇌격;강화",
+            "data_offset": 1042,
+            "data_size": 2,
+            "data_hex": "3200"
+          },
+          "active": {
+            "offset": 1044,
+            "nlen": 4,
+            "name": "스턴",
+            "data_offset": 1049,
+            "data_size": 23,
+            "data_hex": "000000000007004c010001000000000000000000000000"
+          }
+        },
+        {
+          "kind": "effect_boost",
+          "descriptor": {
+            "offset": 1072,
+            "nlen": 21,
+            "name": "뇌격의;스턴 효과;강화",
+            "data_offset": 1094,
+            "data_size": 2,
+            "data_hex": "3e00"
+          },
+          "active": null
+        },
+        {
+          "kind": "aura",
+          "descriptor": null,
+          "active": {
+            "offset": 1096,
+            "nlen": 11,
+            "name": "마력의 오러",
+            "data_offset": 1108,
+            "data_size": 23,
+            "data_hex": "00000000000b0208020002000000000000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 1131,
+            "nlen": 26,
+            "name": "소환시;소환자의;SP회복증가",
+            "data_offset": 1158,
+            "data_size": 2,
+            "data_hex": "3c00"
+          },
+          "active": null
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "세이프가드",
+      "summary": {
+        "offset": 173,
+        "flag": 1,
+        "cost": 45,
+        "size_marker": 36,
+        "sep": 0,
+        "nlen": 10,
+        "name": "세이프가드",
+        "tail_offset": 188,
+        "tail_len": 27,
+        "tail_hex": "0000000000090329040000000000000000000000000000012d3800",
+        "summon_id": 4,
+        "summon_id_offset": 196,
+        "entry_total": 42
+      },
+      "skill_count": 5,
+      "skills_raw": [
+        {
+          "offset": 1193,
+          "nlen": 26,
+          "name": "세이프가드;기본공격력;강화",
+          "data_offset": 1220,
+          "data_size": 2,
+          "data_hex": "3600"
+        },
+        {
+          "offset": 1222,
+          "nlen": 4,
+          "name": "회복",
+          "data_offset": 1227,
+          "data_size": 23,
+          "data_hex": "140000f40102023d640014000000000000000000000000"
+        },
+        {
+          "offset": 1250,
+          "nlen": 25,
+          "name": "세이프가드;회복 효과;강화",
+          "data_offset": 1276,
+          "data_size": 2,
+          "data_hex": "3600"
+        },
+        {
+          "offset": 1278,
+          "nlen": 4,
+          "name": "실드",
+          "data_offset": 1283,
+          "data_size": 23,
+          "data_hex": "000000000006023f320005110200020000000000000000"
+        },
+        {
+          "offset": 1306,
+          "nlen": 25,
+          "name": "회복시;마법방어;증가 효과",
+          "data_offset": 1332,
+          "data_size": 2,
+          "data_hex": "3f00"
+        },
+        {
+          "offset": 1334,
+          "nlen": 11,
+          "name": "보호의 오러",
+          "data_offset": 1346,
+          "data_size": 23,
+          "data_hex": "00000000000b0210010001110100010000000000000000"
+        },
+        {
+          "offset": 1369,
+          "nlen": 27,
+          "name": "소환시;소환자의;방어력 증가",
+          "data_offset": 1397,
+          "data_size": 2,
+          "data_hex": "3700"
+        }
+      ],
+      "skills": [
+        {
+          "kind": "basic_attack",
+          "descriptor": {
+            "offset": 1193,
+            "nlen": 26,
+            "name": "세이프가드;기본공격력;강화",
+            "data_offset": 1220,
+            "data_size": 2,
+            "data_hex": "3600"
+          },
+          "active": {
+            "offset": 1222,
+            "nlen": 4,
+            "name": "회복",
+            "data_offset": 1227,
+            "data_size": 23,
+            "data_hex": "140000f40102023d640014000000000000000000000000"
+          }
+        },
+        {
+          "kind": "paired_skill",
+          "descriptor": {
+            "offset": 1250,
+            "nlen": 25,
+            "name": "세이프가드;회복 효과;강화",
+            "data_offset": 1276,
+            "data_size": 2,
+            "data_hex": "3600"
+          },
+          "active": {
+            "offset": 1278,
+            "nlen": 4,
+            "name": "실드",
+            "data_offset": 1283,
+            "data_size": 23,
+            "data_hex": "000000000006023f320005110200020000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 1306,
+            "nlen": 25,
+            "name": "회복시;마법방어;증가 효과",
+            "data_offset": 1332,
+            "data_size": 2,
+            "data_hex": "3f00"
+          },
+          "active": null
+        },
+        {
+          "kind": "aura",
+          "descriptor": null,
+          "active": {
+            "offset": 1334,
+            "nlen": 11,
+            "name": "보호의 오러",
+            "data_offset": 1346,
+            "data_size": 23,
+            "data_hex": "00000000000b0210010001110100010000000000000000"
+          }
+        },
+        {
+          "kind": "on_summon_buff",
+          "descriptor": {
+            "offset": 1369,
+            "nlen": 27,
+            "name": "소환시;소환자의;방어력 증가",
+            "data_offset": 1397,
+            "data_size": 2,
+            "data_hex": "3700"
+          },
+          "active": null
+        }
+      ]
+    }
+  ],
+  "global_passives": [
+    {
+      "short_name": "마법력강화",
+      "long_name": "소환수의;마법력 강화",
+      "short_entry": {
+        "offset": 1399,
+        "nlen": 10,
+        "name": "마법력강화",
+        "data_offset": 1410,
+        "data_size": 23,
+        "data_hex": "00000000000c035b020000000000000000000000000000"
+      },
+      "long_entry": {
+        "offset": 1433,
+        "nlen": 20,
+        "name": "소환수의;마법력 강화",
+        "data_offset": 1454,
+        "data_size": 2,
+        "data_hex": "3700"
+      }
+    },
+    {
+      "short_name": "교감도강화",
+      "long_name": "소환수의;방어력 강화",
+      "short_entry": {
+        "offset": 1456,
+        "nlen": 10,
+        "name": "교감도강화",
+        "data_offset": 1467,
+        "data_size": 23,
+        "data_hex": "00000000000c035c020000000000000000000000000000"
+      },
+      "long_entry": {
+        "offset": 1490,
+        "nlen": 20,
+        "name": "소환수의;방어력 강화",
+        "data_offset": 1511,
+        "data_size": 2,
+        "data_hex": "3300"
+      }
+    },
+    {
+      "short_name": "체력강화",
+      "long_name": "소환수의;체력 강화",
+      "short_entry": {
+        "offset": 1513,
+        "nlen": 8,
+        "name": "체력강화",
+        "data_offset": 1522,
+        "data_size": 23,
+        "data_hex": "00000000000c035d020000000000000000000000000000"
+      },
+      "long_entry": {
+        "offset": 1545,
+        "nlen": 18,
+        "name": "소환수의;체력 강화",
+        "data_offset": 1564,
+        "data_size": 2,
+        "data_hex": "3500"
+      }
+    },
+    {
+      "short_name": "정신강화",
+      "long_name": "소환수의;교감도 강화",
+      "short_entry": {
+        "offset": 1566,
+        "nlen": 8,
+        "name": "정신강화",
+        "data_offset": 1575,
+        "data_size": 23,
+        "data_hex": "00000000000c035e020000000000000000000000000000"
+      },
+      "long_entry": {
+        "offset": 1598,
+        "nlen": 20,
+        "name": "소환수의;교감도 강화",
+        "data_offset": 1619,
+        "data_size": 5,
+        "data_hex": "0000000000"
+      }
+    }
+  ],
+  "meta": {
+    "summon_count": 5,
+    "raw_entries_per_summon": [
+      7,
+      7,
+      7,
+      7,
+      7
+    ],
+    "logical_skills_per_summon": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "skill_kinds": [
+      "aura",
+      "basic_attack",
+      "effect_boost",
+      "on_summon_buff",
+      "paired_skill",
+      "ranged_status"
+    ],
+    "global_passive_count": 4,
+    "global_passive_skill_ids": [
+      "5b",
+      "5c",
+      "5d",
+      "5e"
+    ]
+  }
+}
