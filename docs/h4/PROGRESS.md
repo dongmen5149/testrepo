@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 79 (2026-05-19) — ESDAT outlier (multi-phase boss) 구조
+
+> 5 outlier ESDAT entries (72B/140B/213B/432B) 분석. 상세: [round79-esdat-outliers.md](round79-esdat-outliers.md).
+>
+> 핵심: `0xff 0x3f` marker 가 **정확히 73B 간격** 으로 반복 (42, 115, 188, 261). multi-phase boss encounters.
+>
+> 73B/phase = 67B 정형 인카운터 (R78) + 6B inter-phase link. 같은 적 (오토마톤/좀비/기갑병) 이 67B 일반 + outlier 보스 dual-mode 보유.
+
+---
+
 ## 🏆 Round 78 (2026-05-19) — ESDAT 67B encounter layout + R76 가설 정정
 
 > 3 ESDAT = 157 일반 적의 난이도 3 stage. 67B body (152/157 = 97%) 분석. 상세: [round78-esdat-encounter-layout.md](round78-esdat-encounter-layout.md).
