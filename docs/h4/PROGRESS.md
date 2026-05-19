@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 84 (2026-05-19) — `_ITM_OPTION` enchantment pool 51종
+
+> 상세: [round84-enchantment-pool.md](round84-enchantment-pool.md).
+>
+> 1928B = **120 entries / 51 unique enchantments / L1-L4 진행**. HP/SP 계열, 공격/방어, proc 발동 (화염/결빙/스턴/슬로우/넉백), 상태이상 저항, 시스템 (쿨타임/레벨제한), 클래스 보완 (양손검 보완 = 티르 mode 0, 사격/마법 보완 = 루레인 mode 0) → R81 다중 mode 가설 강화.
+
+---
+
 ## 🏆 Round 83 (2026-05-19) — REPAY / Q_REPAY / CASH 보상 테이블
 
 > ITM/DAT 의 보상 테이블 6 파일 일괄 복호화 + stride 식별. 상세: [round83-reward-tables.md](round83-reward-tables.md).
