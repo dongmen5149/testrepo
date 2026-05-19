@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 83 (2026-05-19) — REPAY / Q_REPAY / CASH 보상 테이블
+
+> ITM/DAT 의 보상 테이블 6 파일 일괄 복호화 + stride 식별. 상세: [round83-reward-tables.md](round83-reward-tables.md).
+>
+> REPAY_0=14B×88, REPAY_1=12B×74, Q_REPAY_0/1=20B×200, Q_REPAY_2=12B×332, CASH_RANOMBOX=16B×23. 부수 발견: `_ITM_OPTION` 1928B = enchantment pool (HPmax/회복/공격/방어/명중/회피/크리티컬 등 15+ 종).
+
+---
+
 ## 🏆 Round 82 (2026-05-19) — 트랙 C: ITEMDROP + BASIC_SM + SD 상점
 
 > 상세: [round82-itemdrop-shop.md](round82-itemdrop-shop.md).
