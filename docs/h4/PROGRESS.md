@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 81 (2026-05-19) — `_H_BH` 4 stat block 정체 + R76 미해결 해소
+
+> R71 의 "4 hero stat blocks" 해석 정정. 상세: [round81-hero-bh-resolved.md](round81-hero-bh-resolved.md).
+>
+> **4 entries = 2 영웅 × 2 mode** (4명 아님). byte[3] = hero_id (티르=0, 루레인=1). entry 0/1 = 티르 mode 0/1 (S000 양손검 / S002 마검), entry 2/3 = 루레인 mode 0/1.
+>
+> R76 의 `_ITM_03` 사용자 미스터리 해소: 루레인이 사격 (`_ITM_04..06`) + 검 (`_ITM_03`) 다중 mode 가능성. heroes.list[0] note "_H_S000 / _H_S002 (variants)" 와 일치.
+
+---
+
 ## 🏆 Round 80 (2026-05-19) — ESDAT 73B phase 6B link 구조
 
 > R79 정밀화. 상세: [round80-esdat-phase-link.md](round80-esdat-phase-link.md).
