@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 85 (2026-05-19) — Quest reward LE32 분포 (EXP vs gold)
+
+> 상세: [round85-quest-reward-distribution.md](round85-quest-reward-distribution.md).
+>
+> Q_REPAY_0/1 같은 200 records 인데 LE32 median 3700 vs 41700 (~11배) → **Q_REPAY_0 = EXP 보상, Q_REPAY_1 = gold 보상**. 200 - 128 (R70 quest) = 72 차이 = achievement/multi-stage reward 가설.
+
+---
+
 ## 🏆 Round 84 (2026-05-19) — `_ITM_OPTION` enchantment pool 51종
 
 > 상세: [round84-enchantment-pool.md](round84-enchantment-pool.md).
