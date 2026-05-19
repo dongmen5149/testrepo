@@ -131,6 +131,71 @@ data class Hero3DesStatus(
     val blocker: String,
 )
 
+// ─── R75: R74 DES plaintext data classes ──────────────────────────────────
+
+/** i15_dat 의 한 entry (master shop catalog). */
+data class Hero3ShopCatalogEntry(
+    val markerOffset: Int,
+    val nlen: Int,
+    val name: String,
+    val body: String,
+    val headerHex: String,
+)
+
+/** drop_dat / droph_dat 의 한 17B record. */
+data class Hero3DropRecord(
+    val offset: Int,
+    val size: Int,
+    val bytes: List<Int>,
+)
+
+/** smith_dat 의 한 11B recipe.
+ *  byte map: [0]=0x09 const, [1]=0x00, [2..5]=4 input items (cat,id pair?),
+ *  [6,7]=output? [8]=0x64 success rate%, [9]=output_cat, [10]=output_id.
+ */
+data class Hero3Recipe(
+    val offset: Int,
+    val bytes: List<Int>,
+) {
+    val successRate: Int get() = bytes.getOrNull(8) ?: 0
+    val outputCat:   Int get() = bytes.getOrNull(9) ?: 0
+    val outputId:    Int get() = bytes.getOrNull(10) ?: 0
+}
+
+/** shop_dat 의 한 10B region shop entry.
+ *  byte map: [0]=0x08 const, [1]=0x00, [2]=lv_min, [3]=lv_max, [4]=0x00,
+ *  [5..9]=up to 5 item IDs (0xff=empty).
+ */
+data class Hero3RegionShop(
+    val offset: Int,
+    val bytes: List<Int>,
+) {
+    val lvMin:   Int      get() = bytes.getOrNull(2) ?: 0
+    val lvMax:   Int      get() = bytes.getOrNull(3) ?: 0
+    val itemIds: List<Int> get() =
+        bytes.drop(5).filter { it != 0xff }
+}
+
+/** getitem_dat 의 한 4B fixed-drop entry. */
+data class Hero3FixedDrop(
+    val type: Int,
+    val flag: Int,
+    val cat:  Int,
+    val id:   Int,
+)
+
+/** R74 통합 데이터. */
+data class Hero3R74Data(
+    val shopCatalog:    List<Hero3ShopCatalogEntry>,
+    val dropTable:      List<Hero3DropRecord>,
+    val dropTableHard:  List<Hero3DropRecord>,
+    val recipes:        List<Hero3Recipe>,
+    val recipesHard:    List<Hero3Recipe>,
+    val regionShops:    List<Hero3RegionShop>,
+    val regionShopsHard:List<Hero3RegionShop>,
+    val fixedDrops:     List<Hero3FixedDrop>,
+)
+
 data class Hero3Catalog(
     val schemaVersion: String,
     val round: Int,
@@ -145,6 +210,7 @@ data class Hero3Catalog(
     val combatRatingFormulaNormal: String,
     val combatRatingFormulaHard: String,
     val desStatus: Hero3DesStatus,
+    val r74Data: Hero3R74Data? = null,
 ) {
     val totalItems: Int get() = items.sumOf { it.nItems }
     val totalSkills: Int get() = skills.sumOf { it.nSkills }
@@ -155,8 +221,8 @@ data class Hero3Catalog(
     fun statName(code: Int): String? =
         statEnum["0x${code.toString(16).padStart(2, '0')}"]?.name
 
-    /** 보스 ID 매핑 미해결 — DES 복호화 후 R71+ 에서 확정 가능 (R67 H4 가설). */
-    fun bossSkillIdsResolved(): Boolean = false
+    /** R74 가설 검증: drop_dat 98/161 records 가 BSKILL set 과 ≥3 hits → confirmed. */
+    fun bossSkillIdsResolved(): Boolean = r74Data != null && r74Data.dropTable.isNotEmpty()
 }
 
 object Hero3CatalogLoader {
@@ -167,7 +233,7 @@ object Hero3CatalogLoader {
         val root = JSONObject(raw)
 
         val meta = root.optJSONObject("meta") ?: JSONObject()
-        val schemaVersion = meta.optString("schema_version", "1.1")
+        val schemaVersion = meta.optString("schema_version", "1.2")
         val round = meta.optInt("round", 0)
 
         // stat_enum
@@ -308,6 +374,9 @@ object Hero3CatalogLoader {
             blocker = desObj.optString("blocker"),
         )
 
+        // R75: r74_des_data — recipes / region_shops / drops / fixed_drops / shop_catalog
+        val r74Data = root.optJSONObject("r74_des_data")?.let { parseR74Data(it) }
+
         return Hero3Catalog(
             schemaVersion = schemaVersion,
             round = round,
@@ -322,7 +391,95 @@ object Hero3CatalogLoader {
             combatRatingFormulaNormal = crfNormal,
             combatRatingFormulaHard = crfHard,
             desStatus = desStatus,
+            r74Data = r74Data,
         )
+    }
+
+    private fun parseR74Data(obj: JSONObject): Hero3R74Data {
+        return Hero3R74Data(
+            shopCatalog     = parseShopCatalog(obj.optJSONObject("shop_catalog")),
+            dropTable       = parseDropRecords(obj.optJSONObject("drop_table")),
+            dropTableHard   = parseDropRecords(obj.optJSONObject("drop_table_hard")),
+            recipes         = parseRecipes(obj.optJSONObject("recipes")),
+            recipesHard     = parseRecipes(obj.optJSONObject("recipes_hard")),
+            regionShops     = parseRegionShops(obj.optJSONObject("region_shops")),
+            regionShopsHard = parseRegionShops(obj.optJSONObject("region_shops_hard")),
+            fixedDrops      = parseFixedDrops(obj.optJSONObject("fixed_drops")),
+        )
+    }
+
+    private fun parseShopCatalog(obj: JSONObject?): List<Hero3ShopCatalogEntry> {
+        val out = mutableListOf<Hero3ShopCatalogEntry>()
+        val arr = obj?.optJSONArray("entries") ?: return out
+        for (i in 0 until arr.length()) {
+            val e = arr.optJSONObject(i) ?: continue
+            out += Hero3ShopCatalogEntry(
+                markerOffset = e.optInt("marker_offset"),
+                nlen = e.optInt("nlen"),
+                name = e.optString("name"),
+                body = e.optString("body"),
+                headerHex = e.optString("header_hex"),
+            )
+        }
+        return out
+    }
+
+    private fun parseDropRecords(obj: JSONObject?): List<Hero3DropRecord> {
+        val out = mutableListOf<Hero3DropRecord>()
+        val arr = obj?.optJSONArray("records") ?: return out
+        for (i in 0 until arr.length()) {
+            val r = arr.optJSONObject(i) ?: continue
+            val byteArr = r.optJSONArray("bytes") ?: JSONArray()
+            out += Hero3DropRecord(
+                offset = r.optInt("offset"),
+                size = r.optInt("size"),
+                bytes = (0 until byteArr.length()).map { byteArr.optInt(it) },
+            )
+        }
+        return out
+    }
+
+    private fun parseRecipes(obj: JSONObject?): List<Hero3Recipe> {
+        val out = mutableListOf<Hero3Recipe>()
+        val arr = obj?.optJSONArray("recipes") ?: return out
+        for (i in 0 until arr.length()) {
+            val r = arr.optJSONObject(i) ?: continue
+            val byteArr = r.optJSONArray("bytes") ?: JSONArray()
+            out += Hero3Recipe(
+                offset = r.optInt("offset"),
+                bytes = (0 until byteArr.length()).map { byteArr.optInt(it) },
+            )
+        }
+        return out
+    }
+
+    private fun parseRegionShops(obj: JSONObject?): List<Hero3RegionShop> {
+        val out = mutableListOf<Hero3RegionShop>()
+        val arr = obj?.optJSONArray("shops") ?: return out
+        for (i in 0 until arr.length()) {
+            val s = arr.optJSONObject(i) ?: continue
+            val byteArr = s.optJSONArray("bytes") ?: JSONArray()
+            out += Hero3RegionShop(
+                offset = s.optInt("offset"),
+                bytes = (0 until byteArr.length()).map { byteArr.optInt(it) },
+            )
+        }
+        return out
+    }
+
+    private fun parseFixedDrops(obj: JSONObject?): List<Hero3FixedDrop> {
+        val out = mutableListOf<Hero3FixedDrop>()
+        val arr = obj?.optJSONArray("items") ?: return out
+        for (i in 0 until arr.length()) {
+            val it = arr.optJSONObject(i) ?: continue
+            out += Hero3FixedDrop(
+                type = it.optInt("type"),
+                flag = it.optInt("flag"),
+                cat = it.optInt("cat"),
+                id = it.optInt("id"),
+            )
+        }
+        return out
     }
 
     private fun parseSlot(o: JSONObject?): Hero3SkillEffectSlot {

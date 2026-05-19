@@ -1,12 +1,12 @@
-# Hero3 인수인계 노트 (Round 74 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 75 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.97%**. 🎯 **R74 DES 평문 8파일 모두 JSON 파싱 + boss skill H4 가설 confirmed** (drop_dat 98/161 records ≥3 BSKILL hits). drop_dat = **정확히 161 entries** (R56 161 enemies 와 1:1). **남은 작업**: (A) **R75 - 17B drop record field map / i15 trailer 6B / Hero3Recipe Kotlin class / game_balance v1.2** (자동), (B) **SMAF→OGG 변환** (사용자 신뢰도 정책 대기).
+**Hero3 분석 진행률 ~99.98%**. 🎉 **R75: R74 데이터를 Android Hero3Catalog 로 통합 완료**. game_balance.json v1.1 (582KB) → **v1.2 (832KB)**. Hero3Catalog 5 신규 data class (recipes/region_shops/drop records/fixed drops/shop catalog) + Loader + **17/17 unit tests pass**. `bossSkillIdsResolved()` 가 R74 H4 confirmation 으로 true. **남은 작업**: (A) **R76 - drop_dat 17B 정밀 field map / i15 5B trailer / smith input precise / Hero3Catalog ↔ i15 cross-validation**, (B) **SMAF→OGG** (사용자 정책 대기).
 
-마지막 commit: R74 산출물 pending — 본 라운드에서 commit 예정.
+마지막 commit: R75 commit 본 라운드에서 진행 예정.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

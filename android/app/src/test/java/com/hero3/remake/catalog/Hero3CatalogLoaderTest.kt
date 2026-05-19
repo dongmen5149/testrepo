@@ -3,7 +3,6 @@ package com.hero3.remake.catalog
 import com.hero3.remake.engine.AssetNotFound
 import com.hero3.remake.engine.AssetReader
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -41,9 +40,9 @@ class Hero3CatalogLoaderTest {
     }
 
     @Test
-    fun catalog_schema_version_is_1_1() {
+    fun catalog_schema_version_is_1_2() {
         val catalog = Hero3CatalogLoader.load(reader())
-        assertEquals("1.1", catalog.schemaVersion)
+        assertEquals("1.2", catalog.schemaVersion)
     }
 
     @Test
@@ -114,17 +113,70 @@ class Hero3CatalogLoaderTest {
     }
 
     @Test
-    fun des_status_has_8_pending_files() {
+    fun des_status_has_zero_pending_files_after_r73() {
         val catalog = Hero3CatalogLoader.load(reader())
-        // R57/R60: 8 DES pending (i15/drop/droph/getitem/smith/smithh/shop/shoph)
-        assertEquals(8, catalog.desStatus.pendingFiles.size)
+        // R73: all 8 files decrypted via Hero5 mx_des_decrypt variant
+        assertEquals(0, catalog.desStatus.pendingFiles.size)
         assertEquals("0EP@KO91", catalog.desStatus.key)
     }
 
     @Test
-    fun boss_skill_ids_resolved_returns_false() {
+    fun boss_skill_ids_resolved_returns_true_after_r74() {
         val catalog = Hero3CatalogLoader.load(reader())
-        // R67/R68/R70 confirm: H4 (별도 boss skill table) but unresolved
-        assertFalse(catalog.bossSkillIdsResolved())
+        // R74: drop_dat 98/161 records match BSKILL set → H4 confirmed
+        assertTrue(catalog.bossSkillIdsResolved())
+    }
+
+    // ─── R75: R74 DES plaintext data assertions ────────────────────────────
+
+    @Test
+    fun r74_data_is_loaded() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        assertNotNull(catalog.r74Data)
+    }
+
+    @Test
+    fun r74_drop_table_has_161_entries_matching_enemies() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        assertEquals(161, d.dropTable.size)
+        assertEquals(161, d.dropTableHard.size)
+        // 1:1 with R56 enemy_dat
+        assertEquals(catalog.totalEnemies, d.dropTable.size)
+    }
+
+    @Test
+    fun r74_recipes_have_80_entries() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        assertEquals(80, d.recipes.size)
+        assertEquals(80, d.recipesHard.size)
+        // Recipe success rate constant 100 (0x64)
+        assertEquals(100, d.recipes[0].successRate)
+    }
+
+    @Test
+    fun r74_region_shops_have_5_entries_with_level_tiers() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        assertEquals(5, d.regionShops.size)
+        // Normal mode first shop tier = level 1-15
+        assertEquals(1, d.regionShops[0].lvMin)
+        assertEquals(15, d.regionShops[0].lvMax)
+        // Hard mode first tier = 30-44
+        assertEquals(30, d.regionShopsHard[0].lvMin)
+        assertEquals(44, d.regionShopsHard[0].lvMax)
+    }
+
+    @Test
+    fun r74_shop_catalog_and_fixed_drops_populated() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val d = catalog.r74Data!!
+        assertEquals(38, d.shopCatalog.size)
+        assertEquals(96, d.fixedDrops.size)
+        // First i15 entry has Korean name with EUC-KR decoded characters
+        assertTrue(d.shopCatalog[0].name.isNotEmpty())
+        // Fixed drops all type=2 (R74 finding)
+        assertTrue(d.fixedDrops.all { it.type == 2 })
     }
 }

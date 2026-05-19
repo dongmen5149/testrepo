@@ -129,20 +129,22 @@ def clean_name(name: str) -> str:
 
 # ---------- DES status (R57-R63) ----------
 DES_STATUS = {
-    "algorithm": "standard FIPS DES (ECB-like, see Hero5 NDK runner)",
+    "algorithm": "Hero5 mx_des_decrypt (startDes mode=0 + swap halves) — R73 confirmed",
     "key": "0EP@KO91",
     "tables_file": "dat/des_dat (824B FIPS tables: IP, IP^-1, E, P, S1-S8, PC1, PC2)",
-    "pending_files": [
-        {"path": "dat/i15_dat",       "size_bytes": 7400, "entropy": 7.97, "role": "?? master item table (largest)"},
-        {"path": "dat/drop_dat",      "size_bytes": 3080, "entropy": ">=7.8", "role": "enemy loot table"},
-        {"path": "dat/droph_dat",     "size_bytes": 3080, "entropy": ">=7.8", "role": "hard-mode loot table"},
-        {"path": "dat/getitem_dat",   "size_bytes": 400,  "entropy": ">=7.8", "role": "fixed item drops"},
-        {"path": "dat/smith_dat",     "size_bytes": 896,  "entropy": 7.76, "role": "smith recipe (i14 → i0~i12)"},
-        {"path": "dat/smithh_dat",    "size_bytes": 896,  "entropy": 7.76, "role": "smith recipe hard-mode"},
-        {"path": "dat/shop_dat",      "size_bytes": "?", "entropy": ">=7.8", "role": "shop catalog"},
-        {"path": "dat/shoph_dat",     "size_bytes": "?", "entropy": ">=7.8", "role": "shop catalog hard-mode"},
+    "pending_files": [],  # R73: all 8 files decrypted
+    "decrypted_files": [
+        {"path": "dat/i15_dat",       "size_bytes": 7400, "entries": 38,  "role": "master shop catalog (EUC-KR desc)"},
+        {"path": "dat/drop_dat",      "size_bytes": 3080, "entries": 161, "role": "enemy drop table (17B stride)"},
+        {"path": "dat/droph_dat",     "size_bytes": 3080, "entries": 161, "role": "hard-mode drop table"},
+        {"path": "dat/getitem_dat",   "size_bytes": 400,  "entries": 96,  "role": "fixed item table (4B stride)"},
+        {"path": "dat/smith_dat",     "size_bytes": 896,  "entries": 80,  "role": "forge recipes (11B stride)"},
+        {"path": "dat/smithh_dat",    "size_bytes": 896,  "entries": 80,  "role": "forge recipes hard-mode (44/80 differ)"},
+        {"path": "dat/shop_dat",      "size_bytes": 72,   "entries": 5,   "role": "NPC region shops (10B stride)"},
+        {"path": "dat/shoph_dat",     "size_bytes": 72,   "entries": 5,   "role": "NPC region shops hard-mode"},
     ],
-    "blocker": "user environment NDK runner required (Hero5 path, see reference_h5_des_blocker.md)",
+    "blocker": None,
+    "round": 73,
 }
 
 
@@ -158,9 +160,10 @@ def main() -> None:
     # 1. meta
     out["meta"] = {
         "project": "Hero3 Remake (영웅서기3)",
-        "round": 66,
+        "schema_version": "1.2",
+        "round": 75,
         "date": "2026-05-19",
-        "round_label": "R66 = R56-R65 통합 + skill effect v2 + boss combat_rating + debuff codes refined",
+        "round_label": "R75 = R74 DES 평문 정밀 파서 (recipes/region_shops/drops/fixed_drops/shop_catalog) 통합",
         "stat_enum_count": 24,
         "items_categories": 18,
         "skills_files": 7,
@@ -428,6 +431,34 @@ def main() -> None:
                 break
     out["char_classes"] = char_classes
     summary_lines.append(f"\nChar classes: {len(char_classes)} parsed")
+
+    # 10a. R74 DES plaintext parsed data (from tools/recon/parse_h3_des_plain.py)
+    def _load_recon_json(name: str) -> dict:
+        p = RECON / name
+        if not p.exists():
+            return {}
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
+    r74 = {
+        "shop_catalog":     _load_recon_json("h3_i15_dat.json"),
+        "drop_table":       _load_recon_json("h3_drop_dat.json"),
+        "drop_table_hard":  _load_recon_json("h3_droph_dat.json"),
+        "recipes":          _load_recon_json("h3_smith_dat.json"),
+        "recipes_hard":     _load_recon_json("h3_smithh_dat.json"),
+        "region_shops":     _load_recon_json("h3_shop_dat.json"),
+        "region_shops_hard":_load_recon_json("h3_shoph_dat.json"),
+        "fixed_drops":      _load_recon_json("h3_getitem_dat.json"),
+    }
+    out["r74_des_data"] = r74
+    summary_lines.append("\nR74 DES plaintext:")
+    summary_lines.append(f"  shop_catalog:    {r74['shop_catalog'].get('count', 0)} entries")
+    summary_lines.append(f"  drop_table:      {r74['drop_table'].get('count', 0)} entries")
+    summary_lines.append(f"  recipes:         {r74['recipes'].get('count', 0)} entries")
+    summary_lines.append(f"  region_shops:    {r74['region_shops'].get('count', 0)} entries")
+    summary_lines.append(f"  fixed_drops:     {r74['fixed_drops'].get('count', 0)} entries")
 
     # 10. DES status
     out["des_status"] = DES_STATUS
