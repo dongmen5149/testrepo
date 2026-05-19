@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 85 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 86 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.96% / Catalog ~98% / 실제 remake ~85-87%**. R85: `Hero3CatalogQuestIndex` 신규 — questFiles 평탄화 + 캐논화 (꼬리 숫자 제거) + lookupExact/Contains/duplicates. **8 cross-file duplicates 발견** (quest_01/11 dat 7개 + 전장으로 quest_00/10). 67 entries / 59 distinct. CatalogViewer Quests tab 에 통계 헤더 + ★ 마커. **75/75 tests** (29 catalog, R85 4 신규) + APK BUILD SUCCESSFUL. **신규 finding**: quest_01 ↔ quest_11 모두 캐논 일치 → 둘이 동일 데이터 변형 가능성 / n_entries(115) vs loaded(67) 차이 = export script truncation (R86 수정 권장). R86 권장: export truncation fix → 115 entries 복구 / QuestRegistry catalogKey 필드 / CatalogViewer Skills detail panel / R66 effect_v2 BattleScene / item_xref 21 / ForgeScene gold.
+**분석 ~99.97% / Catalog ~98.5% / 실제 remake ~85-87%**. R86: export_game_balance.py 의 `entries[:20]` 슬라이스 제거 → catalog quest **67 → 115 entries 완전 복구**. game_balance.json 832KB → 837KB. R85 quest index 가 자동으로 더 많은 중복 탐지: 8 → **11 duplicates** (신규: 반전세력 엘지스 quest_00↔quest_10, 등대를 향해 quest_00↔quest_10, 협곡 탐사 quest_10 내 intra-file). **해석 강화**: quest_01 ⊂ quest_11 (7 entries 모두 quest_11 에도 존재). 75/75 tests + APK BUILD SUCCESSFUL. R87 권장: QuestRegistry catalogKey / Skills detail panel / R66 effect_v2 / item_xref 21 / ForgeScene gold / CatalogViewer Quests file-색상.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

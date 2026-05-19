@@ -390,7 +390,7 @@ def main() -> None:
         quests_out[fn] = {
             "size_bytes": len(data),
             "n_entries": len(entries),
-            "entries": [{"pos": e["pos"], "name": e["name"]} for e in entries[:20]],
+            "entries": [{"pos": e["pos"], "name": e["name"]} for e in entries],
         }
     out["quests"] = {
         "files": quests_out,
