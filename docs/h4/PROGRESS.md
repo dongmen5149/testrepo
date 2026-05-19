@@ -4,6 +4,14 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 82 (2026-05-19) — 트랙 C: ITEMDROP + BASIC_SM + SD 상점
+
+> 상세: [round82-itemdrop-shop.md](round82-itemdrop-shop.md).
+>
+> ITM root 의 3종 보조 파일 모두 plaintext. `_ITEMDROP` = 9 records × 8B (slot[0..5] drop table), `BASIC_SM_DAT` = 5 records × 44B (모두 [8,8,8,0] baseline 시스템 프로필), `_ITM_SD0/1/2` = 101 tiered shop items (성장 재료 전문 상점).
+
+---
+
 ## 🏆 Round 81 (2026-05-19) — `_H_BH` 4 stat block 정체 + R76 미해결 해소
 
 > R71 의 "4 hero stat blocks" 해석 정정. 상세: [round81-hero-bh-resolved.md](round81-hero-bh-resolved.md).
