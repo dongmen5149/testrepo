@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 86 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 87 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.97% / Catalog ~98.5% / 실제 remake ~85-87%**. R86: export_game_balance.py 의 `entries[:20]` 슬라이스 제거 → catalog quest **67 → 115 entries 완전 복구**. game_balance.json 832KB → 837KB. R85 quest index 가 자동으로 더 많은 중복 탐지: 8 → **11 duplicates** (신규: 반전세력 엘지스 quest_00↔quest_10, 등대를 향해 quest_00↔quest_10, 협곡 탐사 quest_10 내 intra-file). **해석 강화**: quest_01 ⊂ quest_11 (7 entries 모두 quest_11 에도 존재). 75/75 tests + APK BUILD SUCCESSFUL. R87 권장: QuestRegistry catalogKey / Skills detail panel / R66 effect_v2 / item_xref 21 / ForgeScene gold / CatalogViewer Quests file-색상.
+**분석 ~99.98% / Catalog ~99% / 실제 remake ~85-87%**. R87: R62 quest_item_xref 21 items 를 Hero3Catalog.questItemXref 로 통합. data class 2 (Hero3QuestItemMatch / Hero3QuestItemXref) + Loader.parseQuestItemXref + Catalog API 2 (findQuestXref / questXrefByFile) + CatalogViewer 신규 탭 (Item-Quest Xref). **finding**: 21 items 중 20 has matches, "반토막난 지도" 만 빈 매치. "토레즈시민증" 35 / "토레즈의서신" 38 matches 가장 빈번 (game 의 핵심 quest item). 78/78 tests + APK BUILD SUCCESSFUL. R88 권장: QuestRegistry catalogKey / Skills detail panel / R66 effect_v2 BattleScene / ForgeScene gold cost / Quests tab file-색상.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

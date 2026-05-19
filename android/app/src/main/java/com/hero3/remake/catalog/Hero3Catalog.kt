@@ -134,6 +134,28 @@ data class Hero3CatalogQuestFile(
     val entries: List<Hero3CatalogQuestEntry>,
 )
 
+// ─── R87: quest item cross-reference (R62, 21 items) ──────────────────────
+
+/**
+ * R62 quest_item_xref.json 의 한 match — quest 텍스트 안에서 발견된 item 이름 occurrence.
+ * - [file]: quest_*_dat 중 하나
+ * - [offset]: quest body 안 byte offset
+ * - [text]: 실제 quest 안에 등장한 텍스트 (item 의 clean name 의 prefix 일 수 있음)
+ * - [context]: 주변 7-token 컨텍스트 (오프셋 근처 단어들, debug 용)
+ */
+data class Hero3QuestItemMatch(
+    val file: String,
+    val offset: Int,
+    val text: String,
+    val context: List<String>,
+)
+
+/** R62 quest 안에서 언급된 catalog item 의 cross-reference. */
+data class Hero3QuestItemXref(
+    val cleanName: String,
+    val matches: List<Hero3QuestItemMatch>,
+)
+
 data class Hero3DesPendingFile(
     val path: String,
     val role: String,
@@ -264,6 +286,7 @@ data class Hero3Catalog(
     val desStatus: Hero3DesStatus,
     val r74Data: Hero3R74Data? = null,
     val questFiles: List<Hero3CatalogQuestFile> = emptyList(),  // R84 — 115 catalog quests
+    val questItemXref: List<Hero3QuestItemXref> = emptyList(),  // R87 — R62 21 item names cross-referenced
 ) {
     val totalItems: Int get() = items.sumOf { it.nItems }
     val totalSkills: Int get() = skills.sumOf { it.nSkills }
@@ -276,6 +299,16 @@ data class Hero3Catalog(
 
     /** R74 가설 검증: drop_dat 98/161 records 가 BSKILL set 과 ≥3 hits → confirmed. */
     fun bossSkillIdsResolved(): Boolean = r74Data != null && r74Data.dropTable.isNotEmpty()
+
+    /** R87: item clean name 으로 quest cross-reference 찾기. 매칭 없으면 null. */
+    fun findQuestXref(itemCleanName: String): Hero3QuestItemXref? =
+        questItemXref.firstOrNull { it.cleanName == itemCleanName }
+
+    /** R87: 특정 quest file 안에서 언급된 모든 cross-ref 의 (itemName, match) pair 반환. */
+    fun questXrefByFile(questFile: String): List<Pair<String, Hero3QuestItemMatch>> =
+        questItemXref.flatMap { xref ->
+            xref.matches.filter { it.file == questFile }.map { xref.cleanName to it }
+        }
 
     /** R76: ItemRef → 실제 카탈로그 item lookup. cat 의 i{N}_dat 안에서 pos==id (또는 list index)
      *  중 first 매칭 반환. cat=0xff 또는 미존재 카탈로그/id 일 경우 null. */
@@ -462,6 +495,9 @@ object Hero3CatalogLoader {
         // R84: catalog quests (R58/R62)
         val questFiles = parseQuestFiles(root.optJSONObject("quests"))
 
+        // R87: quest item cross-reference (R62)
+        val questItemXref = parseQuestItemXref(root.optJSONObject("quests"))
+
         return Hero3Catalog(
             schemaVersion = schemaVersion,
             round = round,
@@ -478,7 +514,35 @@ object Hero3CatalogLoader {
             desStatus = desStatus,
             r74Data = r74Data,
             questFiles = questFiles,
+            questItemXref = questItemXref,
         )
+    }
+
+    private fun parseQuestItemXref(obj: JSONObject?): List<Hero3QuestItemXref> {
+        val out = mutableListOf<Hero3QuestItemXref>()
+        val xref = obj?.optJSONObject("item_xref") ?: return out
+        val keys = xref.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val o = xref.optJSONObject(key) ?: continue
+            val matchesArr = o.optJSONArray("matches") ?: JSONArray()
+            val matches = (0 until matchesArr.length()).mapNotNull { i ->
+                val m = matchesArr.optJSONObject(i) ?: return@mapNotNull null
+                val ctxArr = m.optJSONArray("context") ?: JSONArray()
+                val ctx = (0 until ctxArr.length()).map { ctxArr.optString(it) }
+                Hero3QuestItemMatch(
+                    file = m.optString("file"),
+                    offset = m.optInt("offset"),
+                    text = m.optString("text"),
+                    context = ctx,
+                )
+            }
+            out += Hero3QuestItemXref(
+                cleanName = o.optString("clean_name", key),
+                matches = matches,
+            )
+        }
+        return out
     }
 
     private fun parseQuestFiles(obj: JSONObject?): List<Hero3CatalogQuestFile> {

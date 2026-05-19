@@ -231,6 +231,42 @@ class Hero3CatalogLoaderTest {
         assertTrue(files.contains("quest_11_dat"))
     }
 
+    // ─── R87: quest item xref ───────────────────────────────────────────────
+
+    @Test
+    fun r87_quest_item_xref_has_21_items() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        assertEquals(21, catalog.questItemXref.size)
+        // cleanName 은 비어있지 않음
+        assertTrue(catalog.questItemXref.all { it.cleanName.isNotEmpty() })
+        // 21개 중 20개는 match 가 있고, 1개 ("반토막난 지도") 는 빈 매치.
+        val withMatches = catalog.questItemXref.count { it.matches.isNotEmpty() }
+        assertEquals(20, withMatches)
+    }
+
+    @Test
+    fun r87_quest_item_xref_finds_known_item() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        // "협곡의성수" — quest_00 등에 8 matches.
+        val x = catalog.findQuestXref("협곡의성수")
+        assertNotNull(x)
+        assertTrue(x!!.matches.size >= 4)
+        // matches 의 file 들이 quest_*_dat 형식인지.
+        assertTrue(x.matches.all { it.file.startsWith("quest_") })
+    }
+
+    @Test
+    fun r87_quest_xref_by_file_groups_correctly() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val q00matches = catalog.questXrefByFile("quest_00_dat")
+        assertTrue(q00matches.isNotEmpty())
+        // 모든 match.file 이 quest_00_dat 인지.
+        assertTrue(q00matches.all { it.second.file == "quest_00_dat" })
+        // 다른 파일은 다른 카운트.
+        val q11matches = catalog.questXrefByFile("quest_11_dat")
+        assertTrue(q11matches.isNotEmpty())
+    }
+
     @Test
     fun r74_shop_catalog_and_fixed_drops_populated() {
         val catalog = Hero3CatalogLoader.load(reader())

@@ -44,6 +44,7 @@ class CatalogViewerScene(
         RECIPES("단조 레시피", "Forge Recipes"),       // R80: R74 smith 80 entries
         REGION_SHOPS("지역 상점", "Region Shops"),     // R80: R74 5 region shops
         QUESTS("퀘스트 목록", "Quests"),                // R84: catalog 115 quests
+        QUEST_ITEM_XREF("아이템-퀘스트 xref", "Item-Quest Xref"),  // R87: 21 items
         DES("DES 상태", "DES Status"),
     }
 
@@ -117,6 +118,21 @@ class CatalogViewerScene(
                     }
                 }
                 if (catalog.questFiles.isEmpty()) listOf("(no catalog quests parsed)") else header + body
+            }
+            Tab.QUEST_ITEM_XREF -> {
+                // R87 — 21 items × N matches. item 별로 group 후 첫 3 match 표시.
+                if (catalog.questItemXref.isEmpty()) listOf("(no quest_item_xref data)")
+                else {
+                    val totalMatches = catalog.questItemXref.sumOf { it.matches.size }
+                    listOf("items=${catalog.questItemXref.size}  total_matches=$totalMatches") +
+                    catalog.questItemXref.flatMap { xref ->
+                        listOf("─ ${xref.cleanName}  (${xref.matches.size} matches)") +
+                        xref.matches.take(3).map { m ->
+                            "    ${m.file}@${m.offset.toString().padStart(4)}  \"${m.text}\""
+                        } +
+                        if (xref.matches.size > 3) listOf("    … +${xref.matches.size - 3} more") else emptyList()
+                    }
+                }
             }
             Tab.DES -> catalog.desStatus.pendingFiles.map { f ->
                 "${f.path.padEnd(20)}  ${f.role}"
