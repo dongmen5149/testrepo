@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 86 (2026-05-19) — `_H_SS` 환수(소환수) 시스템 발견 ★
+
+> 신규 게임 시스템 발견. 상세: [round86-summon-system.md](round86-summon-system.md).
+>
+> `_H_SS` 1624B = **5+ 환수 catalog** (베놈/헤지호그/그래비티/쇼커/세이프가드). 각 환수 5 스킬 (기본공격/원거리/효과/오러/소환시) + 4 글로벌 강화 (마법력/교감도/체력/정신). R69 의 4 character class 스킬과 별개 시스템.
+>
+> R76/R81 의 캐릭터 모델 보강: 2 영웅 × 2 mode + **소환수 시스템** = ARPG + summon hybrid. S003 의 "환수흡수" 스킬이 직접 연결고리.
+
+---
+
 ## 🏆 Round 85 (2026-05-19) — Quest reward LE32 분포 (EXP vs gold)
 
 > 상세: [round85-quest-reward-distribution.md](round85-quest-reward-distribution.md).
