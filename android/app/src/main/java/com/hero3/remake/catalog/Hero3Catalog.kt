@@ -167,6 +167,9 @@ data class Hero3DropRecord(
     val isNormalEnemy: Boolean get() = classFlag == 14
     val isElite:       Boolean get() = classFlag == 18
     val isBossOrBox:   Boolean get() = classFlag == 255
+
+    /** R78: secondary drop 이 common-pool sentinel (133,153) = 0x8599 인지. 63/161 records. */
+    val secondaryIsCommonPool: Boolean get() = secondaryDrop == 133 to 153
 }
 
 /** smith_dat 의 한 11B recipe. R76 field map 확정:

@@ -255,6 +255,17 @@ class Hero3CatalogLoaderTest {
     }
 
     @Test
+    fun r78_common_pool_sentinel_is_secondary_only() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val drops = catalog.r74Data!!.dropTable
+        // R78: (133,153)=0x8599 appears 63 times in secondary, 0 in primary
+        val secondaryCommon = drops.count { it.secondaryIsCommonPool }
+        val primaryCommon = drops.count { it.primaryDrop == 133 to 153 }
+        assertEquals(63, secondaryCommon)
+        assertEquals(0, primaryCommon)
+    }
+
+    @Test
     fun r77_region_shop_items_resolve_to_i15_entries() {
         val catalog = Hero3CatalogLoader.load(reader())
         val shops = catalog.r74Data!!.regionShops

@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 77 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 78 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
-## 0. 현재 상태 한 줄
+## 0. 현재 상태 한 줄 (⚠️ 솔직 재평가 포함)
 
-**Hero3 분석 진행률 ~99.995%**. 🎯 **R77: drop_dat 17B = 10B archetype template + 7B per-enemy overrides 구조 확정** — 161 records → 18 archetype 클러스터. byte[13] {14=normal, 18=elite, 255=box/boss} class flag. region_shops itemIds = i15 indices 검증 (lv 1-15: 얼음비늘장갑, 바람가죽모자). i15 5B trailer 18/37 추출 (`[stat][stat][0x0f][stat][class]`). **23/23 tests pass**. **남은 작업**: R78 - i15 entries 18-37 의 `0x14` marker trailer / getitem cat 분류 / archetype template stat 의미 / SMAF (정책).
+**분석 진행률 ~99.998%**. 그러나 **실제 Android remake 완성도는 ~65-70%**. R78에서 i15 trailer 36/37 추출 + getitem 96 categorized + (133,153) sentinel 검증 (63 secondary, 0 primary). **24/24 tests pass**. **핵심 발견**: R56~R78의 분석 데이터가 ShopScene/BattleScene/InventoryScene/QuestScene에 거의 통합되지 않은 상태 — 모든 registry가 placeholder hardcoded. **R79+ 권장 방향 전환**: "더 깊은 분석" → "데이터→게임 통합". 자세한 audit은 [ghidra-round78-...progress-audit-2026-05-19.md](ghidra-round78-trailer-sentinel-getitem-progress-audit-2026-05-19.md) 참조.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 
