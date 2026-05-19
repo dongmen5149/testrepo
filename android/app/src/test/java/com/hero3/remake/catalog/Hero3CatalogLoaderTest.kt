@@ -225,4 +225,48 @@ class Hero3CatalogLoaderTest {
         val matched = d.shopCatalog.count { catalog.resolveShopCatalogEntry(it) != null }
         assertEquals(38, matched)
     }
+
+    // ─── R77: drop archetype clustering + region_shop xref ─────────────────
+
+    @Test
+    fun r77_drop_records_cluster_into_18_archetypes() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        // R77 finding: 161 drop records group by bytes[0..9] into 18 distinct archetypes
+        val archetypes = catalog.dropArchetypes()
+        assertEquals(18, archetypes.size)
+        // Largest cluster (low-level archetype) has 27 members
+        val largest = archetypes.values.maxByOrNull { it.size }!!
+        assertEquals(27, largest.size)
+    }
+
+    @Test
+    fun r77_drop_class_flags_distinguish_normal_elite_boss() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val drops = catalog.r74Data!!.dropTable
+        // R77: 14=normal, 18=elite, 255=box/boss
+        val normal = drops.count { it.isNormalEnemy }
+        val elite = drops.count { it.isElite }
+        val boss = drops.count { it.isBossOrBox }
+        assertTrue(normal > 0)
+        assertTrue(elite > 0)
+        assertTrue(boss > 0)
+        // 3 classes account for vast majority (1 outlier 22B record exists)
+        assertTrue(normal + elite + boss >= 158)
+    }
+
+    @Test
+    fun r77_region_shop_items_resolve_to_i15_entries() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val shops = catalog.r74Data!!.regionShops
+        // R77 finding: shop.itemIds are indices into i15 shop catalog
+        // lv 1-15 shop has 2 items: i15[4]=얼음비늘장갑, i15[8]=바람가죽모자
+        val firstShop = shops[0]
+        val items = catalog.resolveShopItems(firstShop)
+        assertEquals(2, items.size)
+        assertEquals("얼음비늘장갑", items[0].name)
+        assertEquals("바람가죽모자", items[1].name)
+        // lv 26-40 (final tier) has 5 items
+        val lastShop = shops[4]
+        assertEquals(5, catalog.resolveShopItems(lastShop).size)
+    }
 }

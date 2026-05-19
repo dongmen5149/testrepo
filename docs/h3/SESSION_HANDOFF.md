@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 76 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 77 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**Hero3 분석 진행률 ~99.99%**. 🎯 **R76: Smith Recipe 11B 필드 맵 완전 확정** — 80 recipes 모두 입력 3 슬롯(0xff=empty) + 100% 성공률 + 출력 cat/id 가 카탈로그 실제 아이템과 1:1 매칭. **i15 38 entries 100% 카탈로그 매칭**. drop_dat 17B byte[8/10/12]가 enemy_lvl/hp 와 강한 Pearson 상관 (r=0.6+). Hero3Catalog 신규 `Hero3ItemRef` + `resolveItem()` API. **20/20 unit tests pass**. **남은 작업**: R77 - drop_dat 17B precise field map (shared template + per-enemy overrides 가설) / i15 5B trailer 정밀 / region_shops itemId category 추정, SMAF (정책 대기).
+**Hero3 분석 진행률 ~99.995%**. 🎯 **R77: drop_dat 17B = 10B archetype template + 7B per-enemy overrides 구조 확정** — 161 records → 18 archetype 클러스터. byte[13] {14=normal, 18=elite, 255=box/boss} class flag. region_shops itemIds = i15 indices 검증 (lv 1-15: 얼음비늘장갑, 바람가죽모자). i15 5B trailer 18/37 추출 (`[stat][stat][0x0f][stat][class]`). **23/23 tests pass**. **남은 작업**: R78 - i15 entries 18-37 의 `0x14` marker trailer / getitem cat 분류 / archetype template stat 의미 / SMAF (정책).
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

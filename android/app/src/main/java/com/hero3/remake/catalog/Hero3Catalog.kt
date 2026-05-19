@@ -142,12 +142,32 @@ data class Hero3ShopCatalogEntry(
     val headerHex: String,
 )
 
-/** drop_dat / droph_dat 의 한 17B record. */
+/** drop_dat / droph_dat 의 한 17B record. R77 field map 확정:
+ *  bytes[0..9]   = 10B archetype loot template (18 distinct = enemy tier 그룹)
+ *  bytes[10]     = sub-tier rank (0..7) within archetype
+ *  bytes[11..12] = primary drop pair (boss skill / 고급 item)
+ *  bytes[13]     = enemy class flag: 14=normal, 18=elite, 255=box/boss
+ *  bytes[14]     = per-enemy variant
+ *  bytes[15..16] = secondary drop pair (often common-pool (133,153) = 0x8599)
+ */
 data class Hero3DropRecord(
     val offset: Int,
     val size: Int,
     val bytes: List<Int>,
-)
+) {
+    val archetypeTemplate: List<Int> get() = bytes.take(10)
+    val subTier: Int                 get() = bytes.getOrNull(10) ?: 0
+    val primaryDrop: Pair<Int, Int>  get() =
+        (bytes.getOrNull(11) ?: 0) to (bytes.getOrNull(12) ?: 0)
+    val classFlag: Int               get() = bytes.getOrNull(13) ?: 0
+    val variant: Int                 get() = bytes.getOrNull(14) ?: 0
+    val secondaryDrop: Pair<Int, Int> get() =
+        (bytes.getOrNull(15) ?: 0) to (bytes.getOrNull(16) ?: 0)
+
+    val isNormalEnemy: Boolean get() = classFlag == 14
+    val isElite:       Boolean get() = classFlag == 18
+    val isBossOrBox:   Boolean get() = classFlag == 255
+}
 
 /** smith_dat 의 한 11B recipe. R76 field map 확정:
  *  byte[0]=0x09 const, byte[1]=0x00, byte[2,3]=(input1_cat, input1_id),
@@ -185,6 +205,7 @@ data class Hero3RegionShop(
 ) {
     val lvMin:   Int      get() = bytes.getOrNull(2) ?: 0
     val lvMax:   Int      get() = bytes.getOrNull(3) ?: 0
+    /** R77: itemIds 는 i15_dat (shop catalog) 의 index. resolveShopItems() 로 entry 변환. */
     val itemIds: List<Int> get() =
         bytes.drop(5).filter { it != 0xff }
 }
@@ -252,6 +273,18 @@ data class Hero3Catalog(
             cat.items.firstOrNull { it.cleanName == entry.name || it.name == entry.name }?.let { return it }
         }
         return null
+    }
+
+    /** R77: region_shop 의 itemIds 가 i15 (shop catalog) 의 index 임을 검증, 해당 entries 반환. */
+    fun resolveShopItems(shop: Hero3RegionShop): List<Hero3ShopCatalogEntry> {
+        val cat = r74Data?.shopCatalog ?: return emptyList()
+        return shop.itemIds.mapNotNull { cat.getOrNull(it) }
+    }
+
+    /** R77: drop_dat 161 records 를 archetype template (bytes[0..9]) 으로 그룹화. 18 archetypes. */
+    fun dropArchetypes(): Map<List<Int>, List<Hero3DropRecord>> {
+        val drops = r74Data?.dropTable ?: return emptyMap()
+        return drops.groupBy { it.archetypeTemplate }
     }
 }
 
