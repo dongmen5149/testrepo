@@ -356,10 +356,16 @@ class BattleScene(
         pushLog("$name → ${displayName(target, isEn)} $dmg.")
     }
 
+    /** R83: damage = max(1, atk - def/2) × variance(0.8..1.2), with 8% crit (×1.7).
+     *  catalog-fed enemy (forcedEnemyId h3_*) 은 추후 R63 stat enum / element 적용 (R84+).
+     */
     private fun damage(atk: Int, def: Int): Int {
         val raw = max(1, atk - def / 2)
+        val isCrit = Random.nextFloat() < 0.08f
         val variance = (raw * (0.8f + Random.nextFloat() * 0.4f)).toInt()
-        return max(1, variance)
+        val final = if (isCrit) (variance * 1.7f).toInt() else variance
+        if (isCrit) pushLog(lang("크리티컬!", "Critical!"))
+        return max(1, final)
     }
 
     private fun beginVictory() {

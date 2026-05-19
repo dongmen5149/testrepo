@@ -89,6 +89,20 @@ class Hero3CatalogBridgeTest {
     }
 
     @Test
+    fun r83_drop_table_resolves_some_to_catalog_item_ids() {
+        val c = catalog()
+        val enemies = Hero3CatalogBridge.enemiesFromCatalog(c)
+        // R83: drop_dat primary/secondary 가 (cat, id) 로 해석 시도, catalog 매칭 시 h3_item_ prefix
+        val allDropIds = enemies.flatMap { e -> e.dropTable.map { it.first } }
+        val resolvedCount = allDropIds.count { it.startsWith("h3_item_") }
+        val placeholderCount = allDropIds.count { it.startsWith("h3_drop_") }
+        // 해석된 것 + placeholder 합계 = 259 (R79 카운트 변경 없음)
+        assertEquals(259, resolvedCount + placeholderCount)
+        // 적어도 일부는 resolve 되었어야 함 (catalog 의 item 수가 많으므로)
+        assertTrue("expected some drops to resolve, got $resolvedCount", resolvedCount > 0)
+    }
+
+    @Test
     fun r82_random_catalog_enemy_id_matches_h3_n_pattern() {
         val c = catalog()
         val id = Hero3CatalogBridge.randomCatalogEnemyId(c, playerLevel = 10)

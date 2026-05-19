@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 82 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 83 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.998% / Catalog ~96% / 실제 remake ~82-84%**. R82: **ItemRegistry catalog 확장** (15 → 500+ items via registerExtra) + **MapWalk encounter catalog-fed** (level-band ±5 random pick from 161 catalog enemies → BattleScene auto h3_n_NNN). ForgeScene 매칭 성공률 대폭 향상. **69/69 tests** + APK BUILD SUCCESSFUL. R83 권장: BattleScene combat formula (24 stat enum + skill effect_v2) / QuestRegistry catalog-fed / BattleScene enemy drop integration.
+**분석 ~99.998% / Catalog ~97% / 실제 remake ~84-86%**. R83: **drop resolution** — buildDropTable이 drop_dat (cat,id) pair를 catalog.resolveItem으로 해석 → engine-core ID `h3_item_<file>_<pos>` (R82 ItemRegistry.registerExtra 와 연결). **적 처치 시 실제 catalog item 인벤토리 지급** (푸른용액 등). BattleScene **8% 크리티컬 히트 (×1.7)** + 로그. **70/70 tests** + APK BUILD SUCCESSFUL. R84 권장: R66 skill effect_v2 / R63 24 stat enum element / QuestRegistry catalog-fed / ForgeScene gold cost.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

@@ -152,18 +152,30 @@ object Hero3CatalogBridge {
     private fun inferDef(hpMax: Int, lvl: Int): Int =
         ((hpMax / 8) + (lvl / 4)).coerceAtLeast(1)
 
+    /** R83: drop_dat record 의 primary/secondary 2B pair 를 (item_cat, item_id) 로 해석 시도.
+     *  catalog.resolveItem 이 매칭하면 engine-core ID `h3_item_<file>_<pos>` 추가.
+     *  해석 실패 시 placeholder ID (`h3_drop_p_<a>_<b>`) 로 fallback — UI 에 그대로 노출.
+     */
     private fun buildDropTable(d: Hero3DropRecord, catalog: Hero3Catalog): List<Pair<String, Float>> {
         val table = mutableListOf<Pair<String, Float>>()
-        // primary drop (if not common-pool sentinel)
         val (p1, p2) = d.primaryDrop
         if (p1 != 133 || p2 != 153) {
-            // best-effort: byte[11] as 카테고리 hint (실제 의미 R79+ 확정)
-            table.add("h3_drop_p_${p1}_${p2}" to 0.30f)
+            val resolved = catalog.resolveItem(Hero3ItemRef(p1, p2))
+            val id = resolved?.let { item ->
+                // catalog item.pos 와 카테고리로 engine-core ID 추론
+                val cat = catalog.items.firstOrNull { c -> c.items.any { it === item } }
+                cat?.let { "h3_item_${it.file.removeSuffix("_dat")}_${item.pos}" }
+            } ?: "h3_drop_p_${p1}_${p2}"
+            table.add(id to 0.30f)
         }
-        // secondary drop (only if not common-pool)
         if (!d.secondaryIsCommonPool) {
             val (s1, s2) = d.secondaryDrop
-            table.add("h3_drop_s_${s1}_${s2}" to 0.15f)
+            val resolved = catalog.resolveItem(Hero3ItemRef(s1, s2))
+            val id = resolved?.let { item ->
+                val cat = catalog.items.firstOrNull { c -> c.items.any { it === item } }
+                cat?.let { "h3_item_${it.file.removeSuffix("_dat")}_${item.pos}" }
+            } ?: "h3_drop_s_${s1}_${s2}"
+            table.add(id to 0.15f)
         }
         return table
     }
