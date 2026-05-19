@@ -379,4 +379,54 @@ class Hero3CatalogLoaderTest {
         val lastShop = shops[4]
         assertEquals(5, catalog.resolveShopItems(lastShop).size)
     }
+
+    // ─── R88: QuestIndex 의 byFile / fileColors / colorOf ────────────────────
+
+    @Test
+    fun r88_quest_index_groups_entries_by_file() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        // 4 quest 파일 모두 인덱싱 되어야 함.
+        assertEquals(4, idx.fileCount)
+        val expected = setOf("quest_00_dat", "quest_01_dat", "quest_10_dat", "quest_11_dat")
+        assertEquals(expected, idx.byFile.keys)
+        // 각 파일의 entries 가 모두 같은 file 로 분류됐는지 sanity check.
+        for ((file, list) in idx.byFile) {
+            assertTrue(list.isNotEmpty())
+            assertTrue(list.all { it.file == file })
+        }
+        // 합계가 평탄화 인덱스 크기와 같아야 함.
+        val total = idx.byFile.values.sumOf { it.size }
+        assertEquals(idx.size, total)
+    }
+
+    @Test
+    fun r88_quest_index_fileColors_distinct_and_stable() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        val colors = idx.fileColors()
+        assertEquals(idx.fileCount, colors.size)
+        // 모든 색이 서로 달라야 (4 파일 < 6 슬롯 팔레트).
+        assertEquals(colors.values.toSet().size, colors.size)
+        // 같은 파일을 두 번 물어도 같은 색이 나와야 함.
+        val first = idx.colorOf("quest_00_dat")
+        val second = idx.colorOf("quest_00_dat")
+        assertEquals(first, second)
+        // 미지 파일은 fallback (alpha=0xFF, RGB 각 채널 ≥ 0x80) 으로 항상 색을 만든다.
+        val unknown = idx.colorOf("quest_99_dat")
+        assertEquals(0xFF.toInt(), (unknown ushr 24) and 0xFF)
+    }
+
+    @Test
+    fun r88_quest_index_colorOf_uses_sorted_palette_slots() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogQuestIndex.build(catalog)
+        // 4 파일 정렬 순: quest_00_dat / quest_01_dat / quest_10_dat / quest_11_dat
+        // → 팔레트 [0..3] 슬롯과 1:1 매칭.
+        val palette = Hero3CatalogQuestIndex.FILE_PALETTE
+        assertEquals(palette[0], idx.colorOf("quest_00_dat"))
+        assertEquals(palette[1], idx.colorOf("quest_01_dat"))
+        assertEquals(palette[2], idx.colorOf("quest_10_dat"))
+        assertEquals(palette[3], idx.colorOf("quest_11_dat"))
+    }
 }

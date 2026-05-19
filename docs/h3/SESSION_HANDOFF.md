@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 87 종료 시점, 2026-05-19 업데이트)
+# Hero3 인수인계 노트 (Round 88 종료 시점, 2026-05-19 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.98% / Catalog ~99% / 실제 remake ~85-87%**. R87: R62 quest_item_xref 21 items 를 Hero3Catalog.questItemXref 로 통합. data class 2 (Hero3QuestItemMatch / Hero3QuestItemXref) + Loader.parseQuestItemXref + Catalog API 2 (findQuestXref / questXrefByFile) + CatalogViewer 신규 탭 (Item-Quest Xref). **finding**: 21 items 중 20 has matches, "반토막난 지도" 만 빈 매치. "토레즈시민증" 35 / "토레즈의서신" 38 matches 가장 빈번 (game 의 핵심 quest item). 78/78 tests + APK BUILD SUCCESSFUL. R88 권장: QuestRegistry catalogKey / Skills detail panel / R66 effect_v2 BattleScene / ForgeScene gold cost / Quests tab file-색상.
+**분석 ~99.98% / Catalog ~99% / 실제 remake ~86-87%**. R88: Hero3CatalogQuestIndex 에 byFile / fileColors() / colorOf(file) API + 4-슬롯 ARGB 팔레트(amber/teal/lavender/soft-red) 추가, CatalogViewerScene 의 Quests 탭이 quest_00/01/10/11_dat 4 파일을 색으로 구분. rowsForTab 을 `List<Row>` 구조로 작은 리팩터 — 다른 12 탭 동작 동일. **finding**: quest 파일 4종은 정렬 순(00→01→10→11)으로 palette slot[0..3] 에 1:1 매칭, 미지 파일은 hash fallback (각 채널 ≥ 0x80 보장). 81/81 tests + APK BUILD SUCCESSFUL (32→35 catalog tests). R89 권장: QuestRegistry catalogKey / Skills detail panel (Hero3Skill effectV2) / R66 effect_v2 BattleScene / ForgeScene gold cost (recipe bytes[0..1] 확정 선행) / QuestScene 에 file color 확장.
 
 ## 1. 다음 세션 즉시 시작 가이드 (R75)
 

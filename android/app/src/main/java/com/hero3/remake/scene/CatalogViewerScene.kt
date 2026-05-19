@@ -52,6 +52,18 @@ class CatalogViewerScene(
     private var rowIdx = 0
     private val bg = Paint().apply { color = Color.rgb(10, 14, 28) }
 
+    /**
+     * R88 — 행 데이터 모델. [text] 만 보면 기존 동작 그대로,
+     * [paint] 가 null 이 아니면 해당 paint 로 행을 그린다.
+     * Quests 탭이 quest_*_dat 파일별 색상을 적용하는 데 사용.
+     */
+    private data class Row(val text: String, val paint: Paint? = null)
+
+    /** Hero3CatalogQuestIndex.colorOf() 결과 → Paint 캐시. tab 전환마다 재생성 회피. */
+    private val questPaintCache = mutableMapOf<Int, Paint>()
+    private fun paintForArgb(argb: Int): Paint =
+        questPaintCache.getOrPut(argb) { Paint(UiKit.body).apply { color = argb } }
+
     override fun update(deltaMs: Long) {
         if (input.pressedOnce(InputController.K_SOFT2) ||
             input.pressedOnce(InputController.K_OK)) {
@@ -70,74 +82,85 @@ class CatalogViewerScene(
         if (input.pressedOnce(InputController.K_DOWN)) rowIdx = (rowIdx + 1) % rows.size.coerceAtLeast(1)
     }
 
-    private fun rowsForTab(tab: Tab): List<String> {
+    private fun rowsForTab(tab: Tab): List<Row> {
         val isEn = settings.isEn
         return when (tab) {
-            Tab.OVERVIEW -> overviewRows(isEn)
-            Tab.STAT_ENUM -> catalog.statEnum.entries.map { (k, v) -> "$k  ${v.name.padEnd(20)}  ${v.desc.take(40)}" }
+            Tab.OVERVIEW -> overviewRows(isEn).map { Row(it) }
+            Tab.STAT_ENUM -> catalog.statEnum.entries.map { (k, v) -> Row("$k  ${v.name.padEnd(20)}  ${v.desc.take(40)}") }
             Tab.RARITY -> catalog.rarity.map { r ->
-                "${r.prefix.ifBlank { "(none)" }}  ${r.name.padEnd(14)}  arm×${r.modifierArmor}  wep×${r.modifierWeapon}"
+                Row("${r.prefix.ifBlank { "(none)" }}  ${r.name.padEnd(14)}  arm×${r.modifierArmor}  wep×${r.modifierWeapon}")
             }
             Tab.ITEMS -> catalog.items.map { c ->
-                "${c.file.padEnd(8)}  ${c.category.padEnd(10)}  n=${c.nItems}"
+                Row("${c.file.padEnd(8)}  ${c.category.padEnd(10)}  n=${c.nItems}")
             }
             Tab.SKILLS -> catalog.skills.map { ws ->
-                "${ws.file.padEnd(8)}  ${ws.weapon.padEnd(20)}  n=${ws.nSkills}"
+                Row("${ws.file.padEnd(8)}  ${ws.weapon.padEnd(20)}  n=${ws.nSkills}")
             }
             Tab.BOSSES -> catalog.bossesNormal.map { b ->
                 val td = b.trailerDecoded
                 val rating = td?.combatRating ?: 0
                 val slots = td?.skillSlots?.joinToString(",") ?: "?"
-                "${b.name.padEnd(10)}  lvl=${b.stats.lvl}  HP=${b.stats.hpMax}  rating=$rating  slots=[$slots]"
+                Row("${b.name.padEnd(10)}  lvl=${b.stats.lvl}  HP=${b.stats.hpMax}  rating=$rating  slots=[$slots]")
             }
             Tab.SHOP_CATALOG -> catalog.r74Data?.shopCatalog?.map { e ->
-                "[${e.nlen.toString().padStart(2)}] ${e.name.padEnd(10)}  ${e.body.take(50)}"
-            } ?: listOf("(R74 data not loaded)")
+                Row("[${e.nlen.toString().padStart(2)}] ${e.name.padEnd(10)}  ${e.body.take(50)}")
+            } ?: listOf(Row("(R74 data not loaded)"))
             Tab.RECIPES -> catalog.r74Data?.recipes?.mapIndexed { i, r ->
                 val out = catalog.resolveItem(r.output)?.cleanName ?: "?"
                 val inN = r.inputs.size
-                "[${i.toString().padStart(2)}] in=$inN → out=i${r.outputCat}[${r.outputId}] = $out"
-            } ?: listOf("(R74 data not loaded)")
+                Row("[${i.toString().padStart(2)}] in=$inN → out=i${r.outputCat}[${r.outputId}] = $out")
+            } ?: listOf(Row("(R74 data not loaded)"))
             Tab.REGION_SHOPS -> catalog.r74Data?.regionShops?.mapIndexed { i, s ->
                 val items = catalog.resolveShopItems(s).joinToString(", ") { it.name }
-                "shop[$i]  lv ${s.lvMin}-${s.lvMax}  items=[$items]"
-            } ?: listOf("(R74 data not loaded)")
-            Tab.QUESTS -> {
-                // R85 — quest index 기반 중복 표시 및 통계 헤더.
-                val index = com.hero3.remake.catalog.Hero3CatalogQuestIndex.build(catalog)
-                val dupNames = index.duplicates().keys
-                val header = listOf(
-                    "loaded=${index.size}  distinct=${index.distinctCanonicalNames}  duplicates=${dupNames.size}"
-                )
-                val body = catalog.questFiles.flatMap { qf ->
-                    listOf("=== ${qf.file} (n_entries=${qf.nEntries}, loaded=${qf.entries.size}, ${qf.sizeBytes}B) ===") +
-                    qf.entries.map { e ->
-                        val canon = com.hero3.remake.catalog.Hero3CatalogQuestIndex.canonicalize(e.name)
-                        val mark = if (canon in dupNames) "★" else " "
-                        "$mark pos=${e.pos.toString().padStart(4)}  ${e.name}"
-                    }
-                }
-                if (catalog.questFiles.isEmpty()) listOf("(no catalog quests parsed)") else header + body
-            }
+                Row("shop[$i]  lv ${s.lvMin}-${s.lvMax}  items=[$items]")
+            } ?: listOf(Row("(R74 data not loaded)"))
+            Tab.QUESTS -> questRows()
             Tab.QUEST_ITEM_XREF -> {
                 // R87 — 21 items × N matches. item 별로 group 후 첫 3 match 표시.
-                if (catalog.questItemXref.isEmpty()) listOf("(no quest_item_xref data)")
+                if (catalog.questItemXref.isEmpty()) listOf(Row("(no quest_item_xref data)"))
                 else {
                     val totalMatches = catalog.questItemXref.sumOf { it.matches.size }
-                    listOf("items=${catalog.questItemXref.size}  total_matches=$totalMatches") +
+                    listOf(Row("items=${catalog.questItemXref.size}  total_matches=$totalMatches")) +
                     catalog.questItemXref.flatMap { xref ->
-                        listOf("─ ${xref.cleanName}  (${xref.matches.size} matches)") +
+                        listOf(Row("─ ${xref.cleanName}  (${xref.matches.size} matches)")) +
                         xref.matches.take(3).map { m ->
-                            "    ${m.file}@${m.offset.toString().padStart(4)}  \"${m.text}\""
+                            Row("    ${m.file}@${m.offset.toString().padStart(4)}  \"${m.text}\"")
                         } +
-                        if (xref.matches.size > 3) listOf("    … +${xref.matches.size - 3} more") else emptyList()
+                        if (xref.matches.size > 3) listOf(Row("    … +${xref.matches.size - 3} more")) else emptyList()
                     }
                 }
             }
             Tab.DES -> catalog.desStatus.pendingFiles.map { f ->
-                "${f.path.padEnd(20)}  ${f.role}"
-            }.ifEmpty { listOf("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)") }
+                Row("${f.path.padEnd(20)}  ${f.role}")
+            }.ifEmpty { listOf(Row("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)")) }
         }
+    }
+
+    /**
+     * R88 — Quests 탭 행 생성. R85 의 quest index 를 그대로 사용하되,
+     * quest_*_dat 파일별 [Hero3CatalogQuestIndex.colorOf] 색상을 paint 로 주입한다.
+     * 헤더 (`=== quest_XX_dat …`) 는 파일 색을 그대로, 엔트리 행은 같은 색을 그대로 쓴다.
+     * 중복 (`★`) 표시는 텍스트 prefix 로 유지 — 색상은 file 색이 우선.
+     */
+    private fun questRows(): List<Row> {
+        if (catalog.questFiles.isEmpty()) return listOf(Row("(no catalog quests parsed)"))
+        val index = com.hero3.remake.catalog.Hero3CatalogQuestIndex.build(catalog)
+        val dupNames = index.duplicates().keys
+        val fileColors = index.fileColors()
+        val header = Row(
+            "loaded=${index.size}  distinct=${index.distinctCanonicalNames}  " +
+            "duplicates=${dupNames.size}  files=${index.fileCount}"
+        )
+        val body = catalog.questFiles.flatMap { qf ->
+            val paint = fileColors[qf.file]?.let { paintForArgb(it) }
+            listOf(Row("=== ${qf.file} (n_entries=${qf.nEntries}, loaded=${qf.entries.size}, ${qf.sizeBytes}B) ===", paint)) +
+            qf.entries.map { e ->
+                val canon = com.hero3.remake.catalog.Hero3CatalogQuestIndex.canonicalize(e.name)
+                val mark = if (canon in dupNames) "★" else " "
+                Row("$mark pos=${e.pos.toString().padStart(4)}  ${e.name}", paint)
+            }
+        }
+        return listOf(header) + body
     }
 
     private fun overviewRows(isEn: Boolean): List<String> = listOf(
@@ -196,7 +219,8 @@ class CatalogViewerScene(
             val y = 48f + j * rowH
             if (i == rowIdx) canvas.drawRect(6f, y - 8f, virtualWidth - 6f, y + 2f,
                 Paint().apply { color = Color.argb(80, 200, 200, 255) })
-            canvas.drawText(rows[i], 8f, y, UiKit.body)
+            val row = rows[i]
+            canvas.drawText(row.text, 8f, y, row.paint ?: UiKit.body)
         }
 
         // footer
