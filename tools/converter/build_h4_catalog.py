@@ -301,6 +301,20 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Quest reward map (R90) — idx ↔ quest 1:1 매핑
+    qrm_path = CONVERTED / 'h4_quest_reward_map.json'
+    if qrm_path.exists():
+        try:
+            qrm = json.loads(qrm_path.read_text(encoding='utf-8'))
+            catalog['quest_reward_map'] = {
+                'meta': qrm['meta'],
+                'extra_categorization': qrm['extra_categorization'],
+                'verification': qrm['verification'],
+            }
+            print(f'\nQuest reward map: 128 quest 1:1 + 72 extras (R90)')
+        except Exception as e:
+            print(f'  WARN: failed to load quest_reward_map: {e}', file=sys.stderr)
+
     # Stat block schema (R89) — 23B block 통합 schema
     schema_path = CONVERTED / 'h4_statblock_schema.json'
     if schema_path.exists():

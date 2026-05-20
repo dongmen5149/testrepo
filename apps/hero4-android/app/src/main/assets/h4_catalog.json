@@ -2916,6 +2916,27 @@
       "summon_tier_count": 15
     }
   },
+  "quest_reward_map": {
+    "meta": {
+      "quest_count": 128,
+      "repay_record_count": 200,
+      "mapping_count": 128,
+      "extra_count": 72
+    },
+    "extra_categorization": {
+      "repeatable_mission": 52,
+      "mid_achievement": 8,
+      "endgame_achievement": 11,
+      "sentinel": 1
+    },
+    "verification": {
+      "first_quest_name": "케프네스를 찾아라",
+      "first_quest_match": true,
+      "boundary_61": "_QUEST_0_DAT",
+      "boundary_62": "_QUEST_1_DAT",
+      "crossover_correct": true
+    }
+  },
   "statblock_schema": {
     "template_catalog": {
       "20": "ACTIVE_ATTACK",

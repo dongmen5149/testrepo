@@ -1,0 +1,1610 @@
+{
+  "round": 90,
+  "meta": {
+    "quest_count": 128,
+    "repay_record_count": 200,
+    "mapping_count": 128,
+    "extra_count": 72
+  },
+  "quest_idx_to_reward": [
+    {
+      "idx": 0,
+      "quest_name": "케프네스를 찾아라",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 80,
+      "gold": 19400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 1,
+      "quest_name": "(종속퀘)",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 3300,
+      "gold": 47500,
+      "exp_drop_id": 4,
+      "gold_drop_id": 4
+    },
+    {
+      "idx": 2,
+      "quest_name": "(종속퀘)",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 8070,
+      "gold": 10900,
+      "exp_drop_id": 13,
+      "gold_drop_id": 10
+    },
+    {
+      "idx": 3,
+      "quest_name": "(종속퀘)",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 4,
+      "quest_name": "유적조사",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 5,
+      "quest_name": "크래드를 찾아라",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 19680,
+      "gold": 67100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 23
+    },
+    {
+      "idx": 6,
+      "quest_name": "엘렌을 찾아라",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 340,
+      "gold": 39900,
+      "exp_drop_id": 13,
+      "gold_drop_id": 13
+    },
+    {
+      "idx": 7,
+      "quest_name": "약 재료 수집",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 690,
+      "gold": 79800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 8,
+      "quest_name": "가면 제작",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1720,
+      "gold": 199500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 9,
+      "quest_name": "가면재료1",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 3450,
+      "gold": 399000,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 10,
+      "quest_name": "가면재료2",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1140,
+      "gold": 42600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 11,
+      "quest_name": "매도우 힐로",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 570,
+      "gold": 21300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 12,
+      "quest_name": "이자벨",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1140,
+      "gold": 42600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 13,
+      "quest_name": "케프네스",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 570,
+      "gold": 21300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 14,
+      "quest_name": "검은 바위 섬",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1140,
+      "gold": 42600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 15,
+      "quest_name": "추가병력 합류",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 570,
+      "gold": 21300,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 16,
+      "quest_name": "(종속퀘)",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1140,
+      "gold": 42600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 17,
+      "quest_name": "(종속퀘)",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1140,
+      "gold": 42600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 18,
+      "quest_name": "팔리아스",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 570,
+      "gold": 21300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 19,
+      "quest_name": "선주종의 배",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1490,
+      "gold": 43600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 20,
+      "quest_name": "배의 부품",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 740,
+      "gold": 21800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 21,
+      "quest_name": "탈출",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 3300,
+      "gold": 47500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 22,
+      "quest_name": "케프네스 구출",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 1650,
+      "gold": 23700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 23,
+      "quest_name": "주둔지 침입",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 3300,
+      "gold": 47500,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 24,
+      "quest_name": "유물 탈취",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 6600,
+      "gold": 95000,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 25,
+      "quest_name": "프로비던스로",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 9900,
+      "gold": 142600,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 26,
+      "quest_name": "추격",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 6500,
+      "gold": 52600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 27,
+      "quest_name": "이름없는 섬",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 2540,
+      "gold": 25200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 28,
+      "quest_name": "크래드",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5090,
+      "gold": 50500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 29,
+      "quest_name": "포로수용소",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 3250,
+      "gold": 26300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 30,
+      "quest_name": "선착장으로",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 10740,
+      "gold": 58000,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 31,
+      "quest_name": "도주",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5370,
+      "gold": 29000,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 32,
+      "quest_name": "습격",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 12720,
+      "gold": 60200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 33,
+      "quest_name": "비밀통로",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 6360,
+      "gold": 30100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 34,
+      "quest_name": "엘렌",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 6360,
+      "gold": 30100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 35,
+      "quest_name": "루레인",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7440,
+      "gold": 31200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 36,
+      "quest_name": "엘렌의 약",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 2970,
+      "gold": 12500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 37,
+      "quest_name": "루레인을 찾아라",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 22340,
+      "gold": 69500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 38,
+      "quest_name": "피신",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 2970,
+      "gold": 12500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 39,
+      "quest_name": "결판",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 22340,
+      "gold": 69500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 40,
+      "quest_name": "브리안",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7440,
+      "gold": 31200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 41,
+      "quest_name": "핀디아스의 신전",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 28140,
+      "gold": 74400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 42,
+      "quest_name": "꿈의 탐색",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5620,
+      "gold": 14800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 43,
+      "quest_name": "주둔지",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5620,
+      "gold": 14800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 44,
+      "quest_name": "이자벨",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 29700,
+      "gold": 75600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 45,
+      "quest_name": "누아다",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5940,
+      "gold": 15100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 46,
+      "quest_name": "비밀",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5940,
+      "gold": 15100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 47,
+      "quest_name": "진실",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 5940,
+      "gold": 15100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 48,
+      "quest_name": "듣는 자",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 36330,
+      "gold": 80700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 49,
+      "quest_name": "포로수용소",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7260,
+      "gold": 16100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 50,
+      "quest_name": "포로수용소 침입",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 51,
+      "quest_name": "엔리코",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 52,
+      "quest_name": "마력기관",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 53,
+      "quest_name": "아눈 섬",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 38100,
+      "gold": 82100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 54,
+      "quest_name": "리온 조사",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 55,
+      "quest_name": "구출",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 56,
+      "quest_name": "던전탈출",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 19050,
+      "gold": 41000,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 57,
+      "quest_name": "성지",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 19950,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 58,
+      "quest_name": "지연작전",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 19950,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 59,
+      "quest_name": "성역의 중심",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7980,
+      "gold": 16600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 60,
+      "quest_name": "전이장치",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 41750,
+      "gold": 84700,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 61,
+      "quest_name": "케프네스",
+      "quest_source": "_QUEST_0_DAT",
+      "exp": 7980,
+      "gold": 16600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 62,
+      "quest_name": "성지 방어1",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 7980,
+      "gold": 16600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 63,
+      "quest_name": "성지 방어2",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 39900,
+      "gold": 83400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 64,
+      "quest_name": "노덴스",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19950,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 65,
+      "quest_name": "수호자",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19950,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 66,
+      "quest_name": "탈주",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 39900,
+      "gold": 83400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 67,
+      "quest_name": "활로1",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 9110,
+      "gold": 17400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 68,
+      "quest_name": "활로2",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 45570,
+      "gold": 87400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 69,
+      "quest_name": "활로3",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 45570,
+      "gold": 87400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 70,
+      "quest_name": "선박 탈취",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 30,
+      "gold": 7700,
+      "exp_drop_id": 8,
+      "gold_drop_id": 8
+    },
+    {
+      "idx": 71,
+      "quest_name": "연금술사",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 30,
+      "gold": 7700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 72,
+      "quest_name": "대장장이",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 160,
+      "gold": 38900,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 73,
+      "quest_name": "방어 준비 이후",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 320,
+      "gold": 92500,
+      "exp_drop_id": 11,
+      "gold_drop_id": 11
+    },
+    {
+      "idx": 74,
+      "quest_name": "불의 정령석",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 320,
+      "gold": 92500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 75,
+      "quest_name": "웜의 껍질",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 110,
+      "gold": 4200,
+      "exp_drop_id": 8,
+      "gold_drop_id": 8
+    },
+    {
+      "idx": 76,
+      "quest_name": "스트레이츠",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 3300,
+      "gold": 47500,
+      "exp_drop_id": 10,
+      "gold_drop_id": 10
+    },
+    {
+      "idx": 77,
+      "quest_name": "악령",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 3300,
+      "gold": 47500,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 78,
+      "quest_name": "퇴각",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 220,
+      "gold": 8500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 79,
+      "quest_name": "검은 바위 섬으로",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 43220,
+      "gold": 160400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 80,
+      "quest_name": "괴물들",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1120,
+      "gold": 22200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 81,
+      "quest_name": "사라진 병사들",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 15990,
+      "gold": 15900,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 82,
+      "quest_name": "흔적들",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19680,
+      "gold": 67100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 83,
+      "quest_name": "의문의 동굴",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 9970,
+      "gold": 67400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 84,
+      "quest_name": "소환수?",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19950,
+      "gold": 134800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 85,
+      "quest_name": "카드키 입수",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 3930,
+      "gold": 13400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 86,
+      "quest_name": "탈출",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19680,
+      "gold": 67100,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 87,
+      "quest_name": "보고",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 19680,
+      "gold": 67100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 88,
+      "quest_name": "생존자의 증언",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 21610,
+      "gold": 80200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 89,
+      "quest_name": "불길한 징조",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 29700,
+      "gold": 75600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 90,
+      "quest_name": "에리나",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 14850,
+      "gold": 37800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 91,
+      "quest_name": "고블린 소굴",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 7440,
+      "gold": 31200,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 92,
+      "quest_name": "고블린 소탕",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 34470,
+      "gold": 151600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 93,
+      "quest_name": "수레바퀴섬의 신전",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 34470,
+      "gold": 34400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 94,
+      "quest_name": "팔리아스의 신전",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 28140,
+      "gold": 74400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 95,
+      "quest_name": "팔리아스의 봉인",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 28140,
+      "gold": 74400,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 96,
+      "quest_name": "팔리아스 사건 보고",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 38100,
+      "gold": 82100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 97,
+      "quest_name": "추적",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 44050,
+      "gold": 99000,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 98,
+      "quest_name": "핀디아스의 봉인",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 99,
+      "quest_name": "수호물 강화",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 7620,
+      "gold": 16400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 100,
+      "quest_name": "핀디아스의 침입자",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 100,
+      "gold": 38900,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 101,
+      "quest_name": "누아다 구출",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 300,
+      "gold": 40800,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 102,
+      "quest_name": "인간 반역자",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 300,
+      "gold": 20400,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 103,
+      "quest_name": "포로수용소",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 700,
+      "gold": 44600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 104,
+      "quest_name": "포로 구출",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 400,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 105,
+      "quest_name": "소환수 구출",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 400,
+      "gold": 41700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 106,
+      "quest_name": "크리스탈",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 600,
+      "gold": 43600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 107,
+      "quest_name": "크래드",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 700,
+      "gold": 44600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 108,
+      "quest_name": "탈출로 확보",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 600,
+      "gold": 43600,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 109,
+      "quest_name": "다른 길",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 800,
+      "gold": 9100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 110,
+      "quest_name": "비밀 통로",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 800,
+      "gold": 9100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 111,
+      "quest_name": "다시 비밀통로",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1000,
+      "gold": 23700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 112,
+      "quest_name": "포로수용소 사건 보고.",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 900,
+      "gold": 46500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 113,
+      "quest_name": "아눈 신전",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 900,
+      "gold": 46500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 114,
+      "quest_name": "크리스탈의 단서",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 900,
+      "gold": 9300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 115,
+      "quest_name": "브레스의 호출",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 900,
+      "gold": 46500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 116,
+      "quest_name": "핀디아스의 침입자",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1000,
+      "gold": 47500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 117,
+      "quest_name": "매도우 힐의 연구소",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1000,
+      "gold": 9500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 118,
+      "quest_name": "주둔지 정찰",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1200,
+      "gold": 24700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 119,
+      "quest_name": "침입로",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1200,
+      "gold": 24700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 120,
+      "quest_name": "아눈 섬",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1200,
+      "gold": 24700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 121,
+      "quest_name": "크리스탈 파괴",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1700,
+      "gold": 54700,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 122,
+      "quest_name": "팔리아스",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1800,
+      "gold": 27900,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 123,
+      "quest_name": "팔리아스 방어전1",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1700,
+      "gold": 27300,
+      "exp_drop_id": 12,
+      "gold_drop_id": 12
+    },
+    {
+      "idx": 124,
+      "quest_name": "팔리아스 방어전2",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1700,
+      "gold": 27300,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 125,
+      "quest_name": "성지",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1800,
+      "gold": 27900,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 126,
+      "quest_name": "전이 장치",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 1800,
+      "gold": 11100,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    },
+    {
+      "idx": 127,
+      "quest_name": "케프네스",
+      "quest_source": "_QUEST_1_DAT",
+      "exp": 2400,
+      "gold": 62500,
+      "exp_drop_id": 255,
+      "gold_drop_id": 255
+    }
+  ],
+  "extra_rewards": [
+    {
+      "idx": 128,
+      "exp": 1800,
+      "gold": 11100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 129,
+      "exp": 1900,
+      "gold": 28400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 130,
+      "exp": 1900,
+      "gold": 56900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 131,
+      "exp": 2000,
+      "gold": 11600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 132,
+      "exp": 2400,
+      "gold": 62500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 133,
+      "exp": 2700,
+      "gold": 65900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 134,
+      "exp": 2700,
+      "gold": 32900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 135,
+      "exp": 2700,
+      "gold": 32900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 136,
+      "exp": 3000,
+      "gold": 69500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 137,
+      "exp": 3000,
+      "gold": 69500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 138,
+      "exp": 3000,
+      "gold": 34700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 139,
+      "exp": 3000,
+      "gold": 13900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 140,
+      "exp": 3200,
+      "gold": 14300,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 141,
+      "exp": 3600,
+      "gold": 76900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 142,
+      "exp": 3700,
+      "gold": 39100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 143,
+      "exp": 3700,
+      "gold": 39100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 144,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 145,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 146,
+      "exp": 3500,
+      "gold": 37800,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 147,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 148,
+      "exp": 3500,
+      "gold": 75600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 149,
+      "exp": 3500,
+      "gold": 37800,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 150,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 151,
+      "exp": 3800,
+      "gold": 79500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 152,
+      "exp": 3800,
+      "gold": 15900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 153,
+      "exp": 3800,
+      "gold": 15900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 154,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 155,
+      "exp": 4000,
+      "gold": 82100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 156,
+      "exp": 4000,
+      "gold": 41000,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 157,
+      "exp": 4100,
+      "gold": 16600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 158,
+      "exp": 4100,
+      "gold": 41700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 159,
+      "exp": 4100,
+      "gold": 83400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 160,
+      "exp": 4200,
+      "gold": 16900,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 161,
+      "exp": 4400,
+      "gold": 87400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 162,
+      "exp": 4400,
+      "gold": 87400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 163,
+      "exp": 4400,
+      "gold": 17400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 164,
+      "exp": 4400,
+      "gold": 87400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 165,
+      "exp": 4500,
+      "gold": 88700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 166,
+      "exp": 12470,
+      "gold": 124100,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 167,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 168,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 169,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 170,
+      "exp": 100,
+      "gold": 7700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 171,
+      "exp": 150,
+      "gold": 90300,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 172,
+      "exp": 100,
+      "gold": 7700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 173,
+      "exp": 320,
+      "gold": 92500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 174,
+      "exp": 12470,
+      "gold": 14100,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 175,
+      "exp": 10880,
+      "gold": 121500,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 176,
+      "exp": 1000,
+      "gold": 47500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 177,
+      "exp": 1000,
+      "gold": 9500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 178,
+      "exp": 1000,
+      "gold": 9500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 179,
+      "exp": 1200,
+      "gold": 49500,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 180,
+      "exp": 5600,
+      "gold": 111400,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 181,
+      "exp": 12470,
+      "gold": 124100,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 182,
+      "exp": 15990,
+      "gold": 129400,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 183,
+      "exp": 17920,
+      "gold": 132100,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 184,
+      "exp": 22100,
+      "gold": 137600,
+      "category": "mid_achievement"
+    },
+    {
+      "idx": 185,
+      "exp": 34470,
+      "gold": 151600,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 186,
+      "exp": 2500,
+      "gold": 63600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 187,
+      "exp": 34470,
+      "gold": 151600,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 188,
+      "exp": 34470,
+      "gold": 151600,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 189,
+      "exp": 1500,
+      "gold": 52600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 190,
+      "exp": 3400,
+      "gold": 74400,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 191,
+      "exp": 3000,
+      "gold": 34700,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 192,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 193,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 194,
+      "exp": 3500,
+      "gold": 15100,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 195,
+      "exp": 3500,
+      "gold": 75600,
+      "category": "repeatable_mission"
+    },
+    {
+      "idx": 196,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 197,
+      "exp": 67470,
+      "gold": 181900,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 198,
+      "exp": 88100,
+      "gold": 198100,
+      "category": "endgame_achievement"
+    },
+    {
+      "idx": 199,
+      "exp": 0,
+      "gold": 0,
+      "category": "sentinel"
+    }
+  ],
+  "extra_categorization": {
+    "repeatable_mission": 52,
+    "mid_achievement": 8,
+    "endgame_achievement": 11,
+    "sentinel": 1
+  },
+  "verification": {
+    "first_quest_name": "케프네스를 찾아라",
+    "first_quest_match": true,
+    "boundary_61": "_QUEST_0_DAT",
+    "boundary_62": "_QUEST_1_DAT",
+    "crossover_correct": true
+  }
+}

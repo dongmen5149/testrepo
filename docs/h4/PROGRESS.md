@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 90 (2026-05-20) — Q_REPAY idx ↔ quest 1:1 매핑 확정 (R85 미해결 해소) ★
+
+> R85 의 "200 vs 128 차이 72" 미해결 해소. 상세: [round90-quest-reward-map.md](round90-quest-reward-map.md).
+>
+> Q_REPAY_0/1 idx 0-127 이 R70 의 128 quest 와 직접 1:1 매핑 확인 (idx 0='케프네스를 찾아라', 경계 idx 61→62 에서 `_QUEST_0_DAT`→`_QUEST_1_DAT` 정확 전환). idx 128-198 = 71 extra reward slots: 52 repeatable mission + 8 mid achievement + 11 endgame achievement (idx 192-198 의 EXP 67k-88k / gold 180k+ multi-stage 보상). idx 199 = zero sentinel.
+>
+> `parse_h4_quest_reward_map.py` 신규 + `h4_quest_reward_map.json` 35KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 89 (2026-05-20) — 23B stat block 통합 schema (R87 정정) ★
 
 > R87 의 stat block field 표 전수 정정. 상세: [round89-statblock-schema.md](round89-statblock-schema.md).
