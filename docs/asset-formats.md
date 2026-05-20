@@ -149,7 +149,7 @@ struct Frame {
 
 **관찰된 에지 케이스**:
 - 일부 프레임에서 직전/직후 alignment로 2~6 byte underrun (시각 영향 미미, 마지막 픽셀 행 일부만 누락)
-- `type=0x0c` 프레임은 type=0x0b와 다른 픽셀 인코딩 가능 (압축 추정). 1차 베이스라인은 동일 처리, 향후 Ghidra에서 디코더 확인 필요
+- ~~`type=0x0c` 프레임은 type=0x0b와 다른 픽셀 인코딩 가능 (압축 추정). 1차 베이스라인은 동일 처리, 향후 Ghidra에서 디코더 확인 필요~~ — **2026-05-20 업데이트: 디코더 완전 해독·구현 완료**. Ghidra `FUN_00010fe4 @ 0x10fe4` line 4847-4851 분석으로 `type=0x0c` 의 정확한 인코딩 확정: **8-bit dense palette indexed, byte value 0 = 투명 (skip)**. `tools/converter/convert_bm_v2.py` 가 반영. 91개 tile sheet (`obj_*_bm` 44 + `theme_*_bm` 47) 의 317 frame 모두 PNG 추출 완료 → `assets/sprites_hd/map/{obj,theme}_*_bm/frame_*_tc.png`. **이전의 "sparse encoding" / "16색 고정 팔레트" 가설은 오답**. 단, MapWalkScene 의 tile 렌더는 아직 색상 그리드 fallback 만 사용 중 — `_mp.meta_header_hex` ↔ tile sheet 매핑식 발견 + MapWalkScene wiring 작업이 R109 후보 (`docs/h3/r109-plan-map-tile-wiring.md`).
 - 픽셀 데이터 안에서 우연히 `1f f8 + 9바이트 앞 0b` 패턴이 발생할 수 있음 → false positive. dimensions 1..512 sanity check 로 대부분 제거
 - master `flag1` 값은 frame 0 데이터 크기와 일치하지 않는 경우가 있음 (정밀하지 않은 힌트)
 

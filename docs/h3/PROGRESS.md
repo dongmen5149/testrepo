@@ -10,14 +10,17 @@
 > **현재 git 상태 (2026-05-20 Round 108 종료, committed)**:
 > - 마지막 commit = `feat:영웅서기3 Round 108 — Party debuff render UI + enemy 색상 컨벤션 일관화`
 > - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R108 는 catalog 통합 35 라운드)
-> - Hero3 리메이크 진행률 **~97-98%** (UI/UX/통합이 메인 트랙)
-> - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R109 가이드
+> - Hero3 리메이크 진행률 **~97-98% (엔지니어링 기준)** / **~40-45% (베타 출시 fidelity 기준 — 원작 시각·음향 동일 + 정상 플레이)**
+> - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기, 사운드 0%)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R109 가이드 + 베타 진척도 평가 §0.1
+> - ★ **`docs/h3/r109-plan-map-tile-wiring.md`** = R109 최우선 작업 4-phase 계획 (10~16 dev day)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
+>
+> **베타 출시 fidelity ~40-45% 의 핵심 누락 트랙**: 사운드 0% / dialogue 0% / MapGraph 3% / NPC 배치 5% / 출시 패키징 10% / 콘텐츠 매핑 (engine bespoke ↔ catalog 322 enemy + 115 quest + 529 item) 15%. 단, **타일 그래픽은 직전 30%로 평가했으나 BM 0x0c 디코더 + 317 PNG 추출 완료 확인 → ~70%, MapWalkScene wiring 만 남음** (R109 최우선).
 
 ### 🚀 "영웅서기3 다음 내용 진행해줘" — R109 가이드
 
-R108 (party debuff render UI + enemy 색상 컨벤션 일관화) 완료. catalog stat enum 23종 중 19종 wiring + UI 색상 컨벤션 통일. R109 후보:
+R108 (party debuff render UI + enemy 색상 컨벤션 일관화) 완료. catalog stat enum 23종 중 19종 wiring + UI 색상 컨벤션 통일. **R109 최우선: MapWalkScene 타일 그래픽 wiring** ([r109-plan-map-tile-wiring.md](r109-plan-map-tile-wiring.md), 10~16 dev day, 베타 fidelity critical-path). 그 외 catalog wiring 후보:
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
