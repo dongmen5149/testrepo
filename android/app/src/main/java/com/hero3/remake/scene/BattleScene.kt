@@ -373,10 +373,11 @@ class BattleScene(
     private fun updateEnemyTurn(deltaMs: Long) {
         animTtl -= deltaMs
         if (animTtl <= 0) {
-            // R94: 적의 상태 이상 tick (poison 등). 적이 죽으면 곧장 승리.
+            // R94: 적의 상태 이상 tick (poison/burn dot). 적이 죽으면 곧장 승리.
             tickEnemyStatuses()
             if (enemy.hp <= 0) { beginVictory(); return }
-            doEnemyAttack()
+            // R95: SLOW/STUN 이면 적 행동 skip.
+            if (!enemyShouldSkipAttack()) doEnemyAttack()
             if (aliveCount() == 0) {
                 beginDefeat()
             } else {
@@ -388,24 +389,30 @@ class BattleScene(
     }
 
     /**
-     * R94 — catalog 매칭 hit 의 `effectV2.nDebuffs > 0` 이면 POISON 을 적에게 부여.
-     * `perTick` = max(2, 방금 입힌 데미지 / 5), 3턴 유지. 이미 같은 status 가 있으면 turnsLeft 갱신.
+     * R94/R95 — catalog 매칭 hit 의 `effectV2.nDebuffs > 0` 이면 N 종의 상태 이상을 부여.
+     * nDebuffs 1=POISON, 2=POISON+BURN, 3=POISON+BURN+SLOW, ≥4=POISON+BURN+SLOW+STUN. 3턴 유지.
+     * 같은 status 가 있으면 turnsLeft 갱신 (refresh).
      */
     private fun tryApplyPoisonFromSkill(nameKo: String, lastHitDmg: Int) {
         val nDebuffs = catalogDebuffCountFor(nameKo)
         if (nDebuffs <= 0) return
         val perTick = maxOf(2, lastHitDmg / 5)
-        val existing = enemy.statuses.firstOrNull { it.status == Status.POISON }
-        if (existing != null) {
-            existing.turnsLeft = 3
-        } else {
-            enemy.statuses += StatusEffect(Status.POISON, turnsLeft = 3, perTick = perTick)
+        val order = listOf(Status.POISON, Status.BURN, Status.SLOW, Status.STUN)
+        val applied = order.take(nDebuffs.coerceAtMost(order.size))
+        for (st in applied) {
+            val existing = enemy.statuses.firstOrNull { it.status == st }
+            if (existing != null) {
+                existing.turnsLeft = 3
+            } else {
+                enemy.statuses += StatusEffect(st, turnsLeft = 3, perTick = perTick)
+            }
         }
-        pushLog(lang("적에게 독 부여 (3턴, -${perTick}/턴).",
-                     "Enemy poisoned (3 turns, -$perTick/turn)."))
+        val label = applied.joinToString("/") { statusLabel(it, isEn) }
+        pushLog(lang("적에게 [$label] 부여 (3턴, dot -${perTick}/턴).",
+                     "Enemy debuffed [$label] (3 turns, dot -$perTick/turn)."))
     }
 
-    /** R94 — 적의 모든 상태 이상 1턴 효과 적용 + turnsLeft 감소 후 만료 제거. */
+    /** R94/R95 — 적의 모든 상태 이상 1턴 효과 적용 + turnsLeft 감소 후 만료 제거. */
     private fun tickEnemyStatuses() {
         if (enemy.statuses.isEmpty() || enemy.hp <= 0) return
         val it = enemy.statuses.iterator()
@@ -413,11 +420,12 @@ class BattleScene(
         while (it.hasNext()) {
             val e = it.next()
             when (e.status) {
-                Status.POISON -> {
+                Status.POISON, Status.BURN -> {
                     val dmg = e.perTick
                     enemy.hp = (enemy.hp - dmg).coerceAtLeast(0)
                     totalDmg += dmg
                 }
+                Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -425,8 +433,28 @@ class BattleScene(
         if (totalDmg > 0) {
             popups += Popup("-$totalDmg", onEnemy = true, targetIdx = -1,
                 ttl = 900L, color = Color.rgb(120, 220, 120))
-            pushLog(lang("독: -$totalDmg HP", "Poison: -$totalDmg HP"))
+            pushLog(lang("도트: -$totalDmg HP", "DoT: -$totalDmg HP"))
         }
+    }
+
+    /** R95 — 적이 SLOW/STUN 상태이면 행동 skip 여부 판정. true = skip. */
+    private fun enemyShouldSkipAttack(): Boolean {
+        if (enemy.statuses.any { it.status == Status.STUN }) {
+            pushLog(lang("적이 기절 상태 — 행동 불가.", "Enemy stunned — cannot act."))
+            return true
+        }
+        if (enemy.statuses.any { it.status == Status.SLOW } && Random.nextFloat() < 0.5f) {
+            pushLog(lang("적이 둔화 — 행동 누락.", "Enemy slowed — misses turn."))
+            return true
+        }
+        return false
+    }
+
+    private fun statusLabel(st: Status, isEn: Boolean): String = when (st) {
+        Status.POISON -> if (isEn) "POI" else "독"
+        Status.BURN   -> if (isEn) "BRN" else "화상"
+        Status.SLOW   -> if (isEn) "SLW" else "둔화"
+        Status.STUN   -> if (isEn) "STN" else "기절"
     }
 
     private fun doEnemyAttack() {
@@ -578,14 +606,13 @@ class BattleScene(
         val ratio = enemy.hp.toFloat() / enemy.def.hpMax.coerceAtLeast(1)
         canvas.drawRect(barX, barY, barX + barW * ratio, barY + barH, hpBar)
         canvas.drawText("HP ${enemy.hp}/${enemy.def.hpMax}", barX, barY - 2f, UiKit.muted)
-        // R94: 상태 이상 인디케이터 (적 HP 바 우측).
+        // R94/R95: 상태 이상 인디케이터 (적 HP 바 우측).
         if (enemy.statuses.isNotEmpty()) {
             val statusText = enemy.statuses.joinToString(" ") { e ->
-                val tag = when (e.status) { Status.POISON -> if (isEn) "POI" else "독" }
-                "$tag(${e.turnsLeft})"
+                "${statusLabel(e.status, isEn)}(${e.turnsLeft})"
             }
             val statusPaint = Paint(UiKit.muted).apply { color = Color.rgb(150, 230, 150) }
-            canvas.drawText(statusText, barX + barW - 60f, barY - 2f, statusPaint)
+            canvas.drawText(statusText, barX + barW - 90f, barY - 2f, statusPaint)
         }
 
         // 액터(현재 차례) sprite — 좌측, lunge

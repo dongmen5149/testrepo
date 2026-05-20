@@ -15,8 +15,40 @@ class StatusTest {
 
     @Test
     fun status_enum_has_poison() {
-        // R94: 현재는 POISON 한 종 — 향후 BURN/SLOW/STUN 추가 시 그대로 enum 확장.
+        // R94: 현재는 POISON 한 종 — R95 에서 BURN/SLOW/STUN 추가.
         assertTrue(Status.values().contains(Status.POISON))
+    }
+
+    @Test
+    fun r95_status_enum_has_burn_slow_stun() {
+        // R95: 신규 3종 추가.
+        val all = Status.values().toSet()
+        assertTrue(Status.BURN in all)
+        assertTrue(Status.SLOW in all)
+        assertTrue(Status.STUN in all)
+        assertEquals(4, Status.values().size)
+    }
+
+    @Test
+    fun r95_burn_tick_decays_like_poison() {
+        // BURN 은 POISON 와 동일 dot 효과 — tick 시뮬레이션 시 hp 감소량 동일.
+        val def = EnemyRegistry.all.first()
+        val a = EnemyInstance(def, hp = 100)
+        a.statuses += StatusEffect(Status.POISON, turnsLeft = 3, perTick = 5)
+        val b = EnemyInstance(def, hp = 100)
+        b.statuses += StatusEffect(Status.BURN, turnsLeft = 3, perTick = 5)
+        repeat(3) {
+            for (ei in listOf(a, b)) {
+                val it = ei.statuses.iterator()
+                while (it.hasNext()) {
+                    val e = it.next()
+                    if (e.status == Status.POISON || e.status == Status.BURN) ei.hp -= e.perTick
+                    e.turnsLeft -= 1
+                    if (e.turnsLeft <= 0) it.remove()
+                }
+            }
+        }
+        assertEquals(a.hp, b.hp)
     }
 
     @Test
