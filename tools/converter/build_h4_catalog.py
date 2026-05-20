@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Drop_id 17 fix (R105) — qty LE16 정정
+    drop17_path = CONVERTED / 'h4_drop_id_17_fix.json'
+    if drop17_path.exists():
+        try:
+            d17 = json.loads(drop17_path.read_text(encoding='utf-8'))
+            catalog['drop_id_17_fix'] = {
+                'r97_followup': d17['r97_followup'],
+                'correction': d17['correction'],
+                'record_format_revised': d17['record_format_revised'],
+                'qty_examples_revisited': d17['qty_examples_revisited'],
+            }
+            print(f'\nDrop_id 17 fix: byte10=232 → LE16=1000 (OPTION × qty 1000) (R105)')
+        except Exception as e:
+            print(f'  WARN: failed to load drop_id_17_fix: {e}', file=sys.stderr)
+
     # Damage type semantics (R104) — byte[5] enum 4 type
     dts_path = CONVERTED / 'h4_damage_type_semantics.json'
     if dts_path.exists():

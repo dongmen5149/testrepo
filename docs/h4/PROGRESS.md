@@ -4,6 +4,20 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 105 (2026-05-20) — drop_id 17 byte10=232 정확한 해석 (R97 정정) ★
+
+> R97 의 byte10=232 ambiguity 해소. 상세: [round105-drop-id-17-fix.md](round105-drop-id-17-fix.md).
+>
+> Raw record 재검토 결과 byte10 단일이 아닌 **bytes[10-11] LE16 = 0x03e8 = 1000** 임을 확인. drop_id 17 = `_ITM_OPTION` (alphabetic order index 유지) × qty **1000** = endgame achievement (repay#168/196) 의 enchantment scroll 대량 보상.
+>
+> Record format revised: byte[8]=drop_id, byte[9]=item_idx, **bytes[10-11] LE16=qty (variable-width)**, [12-13]=padding. 대다수 drop (qty < 256) 은 byte[10] 단일로 보였으나 LE16 으로 일관 통합.
+>
+> endgame paired reward 확정: repay#168/196 = OPTION × 1000 (drop_id 17), repay#169/197 = CASH_RANOMBOX × 1 (drop_id 16). 게임 클리어 시 massive enchantment + 1 random cash box.
+>
+> `parse_h4_drop_id_17_fix.py` 신규 + `h4_drop_id_17_fix.json` 3.2KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 104 (2026-05-20) — damage_type enum 별 특성 확정 (R102 후속) ★
 
 > R102 의 byte[5] damage_type enum (4종) in-game 의미. 상세: [round104-damage-type-semantics.md](round104-damage-type-semantics.md).

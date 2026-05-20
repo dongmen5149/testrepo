@@ -2916,6 +2916,31 @@
       "summon_tier_count": 15
     }
   },
+  "drop_id_17_fix": {
+    "r97_followup": "drop_id 17 byte10=232 ambiguity 정정",
+    "correction": {
+      "r97_claim": "byte[10] alone = 232, ambiguous qty/idx",
+      "r105_finding": "bytes[10-11] LE16 = 0x03e8 = 1000 = qty (variable-width qty field)",
+      "evidence": "4/4 occurrences identical bytes[10-13] = [232, 3, 0, 0] = LE16 1000"
+    },
+    "record_format_revised": {
+      "bytes_8": "drop_id (ITM_file alphabetic order index)",
+      "bytes_9": "item_idx (item within file)",
+      "bytes_10_11_le16": "qty (1-65535, variable-width)",
+      "bytes_12_13": "reserved / padding"
+    },
+    "qty_examples_revisited": {
+      "small_qty_byte_10_only": {
+        "ITM_12 가면 (quest)": 1,
+        "ITM_08 제련석 (자원)": 5,
+        "ITM_15 뇌격 (환수)": 8,
+        "ITM_13 네트워크전용 (consumable)": "64 / 118 (대량)"
+      },
+      "large_qty_le16": {
+        "drop_id 17 OPTION (endgame)": 1000
+      }
+    }
+  },
   "damage_type_semantics": {
     "type_enum_definitions": {
       "0": "MAGIC_OR_SKILL",

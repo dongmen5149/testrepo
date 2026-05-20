@@ -1,0 +1,117 @@
+{
+  "round": 105,
+  "r97_followup": "drop_id 17 byte10=232 ambiguity 정정",
+  "correction": {
+    "r97_claim": "byte[10] alone = 232, ambiguous qty/idx",
+    "r105_finding": "bytes[10-11] LE16 = 0x03e8 = 1000 = qty (variable-width qty field)",
+    "evidence": "4/4 occurrences identical bytes[10-13] = [232, 3, 0, 0] = LE16 1000"
+  },
+  "drop_id_17_records": [
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 168,
+      "raw_bytes_8_13": [
+        17,
+        0,
+        232,
+        3,
+        0,
+        0
+      ],
+      "drop_id": 17,
+      "byte_9_item_idx": 0,
+      "r97_interpretation": {
+        "byte_10_as_qty": 232,
+        "note": "AMBIGUOUS - qty 232 doesn't fit OPTION pool (120 records)"
+      },
+      "r105_interpretation": {
+        "bytes_10_11_le16_qty": 1000,
+        "note": "qty 1000 (=0x03e8) of OPTION pool item"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 196,
+      "raw_bytes_8_13": [
+        17,
+        0,
+        232,
+        3,
+        0,
+        0
+      ],
+      "drop_id": 17,
+      "byte_9_item_idx": 0,
+      "r97_interpretation": {
+        "byte_10_as_qty": 232,
+        "note": "AMBIGUOUS - qty 232 doesn't fit OPTION pool (120 records)"
+      },
+      "r105_interpretation": {
+        "bytes_10_11_le16_qty": 1000,
+        "note": "qty 1000 (=0x03e8) of OPTION pool item"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 168,
+      "raw_bytes_8_13": [
+        17,
+        0,
+        232,
+        3,
+        0,
+        0
+      ],
+      "drop_id": 17,
+      "byte_9_item_idx": 0,
+      "r97_interpretation": {
+        "byte_10_as_qty": 232,
+        "note": "AMBIGUOUS - qty 232 doesn't fit OPTION pool (120 records)"
+      },
+      "r105_interpretation": {
+        "bytes_10_11_le16_qty": 1000,
+        "note": "qty 1000 (=0x03e8) of OPTION pool item"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 196,
+      "raw_bytes_8_13": [
+        17,
+        0,
+        232,
+        3,
+        0,
+        0
+      ],
+      "drop_id": 17,
+      "byte_9_item_idx": 0,
+      "r97_interpretation": {
+        "byte_10_as_qty": 232,
+        "note": "AMBIGUOUS - qty 232 doesn't fit OPTION pool (120 records)"
+      },
+      "r105_interpretation": {
+        "bytes_10_11_le16_qty": 1000,
+        "note": "qty 1000 (=0x03e8) of OPTION pool item"
+      }
+    }
+  ],
+  "record_format_revised": {
+    "bytes_8": "drop_id (ITM_file alphabetic order index)",
+    "bytes_9": "item_idx (item within file)",
+    "bytes_10_11_le16": "qty (1-65535, variable-width)",
+    "bytes_12_13": "reserved / padding"
+  },
+  "qty_examples_revisited": {
+    "small_qty_byte_10_only": {
+      "ITM_12 가면 (quest)": 1,
+      "ITM_08 제련석 (자원)": 5,
+      "ITM_15 뇌격 (환수)": 8,
+      "ITM_13 네트워크전용 (consumable)": "64 / 118 (대량)"
+    },
+    "large_qty_le16": {
+      "drop_id 17 OPTION (endgame)": 1000
+    }
+  },
+  "drop_id_17_endgame_interpretation": "repay#168/196 = endgame achievement 의 OPTION 강화 scroll 1000개 보상. 대량 currency-style reward."
+}
