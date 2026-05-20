@@ -90,6 +90,10 @@ class Hero3CatalogSkillIndex(
         HP_DRAIN,
         /** R100 — TAUNT slot. 시전 시 actor 를 적 target picker 우선순위로 N턴 등록. */
         TAUNT,
+        /** R101 — REVIVE slot. 시전 시 KO 된 party member 한 명을 perTick% HP 로 부활. */
+        REVIVE,
+        /** R101 — BLOCK slot. 시전 시 actor 자기 BLOCK buff (perTick% 받는 공격 무효) 등록. */
+        BLOCK,
     }
 
     /**
@@ -121,6 +125,8 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.SP_REGEN  -> s.codeName == "SP_REGEN"
                 ModifierKind.HP_DRAIN  -> s.codeName == "HP_DRAIN"
                 ModifierKind.TAUNT     -> s.codeName == "TAUNT"
+                ModifierKind.REVIVE    -> s.codeName == "REVIVE"
+                ModifierKind.BLOCK     -> s.codeName == "BLOCK"
             }
             if (keep) sum += s.primarySigned
         }

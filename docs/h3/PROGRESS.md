@@ -7,32 +7,35 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 100 종료, uncommitted)**:
-> - 마지막 commit = `e55e4696 feat:영웅서기3 Round 99 — HP_DRAIN (life steal) wiring`
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R100 는 catalog 통합 라운드 — **27 라운드 milestone**)
-> - Hero3 리메이크 진행률 **~93-94%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 101 종료, uncommitted)**:
+> - 마지막 commit = `cf3f45c0 feat:영웅서기3 Round 100 — Milestone: TAUNT wiring + catalog 통합 27 라운드 회고`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R101 는 catalog 통합 28 라운드)
+> - Hero3 리메이크 진행률 **~94%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R101 가이드 (CURE_STATUS / HP_MAX 등)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R102 가이드 (CURE_STATUS / HP_MAX 등)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R101 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R102 가이드
 
-R100 milestone (TAUNT) 완료. catalog stat enum 23종 중 11종 wiring. R101 후보:
+R101 (REVIVE + BLOCK) 완료. catalog stat enum 23종 중 13종 wiring. R102 후보:
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐ | A. CURE_STATUS | `BattleScene.useSkill` | 시전 시 actor status 제거. |
-| ⭐⭐ | B. HP_MAX / SP_MAX 일시 buff | `Status` + BattleScene | R96 buff 패턴. |
+| ⭐⭐ | A. CURE_STATUS | `useSkill` | 시전 시 status 제거. |
+| ⭐⭐ | B. HP_MAX / SP_MAX 일시 buff | `Status` + BattleScene | R96 패턴. |
 | ⭐⭐ | C. SP_COST_REDUCE / CD_REDUCE | useSkill cost 조정 | 작은 작업. |
-| ⭐⭐ | D. BLOCK / SHIELD_PIERCE | `BattleScene` | 방어 무효화. |
-| ⭐⭐ | E. REVIVE | `useSkill` | 사망 멤버 부활. |
-| ⭐⭐ | F. enemy 측 buff/debuff 시스템 | `BattleScene` | 더 풍부한 전투. |
-| ⭐⭐ | G. recipe bytes[0..1] gold cost | `tools/recon/` | 가설 검증성. |
+| ⭐⭐ | D. SHIELD_PIERCE | `useSkill` 데미지 식 | 방어 무효화. |
+| ⭐⭐ | E. BUFF_REMOVE — 적 buff 제거 | enemy buff 선행 | F와 묶음. |
+| ⭐⭐ | F. *_BASE 영구 stat (서적) | engine + BattleScene | 큰 작업. |
+| ⭐⭐ | G. enemy 측 buff/debuff 시스템 | `BattleScene` | 더 풍부한 전투. |
+| ⭐⭐ | H. recipe bytes[0..1] gold cost | `tools/recon/` | 가설 검증성. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 100, uncommitted) — **Milestone: TAUNT wiring + catalog 통합 27 라운드 회고**. (1) ⭐⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 10종 → 11종** — `TAUNT` 신규 (exact-match `codeName == "TAUNT"`). (2) ⭐⭐⭐⭐⭐ **engine `Status` enum 10종 → 11종** — `TAUNT_BUFF` 신규 (perTick 미사용, presence flag). (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — catalog TAUNT primaryModifier > 0 시 (clamp 없음) actor 자기 `TAUNT_BUFF` 3턴 등록. 로그에 "도발/TNT" 추가 (6종 → 7종 표시 가능). (4) ⭐⭐⭐⭐ **`doEnemyAttack` target picker 변경** — `taunters = alive.filter { partyStatuses[idx]?.any { it.status == TAUNT_BUFF } == true }`. taunters 비어있지 않으면 그 안에서 random pick, 비어있으면 기존 alive 전체 random (R96 이전 행동 보존). (5) ⭐⭐⭐ **statusLabel + enemy tick `when`** 확장 — TAUNT_BUFF → `도발/TNT` + party-only no-op 분기. (6) ⭐⭐⭐ **2 신규 unit tests** — engine `r100_status_enum_has_taunt_buff` (size ≥ 11) + catalog `r100_taunt_modifier_kind_matches_only_taunt` (exact-match 검증). (7) **119/119 tests** (engine 46→47 +1, catalog 59→60 +1, app 72) + APK BUILD SUCCESSFUL. (8) **R74~R100 catalog 통합 27 라운드 milestone** — 트랙별 회고는 round doc §4 참조 (data R74-78 / bridge R79-83 / quest R84-87 / index R88-89 / effect R90-93 / status R94-100). 누적 catalog stat enum 23종 중 11종 wiring. (9) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~93% → ~93-94% (target picker 변경 + milestone 도달). 상세는 [ghidra-round100-milestone-taunt-2026-05-19.md](ghidra-round100-milestone-taunt-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 101, uncommitted) — **REVIVE + BLOCK wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 11종 → 13종** — REVIVE (시전 시 KO member 부활) / BLOCK (자기 buff, 확률 무효) 2 신규 exact-match. (2) ⭐⭐⭐⭐ **engine `Status` enum 11종 → 12종** — `BLOCK_BUFF` (perTick = 무효 %) 신규. REVIVE 는 status 아닌 single-shot effect 라 enum 추가 없음. (3) ⭐⭐⭐⭐ **`tryReviveFromSkill(nameKo)` 신규** — catalog REVIVE 값 0..100 clamp 가 > 0 이고 `party.indexOfFirst { hp <= 0 }` 가 있으면 그 member 의 hp 를 `(hpMax * revivePct / 100).coerceAtLeast(1)` 로 부활. 황색 popup `rgb(255,240,120)` + 한국어 "부활" 로그. useSkill 의 heal/공격 두 분기 끝에서 호출 (heal 분기는 누락됐던 `registerSelfBuffsFromSkill` 도 보강). (4) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — catalog BLOCK 값 0..25 clamp 후 `BLOCK_BUFF` 3턴 등록. 로그에 "블록/BLK" 추가 (7종 → 8종). (5) ⭐⭐⭐⭐ **`doEnemyAttack` BLOCK 적용** — hit-roll 통과 후 BLOCK check 추가. `blockPct > 0 && Random.nextInt(100) < blockPct` 면 "막아냄/blocked!" 로그 + return (데미지 0). DODGE 가 hit chance 인 반면 BLOCK 은 hit 이후 단계라 시스템적으로 별개. (6) ⭐⭐⭐ **statusLabel + enemy tick `when`** 확장 — BLOCK_BUFF → `블록/BLK` + party-only no-op 분기. (7) ⭐⭐⭐ **3 신규 unit tests** — engine `r101_status_enum_has_block_buff` (size ≥ 12) + catalog `r101_revive_modifier_kind_matches_only_revive` / `r101_block_modifier_kind_matches_only_block` (exact-match 검증). (8) **122/122 tests** (engine 47→48 +1, catalog 60→62 +2, app 74) + APK BUILD SUCCESSFUL. (9) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~93-94% → ~94% (catalog stat enum 13종 wiring + 전투 옵션 풍부화). 상세는 [ghidra-round101-revive-block-2026-05-19.md](ghidra-round101-revive-block-2026-05-19.md).
+
+**Round 100** (committed `cf3f45c0`) — **Milestone: TAUNT wiring + catalog 통합 27 라운드 회고**. (1) ⭐⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 10종 → 11종** — `TAUNT` 신규 (exact-match `codeName == "TAUNT"`). (2) ⭐⭐⭐⭐⭐ **engine `Status` enum 10종 → 11종** — `TAUNT_BUFF` 신규 (perTick 미사용, presence flag). (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — catalog TAUNT primaryModifier > 0 시 (clamp 없음) actor 자기 `TAUNT_BUFF` 3턴 등록. 로그에 "도발/TNT" 추가 (6종 → 7종 표시 가능). (4) ⭐⭐⭐⭐ **`doEnemyAttack` target picker 변경** — `taunters = alive.filter { partyStatuses[idx]?.any { it.status == TAUNT_BUFF } == true }`. taunters 비어있지 않으면 그 안에서 random pick, 비어있으면 기존 alive 전체 random (R96 이전 행동 보존). (5) ⭐⭐⭐ **statusLabel + enemy tick `when`** 확장 — TAUNT_BUFF → `도발/TNT` + party-only no-op 분기. (6) ⭐⭐⭐ **2 신규 unit tests** — engine `r100_status_enum_has_taunt_buff` (size ≥ 11) + catalog `r100_taunt_modifier_kind_matches_only_taunt` (exact-match 검증). (7) **119/119 tests** (engine 46→47 +1, catalog 59→60 +1, app 72) + APK BUILD SUCCESSFUL. (8) **R74~R100 catalog 통합 27 라운드 milestone** — 트랙별 회고는 round doc §4 참조 (data R74-78 / bridge R79-83 / quest R84-87 / index R88-89 / effect R90-93 / status R94-100). 누적 catalog stat enum 23종 중 11종 wiring. (9) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~93% → ~93-94% (target picker 변경 + milestone 도달). 상세는 [ghidra-round100-milestone-taunt-2026-05-19.md](ghidra-round100-milestone-taunt-2026-05-19.md).
 
 **Round 99** (committed `e55e4696`) — **HP_DRAIN (life steal) wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 9종 → 10종** — `HP_DRAIN` 신규 (exact-match `codeName == "HP_DRAIN"`). (2) ⭐⭐⭐⭐ **`BattleScene.tryHpDrainFromSkill(actor, nameKo, dmgDealt)`** — useSkill 공격 분기 끝에서 호출 (POISON / self-buff 등록 다음). catalog HP_DRAIN primaryModifier 0..25 clamp 후 `heal = (dmg * drainPct / 100).coerceAtLeast(1).coerceAtMost(hpMax - hp)`. (3) ⭐⭐⭐ **UI** — 보라색 popup `rgb(220,120,220)` + "흡혈: +N HP" / "Drain: +N HP" 로그. drainPct ≤ 0 또는 dmg ≤ 0 또는 actor.hp 가 이미 max 면 no-op. (4) ⭐⭐⭐ **2 신규 unit tests** — `r99_hp_drain_modifier_kind_matches_only_hp_drain` (exact-match 검증) / `r99_hp_drain_lookup_returns_zero_for_unknown_engine_name` (sentinel = 0). (5) **117/117 tests** (catalog 57→59 +2, engine 46 그대로, app 71) + APK BUILD SUCCESSFUL. (6) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~92-93% → ~93% (life steal 가시 효과 + catalog stat enum 23종 중 10종 wiring). 상세는 [ghidra-round99-hp-drain-life-steal-2026-05-19.md](ghidra-round99-hp-drain-life-steal-2026-05-19.md).
 

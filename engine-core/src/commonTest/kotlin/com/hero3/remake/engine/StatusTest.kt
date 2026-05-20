@@ -48,6 +48,13 @@ class StatusTest {
     }
 
     @Test
+    fun r101_status_enum_has_block_buff() {
+        val all = Status.values().toSet()
+        assertTrue(Status.BLOCK_BUFF in all)
+        assertTrue(Status.values().size >= 12)
+    }
+
+    @Test
     fun r100_status_enum_has_taunt_buff() {
         val all = Status.values().toSet()
         assertTrue(Status.TAUNT_BUFF in all)

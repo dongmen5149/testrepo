@@ -600,6 +600,34 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R101: REVIVE + BLOCK ModifierKind ─────────────────────────────────
+
+    @Test
+    fun r101_revive_modifier_kind_matches_only_revive() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "REVIVE" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.REVIVE))
+        }
+    }
+
+    @Test
+    fun r101_block_modifier_kind_matches_only_block() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "BLOCK" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.BLOCK))
+        }
+    }
+
     // ─── R100: TAUNT ModifierKind ──────────────────────────────────────────
 
     @Test

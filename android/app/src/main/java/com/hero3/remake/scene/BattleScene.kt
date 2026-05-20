@@ -138,6 +138,9 @@ class BattleScene(
             .coerceIn(0, catalogBonusClamp)
         val taunt = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.TAUNT)
+        val block = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.BLOCK)
+            .coerceIn(0, catalogBonusClamp)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -173,7 +176,12 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.TAUNT_BUFF, turnsLeft = 3, perTick = taunt)
         }
-        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0) {
+        if (block > 0) {
+            val ex = list.firstOrNull { it.status == Status.BLOCK_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.BLOCK_BUFF, turnsLeft = 3, perTick = block)
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0 || block > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
@@ -182,9 +190,29 @@ class BattleScene(
                 if (hpRegen > 0) "${if (isEn) "HPR" else "HP재생"}+$hpRegen/턴" else null,
                 if (spRegen > 0) "${if (isEn) "SPR" else "SP재생"}+$spRegen/턴" else null,
                 if (taunt > 0) "${if (isEn) "TNT" else "도발"}" else null,
+                if (block > 0) "${if (isEn) "BLK" else "블록"}+$block%" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
+    }
+
+    /**
+     * R101 — catalog REVIVE slot 이 있으면 KO 된 party member 한 명을 perTick% HP 로 부활.
+     * 매칭이 없거나 KO 된 member 가 없으면 no-op. 우선 lowest index (먼저 죽은 멤버).
+     */
+    private fun tryReviveFromSkill(nameKo: String) {
+        val idx = catalogSkillIndex ?: return
+        val revivePct = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.REVIVE)
+            .coerceIn(0, 100)
+        if (revivePct <= 0) return
+        val koIdx = party.indexOfFirst { it.hp <= 0 }
+        if (koIdx < 0) return
+        val target = party[koIdx]
+        target.hp = (target.hpMax * revivePct / 100).coerceAtLeast(1)
+        popups += Popup("+${target.hp}", onEnemy = false, targetIdx = koIdx, ttl = 1200L, color = Color.rgb(255, 240, 120))
+        pushLog(lang("부활: ${displayName(target, isEn)} → ${target.hp} HP",
+                     "Revived: ${displayName(target, isEn)} → ${target.hp} HP"))
     }
 
     /**
@@ -403,6 +431,9 @@ class BattleScene(
             popups += Popup("+$healed", onEnemy = false, targetIdx = targetIdx, ttl = 900L, color = Color.rgb(120, 240, 120))
             pushLog("$name → ${displayName(target, isEn)} +${healed} HP")
             if (catalogBonus != 0) pushLog(lang("(카탈로그 +$catalogBonus)", "(catalog +$catalogBonus)"))
+            // R101: heal skill 이 REVIVE slot 가지면 KO 된 member 부활.
+            tryReviveFromSkill(s.nameKo)
+            registerSelfBuffsFromSkill(actorIdx, s.nameKo)
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
@@ -428,6 +459,8 @@ class BattleScene(
         registerSelfBuffsFromSkill(actorIdx, s.nameKo)
         // R99: catalog HP_DRAIN slot → 입힌 데미지 × N% 를 actor HP 로 흡혈.
         tryHpDrainFromSkill(actor, s.nameKo, dmg)
+        // R101: 공격 skill 도 REVIVE slot 가지면 KO 된 member 부활 (드물지만 가능).
+        tryReviveFromSkill(s.nameKo)
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
@@ -599,7 +632,8 @@ class BattleScene(
                 Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
                 Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF,
                 Status.ACCURACY_BUFF, Status.DODGE_BUFF,
-                Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF, Status.TAUNT_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF,
+                Status.TAUNT_BUFF, Status.BLOCK_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -636,6 +670,7 @@ class BattleScene(
         Status.HP_REGEN_BUFF -> if (isEn) "HPR" else "HP재"
         Status.SP_REGEN_BUFF -> if (isEn) "SPR" else "SP재"
         Status.TAUNT_BUFF    -> if (isEn) "TNT" else "도발"
+        Status.BLOCK_BUFF    -> if (isEn) "BLK" else "블록"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
@@ -659,6 +694,14 @@ class BattleScene(
             val name = lang(enemy.def.nameKo, enemy.def.nameEn)
             pushLog(lang("$name → ${displayName(target, isEn)} 회피!",
                          "$name → ${displayName(target, isEn)} dodged!"))
+            return
+        }
+        // R101: target 의 BLOCK_BUFF — perTick% 확률로 무효화.
+        val blockPct = buffPercent(pick.index, Status.BLOCK_BUFF)
+        if (blockPct > 0 && Random.nextInt(100) < blockPct) {
+            val name = lang(enemy.def.nameKo, enemy.def.nameEn)
+            pushLog(lang("$name → ${displayName(target, isEn)} 막아냄!",
+                         "$name → ${displayName(target, isEn)} blocked!"))
             return
         }
         val rawDmg = damage(enemy.def.atk, CharacterRegistry.effectiveDefense(target),

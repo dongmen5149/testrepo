@@ -53,6 +53,11 @@ enum class Status {
      * perTick 미사용. catalog TAUNT slot 값에서 유래.
      */
     TAUNT_BUFF,
+    /**
+     * R101 — 받는 공격을 perTick% 확률로 무효화. BattleScene.doEnemyAttack 가 hit-roll 다음 단계에 적용.
+     * catalog BLOCK slot 값에서 유래.
+     */
+    BLOCK_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */
