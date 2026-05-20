@@ -69,8 +69,18 @@ class Hero3CatalogSkillIndex(
             f to FILE_PALETTE[i % FILE_PALETTE.size]
         }
 
-    /** R91: catalog effectV2 의 어떤 stat code 를 데미지/회복 식에 더할지 지정. */
-    enum class ModifierKind { OFFENSE, HEAL }
+    /**
+     * R91/R93: catalog effectV2 의 어떤 stat code 를 어느 식에 더할지 지정.
+     *
+     *  - OFFENSE   = ATT*               (R91: BattleScene.useSkill 데미지 +)
+     *  - HEAL      = HP_HEAL* / HP_REGEN* (R91: BattleScene.useSkill 회복 +)
+     *  - DEFENSE   = P_DEF / M_DEF      (R93: 미래 wiring — 받는 데미지 reduction)
+     *  - CRIT_RATE = CRI_RATE           (R93: BattleScene.damage crit % 가산)
+     *  - CRIT_DEF  = CRI_DEF            (R93: 미래 wiring — 받는 crit 감쇄)
+     *  - ACCURACY  = ACC                (R93: 미래 wiring — miss 시스템 도입 후)
+     *  - DODGE     = DOD                (R93: 미래 wiring — 회피 시스템 도입 후)
+     */
+    enum class ModifierKind { OFFENSE, HEAL, DEFENSE, CRIT_RATE, CRIT_DEF, ACCURACY, DODGE }
 
     /**
      * R91 — engine 데미지/회복 식에 가산할 catalog 보정값.
@@ -90,8 +100,13 @@ class Hero3CatalogSkillIndex(
         var sum = 0
         for (s in live) {
             val keep = when (kind) {
-                ModifierKind.OFFENSE -> s.codeName.startsWith("ATT")
-                ModifierKind.HEAL    -> s.codeName.startsWith("HP_HEAL") || s.codeName.startsWith("HP_REGEN")
+                ModifierKind.OFFENSE   -> s.codeName.startsWith("ATT")
+                ModifierKind.HEAL      -> s.codeName.startsWith("HP_HEAL") || s.codeName.startsWith("HP_REGEN")
+                ModifierKind.DEFENSE   -> s.codeName == "P_DEF" || s.codeName == "M_DEF"
+                ModifierKind.CRIT_RATE -> s.codeName == "CRI_RATE"
+                ModifierKind.CRIT_DEF  -> s.codeName == "CRI_DEF"
+                ModifierKind.ACCURACY  -> s.codeName == "ACC"
+                ModifierKind.DODGE     -> s.codeName == "DOD"
             }
             if (keep) sum += s.primarySigned
         }

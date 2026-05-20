@@ -82,6 +82,14 @@ class BattleScene(
         return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
     }
 
+    /** R93: engine skill 의 CRI_RATE slot 보정값 (단위 = percent). clamp ±25. */
+    private fun catalogCritBonusFor(nameKo: String): Int {
+        val idx = catalogSkillIndex ?: return 0
+        val raw = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.CRIT_RATE)
+        return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
+    }
+
     private val enemy: EnemyInstance = run {
         // R80: forcedEnemyId 가 "h3_n_NNN" / "h3_h_NNN" 패턴이면 Hero3Catalog 의 161 enemies 사용.
         // 그 외는 기존 EnemyRegistry (placeholder 13 entries).
@@ -233,7 +241,8 @@ class BattleScene(
             return
         }
         val atk = (CharacterRegistry.effectiveAttack(actor) * s.powerMul).toInt() + s.flatBonus + catalogBonus
-        val dmg = damage(atk, enemy.def.def)
+        val critBonus = catalogCritBonusFor(s.nameKo)
+        val dmg = damage(atk, enemy.def.def, extraCritPercent = critBonus)
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 280L
@@ -377,12 +386,14 @@ class BattleScene(
         pushLog("$name → ${displayName(target, isEn)} $dmg.")
     }
 
-    /** R83: damage = max(1, atk - def/2) × variance(0.8..1.2), with 8% crit (×1.7).
+    /** R83/R93: damage = max(1, atk - def/2) × variance(0.8..1.2), with crit (×1.7).
+     *  base crit chance 8% + [extraCritPercent] (catalog CRI_RATE slot, R93). clamp [0, 50%].
      *  catalog-fed enemy (forcedEnemyId h3_*) 은 추후 R63 stat enum / element 적용 (R84+).
      */
-    private fun damage(atk: Int, def: Int): Int {
+    private fun damage(atk: Int, def: Int, extraCritPercent: Int = 0): Int {
         val raw = max(1, atk - def / 2)
-        val isCrit = Random.nextFloat() < 0.08f
+        val critChance = (0.08f + extraCritPercent / 100f).coerceIn(0f, 0.5f)
+        val isCrit = Random.nextFloat() < critChance
         val variance = (raw * (0.8f + Random.nextFloat() * 0.4f)).toInt()
         val final = if (isCrit) (variance * 1.7f).toInt() else variance
         if (isCrit) pushLog(lang("크리티컬!", "Critical!"))

@@ -7,36 +7,40 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 92 종료, uncommitted)**:
-> - 마지막 commit = `1c310d47 feat:영웅서기3 Round 91 — BattleScene 데미지/회복에 catalog effect_v2 보정`
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R92 는 catalog 통합 라운드)
-> - Hero3 리메이크 진행률 **~89%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 93 종료, uncommitted)**:
+> - 마지막 commit = `6f655854 feat:영웅서기3 Round 92 — Hero3CatalogItemIndex + ITEMS 탭 drill-down`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R93 는 catalog 통합 라운드)
+> - Hero3 리메이크 진행률 **~89-90%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R93 즉시 시작 가이드 (§1.2 확장 권장)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R94 즉시 시작 가이드 (CRIT_DEF wiring 또는 디버프 enum)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R93 즉시 시작 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R94 즉시 시작 가이드
 
-`SESSION_HANDOFF.md §1` 참조 — R93 후보 (R90 §1.1+§1.4, R91 §1.2 OFFENSE/HEAL, R92 §1.3 종결):
+`SESSION_HANDOFF.md §1` 참조 — R94 후보 (R93 §1.2 ModifierKind 7종 / CRIT_RATE wiring 종결):
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐ | **§1.2 확장 — P_DEF/M_DEF/CRI_RATE/ACC/DOD 매핑** | `Hero3CatalogSkillIndex.kt` + `BattleScene.kt` | R91 OFFENSE/HEAL → 다섯 종 이상 확장. |
-| ⭐⭐ | 디버프 (`nDebuffs > 0`) 통합 | engine `Status` enum 신설 + BattleScene | 중급. |
+| ⭐⭐⭐ | **CRIT_DEF wiring** — 받는 crit 데미지 감쇄 | `BattleScene.damage` | R93 ModifierKind.CRIT_DEF 데이터 노출 완료. 1.7 multiplier 감쇄. |
+| ⭐⭐⭐ | **디버프 enum** — engine Status + BattleScene tick | `engine-core/.../Status.kt` 신규 + BattleScene | 가시 효과 크지만 중급. |
+| ⭐⭐ | DEFENSE wiring — 받는 데미지 reduction | `BattleScene.doEnemyAttack` | 적용 시점 정의 필요. |
+| ⭐⭐ | ACCURACY/DODGE 시스템 — miss/dodge 신설 | `engine-core` + `BattleScene` | engine 측 시스템 신설 선행. |
 | ⭐⭐ | ForgeScene recipe bytes[0..1] = gold cost? | `tools/recon/` 분석 | 가설 검증성. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
-**R93 권장 시작 순서** (SESSION_HANDOFF §2 참조):
-1. `git status` + `git log --oneline -5` → R92 commit 확인.
-2. **§1.2 확장** — `ModifierKind` enum 에 DEFENSE/CRIT/ACCURACY 추가 + `BattleScene.doEnemyAttack` 의 받는 데미지 / `damage()` crit rate 보정.
+**R94 권장 시작 순서** (SESSION_HANDOFF §2 참조):
+1. `git status` + `git log --oneline -5` → R93 commit 확인.
+2. **CRIT_DEF wiring** — `damage(extraCritDefPercent)` 추가 + 1.7 multiplier 감쇄.
 3. (병행) 디버프 — engine `Status` enum 신설.
 4. Hero3CatalogLoaderTest 갱신.
 5. `:app:testDebugUnitTest` + `:engine-core:testDebugUnitTest` + `:app:assembleDebug`.
-6. `docs/h3/ghidra-round93-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
+6. `docs/h3/ghidra-round94-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 92, uncommitted) — **Hero3CatalogItemIndex + ITEMS 탭 drill-down**. (1) ⭐⭐⭐⭐ **`Hero3CatalogItemIndex` 신설** — R85 quest / R89 skill 패턴 3번째. `Entry(file, category, item)` flat view + byCategory / byFile / colorOf / fileColors + 10-슬롯 ARGB 팔레트 (coral/amber/yellow/lime/aqua/cyan/periwinkle/orchid/rose/sand, quest/skill 팔레트와 hue 충돌 없음) + hash fallback (11번째 파일부터). (2) ⭐⭐⭐ **lookup API 2종** — `lookupByName(fragment)` (item.name + cleanName 둘 다 검사) / `lookupByCategory(fragment)`. 추후 BattleScene/ShopScene/ForgeScene 에서 catalog item 매칭 시 활용. (3) ⭐⭐⭐ **CatalogViewerScene ITEMS 탭 확장** — 18-줄 카테고리 요약 → ~547 줄 per-item drill-down (pos / cleanName / raw name). category 헤더 + items 가 같은 색으로 묶임. (4) ⭐⭐⭐ **4 신규 unit tests** — 18 categories × 529 items 검증 / byFile 그룹 sanity / colorOf distinct 첫 10 + fallback / lookupByName "포션" 매칭. (5) **finding (R71 확장)**: 18 카테고리 = 10 distinct palette + 8 hash fallback. R76 의 i18_dat[0]="포션" 등 lookup 으로 즉시 검증 가능. (6) **96/96 tests** (catalog 46→50, +4 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~88-89% → ~89% (catalog 인덱스 3종 (Quest/Skill/Item) 패턴 정착 + 마지막 데이터 축 인덱싱 완료). 상세는 [ghidra-round92-catalog-item-index-2026-05-19.md](ghidra-round92-catalog-item-index-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 93, uncommitted) — **ModifierKind 7종 확장 + BattleScene CRIT_RATE wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 2종 → 7종 확장** — DEFENSE (P_DEF/M_DEF) / CRIT_RATE (CRI_RATE) / CRIT_DEF (CRI_DEF) / ACCURACY (ACC) / DODGE (DOD) 5 신규. `primaryModifier when (kind)` 분기 완성. (2) ⭐⭐⭐ **CRIT_RATE 실 wiring** — `BattleScene.damage(extraCritPercent = 0)` 시그니처 확장, `critChance = (0.08f + extraCritPercent / 100f).coerceIn(0f, 0.5f)`. `useSkill` 가 `catalogCritBonusFor(s.nameKo)` ±25 clamp 결과를 전달. (3) ⭐⭐ **남은 4 kind (DEFENSE/CRIT_DEF/ACCURACY/DODGE) 는 인덱스 노출만** — engine 측 수신 데미지/명중/회피 시스템이 아직 없어 후속 라운드 wiring 대기. (4) ⭐⭐ **KDoc 안의 `HP_HEAL*/HP_REGEN*` 가 `*/` 로 KDoc 조기 종료시키던 buglet 발견 → 공백 분리** (`HP_HEAL* / HP_REGEN*`). 빌드 실패 → 즉시 수정 후 통과. (5) ⭐⭐⭐ **3 신규 unit tests** — 모든 catalog skill 의 5 신규 kind 합산이 manually computed expected 와 일치 / effectV2=null 모든 kind 0 / unknown name 모든 kind 0. (6) **99/99 tests** (catalog 50→53, +3 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~89% → ~89-90% (ModifierKind 7종 전체 인덱싱 + CRIT_RATE 실 가산). 상세는 [ghidra-round93-modifier-kind-expansion-2026-05-19.md](ghidra-round93-modifier-kind-expansion-2026-05-19.md).
+
+**Round 92** (committed `6f655854`) — **Hero3CatalogItemIndex + ITEMS 탭 drill-down**. (1) ⭐⭐⭐⭐ **`Hero3CatalogItemIndex` 신설** — R85 quest / R89 skill 패턴 3번째. `Entry(file, category, item)` flat view + byCategory / byFile / colorOf / fileColors + 10-슬롯 ARGB 팔레트 (coral/amber/yellow/lime/aqua/cyan/periwinkle/orchid/rose/sand, quest/skill 팔레트와 hue 충돌 없음) + hash fallback (11번째 파일부터). (2) ⭐⭐⭐ **lookup API 2종** — `lookupByName(fragment)` (item.name + cleanName 둘 다 검사) / `lookupByCategory(fragment)`. 추후 BattleScene/ShopScene/ForgeScene 에서 catalog item 매칭 시 활용. (3) ⭐⭐⭐ **CatalogViewerScene ITEMS 탭 확장** — 18-줄 카테고리 요약 → ~547 줄 per-item drill-down (pos / cleanName / raw name). category 헤더 + items 가 같은 색으로 묶임. (4) ⭐⭐⭐ **4 신규 unit tests** — 18 categories × 529 items 검증 / byFile 그룹 sanity / colorOf distinct 첫 10 + fallback / lookupByName "포션" 매칭. (5) **finding (R71 확장)**: 18 카테고리 = 10 distinct palette + 8 hash fallback. R76 의 i18_dat[0]="포션" 등 lookup 으로 즉시 검증 가능. (6) **96/96 tests** (catalog 46→50, +4 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~88-89% → ~89% (catalog 인덱스 3종 (Quest/Skill/Item) 패턴 정착 + 마지막 데이터 축 인덱싱 완료). 상세는 [ghidra-round92-catalog-item-index-2026-05-19.md](ghidra-round92-catalog-item-index-2026-05-19.md).
 
 **Round 91** (committed `1c310d47`) — **BattleScene 데미지/회복에 catalog effect_v2 보정**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.primaryModifier(skill, kind)`** 신규 — `enum ModifierKind { OFFENSE, HEAL }`. 살아있는 effectV2 slot 만 검사 (`!isSentinel && !isZero`), OFFENSE = `codeName.startsWith("ATT")` (ATT1/ATT1_BASE/ATT2), HEAL = `startsWith("HP_HEAL")` 또는 `startsWith("HP_REGEN")` 의 primarySigned 합. (2) ⭐⭐⭐⭐ **`primaryModifierForEngineName(nameKo, kind)`** — `lookupByName` fuzzy + rank 최대 hit 1개 → `primaryModifier`. 매칭 없음 = 0. (3) ⭐⭐⭐⭐ **`BattleScene.useSkill` 데미지/회복 식에 가산** — `catalogSkillIndex` lazy 빌드 (catalog 미설치 시 null), `catalogBonusFor(nameKo, heal)` 가 ±25 clamp. heal: `intl*powerMul + flatBonus + catalogBonus` (음수 방지). 공격: `atk = effectiveAttack*powerMul + flatBonus + catalogBonus`. 보정 ≠ 0 시 "(카탈로그 +N)" 한 줄 로그. (4) ⭐⭐⭐ **3 신규 unit tests** — null effectV2 = 0 / 모든 catalog skill 의 OFFENSE/HEAL 합 = manually computed expected 일치 / unknown engine name = 0 + "연사" Int 반환. (5) **finding**: catalog 의 effectV2 stat enum 23종 중 R91 은 ATT*/HP_HEAL*/HP_REGEN* 만 매핑 (5종). P_DEF/M_DEF/CRI_RATE/ACC/DOD/디버프 = R92 확장 대상. (6) 92/92 tests (catalog 43→46, +3 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~88% → ~88-89% (catalog effect_v2 가 UI 표시 → 실 데미지 식까지 도달, 가시적 게임플레이 영향). 상세는 [ghidra-round91-battle-effect-v2-modifier-2026-05-19.md](ghidra-round91-battle-effect-v2-modifier-2026-05-19.md).
 

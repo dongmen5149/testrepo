@@ -600,6 +600,54 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R93: ModifierKind 확장 (DEFENSE/CRIT*/ACCURACY/DODGE) ─────────────
+
+    @Test
+    fun r93_modifier_kinds_match_distinct_code_names() {
+        // R93: 5 신규 kind 의 매칭 코드가 R91 의 OFFENSE/HEAL 와 disjoint.
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expectedDef    = live.filter { it.codeName == "P_DEF" || it.codeName == "M_DEF" }.sumOf { it.primarySigned }
+            val expectedCrit   = live.filter { it.codeName == "CRI_RATE" }.sumOf { it.primarySigned }
+            val expectedCDef   = live.filter { it.codeName == "CRI_DEF" }.sumOf { it.primarySigned }
+            val expectedAcc    = live.filter { it.codeName == "ACC" }.sumOf { it.primarySigned }
+            val expectedDod    = live.filter { it.codeName == "DOD" }.sumOf { it.primarySigned }
+            assertEquals(expectedDef,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.DEFENSE))
+            assertEquals(expectedCrit,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.CRIT_RATE))
+            assertEquals(expectedCDef,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.CRIT_DEF))
+            assertEquals(expectedAcc,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.ACCURACY))
+            assertEquals(expectedDod,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.DODGE))
+        }
+    }
+
+    @Test
+    fun r93_modifier_kinds_handle_null_effect() {
+        // effectV2=null 인 skill 은 모든 kind 에서 0.
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        val noEffect = idx.entries.firstOrNull { it.skill.effectV2 == null } ?: return
+        for (k in Hero3CatalogSkillIndex.ModifierKind.values()) {
+            assertEquals(0, idx.primaryModifier(noEffect.skill, k))
+        }
+    }
+
+    @Test
+    fun r93_modifier_kind_engine_lookup_returns_zero_for_unknown_name() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (k in Hero3CatalogSkillIndex.ModifierKind.values()) {
+            assertEquals(0, idx.primaryModifierForEngineName("__nope__$k", k))
+        }
+    }
+
     // ─── R90: engine ↔ catalog skill bridge ────────────────────────────────
 
     @Test
