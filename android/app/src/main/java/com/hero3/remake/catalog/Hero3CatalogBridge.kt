@@ -64,9 +64,12 @@ object Hero3CatalogBridge {
 
     /** R82 — catalog 의 핵심 items 를 engine-core Item 으로 변환하여 ItemRegistry 에 추가 등록.
      *  i0-i12 (장비) + i14 (재료) + i17-i18 (액세서리/소비) 의 일부를 가져와 ID `h3_item_<file>_<pos>`.
-     *  ForgeScene 의 recipe matching 범위를 ItemRegistry 15 → 100+ 로 확장.
+     *  ForgeScene 의 recipe matching 범위를 ItemRegistry 15 → 529 로 확장.
+     *
+     *  R110f (2026-05-20): maxPerCategory 기본값 30 → 50 으로 상향. catalog 의 18 file 중 7 file
+     *  이 30 초과 entry (max 46, i14_dat) 보유 — 30 cap 으로 60 items 가 누락되던 것을 모두 적재.
      */
-    fun catalogItemPool(catalog: Hero3Catalog, maxPerCategory: Int = 30): List<Item> {
+    fun catalogItemPool(catalog: Hero3Catalog, maxPerCategory: Int = 50): List<Item> {
         val pool = mutableListOf<Item>()
         for (cat in catalog.items) {
             val kind = inferKind(cat.file)

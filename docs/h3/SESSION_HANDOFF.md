@@ -81,7 +81,8 @@ R73 시점에 분석/DES 는 끝났고, R74~R108 는 catalog 데이터를 Androi
 - R108: party debuff render UI + enemy 색상 컨벤션 일관화. renderPartyPanel 인디케이터 buff/debuff 분리 (debuff light-red 좌측 / buff light-blue 우측). enemy HP 바도 동일 컨벤션. `turnsLeft > 9 → "∞"` party 측에도 적용. partyBuffLabel alias 삭제. StatusTest 의 r108 partition test +1. 133/133 tests.
 - R109: MapWalkScene 타일 그래픽 wiring (Phase 1~3). `meta_header_hex[0]` = theme sheet ID 규칙 발견 (4 anchor + 134 map universal 시각 검증). `MapData{themeId, themeShift}` + `themeTileCache` + `loadThemeTiles()` + drawBitmap 통합. 색상 fallback 유지. 그래픽 70% → 90%. 베타 fidelity 42% → 44%. 자세한 내용은 [`round109-map-tile-wiring-phase1-3.md`](round109-map-tile-wiring-phase1-3.md).
 - R110a: MapWalkScene obj layer wiring. `layer_1[i] >> 6 = frame_idx in obj_<byte[0]>_bm` 규칙 발견 (134 map 의 99%+ value 가 `frame_idx << 6` 정합). bottom-center anchor + 4 anchor map 시각 검증. `objFrameCache` + `loadObjFrames()` + drawBitmap 통합. 그래픽 90% → 95%. 베타 fidelity 44% → 46%. 자세한 내용은 [`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md).
-- 스물세 라운드 — 전투 양방향 대칭성 + 일시 max 증가 buff + render 색상 컨벤션 통일 + 타일 그래픽 + obj sprite 실 sprite 통합까지 완성.
+- R110f: `Hero3CatalogBridge.catalogItemPool` 의 `maxPerCategory` 기본값 30 → 50. catalog 의 18 file 중 7 file 이 30 초과 entry 보유 (max 46 i14_dat) — 30 cap 으로 60 items 누락되던 것을 모두 적재 → catalog 529 items 전체 ItemRegistry 등록. ForgeScene/Inventory/drop_table resolve 범위 ↑. Tests +2. 자세한 내용은 [`round110f-itemregistry-full-catalog.md`](round110f-itemregistry-full-catalog.md).
+- 스물네 라운드 — 전투 양방향 대칭성 + 일시 max 증가 buff + render 색상 컨벤션 통일 + 타일 그래픽 + obj sprite 통합 + catalog item 적재 전체화까지 완성.
 
 ### 1.1 ✅ R90 완료 — SkillScene catalog effectSummary
 

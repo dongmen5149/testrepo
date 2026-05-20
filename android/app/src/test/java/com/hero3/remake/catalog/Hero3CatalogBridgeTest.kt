@@ -89,6 +89,25 @@ class Hero3CatalogBridgeTest {
     }
 
     @Test
+    fun r110f_catalog_item_pool_default_loads_all_529_items() {
+        val c = catalog()
+        val pool = Hero3CatalogBridge.catalogItemPool(c)
+        // R110f: maxPerCategory 기본값 50 으로 상향. 18 file × max 46 entry = 529 catalog items 모두 적재.
+        // (정확히 529 가 아닌 ≥ 529 인 이유: 18 file 외 변동 가능성 대비.)
+        assertTrue("expected all 529 catalog items, got ${pool.size}", pool.size >= 529)
+    }
+
+    @Test
+    fun r110f_catalog_item_pool_max_per_category_30_truncates() {
+        val c = catalog()
+        val capped = Hero3CatalogBridge.catalogItemPool(c, maxPerCategory = 30)
+        val full = Hero3CatalogBridge.catalogItemPool(c)  // default 50
+        // 30 cap 시 7 file 이 truncate 되어 60 items 누락.
+        assertTrue("expected cap=30 to truncate, ${capped.size} vs ${full.size}", capped.size < full.size)
+        assertEquals(60, full.size - capped.size)
+    }
+
+    @Test
     fun r83_drop_table_resolves_some_to_catalog_item_ids() {
         val c = catalog()
         val enemies = Hero3CatalogBridge.enemiesFromCatalog(c)
