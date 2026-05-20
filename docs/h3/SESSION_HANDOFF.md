@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 109 종료 시점, 2026-05-20 업데이트)
+# Hero3 인수인계 노트 (Round 110a 종료 시점, 2026-05-20 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.98% / Catalog ~99% / 실제 remake ~97-98% (엔지니어링 기준) / 베타 출시 fidelity ~44% (원작 동일 시각·음향 기준)**. R109 (MapWalkScene 타일 그래픽 wiring, byte[0]=theme 규칙 발견 + Android 통합) 완료. 다음 우선 = **R110a obj layer wiring** (3-5 dev day, 그래픽 ~90% → ~95%). 상세 [`round109-map-tile-wiring-phase1-3.md`](round109-map-tile-wiring-phase1-3.md).
+**분석 ~99.98% / Catalog ~99% / 실제 remake ~97-98% (엔지니어링 기준) / 베타 출시 fidelity ~46% (원작 동일 시각·음향 기준)**. R110a (obj layer wiring, `layer_1[i] >> 6 = frame_idx in obj_<byte[0]>_bm` 규칙 + bottom-center anchor + Android 통합) 완료. 그래픽 영역 ~95%. 다음 우선 = **R110b 사운드 정책 결정** 또는 **R110c MapGraph 자동화** (10-15 dev day 단위). 상세 [`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md).
 
 ## 0.1 베타 출시 진척도 평가 (2026-05-20 세션 추가)
 
@@ -15,7 +15,7 @@
 | A. 엔진 / scene 골격 | ~92% | 12% | 22 scene · GameView · GameState save · 22 status enum wiring · 133 unit test green |
 | B. 전투 시스템 | ~85% | 12% | catalog stat 19/23 wiring (R107 HP/SP_MAX, R108 render). 미완: boss skill 매핑 (R74) / CD_REDUCE / *_BASE |
 | C. 콘텐츠 매핑 | ~15% | 15% | engine bespoke quest 4/115 · enemy 14/322 · item 17/529 · skill 2/105. catalog 데이터는 적재 완료 |
-| D. 그래픽 / 타일 | **~90%** | 10% | R109 byte[0]=theme 규칙 + MapWalkScene drawBitmap 통합 ✓. layer_1 obj sheet 통합만 남음 (R110a) |
+| D. 그래픽 / 타일 | **~95%** | 10% | R109 theme + R110a obj layer wiring 완료 ✓. frame_4 (≥80px 대형 건물) + sprObj NPC sheet + extras_records 정밀 해독 남음 |
 | E. 오디오 | **0%** | 10% | SfxBus stub만. 33 SMAF 디크립트 완료지만 OGG 변환 정책 보류 (사용자 신뢰도) |
 | F. 스토리 / 대사 | ~3% | 10% | 9,740 dialogue 미통합. 245 scn_v2 event trigger 미연결 |
 | G. MapGraph 연결 | ~3% | 5% | 134 맵 중 4 edge placeholder. `_mp.extras_records` 의 exit 정보 미파싱 |
@@ -25,12 +25,12 @@
 | K. 출시 패키징 | ~10% | 5% | ic_launcher 부재 · release keystore 부재 · Manifest 최소 · Play Store metadata 0 |
 | L. 테스트 / QA | ~50% | 6% | unit 133/133 ✓. instrumented test 0. 디바이스 QA 기록 없음 |
 
-가중 평균 **~44%** (R109 후, +2%p). 범위 **42~52%**.
+가중 평균 **~46%** (R110a 후, +2%p). 범위 **44~54%**.
 
 ### 베타까지의 critical-path (남은 큰 트랙, 비-catalog)
 
 1. ⭐⭐⭐⭐⭐ ~~R109: MapWalkScene 타일 wiring~~ (10~16 dev day) — **2026-05-20 완료**. 그래픽 70% → 90%.
-1a. ⭐⭐⭐⭐⭐ **R110a: obj layer wiring** (3~5 dev day) — `obj_<byte[0]>_bm` multi-frame sprite 통합. 그래픽 90% → 95%.
+1a. ⭐⭐⭐⭐⭐ ~~R110a: obj layer wiring~~ (3~5 dev day) — **2026-05-20 완료**. 그래픽 90% → 95%.
 2. ⭐⭐⭐⭐⭐ **사운드 트랙 재개** (10~15 dev day) — SMAF→OGG 33곡 + MediaPlayer 통합. 사용자 신뢰도 정책 재결정 필요.
 3. ⭐⭐⭐⭐ **MapGraph 자동화** (10~15 dev day) — `_mp.extras_records` 의 exit 정보 추출로 134 맵 연결.
 4. ⭐⭐⭐⭐ **NPC 자동 배치** (20~30 dev day) — `_mp.extras_records` NPC marker 통합.
@@ -40,16 +40,18 @@
 
 총 잔여 100~160 dev day. 다른 모델의 "92% / 8% 남음" 평가는 catalog wiring 잔여분만 본 것으로, 위 7개 트랙을 critical-path 에 포함하지 않은 가정. 사용자 정의 (원작 fidelity) 에서는 위 트랙 모두가 필수.
 
-## 1. 다음 세션 즉시 시작 가이드 (R110a)
+## 1. 다음 세션 즉시 시작 가이드 (R110b/c — 사용자 선택)
 
-**R110a 최우선 권고: obj layer wiring** — R109 (`byte[0]=theme`) 패턴을 layer_1 에 확장. `obj_<byte[0]>_bm/frame_NN_*.png` 의 multi-frame sprite 를 `layer_1[i]` 의 (frame_idx, x/y offset) 값과 매핑.
+R109 + R110a 로 시각 fidelity ~95% 도달. 다음 큰 트랙 후보:
 
-먼저 layer_1 raw 값과 obj sheet frame 의 정확한 매핑 식을 발견해야 함 (R109 Phase 2 와 동일 패턴):
-1. `python tools/recon/find_map_to_sheet_mapping_v2.py` 의 obj 적합도 결과 (`shift=6` 이 120/134 map 에서 fit) 분석 재시작.
-2. anchor map 4개로 `tools/qa/render_layer1_candidates.py` 신규 작성, 시각 비교.
-3. `MapWalkScene.kt` 의 layer_1 색상 loop 도 R109 와 동일한 lookup-or-fallback 패턴으로 교체.
+- **R110b 사운드** (10-15 dev day) — SMAF→OGG 33곡 + `SfxBus.play()` MediaPlayer/SoundPool 통합. **사용자 신뢰도 정책 재결정 필요** ([Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) 의 stale 가이드 참조). 베타 fidelity 가장 큰 단일 임팩트.
+- **R110c MapGraph 자동화** (10-15 dev day) — `_mp.extras_records` 의 exit 정보 추출 + 134 map 자동 연결. 현 4 edge placeholder → 수십~수백 edge.
+- **R110d NPC 자동 배치** (20-30 dev day) — extras_records NPC marker → 원작 위치 배치. sprObj_*_bm sheet 도 통합.
+- **R110e frame_4 대형 건물** (3-5 dev day) — layer_1 미경유 (max=192=3<<6). extras_records type=0 vs type=128 의미 + frame_idx 추론 필요.
 
-[`round109-map-tile-wiring-phase1-3.md`](round109-map-tile-wiring-phase1-3.md) §6 도 참고.
+권장 시작: **R110e** (작업량 작고 시각 임팩트 명확) 또는 사용자 결정 후 **R110b**.
+
+[`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md) §6 도 참고.
 
 R73 시점에 분석/DES 는 끝났고, R74~R108 는 catalog 데이터를 Android 리메이크 안으로 끌어들이는 통합 라운드들 — **35 라운드**. catalog stat enum 23종 중 **19종 wiring** + UI 색상 컨벤션 통일 완료. R109 후보 중 catalog wiring 잔여 (boss skill / *_BASE / CD_REDUCE) 는 베타 fidelity 임팩트 작음. **타일 wiring → 사운드 → MapGraph → 콘텐츠** 순서가 베타 출시 정공법.
 
@@ -77,7 +79,8 @@ R73 시점에 분석/DES 는 끝났고, R74~R108 는 catalog 데이터를 Androi
 - R107: ModifierKind 17종 → 19종 (HP_MAX/SP_MAX). Status enum 13종 → 15종 (HP_MAX_BUFF/SP_MAX_BUFF). BattleScene effectiveHpMax/effectiveSpMax 헬퍼 + 모든 사용처 wiring + HUD bar effective max. 132/132 tests, +2 (R107).
 - R108: party debuff render UI + enemy 색상 컨벤션 일관화. renderPartyPanel 인디케이터 buff/debuff 분리 (debuff light-red 좌측 / buff light-blue 우측). enemy HP 바도 동일 컨벤션. `turnsLeft > 9 → "∞"` party 측에도 적용. partyBuffLabel alias 삭제. StatusTest 의 r108 partition test +1. 133/133 tests.
 - R109: MapWalkScene 타일 그래픽 wiring (Phase 1~3). `meta_header_hex[0]` = theme sheet ID 규칙 발견 (4 anchor + 134 map universal 시각 검증). `MapData{themeId, themeShift}` + `themeTileCache` + `loadThemeTiles()` + drawBitmap 통합. 색상 fallback 유지. 그래픽 70% → 90%. 베타 fidelity 42% → 44%. 자세한 내용은 [`round109-map-tile-wiring-phase1-3.md`](round109-map-tile-wiring-phase1-3.md).
-- 스물두 라운드 — 전투 양방향 대칭성 + 일시 max 증가 buff + render 색상 컨벤션 통일 + 타일 그래픽 실 sprite 통합까지 완성.
+- R110a: MapWalkScene obj layer wiring. `layer_1[i] >> 6 = frame_idx in obj_<byte[0]>_bm` 규칙 발견 (134 map 의 99%+ value 가 `frame_idx << 6` 정합). bottom-center anchor + 4 anchor map 시각 검증. `objFrameCache` + `loadObjFrames()` + drawBitmap 통합. 그래픽 90% → 95%. 베타 fidelity 44% → 46%. 자세한 내용은 [`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md).
+- 스물세 라운드 — 전투 양방향 대칭성 + 일시 max 증가 buff + render 색상 컨벤션 통일 + 타일 그래픽 + obj sprite 실 sprite 통합까지 완성.
 
 ### 1.1 ✅ R90 완료 — SkillScene catalog effectSummary
 

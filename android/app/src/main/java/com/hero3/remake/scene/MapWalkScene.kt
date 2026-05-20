@@ -117,6 +117,8 @@ class MapWalkScene(
     private val npcSprites: MutableMap<String, Bitmap> = mutableMapOf()
     /** R109: theme sheet ID → 16x16 tile bitmap 리스트. lazy load. */
     private val themeTileCache: MutableMap<Int, List<Bitmap>> = mutableMapOf()
+    /** R110a: obj sheet ID → frame_idx → 가변 크기 sprite bitmap. lazy load. */
+    private val objFrameCache: MutableMap<Int, Map<Int, Bitmap>> = mutableMapOf()
 
     init {
         loadMap(gameState.currentMapId)
@@ -188,6 +190,29 @@ class MapWalkScene(
             val rows = sheet.height / px
             (0 until rows).map { row -> Bitmap.createBitmap(sheet, 0, row * px, px, px) }
         }.getOrNull()?.also { themeTileCache[themeId] = it }
+    }
+
+    /**
+     * R110a: obj_{id}_bm/frame_NN_*.png 을 열어 frame_idx → Bitmap map 으로 적재.
+     * obj sheet 의 frame 은 가변 크기 sprite (16×16 wall, 24×32 building, 10×42 lamp 등).
+     * layer_1[i] >> 6 으로 frame_idx 선택.
+     */
+    private fun loadObjFrames(objId: Int): Map<Int, Bitmap>? {
+        if (objId < 0) return null
+        objFrameCache[objId]?.let { return it }
+        val dir = "${settings.spritesDir()}/map/obj_${objId}_bm"
+        return runCatching {
+            val files = context.assets.list(dir)?.filter { it.endsWith(".png") }?.sorted() ?: emptyList()
+            if (files.isEmpty()) return@runCatching null
+            val framePat = Regex("frame_(\\d+)_")
+            val map = mutableMapOf<Int, Bitmap>()
+            for (f in files) {
+                val m = framePat.find(f) ?: continue
+                val idx = m.groupValues[1].toInt()
+                map[idx] = context.assets.open("$dir/$f").use { BitmapFactory.decodeStream(it) }
+            }
+            map.toMap()
+        }.getOrNull()?.also { objFrameCache[objId] = it }
     }
 
     private fun jsonIntArray(arr: org.json.JSONArray?): List<Int> {
@@ -450,18 +475,29 @@ class MapWalkScene(
                 }
             }
         }
-        // Layer 1 (collision/objects) 렌더 — 비-0 만 색상 패널 (반투명)
+        // Layer 1 (collision/objects) 렌더 — R110a: obj_{themeId}_bm 의 가변 크기 sprite 사용.
+        // layer_1[i] >> 6 = frame_idx (NEOSOLTIA 134-map 통계: 99%+ 가 frame_idx<<6 패턴).
+        // bottom-center anchor — tile 의 (px, py+tilePx) 에 sprite 바닥 정렬.
+        // top-down 순서로 그려 perspective overlap (남쪽 sprite 가 북쪽 위에) 자동.
+        val objFrames = if (m.themeId >= 0) loadObjFrames(m.themeId) else null
         for (ty in ty0 until ty1) {
             for (tx in tx0 until tx1) {
                 val i = ty * m.w + tx
                 if (i >= m.layer1.size) continue
                 val tileId = m.layer1[i]
                 if (tileId == 0) continue
-                tilePaint.color = colorForTile(tileId, layer = 1)
                 val px = tx * tilePx - camX
                 val py = ty * tilePx - camY + hudOffsetY
-                canvas.drawRect(px.toFloat(), py.toFloat(),
-                    (px + tilePx).toFloat(), (py + tilePx).toFloat(), tilePaint)
+                val sprite = objFrames?.get(tileId shr 6)
+                if (sprite != null) {
+                    val sx = px + (tilePx - sprite.width) / 2
+                    val sy = py + (tilePx - sprite.height)
+                    canvas.drawBitmap(sprite, sx.toFloat(), sy.toFloat(), null)
+                } else {
+                    tilePaint.color = colorForTile(tileId, layer = 1)
+                    canvas.drawRect(px.toFloat(), py.toFloat(),
+                        (px + tilePx).toFloat(), (py + tilePx).toFloat(), tilePaint)
+                }
             }
         }
 
