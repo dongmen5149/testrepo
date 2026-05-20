@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 98 (2026-05-20) — 죽음의 구 72B 특수 layout 정밀 (R91 후속) ★
+
+> R91 의 죽음의 구 72B anomaly 해소. 상세: [round98-death-sphere.md](round98-death-sphere.md).
+>
+> 3 stage variant (`_ESDAT_0/1/2` @ 0x331b) 의 byte-by-byte 비교 결과: **pos[63-64] LE16 countdown timer 발견** (600 → 480 → 360, monotonic -120/stage = 10/8/6분). 죽음의 구 = **time-limited boss encounter** (보스 카운트다운 mode). enemy_class=0x32 죽음의 구 전용 unique ID. HP/ATK/gold/EXP 단조 증가 (1× → 3.6×/4×/5.5×/6.6×). R80 의 `ff 3f` marker 부재 anomaly 는 timer 영역 확보를 위한 layout 변형으로 해명. R80 가설 "보스 카운트다운/mini-boss" 검증 완료. ESDAT 5 outlier 중 유일한 time-limited single phase.
+>
+> `parse_h4_death_sphere.py` 신규 + `h4_death_sphere.json` 4.5KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 97 (2026-05-20) — drop_id 16/17/23 currency 가설 검증 (R96 후속) ★
 
 > R96 미해결 drop_id 3 종 의미 식별. 상세: [round97-drop-id-currency.md](round97-drop-id-currency.md).

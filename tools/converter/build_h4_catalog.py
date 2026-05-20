@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Death sphere (R98) — 72B time-limited boss layout
+    ds_path = CONVERTED / 'h4_death_sphere.json'
+    if ds_path.exists():
+        try:
+            ds = json.loads(ds_path.read_text(encoding='utf-8'))
+            catalog['death_sphere'] = {
+                'r91_followup': ds['r91_followup'],
+                'scaling_table': ds['scaling_table'],
+                'countdown_timer_finding': ds['countdown_timer_finding'],
+                'layout_summary': ds['layout_summary'],
+            }
+            print(f'\nDeath sphere: 3-stage time-limited boss (timer 600/480/360s) (R98)')
+        except Exception as e:
+            print(f'  WARN: failed to load death_sphere: {e}', file=sys.stderr)
+
     # Drop_id currency (R97) — drop_id 16/17/23 정체
     drc_path = CONVERTED / 'h4_drop_id_currency.json'
     if drc_path.exists():

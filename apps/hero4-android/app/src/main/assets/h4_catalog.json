@@ -2916,6 +2916,67 @@
       "summon_tier_count": 15
     }
   },
+  "death_sphere": {
+    "r91_followup": "죽음의 구 72B = 67B 변형 + 5B trailer (timer + padding)",
+    "scaling_table": {
+      "hp_p23_le16": [
+        120,
+        322,
+        437
+      ],
+      "atk_p27_le16": [
+        195,
+        567,
+        772
+      ],
+      "def_p29_le16": [
+        8405,
+        29925,
+        49109
+      ],
+      "gold_le16_p57_58": [
+        3339,
+        13621,
+        18499
+      ],
+      "exp_le16_p59_60": [
+        2569,
+        13359,
+        16961
+      ],
+      "countdown_timer_p63_64_le16": [
+        600,
+        480,
+        360
+      ]
+    },
+    "countdown_timer_finding": {
+      "sequence": [
+        600,
+        480,
+        360
+      ],
+      "monotonic_decrease": true,
+      "difference_per_stage": [
+        120,
+        120
+      ],
+      "as_seconds_if_div_1": "600s = 10.0분 → 360s = 6.0분",
+      "hypothesis": "death sphere countdown timer — stage 진행시 단축 (time pressure 증가)"
+    },
+    "layout_summary": {
+      "pos_0": "enemy_class (=0x32, 죽음의 구 전용)",
+      "pos_23_24": "HP LE16",
+      "pos_28_29": "ATK LE16",
+      "pos_30_31": "DEF LE16",
+      "pos_42_43": "(R80 anomaly) ff 3f marker 부재 = 04 00",
+      "pos_55_56": "sub-boundary 07 ff (표준 +56 marker)",
+      "pos_57_58": "gold LE16",
+      "pos_59_60": "EXP LE16",
+      "pos_63_64": "★ countdown timer LE16 (death sphere 시간 제한)",
+      "pos_65_71": "zero padding (5B trailer 남은 부분)"
+    }
+  },
   "drop_id_currency": {
     "alphabetic_order_hypothesis": {
       "16": "_ITM_CASH_RANOMBOX",

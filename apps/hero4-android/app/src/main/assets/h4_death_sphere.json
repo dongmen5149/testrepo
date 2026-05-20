@@ -1,0 +1,193 @@
+{
+  "round": 98,
+  "r91_followup": "죽음의 구 72B = 67B 변형 + 5B trailer (timer + padding)",
+  "entries": [
+    {
+      "enemy_class_p0": 50,
+      "header_le16_p1_2": 35882,
+      "exp_base_le32_p3_6": 234881031,
+      "const_p8_p9": [
+        51,
+        169
+      ],
+      "const_p14": 156,
+      "const_p22": 15,
+      "hp_p23_le16": 120,
+      "hp_dup_p25_le16": 120,
+      "atk_p27_le16": 195,
+      "def_p29_le16": 8405,
+      "def_dup_p31_le16": 8405,
+      "misc_p33_p34": [
+        144,
+        144
+      ],
+      "speed_p35_p36": [
+        14,
+        4
+      ],
+      "sub_boundary_p55_56": [
+        7,
+        255
+      ],
+      "gold_le16_p57_58": 3339,
+      "exp_le16_p59_60": 2569,
+      "countdown_timer_p63_64_le16": 600,
+      "trailer_p65_71": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source": "_ESDAT_0",
+      "stage": 0,
+      "raw_body_hex": "322a8c0700000e0033a9000000009c000000000000000f78007800c300d520d52090900e04001a0e11040000000000000000000000000007ff0b0d090a0000580200000000000000"
+    },
+    {
+      "enemy_class_p0": 50,
+      "header_le16_p1_2": 39748,
+      "exp_base_le32_p3_6": 704643095,
+      "const_p8_p9": [
+        51,
+        169
+      ],
+      "const_p14": 156,
+      "const_p22": 15,
+      "hp_p23_le16": 322,
+      "hp_dup_p25_le16": 322,
+      "atk_p27_le16": 567,
+      "def_p29_le16": 29925,
+      "def_dup_p31_le16": 29925,
+      "misc_p33_p34": [
+        250,
+        250
+      ],
+      "speed_p35_p36": [
+        10,
+        13
+      ],
+      "sub_boundary_p55_56": [
+        7,
+        255
+      ],
+      "gold_le16_p57_58": 13621,
+      "exp_le16_p59_60": 13359,
+      "countdown_timer_p63_64_le16": 480,
+      "trailer_p65_71": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source": "_ESDAT_1",
+      "stage": 1,
+      "raw_body_hex": "32449b1700002a0033a9000000009c000000000000000f420142013702e574e574fafa0a0d00271e35040000000000000000000000000007ff35352f340000e00100000000000000"
+    },
+    {
+      "enemy_class_p0": 50,
+      "header_le16_p1_2": 36701,
+      "exp_base_le32_p3_6": 956301348,
+      "const_p8_p9": [
+        51,
+        169
+      ],
+      "const_p14": 156,
+      "const_p22": 15,
+      "hp_p23_le16": 437,
+      "hp_dup_p25_le16": 437,
+      "atk_p27_le16": 772,
+      "def_p29_le16": 49109,
+      "def_dup_p31_le16": 49109,
+      "misc_p33_p34": [
+        254,
+        254
+      ],
+      "speed_p35_p36": [
+        12,
+        17
+      ],
+      "sub_boundary_p55_56": [
+        7,
+        255
+      ],
+      "gold_le16_p57_58": 18499,
+      "exp_le16_p59_60": 16961,
+      "countdown_timer_p63_64_le16": 360,
+      "trailer_p65_71": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source": "_ESDAT_2",
+      "stage": 2,
+      "raw_body_hex": "325d8f240000390033a9000000009c000000000000000fb501b5010403d5bfd5bffefe0c1100342748040000000000000000000000000007ff434841420000680100000000000000"
+    }
+  ],
+  "scaling_table": {
+    "hp_p23_le16": [
+      120,
+      322,
+      437
+    ],
+    "atk_p27_le16": [
+      195,
+      567,
+      772
+    ],
+    "def_p29_le16": [
+      8405,
+      29925,
+      49109
+    ],
+    "gold_le16_p57_58": [
+      3339,
+      13621,
+      18499
+    ],
+    "exp_le16_p59_60": [
+      2569,
+      13359,
+      16961
+    ],
+    "countdown_timer_p63_64_le16": [
+      600,
+      480,
+      360
+    ]
+  },
+  "countdown_timer_finding": {
+    "sequence": [
+      600,
+      480,
+      360
+    ],
+    "monotonic_decrease": true,
+    "difference_per_stage": [
+      120,
+      120
+    ],
+    "as_seconds_if_div_1": "600s = 10.0분 → 360s = 6.0분",
+    "hypothesis": "death sphere countdown timer — stage 진행시 단축 (time pressure 증가)"
+  },
+  "layout_summary": {
+    "pos_0": "enemy_class (=0x32, 죽음의 구 전용)",
+    "pos_23_24": "HP LE16",
+    "pos_28_29": "ATK LE16",
+    "pos_30_31": "DEF LE16",
+    "pos_42_43": "(R80 anomaly) ff 3f marker 부재 = 04 00",
+    "pos_55_56": "sub-boundary 07 ff (표준 +56 marker)",
+    "pos_57_58": "gold LE16",
+    "pos_59_60": "EXP LE16",
+    "pos_63_64": "★ countdown timer LE16 (death sphere 시간 제한)",
+    "pos_65_71": "zero padding (5B trailer 남은 부분)"
+  }
+}
