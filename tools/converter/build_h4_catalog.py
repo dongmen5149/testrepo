@@ -301,6 +301,22 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Summon tutorial (R99) — n0124_scn tutorial 전문
+    st_path = CONVERTED / 'h4_summon_tutorial.json'
+    if st_path.exists():
+        try:
+            st = json.loads(st_path.read_text(encoding='utf-8'))
+            catalog['summon_tutorial'] = {
+                'source_file': st['source_file'],
+                'tutorial_readable': st['tutorial_readable'],
+                'in_game_terms_to_binary_catalog': st['in_game_terms_to_binary_catalog'],
+                'venom_example_xref': st['venom_example_xref'],
+                'r86_r87_r88_validation': st['r86_r87_r88_validation'],
+            }
+            print(f'\nSummon tutorial: n0124_scn 전문 추출 + R86-R88 catalog 1:1 매핑 (R99)')
+        except Exception as e:
+            print(f'  WARN: failed to load summon_tutorial: {e}', file=sys.stderr)
+
     # Death sphere (R98) — 72B time-limited boss layout
     ds_path = CONVERTED / 'h4_death_sphere.json'
     if ds_path.exists():

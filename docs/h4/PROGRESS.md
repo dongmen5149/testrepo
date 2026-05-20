@@ -4,6 +4,24 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 99 (2026-05-20) — n0124_scn 환수 시스템 tutorial 전문 + R86-R88 catalog 1:1 매핑 (R92 후속) ★
+
+> R92 의 환수 tutorial scene 전문 추출. 상세: [round99-summon-tutorial.md](round99-summon-tutorial.md).
+>
+> n0124_scn 안의 NPC 대화 (offset ~4134-4790) 가 환수 시스템 in-game 설명서. 추출 결과: "진화포인트로 소환수의 기본 능력을 올리거나 특성을 개발할 수 있습니다. 기본 능력은 마법력/방어력/체력/교감도. 특성은 소환수가 가진 스킬 (베놈 = 원거리 공격 + 중독 능력 + 저주 강화). 고레벨로 올라갈 수록 소모 포인트 증가."
+>
+> in-game 용어 ↔ binary catalog 1:1 매핑 검증 통과:
+> - 진화포인트 = `_H_SA` tier_value (R88)
+> - 기본 능력 4 stat (마법력/방어력/체력/교감도) = `_H_SS` 4 global passive skill_id 91-94 (R87)
+> - 특성 = `_H_SS` 5 환수 × 5 logical skills (R86-R87)
+> - 베놈 3 trait → 5 catalog skill thematic grouping 일치
+>
+> R87 "정신강화 ↔ 교감도 강화" mismatch 가 in-game 설계 의도 (short=stat 이름, long=효과 설명) 로 해명. 환수 시스템 player-facing/engine-facing 매핑 완전 검증.
+>
+> `parse_h4_summon_tutorial.py` 신규 + `h4_summon_tutorial.json` 4.2KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 98 (2026-05-20) — 죽음의 구 72B 특수 layout 정밀 (R91 후속) ★
 
 > R91 의 죽음의 구 72B anomaly 해소. 상세: [round98-death-sphere.md](round98-death-sphere.md).

@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 98 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 99 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R98 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R99 은 각 round 문서.
 
-## 🏆 Round 76-R98 누적 (2026-05-19 ~ 2026-05-20, 23 라운드 연속 자동 분석)
+## 🏆 Round 76-R99 누적 (2026-05-19 ~ 2026-05-20, 24 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -30,19 +30,20 @@
 | R95 | element byte[5]=2 검증 + R89 정정 — `_H_SS` 전용 5 hit, byte[5]=2 invariant = summon-exclusive subtype marker | [round95-active-attack-xref.md](round95-active-attack-xref.md) |
 | R96 | Q_REPAY drop_id ↔ ITM 매핑 검증 — drop slot 구조 [ITM_file_id:1B][item_idx:1B][qty:1B] × 2 slot. 55/65 DAT 매핑 (quest-thematic 일치) | [round96-q-repay-drops.md](round96-q-repay-drops.md) |
 | R97 | drop_id 16/17/23 currency 가설 검증 — 16=`_ITM_CASH_RANOMBOX` 확정, 23=`_ITM_REPAY_2` 확정, 17 ambiguous | [round97-drop-id-currency.md](round97-drop-id-currency.md) |
-| **R98** | **★ 죽음의 구 72B = time-limited boss 확정** — pos[63-64] LE16 countdown timer 600/480/360 (10/8/6분 단조 감소). enemy_class=0x32 전용. ESDAT 5 outlier 중 유일 time-limited single phase | [round98-death-sphere.md](round98-death-sphere.md) |
+| R98 | 죽음의 구 72B = time-limited boss 확정 — pos[63-64] LE16 countdown timer 600/480/360 (10/8/6분 단조 감소) | [round98-death-sphere.md](round98-death-sphere.md) |
+| **R99** | **★ n0124_scn 환수 tutorial 전문 + R86-R88 catalog 1:1 매핑** — in-game 용어 (진화포인트/기본 능력 4 stat/특성/베놈 예시) 모두 binary catalog 와 정확 매칭. R87 정신-교감도 mismatch 도 in-game 설계 의도로 해명 | [round99-summon-tutorial.md](round99-summon-tutorial.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. ESDAT outlier 5종 모두 해석 완성. 남은 자동 트랙은 character skill schema, tutorial, drop_id 17 정밀.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. 환수 시스템 player-facing/engine-facing 1:1 매핑 검증 완료. 남은 자동 트랙은 character skill schema, drop_id 17, bonus_id 정밀.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **n0124_scn tutorial 전문 분석** (R92 후속) — 환수 시스템 in-game 설명
-2. **bonus_id=0 + tier_value 의미** (R94 후속)
-3. **character class skill (S000-S003) stat block schema** (R95 후속)
-4. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
-5. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
+1. ⭐ **bonus_id=0 + tier_value 의미** (R94 후속)
+2. **character class skill (S000-S003) stat block schema** (R95 후속)
+3. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
+4. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
+5. **타 character class tutorial scene** (R99 후속) — S000-S003 의 in-game 설명 검색
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 

@@ -1,0 +1,90 @@
+{
+  "round": 99,
+  "source_file": "MAP/SC/n0124_scn",
+  "source_size_bytes": 16968,
+  "tutorial_block_offset_kw": "소환수 관리에 대한 설명",
+  "tutorial_raw_text": "소환수 관리에 대한 설명을 해드릴까요?\u0000듣는다\u0000진화포인트로 소환수의 기본 능력을 올리거나 특성을 개발할 수 있습니다. 기본 능력은 마법력, 방어력, 체력, 교감도이며 각각 공격력, 방어력, 체력, 그리고 MP를 말합니다.\u0000특성은 소환수가 가진 스킬로 소환수에 따라 다릅니다. <베놈{은 원거리 공격, 중독 능력, 저주 강화 능력이 있습니다. 기본 능력이나 특성 개발이나 모두 고레벨로 올라갈 수록 소모되는 포인트의 양이 많아집니다.\u0000듣지않는다",
+  "tutorial_readable": "소환수 관리에 대한 설명을 해드릴까요? / 듣는다 / 진화포인트로 소환수의 기본 능력을 올리거나 특성을 개발할 수 있습니다. 기본 능력은 마법력, 방어력, 체력, 교감도이며 각각 공격력, 방어력, 체력, 그리고 MP를 말합니다. / 특성은 소환수가 가진 스킬로 소환수에 따라 다릅니다. <베놈{은 원거리 공격, 중독 능력, 저주 강화 능력이 있습니다. 기본 능력이나 특성 개발이나 모두 고레벨로 올라갈 수록 소모되는 포인트의 양이 많아집니다. / 듣지않는다",
+  "in_game_terms_to_binary_catalog": {
+    "진화포인트": {
+      "binary_source": "_H_SA 24 ability slots tier_value",
+      "r88_round": "R88",
+      "examples": "skill_id 12 (동시사격) tier 10/20/30; skill_id 37 (마법강화) tier 20/40/60"
+    },
+    "기본 능력 4 stat": {
+      "binary_source": "_H_SS 4 global passives (skill_id 91-94)",
+      "r87_round": "R87",
+      "mapping": [
+        {
+          "in_game": "마법력",
+          "effect": "공격력",
+          "r87_skill_id": 91,
+          "r87_name": "마법력강화"
+        },
+        {
+          "in_game": "방어력",
+          "effect": "방어력",
+          "r87_skill_id": 92,
+          "r87_name": "교감도강화"
+        },
+        {
+          "in_game": "체력",
+          "effect": "체력",
+          "r87_skill_id": 93,
+          "r87_name": "체력강화"
+        },
+        {
+          "in_game": "교감도",
+          "effect": "MP",
+          "r87_skill_id": 94,
+          "r87_name": "정신강화"
+        }
+      ]
+    },
+    "특성 (per-summon trait)": {
+      "binary_source": "_H_SS 5 환수 × 5 logical skills",
+      "r86_r87_rounds": "R86 (발견) + R87 (정밀화)",
+      "note": "in-game 3 trait 설명 = catalog 5 skill 의 thematic grouping"
+    },
+    "고레벨로 올라갈 수록 소모되는 포인트 증가": {
+      "binary_source": "_H_SA tier_value monotonic progression (10/20/30 또는 5/10/15)",
+      "r88_round": "R88"
+    }
+  },
+  "venom_example_xref": {
+    "in_game_described_traits": [
+      "원거리 공격",
+      "중독 능력",
+      "저주 강화 능력"
+    ],
+    "r86_r87_catalog_skills": [
+      {
+        "kind": "basic_attack",
+        "name": "뇌격"
+      },
+      {
+        "kind": "ranged_status",
+        "name": "맹독 (= 원거리 공격 + 중독)"
+      },
+      {
+        "kind": "effect_boost",
+        "name": "뇌격의 중독 효과 강화"
+      },
+      {
+        "kind": "aura",
+        "name": "저주의 오러 (= 저주 강화)"
+      },
+      {
+        "kind": "on_summon_buff",
+        "name": "소환시 소환자의 저주 증가"
+      }
+    ],
+    "mapping_observation": "in-game \"원거리 공격\" = catalog basic_attack(뇌격) + ranged_status(맹독); \"중독 능력\" = effect_boost(중독효과강화); \"저주 강화 능력\" = aura(저주의 오러) + on_summon_buff(저주 증가)"
+  },
+  "r86_r87_r88_validation": {
+    "all_in_game_terms_have_binary_match": true,
+    "all_5_environment_skills_explained_thematically": true,
+    "evolution_point_currency_confirmed": "진화포인트 = tier_value upgrade cost",
+    "4_base_abilities_match_passive_skill_ids_91_94": true
+  }
+}
