@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 92 (2026-05-20) — Summon dialogue corpus cross-ref (R87 후속) ★
+
+> R87 의 dialogue cross-ref 완료. 상세: [round92-summon-dialogue-xref.md](round92-summon-dialogue-xref.md).
+>
+> 252 decrypted 파일 / 484KB 전수 스캔. 5 환수 개별 이름은 **catalog (`_H_SS`) + item catalog (`_ITM_15_DAT`) + 상점 NPC (`NPCUI_GUARDIANSHOP_DAT`) + tutorial scene (`n0124_scn`, 베놈 예시) 4 파일** 외 거의 부재. generic "환수" 147 hits / "소환수" 130 hits 35 파일에 산재. "소환사" 9 hits 만, "소환술" 0 hits, 보스 "망각의 저주" catalog 외 0 hits.
+>
+> 환수 시스템 in-game 입문 경로 식별: tutorial(n0124) → 수호자 상점(NPCUI_GUARDIANSHOP_DAT) 획득 → catalog 사용. story-isolated 부가 시스템임을 검증.
+>
+> `parse_h4_summon_dialogue_xref.py` 신규 + `h4_summon_dialogue_xref.json` 11.3KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 91 (2026-05-20) — Multi-phase boss encounter stat scaling 정량 (R80 후속) ★
 
 > R80 미해결 보스 phase 강화율 정량화. 상세: [round91-boss-phase-scaling.md](round91-boss-phase-scaling.md).

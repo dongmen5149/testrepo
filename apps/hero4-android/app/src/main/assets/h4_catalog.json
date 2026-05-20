@@ -2916,6 +2916,88 @@
       "summon_tier_count": 15
     }
   },
+  "summon_dialogue_xref": {
+    "corpus_meta": {
+      "files_scanned": 252,
+      "bytes_scanned": 484512
+    },
+    "individual_summon_hits": {
+      "베놈": 8,
+      "헤지호그": 7,
+      "그래비티": 7,
+      "쇼커": 7,
+      "세이프가드": 7
+    },
+    "generic_term_hits": {
+      "환수": 147,
+      "소환수": 130,
+      "소환사": 9,
+      "소환술": 0,
+      "망각의 저주": 1
+    },
+    "summon_source_files": [
+      {
+        "path": "HDAT/_H_SS",
+        "roles": [
+          "catalog_primary"
+        ],
+        "summons_found": [
+          "그래비티",
+          "베놈",
+          "세이프가드",
+          "쇼커",
+          "헤지호그"
+        ],
+        "summon_count": 5
+      },
+      {
+        "path": "ITM/DAT/_ITM_15_DAT",
+        "roles": [
+          "item_catalog_sub"
+        ],
+        "summons_found": [
+          "그래비티",
+          "베놈",
+          "세이프가드",
+          "쇼커",
+          "헤지호그"
+        ],
+        "summon_count": 5
+      },
+      {
+        "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+        "roles": [
+          "shop_npc"
+        ],
+        "summons_found": [
+          "그래비티",
+          "베놈",
+          "세이프가드",
+          "쇼커",
+          "헤지호그"
+        ],
+        "summon_count": 5
+      },
+      {
+        "path": "MAP/SC/n0124_scn",
+        "roles": [
+          "scene_dialogue"
+        ],
+        "summons_found": [
+          "베놈"
+        ],
+        "summon_count": 1
+      }
+    ],
+    "r87_followup_findings": {
+      "individual_names_localized": "5 환수 이름은 catalog + 상점 NPC + tutorial 1 scene 외 dialogue 부재",
+      "generic_terms_widespread": "\"환수\"/\"소환수\" 147+130 hits across 35 files",
+      "class_name_absent": "\"소환사\" 9 hits, \"소환술\" 0 hits — class name 으로 dialogue 거의 없음",
+      "boss_curse_catalog_only": "\"망각의 저주\" 1 hit (catalog 외 0)",
+      "shop_npc_role": "NPCUI_GUARDIANSHOP_DAT = 수호자 상점 = 환수 획득 UI",
+      "tutorial_scene": "n0124_scn 이 베놈 을 예시로 환수 시스템 설명"
+    }
+  },
   "boss_phase_scaling": {
     "outlier_count": 4,
     "r78_field_layout": {

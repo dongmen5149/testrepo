@@ -1,0 +1,528 @@
+{
+  "round": 92,
+  "corpus_meta": {
+    "files_scanned": 252,
+    "bytes_scanned": 484512
+  },
+  "keyword_summary": {
+    "베놈": {
+      "hits": 8,
+      "file_count": 4,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 3
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "MAP/SC/n0124_scn",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 3
+        }
+      ]
+    },
+    "헤지호그": {
+      "hits": 7,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 3
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 3
+        }
+      ]
+    },
+    "그래비티": {
+      "hits": 7,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 3
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 3
+        }
+      ]
+    },
+    "쇼커": {
+      "hits": 7,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 3
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 3
+        }
+      ]
+    },
+    "세이프가드": {
+      "hits": 7,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 3
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 3
+        }
+      ]
+    },
+    "소환수": {
+      "hits": 130,
+      "file_count": 33,
+      "top_files": [
+        {
+          "path": "E/_ESDAT_0",
+          "count": 8
+        },
+        {
+          "path": "E/_ESDAT_1",
+          "count": 8
+        },
+        {
+          "path": "E/_ESDAT_2",
+          "count": 8
+        },
+        {
+          "path": "HDAT/_H_SS",
+          "count": 4
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 4
+        }
+      ]
+    },
+    "소환사": {
+      "hits": 9,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "E/_ESDAT_0",
+          "count": 3
+        },
+        {
+          "path": "E/_ESDAT_1",
+          "count": 3
+        },
+        {
+          "path": "E/_ESDAT_2",
+          "count": 3
+        }
+      ]
+    },
+    "환수": {
+      "hits": 147,
+      "file_count": 35,
+      "top_files": [
+        {
+          "path": "E/_ESDAT_0",
+          "count": 8
+        },
+        {
+          "path": "E/_ESDAT_1",
+          "count": 8
+        },
+        {
+          "path": "E/_ESDAT_2",
+          "count": 8
+        },
+        {
+          "path": "HDAT/_H_S002",
+          "count": 3
+        },
+        {
+          "path": "HDAT/_H_S003",
+          "count": 8
+        }
+      ]
+    },
+    "소환술": {
+      "hits": 0,
+      "file_count": 0,
+      "top_files": []
+    },
+    "망각": {
+      "hits": 1,
+      "file_count": 1,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        }
+      ]
+    },
+    "망각의 저주": {
+      "hits": 1,
+      "file_count": 1,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        }
+      ]
+    },
+    "뇌격": {
+      "hits": 28,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 12
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 12
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 4
+        }
+      ]
+    },
+    "맹독": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "되돌리기": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "슬로우": {
+      "hits": 9,
+      "file_count": 4,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 2
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 2
+        },
+        {
+          "path": "ITM/DAT/_ITM_OPTION",
+          "count": 3
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 2
+        }
+      ]
+    },
+    "스턴": {
+      "hits": 11,
+      "file_count": 6,
+      "top_files": [
+        {
+          "path": "HDAT/_H_S000",
+          "count": 1
+        },
+        {
+          "path": "HDAT/_H_S001",
+          "count": 1
+        },
+        {
+          "path": "HDAT/_H_SS",
+          "count": 2
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 2
+        },
+        {
+          "path": "ITM/DAT/_ITM_OPTION",
+          "count": 3
+        }
+      ]
+    },
+    "실드": {
+      "hits": 4,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 2
+        }
+      ]
+    },
+    "저주의 오러": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "강화의 오러": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "마법의 오러": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "마력의 오러": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "보호의 오러": {
+      "hits": 3,
+      "file_count": 3,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "ITM/DAT/_ITM_15_DAT",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 1
+        }
+      ]
+    },
+    "마법력강화": {
+      "hits": 6,
+      "file_count": 2,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 5
+        }
+      ]
+    },
+    "교감도강화": {
+      "hits": 6,
+      "file_count": 2,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 5
+        }
+      ]
+    },
+    "체력강화": {
+      "hits": 6,
+      "file_count": 2,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        },
+        {
+          "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+          "count": 5
+        }
+      ]
+    },
+    "정신강화": {
+      "hits": 1,
+      "file_count": 1,
+      "top_files": [
+        {
+          "path": "HDAT/_H_SS",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "summon_source_files": [
+    {
+      "path": "HDAT/_H_SS",
+      "roles": [
+        "catalog_primary"
+      ],
+      "summons_found": [
+        "그래비티",
+        "베놈",
+        "세이프가드",
+        "쇼커",
+        "헤지호그"
+      ],
+      "summon_count": 5
+    },
+    {
+      "path": "ITM/DAT/_ITM_15_DAT",
+      "roles": [
+        "item_catalog_sub"
+      ],
+      "summons_found": [
+        "그래비티",
+        "베놈",
+        "세이프가드",
+        "쇼커",
+        "헤지호그"
+      ],
+      "summon_count": 5
+    },
+    {
+      "path": "NPC/NPCUI_GUARDIANSHOP_DAT",
+      "roles": [
+        "shop_npc"
+      ],
+      "summons_found": [
+        "그래비티",
+        "베놈",
+        "세이프가드",
+        "쇼커",
+        "헤지호그"
+      ],
+      "summon_count": 5
+    },
+    {
+      "path": "MAP/SC/n0124_scn",
+      "roles": [
+        "scene_dialogue"
+      ],
+      "summons_found": [
+        "베놈"
+      ],
+      "summon_count": 1
+    }
+  ],
+  "tutorial_excerpts": [
+    {
+      "path": "MAP/SC/n0124_scn",
+      "excerpt_around_first_mention": "력, 방어력, 체력, 교감도이며 각각 공격력, 방어력, 체력, 그리고 MP를 말합니다.·특성은 소환수가 가진 스킬로 소환수에 따라 다릅니다. <베놈{은 원거리 공격, 중독 능력, 저주 강화 능력이 있습니다. 기본 능력이나 특성 개발이나 모두 고레벨로 올라갈 수록 소모되는 포인트의 양이 많아집니다.·듣지않는다·&소환수;$...........{퀘스트 완료!·&"
+    }
+  ],
+  "r87_followup_findings": {
+    "individual_names_localized": "5 환수 이름은 catalog + 상점 NPC + tutorial 1 scene 외 dialogue 부재",
+    "generic_terms_widespread": "\"환수\"/\"소환수\" 147+130 hits across 35 files",
+    "class_name_absent": "\"소환사\" 9 hits, \"소환술\" 0 hits — class name 으로 dialogue 거의 없음",
+    "boss_curse_catalog_only": "\"망각의 저주\" 1 hit (catalog 외 0)",
+    "shop_npc_role": "NPCUI_GUARDIANSHOP_DAT = 수호자 상점 = 환수 획득 UI",
+    "tutorial_scene": "n0124_scn 이 베놈 을 예시로 환수 시스템 설명"
+  }
+}

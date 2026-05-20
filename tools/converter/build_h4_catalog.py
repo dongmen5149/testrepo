@@ -301,6 +301,28 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Summon dialogue xref (R92) — 환수 시스템 corpus cross-ref
+    sdx_path = CONVERTED / 'h4_summon_dialogue_xref.json'
+    if sdx_path.exists():
+        try:
+            sdx = json.loads(sdx_path.read_text(encoding='utf-8'))
+            catalog['summon_dialogue_xref'] = {
+                'corpus_meta': sdx['corpus_meta'],
+                'individual_summon_hits': {
+                    n: sdx['keyword_summary'][n]['hits'] for n in
+                    ['베놈', '헤지호그', '그래비티', '쇼커', '세이프가드']
+                },
+                'generic_term_hits': {
+                    n: sdx['keyword_summary'][n]['hits'] for n in
+                    ['환수', '소환수', '소환사', '소환술', '망각의 저주']
+                },
+                'summon_source_files': sdx['summon_source_files'],
+                'r87_followup_findings': sdx['r87_followup_findings'],
+            }
+            print(f'\nSummon dialogue xref: 252 files scanned, 4 sources for individual names (R92)')
+        except Exception as e:
+            print(f'  WARN: failed to load summon_dialogue_xref: {e}', file=sys.stderr)
+
     # Boss phase scaling (R91) — 4 multi-phase encounter stat 정량
     bp_path = CONVERTED / 'h4_boss_phases.json'
     if bp_path.exists():

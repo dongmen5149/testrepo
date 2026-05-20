@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 91 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 92 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R91 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R92 은 각 round 문서.
 
-## 🏆 Round 76-R91 누적 (2026-05-19 ~ 2026-05-20, 16 라운드 연속 자동 분석)
+## 🏆 Round 76-R92 누적 (2026-05-19 ~ 2026-05-20, 17 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -23,20 +23,21 @@
 | R88 | `_H_BS` + `_H_SA` 정밀화 — R86 stride 가설 정정 (5×27B / 40×24B). 5 환수 base stat + learn skill ID(6-20), 8 ability × 3 tier, 5 summon × 3 growth tier (value = tier × 10) | [round88-summon-progression.md](round88-summon-progression.md) |
 | R89 | 23B stat block 통합 schema — 3 template (ACTIVE_ATTACK/DIVIDER/PASSIVE_TEMPLATE) × 4 PASSIVE subtype (SHIELD/STATUS_PROC/AURA/PASSIVE). R87 정정: damage byte[3-4] LE16, byte[5]가 subtype | [round89-statblock-schema.md](round89-statblock-schema.md) |
 | R90 | Q_REPAY idx ↔ quest 1:1 매핑 확정 — idx 0-127 = 128 quest 직접 매핑 (경계 61→62 = _QUEST_0→_QUEST_1), 128-198 = 71 extra (52 repeatable + 8 mid + 11 endgame), 199 = sentinel | [round90-quest-reward-map.md](round90-quest-reward-map.md) |
-| **R91** | **★ 보스 phase stat scaling 정량** — 4 outlier (좀비/오토마톤/소환된좀비/기갑병) 추출. 표준 보스 phase 0→final HP/ATK/DEF +20-25%, gold/EXP +25-30% 일관 ratio. 오토마톤 V-shape (phase 1 cinematic dip). enemy_class byte 도 phase 별 전환 | [round91-boss-phase-scaling.md](round91-boss-phase-scaling.md) |
+| R91 | 보스 phase stat scaling 정량 — 4 outlier (좀비/오토마톤/소환된좀비/기갑병) 추출. 표준 보스 phase 0→final HP/ATK/DEF +20-25%, gold/EXP +25-30% 일관 ratio. 오토마톤 V-shape (phase 1 cinematic dip). enemy_class byte 도 phase 별 전환 | [round91-boss-phase-scaling.md](round91-boss-phase-scaling.md) |
+| **R92** | **★ Summon dialogue corpus cross-ref** — 252 파일/484KB 스캔. 5 환수 개별 이름은 catalog/item/shop NPC/tutorial 4 파일만, 환수 시스템 acquisition entry = `NPCUI_GUARDIANSHOP_DAT` (수호자 상점), tutorial = `n0124_scn` (베놈 예시), 보스 망각의 저주 catalog 외 0 hits | [round92-summon-dialogue-xref.md](round92-summon-dialogue-xref.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.95% 종결**. 보스 phase scaling 까지 정량화. 남은 자동 트랙은 dialogue cross-ref, _H_SA 검증.
+**Hero4 게임 데이터 자동 분석 ~99.97% 종결**. 환수 시스템의 in-game 입문 경로까지 식별. 남은 자동 트랙은 _H_SA 검증, drop_id, 죽음의 구.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **dialogue corpus 환수 등장 빈도** (R87 후속) — 베놈/헤지호그/... 35,752 대사 cross-ref
-2. **`_H_SA` group_id ↔ 5 환수 매핑 검증** (R88 후속) — group 0/64/78/38/75 의 환수 식별
-3. **`_H_SA` ability skill_id {12,13,15,16,18,21,22,37} 카테고리** (R88 후속)
-4. **element byte[5]=2 검증** (R89 후속)
-5. **Q_REPAY drop_id 의미** (R90 후속) — 32 entries 의 drop_id 가 ITM 아이템 idx 인지 검증
-6. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
+1. ⭐ **`_H_SA` group_id ↔ 5 환수 매핑 검증** (R88 후속) — group 0/64/78/38/75
+2. **`_H_SA` ability skill_id {12,13,15,16,18,21,22,37} 카테고리** (R88 후속)
+3. **element byte[5]=2 검증** (R89 후속)
+4. **Q_REPAY drop_id 의미** (R90 후속) — 32 entries 검증
+5. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
+6. **n0124_scn tutorial 전문 분석** (R92 후속)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
