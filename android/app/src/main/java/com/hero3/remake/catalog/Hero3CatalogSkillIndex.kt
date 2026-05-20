@@ -100,6 +100,8 @@ class Hero3CatalogSkillIndex(
         SHIELD_PIERCE,
         /** R105 — BUFF_REMOVE slot. 시전 시 적 buff 중 perTick 개 제거 (debuff 는 미보존). */
         BUFF_REMOVE,
+        /** R106 — CURE_STATUS slot. 시전 시 actor 자기 (또는 파티) 의 debuff 를 perTick 개 제거. */
+        CURE_STATUS,
     }
 
     /**
@@ -136,6 +138,7 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.SP_COST_REDUCE -> s.codeName == "SP_COST_REDUCE"
                 ModifierKind.SHIELD_PIERCE  -> s.codeName == "SHIELD_PIERCE"
                 ModifierKind.BUFF_REMOVE    -> s.codeName == "BUFF_REMOVE"
+                ModifierKind.CURE_STATUS    -> s.codeName == "CURE_STATUS"
             }
             if (keep) sum += s.primarySigned
         }

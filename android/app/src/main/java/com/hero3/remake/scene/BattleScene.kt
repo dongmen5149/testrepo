@@ -230,6 +230,47 @@ class BattleScene(
     }
 
     /**
+     * R106 — 적의 공격이 명중 시 일정 확률로 party 의 한 명에게 random debuff 부여.
+     * 일반 적 = 8%, boss = 15%. POISON / BURN / SLOW / STUN 중 random 1개, 3턴.
+     * SLOW/STUN 의 perTick 은 사용 안 됨, POISON/BURN 은 max(2, dmg/5).
+     */
+    private fun tryApplyDebuffToParty(memberIdx: Int, lastHitDmg: Int) {
+        val isBoss = forcedEnemyId?.startsWith("boss_") == true
+        val pct = if (isBoss) 15 else 8
+        if (Random.nextInt(100) >= pct) return
+        val pool = listOf(Status.POISON, Status.BURN, Status.SLOW, Status.STUN)
+        val st = pool[Random.nextInt(pool.size)]
+        val perTick = if (st == Status.POISON || st == Status.BURN) maxOf(2, lastHitDmg / 5) else 0
+        val list = statusesOf(memberIdx)
+        val existing = list.firstOrNull { it.status == st }
+        if (existing != null) { existing.turnsLeft = 3 }
+        else list += StatusEffect(st, turnsLeft = 3, perTick = perTick)
+        val target = party.getOrNull(memberIdx) ?: return
+        pushLog(lang(
+            "${displayName(target, false)} ${statusLabel(st, false)} 부여 (3턴).",
+            "${displayName(target, true)} ${statusLabel(st, true)} applied (3 turns)."))
+    }
+
+    /**
+     * R106 — catalog CURE_STATUS slot > 0 시 actor 자기 debuff 를 N (1..3) 개 제거.
+     * 자기 자신만 (party 전체 아님). buff 는 보존.
+     */
+    private fun tryCureStatusFromSkill(actorMemberIdx: Int, nameKo: String) {
+        val idx = catalogSkillIndex ?: return
+        val rawN = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.CURE_STATUS)
+        val n = rawN.coerceIn(0, 3)
+        if (n <= 0) return
+        val list = partyStatuses[actorMemberIdx] ?: return
+        val removable = list.filter { !isBuff(it.status) }
+        if (removable.isEmpty()) return
+        val toRemove = removable.take(n)
+        val names = toRemove.joinToString("/") { statusLabel(it.status, isEn) }
+        list.removeAll(toRemove.toSet())
+        pushLog(lang("상태이상 회복: $names", "Cured: $names"))
+    }
+
+    /**
      * R105 — 주어진 Status 가 buff (긍정 효과) 인지 debuff (부정 효과) 인지 분류.
      * POISON/BURN/SLOW/STUN = debuff, 나머지는 모두 buff.
      */
@@ -304,9 +345,10 @@ class BattleScene(
     }
 
     /**
-     * R96/R98 — 1턴 경과 처리.
+     * R96/R98/R106 — 1턴 경과 처리.
      * R98: HP_REGEN_BUFF / SP_REGEN_BUFF 가 있으면 해당 member 에 HP/SP 회복 적용 (살아있는 member 만).
-     * 이후 모든 buff turnsLeft -= 1, 만료 제거.
+     * R106: POISON/BURN debuff 도 dot 적용. SLOW/STUN 은 tick 효과 없음 (action 시점에서 skip).
+     * 이후 모든 buff/debuff turnsLeft -= 1, 만료 제거.
      */
     private fun tickPartyStatuses() {
         for ((idx, list) in partyStatuses) {
@@ -314,6 +356,7 @@ class BattleScene(
             if (c.hp > 0) {
                 var hpHealed = 0
                 var spGained = 0
+                var dotDmg = 0
                 for (e in list) {
                     when (e.status) {
                         Status.HP_REGEN_BUFF -> {
@@ -326,6 +369,11 @@ class BattleScene(
                             c.sp += gain
                             spGained += gain
                         }
+                        Status.POISON, Status.BURN -> {
+                            val take = e.perTick.coerceAtMost(c.hp)
+                            c.hp -= take
+                            dotDmg += take
+                        }
                         else -> {}
                     }
                 }
@@ -336,6 +384,10 @@ class BattleScene(
                 if (spGained > 0) {
                     pushLog(lang("재생: ${displayName(c, isEn)} +${spGained} SP", "Regen: ${displayName(c, isEn)} +$spGained SP"))
                 }
+                if (dotDmg > 0) {
+                    popups += Popup("-$dotDmg", onEnemy = false, targetIdx = idx, ttl = 900L, color = Color.rgb(170, 220, 100))
+                    pushLog(lang("도트: ${displayName(c, isEn)} -$dotDmg HP", "DoT: ${displayName(c, isEn)} -$dotDmg HP"))
+                }
             }
             val it = list.iterator()
             while (it.hasNext()) {
@@ -343,6 +395,40 @@ class BattleScene(
                 e.turnsLeft -= 1
                 if (e.turnsLeft <= 0) it.remove()
             }
+        }
+    }
+
+    /**
+     * R106 — actor 가 STUN_BUFF 보유 시 행동 100% skip, SLOW 50% skip. true = skip.
+     */
+    private fun partyMemberShouldSkipTurn(memberIdx: Int): Boolean {
+        val list = partyStatuses[memberIdx] ?: return false
+        if (list.any { it.status == Status.STUN }) return true
+        if (list.any { it.status == Status.SLOW } && Random.nextFloat() < 0.5f) return true
+        return false
+    }
+
+    /**
+     * R106 — actor 가 STUN/SLOW 면 행동 skip + 로그 + ANIMATE phase 로 다음 actor 호출.
+     * 그 외는 일반 COMMAND phase 진입.
+     */
+    private fun enterCommandOrSkip() {
+        if (partyMemberShouldSkipTurn(actorIdx)) {
+            val target = currentActor()
+            val list = partyStatuses[actorIdx]
+            val st = list?.firstOrNull { it.status == Status.STUN }?.status
+                ?: list?.firstOrNull { it.status == Status.SLOW }?.status
+                ?: Status.SLOW
+            pushLog(lang(
+                "${displayName(target, false)} 행동 불가 (${statusLabel(st, false)}).",
+                "${displayName(target, true)} cannot act (${statusLabel(st, true)})."))
+            phase = Phase.ANIMATE
+            animTtl = 400L
+        } else {
+            skillPickIdx = 0
+            itemPickIdx = 0
+            menuIdx = 0
+            phase = Phase.COMMAND
         }
     }
 
@@ -518,6 +604,8 @@ class BattleScene(
             // R101: heal skill 이 REVIVE slot 가지면 KO 된 member 부활.
             tryReviveFromSkill(s.nameKo)
             registerSelfBuffsFromSkill(actorIdx, s.nameKo)
+            // R106: heal skill 이 CURE_STATUS slot 가지면 actor 자기 debuff 제거.
+            tryCureStatusFromSkill(actorIdx, s.nameKo)
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
@@ -682,10 +770,7 @@ class BattleScene(
                 animTtl = 600L
             } else {
                 actorIdx = next
-                skillPickIdx = 0
-                itemPickIdx = 0
-                menuIdx = 0
-                phase = Phase.COMMAND
+                enterCommandOrSkip()
             }
         }
     }
@@ -706,9 +791,10 @@ class BattleScene(
             } else {
                 // R96: 한 라운드 (party 행동 → enemy 행동) 종료 → 파티 buff turnsLeft 감소.
                 tickPartyStatuses()
+                // R106: tick 이 dot 으로 모든 멤버를 죽였을 수 있음.
+                if (aliveCount() == 0) { beginDefeat(); return }
                 actorIdx = firstAliveFrom(0)
-                menuIdx = 0; skillPickIdx = 0; itemPickIdx = 0
-                phase = Phase.COMMAND
+                enterCommandOrSkip()
             }
         }
     }
@@ -837,6 +923,8 @@ class BattleScene(
         popups += Popup("-$dmg", onEnemy = false, targetIdx = pick.index, ttl = 900L, color = Color.rgb(255, 80, 80))
         val name = lang(enemy.def.nameKo, enemy.def.nameEn)
         pushLog("$name → ${displayName(target, isEn)} $dmg.")
+        // R106: 적의 공격이 명중하면 8% (boss=15%) 확률로 random debuff 부여 (target alive 시).
+        if (target.hp > 0) tryApplyDebuffToParty(pick.index, dmg)
         if (critDefPct > 0 || defPct > 0) {
             pushLog(lang("(버프 흡수: 크감 $critDefPct% / 방어 $defPct%)",
                          "(buffs: critDef $critDefPct% / def $defPct%)"))
