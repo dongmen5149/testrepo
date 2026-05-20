@@ -363,10 +363,26 @@ class BattleScene(
         val isBoss = forcedEnemyId?.startsWith("boss_") == true
         SfxBus.playMusic(if (isBoss) SfxBus.Bgm.BOSS else SfxBus.Bgm.BATTLE)
         if (isBoss) SfxBus.play(SfxBus.Sfx.BOSS_INTRO)
-        // R103: boss 는 전투 시작 시 자기 DEFENSE_BUFF 25% (전투 내내) 보유 — 받는 데미지 감쇄.
-        // 일반 적은 변동 없음. enemy.statuses 는 R94 에 도입됨 (debuff 용) 이지만 buff 도 같은 컨테이너 재사용.
+        // R103/R104: boss 별 차별화 buff. R104 은 3 메인 boss 가 각자 다른 컨셉.
+        //  guardian = tank (DEFENSE 25% + CRIT_DEF 20%)
+        //  chaos    = evasive (DODGE 20% + ACCURACY 15%)
+        //  sealed   = endgame (BLOCK 15% + DEFENSE 20% + CRIT_DEF 30%)
+        //  기타 boss = default tank (DEFENSE 25%)
         if (isBoss) {
-            enemy.statuses += StatusEffect(Status.DEFENSE_BUFF, turnsLeft = 99, perTick = 25)
+            applyBossBuffs(enemy.def.id)
+        }
+    }
+
+    /** R104 — boss id 별로 다른 buff 조합을 enemy.statuses 에 부여 (turnsLeft = 99, 전투 내내). */
+    private fun applyBossBuffs(bossId: String) {
+        fun add(st: Status, pct: Int) {
+            enemy.statuses += StatusEffect(st, turnsLeft = 99, perTick = pct)
+        }
+        when (bossId) {
+            "boss_guardian" -> { add(Status.DEFENSE_BUFF, 25); add(Status.CRIT_DEF_BUFF, 20) }
+            "boss_chaos"    -> { add(Status.DODGE_BUFF, 20);   add(Status.ACCURACY_BUFF, 15) }
+            "boss_sealed"   -> { add(Status.BLOCK_BUFF, 15);   add(Status.DEFENSE_BUFF, 20); add(Status.CRIT_DEF_BUFF, 30) }
+            else            -> { add(Status.DEFENSE_BUFF, 25) }
         }
     }
     private val hpBar = Paint().apply { color = Color.rgb(220, 80, 80) }
@@ -478,10 +494,18 @@ class BattleScene(
         }
         val atk = (CharacterRegistry.effectiveAttack(actor) * s.powerMul).toInt() + s.flatBonus + catalogBonus
         val critBonus = catalogCritBonusFor(s.nameKo)
-        // R97: 명중 판정. 액터 ACC buff, 적은 DODGE 0 (enemy 측 buff 미존재 — 향후 enemy.statuses 확장 시 추가).
+        // R97/R104: 명중 판정. 액터 ACC buff + 적 DODGE_BUFF (R104, boss_chaos 등).
         val accPct = buffPercent(actorIdx, Status.ACCURACY_BUFF)
-        if (!rollHit(accPct, targetDodgePct = 0)) {
+        val enemyDodge = enemyBuffPercent(Status.DODGE_BUFF)
+        if (!rollHit(accPct, targetDodgePct = enemyDodge)) {
             pushLog(lang("$name → 빗나감.", "$name → missed."))
+            phase = Phase.ANIMATE; animTtl = 500L
+            return
+        }
+        // R104: 적 BLOCK_BUFF 로 확률 무효 (boss_sealed 등).
+        val enemyBlock = enemyBuffPercent(Status.BLOCK_BUFF).coerceIn(0, 100)
+        if (enemyBlock > 0 && Random.nextInt(100) < enemyBlock) {
+            pushLog(lang("$name → 적이 막아냄!", "$name → enemy blocked!"))
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
@@ -493,7 +517,9 @@ class BattleScene(
         val effectiveEnemyDef = if (piercePct > 0)
             (enemy.def.def * (100 - piercePct) / 100).coerceAtLeast(0)
         else enemy.def.def
-        val rawDmg = damage(atk, effectiveEnemyDef, extraCritPercent = critBonus)
+        // R104: enemy CRIT_DEF_BUFF — crit multiplier 감쇄.
+        val enemyCritDef = enemyBuffPercent(Status.CRIT_DEF_BUFF)
+        val rawDmg = damage(atk, effectiveEnemyDef, extraCritPercent = critBonus, extraCritDefPercent = enemyCritDef)
         if (piercePct > 0) pushLog(lang("(방어 관통 -$piercePct%)", "(pierce -$piercePct%)"))
         // R103: enemy DEFENSE_BUFF 감쇄.
         val dmg = applyEnemyDefenseBuff(rawDmg)
@@ -570,7 +596,19 @@ class BattleScene(
     private fun doActorAttack() {
         val actor = currentActor()
         val base = CharacterRegistry.effectiveAttack(actor)
-        val rawDmg = damage(base, enemy.def.def)
+        // R104: enemy DODGE_BUFF 로 회피 / BLOCK_BUFF 로 무효 가능.
+        val enemyDodge = enemyBuffPercent(Status.DODGE_BUFF)
+        if (!rollHit(attackerAccPct = 0, targetDodgePct = enemyDodge)) {
+            pushLog(lang("${displayName(actor, false)} → 빗나감.", "${displayName(actor, true)} → missed."))
+            return
+        }
+        val enemyBlock = enemyBuffPercent(Status.BLOCK_BUFF).coerceIn(0, 100)
+        if (enemyBlock > 0 && Random.nextInt(100) < enemyBlock) {
+            pushLog(lang("${displayName(actor, false)} → 적이 막아냄!", "${displayName(actor, true)} → enemy blocked!"))
+            return
+        }
+        val enemyCritDef = enemyBuffPercent(Status.CRIT_DEF_BUFF)
+        val rawDmg = damage(base, enemy.def.def, extraCritDefPercent = enemyCritDef)
         // R103: enemy DEFENSE_BUFF (예: boss 25%) 가 있으면 받는 데미지 감쇄.
         val dmg = applyEnemyDefenseBuff(rawDmg)
         enemy.hp -= dmg
@@ -744,9 +782,10 @@ class BattleScene(
         // R96: target 의 CRIT_DEF / DEFENSE buff 합산 → damage() / 최종 데미지에 반영.
         val critDefPct = buffPercent(pick.index, Status.CRIT_DEF_BUFF)
         val defPct     = buffPercent(pick.index, Status.DEFENSE_BUFF)
-        // R97: target 의 DODGE buff 로 적의 hit-roll 감산. 적 ACC = 0 (catalog 측 enemy 없음).
+        // R97/R104: target 의 DODGE buff 로 적의 hit-roll 감산 + R104: 적 ACCURACY_BUFF (boss_chaos 등) 가산.
         val dodgePct = buffPercent(pick.index, Status.DODGE_BUFF)
-        if (!rollHit(attackerAccPct = 0, targetDodgePct = dodgePct)) {
+        val enemyAcc = enemyBuffPercent(Status.ACCURACY_BUFF)
+        if (!rollHit(attackerAccPct = enemyAcc, targetDodgePct = dodgePct)) {
             val name = lang(enemy.def.nameKo, enemy.def.nameEn)
             pushLog(lang("$name → ${displayName(target, isEn)} 회피!",
                          "$name → ${displayName(target, isEn)} dodged!"))
