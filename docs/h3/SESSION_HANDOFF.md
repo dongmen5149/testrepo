@@ -1,10 +1,10 @@
-# Hero3 인수인계 노트 (Round 110a + R110e 조사 종료 시점, 2026-05-20 업데이트)
+# Hero3 인수인계 노트 (Round 110a + R110c/R110e 조사 종료 시점, 2026-05-20 업데이트)
 
 > **다음 세션 시작 명령**: 사용자가 `"영웅서기3 다음 내용 진행해줘"` 또는 `"Hero3 이어서"` 라고 하면 이 문서를 본다.
 
 ## 0. 현재 상태 한 줄
 
-**분석 ~99.98% / Catalog ~99% / 실제 remake ~97-98% (엔지니어링 기준) / 베타 출시 fidelity ~46% (원작 동일 시각·음향 기준)**. R110a (obj layer wiring) 완료, 그래픽 영역 ~95%. R110e (extras_records frame_4 / sprObj 매핑) = **조사 후 deferred** — extras id range 0..215 (162 unique) 의 sprite 출처 catalog 미해독, 추가 RE 필요 (10-20 dev day, Ghidra disasm). 다음 우선 후보: **R110b 사운드** (사용자 정책 재결정 필요) / **R110c MapGraph 자동화** (10-15 dev day). 상세 [`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md), [`round110e-extras-investigation.md`](round110e-extras-investigation.md).
+**분석 ~99.98% / Catalog ~99% / 실제 remake ~97-98% (엔지니어링 기준) / 베타 출시 fidelity ~46% (원작 동일 시각·음향 기준)**. R110a (obj layer wiring) 완료, 그래픽 영역 ~95%. R110c (MapGraph 자동화) + R110e (extras catalog) = **둘 다 조사 후 deferred** — 둘 다 `_scn` opcode 디코드 + global decoration catalog RE 등 깊은 분석 작업 필요. 자동 가능 트랙 소진. 다음 우선 = **R110b 사운드** (사용자 정책 재결정 필요) 또는 **R111 `_scn` 디코드** (Ghidra 분석, 20-30 dev day). 상세 [`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md), [`round110c-mapgraph-investigation.md`](round110c-mapgraph-investigation.md), [`round110e-extras-investigation.md`](round110e-extras-investigation.md).
 
 ## 0.1 베타 출시 진척도 평가 (2026-05-20 세션 추가)
 
@@ -40,18 +40,19 @@
 
 총 잔여 100~160 dev day. 다른 모델의 "92% / 8% 남음" 평가는 catalog wiring 잔여분만 본 것으로, 위 7개 트랙을 critical-path 에 포함하지 않은 가정. 사용자 정의 (원작 fidelity) 에서는 위 트랙 모두가 필수.
 
-## 1. 다음 세션 즉시 시작 가이드 (R110b/c — 사용자 선택 필요)
+## 1. 다음 세션 즉시 시작 가이드 (R110b 또는 R111 — 사용자/RE 결정)
 
-R109 + R110a 로 시각 fidelity ~95% 도달. R110e 는 조사 후 deferred (extras_records sprite catalog 미해독). 다음 큰 트랙 후보:
+R109 + R110a 로 시각 fidelity ~95% 도달. R110c (MapGraph) + R110e (extras catalog) = 둘 다 조사 후 deferred. 데이터 기반 자동 진행 트랙 소진. 다음 작업은 **사용자 정책 결정 또는 깊은 RE** 가 필요:
 
-- ⭐⭐⭐⭐⭐ **R110b 사운드** (10-15 dev day) — SMAF→OGG 33곡 + `SfxBus.play()` MediaPlayer/SoundPool 통합. **사용자 신뢰도 정책 재결정 필요** ([Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) 의 stale 가이드 참조). 베타 fidelity 가장 큰 단일 임팩트 (+5-10%p 가능).
-- ⭐⭐⭐⭐ **R110c MapGraph 자동화** (10-15 dev day) — `_mp.extras_records` 의 exit 정보 추출 + 134 map 자동 연결. 현 4 edge placeholder → 수십 edge. 게임 진행 가능성 ↑.
-- ⭐⭐⭐⭐ **R110d NPC 자동 배치** (20-30 dev day) — extras_records type=128 marker → NPC 자동 배치. 단, NPC sprite 매핑 (R110e 의 deferred 항목과 겹침) 해결 후 가능.
-- ⭐⭐⭐ **R111 extras_records catalog RE** (20-30 dev day) — Ghidra 분석으로 162 unique id 의 sprite 출처 결정. R110d/e 의 선결 작업.
+- ⭐⭐⭐⭐⭐ **R110b 사운드** (10-15 dev day) — SMAF→OGG 33곡 + `SfxBus.play()` MediaPlayer/SoundPool 통합. **사용자 신뢰도 정책 재결정 필요** ([Round 73](ghidra-round73-des-success-smaf-pipeline-2026-05-19.md) 의 stale 가이드 참조). 베타 fidelity 가장 큰 단일 임팩트 (+5-10%p 가능). 자동 불가.
+- ⭐⭐⭐⭐ **R111 `_scn` opcode 디코드** (20-30 dev day, Ghidra) — `_scn` interpreter 분석. 풀리면 R110c (exit) + R110d (NPC 배치) + R110e 일부 (decoration sprite) 동시 해결. 단, Ghidra 의존 깊은 RE 작업.
+- ⭐⭐⭐ **R112 global decoration catalog RE** (20-30 dev day) — extras_records 의 162 unique id → sprite 매핑. R110d/e 의 선결 작업.
+- (참고) 콘텐츠 매핑 확장 (catalog 322 enemy / 115 quest / 105 skill / 529 item) — 가중치 15%, 30-50 dev day. 자동 가능하지만 시각 임팩트 작음.
 
-권장: **R110b (사운드)** 가 가장 큰 단일 임팩트. 사용자 정책 결정만 있으면 즉시 진행 가능. R110c (MapGraph) 는 사용자 결정 불필요, 자동 가능.
+권장 (사용자 측): **R110b 시작 결정** (사운드 정책). 가장 큰 단일 임팩트.
+권장 (자동 측): 단기간에 시각 fidelity 를 더 끌어올릴 수 있는 명확한 자동 트랙 부재. RE 깊이 들어가야 함.
 
-[`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md) §6 + [`round110e-extras-investigation.md`](round110e-extras-investigation.md) §4 도 참고.
+[`round110a-obj-layer-wiring.md`](round110a-obj-layer-wiring.md) §6 + [`round110c-mapgraph-investigation.md`](round110c-mapgraph-investigation.md) §6 + [`round110e-extras-investigation.md`](round110e-extras-investigation.md) §4 도 참고.
 
 R73 시점에 분석/DES 는 끝났고, R74~R108 는 catalog 데이터를 Android 리메이크 안으로 끌어들이는 통합 라운드들 — **35 라운드**. catalog stat enum 23종 중 **19종 wiring** + UI 색상 컨벤션 통일 완료. R109 후보 중 catalog wiring 잔여 (boss skill / *_BASE / CD_REDUCE) 는 베타 fidelity 임팩트 작음. **타일 wiring → 사운드 → MapGraph → 콘텐츠** 순서가 베타 출시 정공법.
 
