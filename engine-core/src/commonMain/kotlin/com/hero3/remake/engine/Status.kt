@@ -38,6 +38,16 @@ enum class Status {
      * BattleScene 가 target 측 hit-roll 에서 감산.
      */
     DODGE_BUFF,
+    /**
+     * R98 — 매 라운드 종료 시 HP +perTick (자기 자신, hpMax cap).
+     * catalog HP_REGEN slot 값에서 유래. 도트 회복 (BattleScene.tickPartyStatuses 가 적용).
+     */
+    HP_REGEN_BUFF,
+    /**
+     * R98 — 매 라운드 종료 시 SP +perTick (자기 자신, spMax cap).
+     * catalog SP_REGEN slot 값에서 유래.
+     */
+    SP_REGEN_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

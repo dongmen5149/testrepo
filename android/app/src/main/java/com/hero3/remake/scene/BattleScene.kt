@@ -130,6 +130,12 @@ class BattleScene(
         val dodge = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.DODGE)
             .coerceIn(0, catalogBonusClamp)
+        val hpRegen = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.HP_REGEN)
+            .coerceIn(0, catalogBonusClamp)
+        val spRegen = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SP_REGEN)
+            .coerceIn(0, catalogBonusClamp)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -150,12 +156,24 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.DODGE_BUFF, turnsLeft = 3, perTick = dodge)
         }
-        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0) {
+        if (hpRegen > 0) {
+            val ex = list.firstOrNull { it.status == Status.HP_REGEN_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.HP_REGEN_BUFF, turnsLeft = 3, perTick = hpRegen)
+        }
+        if (spRegen > 0) {
+            val ex = list.firstOrNull { it.status == Status.SP_REGEN_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.SP_REGEN_BUFF, turnsLeft = 3, perTick = spRegen)
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
                 if (accuracy > 0) "${if (isEn) "ACC" else "명중"}+$accuracy%" else null,
                 if (dodge > 0) "${if (isEn) "DOD" else "회피"}+$dodge%" else null,
+                if (hpRegen > 0) "${if (isEn) "HPR" else "HP재생"}+$hpRegen/턴" else null,
+                if (spRegen > 0) "${if (isEn) "SPR" else "SP재생"}+$spRegen/턴" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
@@ -170,9 +188,40 @@ class BattleScene(
         return Random.nextInt(100) < chance
     }
 
-    /** R96 — 1턴 경과 처리. 모든 party member 의 buff 의 turnsLeft 감소 + 만료 제거. */
+    /**
+     * R96/R98 — 1턴 경과 처리.
+     * R98: HP_REGEN_BUFF / SP_REGEN_BUFF 가 있으면 해당 member 에 HP/SP 회복 적용 (살아있는 member 만).
+     * 이후 모든 buff turnsLeft -= 1, 만료 제거.
+     */
     private fun tickPartyStatuses() {
-        for ((_, list) in partyStatuses) {
+        for ((idx, list) in partyStatuses) {
+            val c = party.getOrNull(idx) ?: continue
+            if (c.hp > 0) {
+                var hpHealed = 0
+                var spGained = 0
+                for (e in list) {
+                    when (e.status) {
+                        Status.HP_REGEN_BUFF -> {
+                            val heal = (c.hpMax - c.hp).coerceAtMost(e.perTick).coerceAtLeast(0)
+                            c.hp += heal
+                            hpHealed += heal
+                        }
+                        Status.SP_REGEN_BUFF -> {
+                            val gain = (c.spMax - c.sp).coerceAtMost(e.perTick).coerceAtLeast(0)
+                            c.sp += gain
+                            spGained += gain
+                        }
+                        else -> {}
+                    }
+                }
+                if (hpHealed > 0) {
+                    popups += Popup("+$hpHealed", onEnemy = false, targetIdx = idx, ttl = 900L, color = Color.rgb(120, 240, 120))
+                    pushLog(lang("재생: ${displayName(c, isEn)} +${hpHealed} HP", "Regen: ${displayName(c, isEn)} +$hpHealed HP"))
+                }
+                if (spGained > 0) {
+                    pushLog(lang("재생: ${displayName(c, isEn)} +${spGained} SP", "Regen: ${displayName(c, isEn)} +$spGained SP"))
+                }
+            }
             val it = list.iterator()
             while (it.hasNext()) {
                 val e = it.next()
@@ -522,7 +571,8 @@ class BattleScene(
                 }
                 Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
                 Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF,
-                Status.ACCURACY_BUFF, Status.DODGE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.ACCURACY_BUFF, Status.DODGE_BUFF,
+                Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -556,6 +606,8 @@ class BattleScene(
         Status.DEFENSE_BUFF  -> if (isEn) "DEF" else "방어"
         Status.ACCURACY_BUFF -> if (isEn) "ACC" else "명중"
         Status.DODGE_BUFF    -> if (isEn) "DOD" else "회피"
+        Status.HP_REGEN_BUFF -> if (isEn) "HPR" else "HP재"
+        Status.SP_REGEN_BUFF -> if (isEn) "SPR" else "SP재"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)

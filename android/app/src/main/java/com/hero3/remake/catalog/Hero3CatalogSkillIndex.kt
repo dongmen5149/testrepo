@@ -80,7 +80,13 @@ class Hero3CatalogSkillIndex(
      *  - ACCURACY  = ACC                (R93: 미래 wiring — miss 시스템 도입 후)
      *  - DODGE     = DOD                (R93: 미래 wiring — 회피 시스템 도입 후)
      */
-    enum class ModifierKind { OFFENSE, HEAL, DEFENSE, CRIT_RATE, CRIT_DEF, ACCURACY, DODGE }
+    enum class ModifierKind {
+        OFFENSE, HEAL, DEFENSE, CRIT_RATE, CRIT_DEF, ACCURACY, DODGE,
+        /** R98 — HP_REGEN slot 한정 (ongoing tick). HEAL kind 와 겹쳐 즉시-시전 + 지속 효과 모두 가능. */
+        HP_REGEN,
+        /** R98 — SP_REGEN slot 한정 (ongoing tick). */
+        SP_REGEN,
+    }
 
     /**
      * R91 — engine 데미지/회복 식에 가산할 catalog 보정값.
@@ -107,6 +113,8 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.CRIT_DEF  -> s.codeName == "CRI_DEF"
                 ModifierKind.ACCURACY  -> s.codeName == "ACC"
                 ModifierKind.DODGE     -> s.codeName == "DOD"
+                ModifierKind.HP_REGEN  -> s.codeName == "HP_REGEN"
+                ModifierKind.SP_REGEN  -> s.codeName == "SP_REGEN"
             }
             if (keep) sum += s.primarySigned
         }

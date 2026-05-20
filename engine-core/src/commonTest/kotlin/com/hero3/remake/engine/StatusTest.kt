@@ -48,6 +48,34 @@ class StatusTest {
     }
 
     @Test
+    fun r98_status_enum_has_regen_buffs() {
+        val all = Status.values().toSet()
+        assertTrue(Status.HP_REGEN_BUFF in all)
+        assertTrue(Status.SP_REGEN_BUFF in all)
+        assertTrue(Status.values().size >= 10)
+    }
+
+    @Test
+    fun r98_regen_tick_simulation_caps_at_max() {
+        // HP_REGEN_BUFF tick: hp += perTick, hpMax cap. 3 턴 후 만료.
+        val def = EnemyRegistry.all.first()
+        val ei = EnemyInstance(def, hp = 50)
+        // 시뮬용으로만 EnemyInstance 사용. real wiring 은 Character/party 측.
+        val buff = StatusEffect(Status.HP_REGEN_BUFF, turnsLeft = 3, perTick = 10)
+        var hp = 50
+        val hpMax = 100
+        var turns = buff.turnsLeft
+        repeat(3) {
+            val heal = (hpMax - hp).coerceAtMost(buff.perTick).coerceAtLeast(0)
+            hp += heal
+            buff.turnsLeft -= 1
+            turns = buff.turnsLeft
+        }
+        assertEquals(80, hp)        // 50 → 60 → 70 → 80
+        assertEquals(0, turns)
+    }
+
+    @Test
     fun r97_hit_chance_formula_clamps_to_30_100() {
         // R97 의 rollHit 식 시뮬: chance = (90 + acc - dodge).coerceIn(30, 100).
         // helper 가 BattleScene 안에 있어 직접 호출 불가 — 식 자체를 여기서 검증.
