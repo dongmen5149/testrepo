@@ -600,6 +600,29 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R94: debuffCountForEngineName ─────────────────────────────────────
+
+    @Test
+    fun r94_debuff_count_zero_for_unknown_engine_name() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        assertEquals(0, idx.debuffCountForEngineName("__no_such_skill_zzz__"))
+    }
+
+    @Test
+    fun r94_debuff_count_matches_best_hit_nDebuffs() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // 모든 skill 에 대해, lookupByName(skill.name) 의 rank 최대 hit 의 nDebuffs 와 일치.
+        for (e in idx.entries) {
+            val hits = idx.lookupByName(e.skill.name)
+            if (hits.isEmpty()) continue
+            val best = hits.maxByOrNull { it.skill.effectV2?.rank ?: 0 } ?: hits[0]
+            val expected = best.skill.effectV2?.nDebuffs ?: 0
+            assertEquals(expected, idx.debuffCountForEngineName(e.skill.name))
+        }
+    }
+
     // ─── R93: ModifierKind 확장 (DEFENSE/CRIT*/ACCURACY/DODGE) ─────────────
 
     @Test

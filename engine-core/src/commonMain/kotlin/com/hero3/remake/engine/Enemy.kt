@@ -22,6 +22,8 @@ data class EnemyDef(
 data class EnemyInstance(
     val def: EnemyDef,
     var hp: Int,
+    /** R94: 부여된 상태 이상 목록. BattleScene 이 매 턴 tick. */
+    val statuses: MutableList<StatusEffect> = mutableListOf(),
 )
 
 object EnemyRegistry {

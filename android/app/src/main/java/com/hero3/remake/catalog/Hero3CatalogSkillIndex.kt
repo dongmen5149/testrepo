@@ -125,6 +125,18 @@ class Hero3CatalogSkillIndex(
         return primaryModifier(best.skill, kind)
     }
 
+    /**
+     * R94 — engine skill 의 한국어 이름으로 catalog 를 fuzzy 매칭한 뒤, 가장 rank 높은 hit 의
+     * `effectV2.nDebuffs` 를 반환. 매칭 없음 / effectV2=null = 0. BattleScene 이 0 초과 시
+     * 적에게 [com.hero3.remake.engine.Status] 를 부여하는 신호로 사용.
+     */
+    fun debuffCountForEngineName(nameKo: String): Int {
+        val hits = lookupByName(nameKo)
+        if (hits.isEmpty()) return 0
+        val best = hits.maxByOrNull { it.skill.effectV2?.rank ?: 0 } ?: hits[0]
+        return best.skill.effectV2?.nDebuffs ?: 0
+    }
+
     /** [Hero3Skill] 의 effectV2 가 있고 첫 슬롯이 sentinel/zero 가 아니면 한 줄 요약 — 디버그/UI 용. */
     fun effectSummary(skill: Hero3Skill): String? {
         val ev = skill.effectV2 ?: return null

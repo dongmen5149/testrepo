@@ -26,6 +26,8 @@ import com.hero3.remake.engine.Settings
 import com.hero3.remake.engine.SfxBus
 import com.hero3.remake.engine.Skill
 import com.hero3.remake.engine.SkillRegistry
+import com.hero3.remake.engine.Status
+import com.hero3.remake.engine.StatusEffect
 import com.hero3.remake.engine.UiKit
 import kotlin.math.abs
 import kotlin.math.max
@@ -80,6 +82,12 @@ class BattleScene(
                    else      com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.OFFENSE
         val raw = idx.primaryModifierForEngineName(nameKo, kind)
         return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
+    }
+
+    /** R94: engine skill 의 catalog effectV2.nDebuffs (0 이면 부여 없음). */
+    private fun catalogDebuffCountFor(nameKo: String): Int {
+        val idx = catalogSkillIndex ?: return 0
+        return idx.debuffCountForEngineName(nameKo)
     }
 
     /** R93: engine skill 의 CRI_RATE slot 보정값 (단위 = percent). clamp ±25. */
@@ -249,6 +257,8 @@ class BattleScene(
         popups += Popup("-$dmg", onEnemy = true, targetIdx = -1, ttl = 900L, color = Color.rgb(255, 200, 100))
         pushLog("$name → $dmg")
         if (catalogBonus != 0) pushLog(lang("(카탈로그 +$catalogBonus)", "(catalog +$catalogBonus)"))
+        // R94: catalog effectV2.nDebuffs > 0 인 skill 은 처치되지 않은 적에게 POISON 부여 (3턴).
+        if (enemy.hp > 0) tryApplyPoisonFromSkill(s.nameKo, dmg)
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
@@ -363,6 +373,9 @@ class BattleScene(
     private fun updateEnemyTurn(deltaMs: Long) {
         animTtl -= deltaMs
         if (animTtl <= 0) {
+            // R94: 적의 상태 이상 tick (poison 등). 적이 죽으면 곧장 승리.
+            tickEnemyStatuses()
+            if (enemy.hp <= 0) { beginVictory(); return }
             doEnemyAttack()
             if (aliveCount() == 0) {
                 beginDefeat()
@@ -371,6 +384,48 @@ class BattleScene(
                 menuIdx = 0; skillPickIdx = 0; itemPickIdx = 0
                 phase = Phase.COMMAND
             }
+        }
+    }
+
+    /**
+     * R94 — catalog 매칭 hit 의 `effectV2.nDebuffs > 0` 이면 POISON 을 적에게 부여.
+     * `perTick` = max(2, 방금 입힌 데미지 / 5), 3턴 유지. 이미 같은 status 가 있으면 turnsLeft 갱신.
+     */
+    private fun tryApplyPoisonFromSkill(nameKo: String, lastHitDmg: Int) {
+        val nDebuffs = catalogDebuffCountFor(nameKo)
+        if (nDebuffs <= 0) return
+        val perTick = maxOf(2, lastHitDmg / 5)
+        val existing = enemy.statuses.firstOrNull { it.status == Status.POISON }
+        if (existing != null) {
+            existing.turnsLeft = 3
+        } else {
+            enemy.statuses += StatusEffect(Status.POISON, turnsLeft = 3, perTick = perTick)
+        }
+        pushLog(lang("적에게 독 부여 (3턴, -${perTick}/턴).",
+                     "Enemy poisoned (3 turns, -$perTick/turn)."))
+    }
+
+    /** R94 — 적의 모든 상태 이상 1턴 효과 적용 + turnsLeft 감소 후 만료 제거. */
+    private fun tickEnemyStatuses() {
+        if (enemy.statuses.isEmpty() || enemy.hp <= 0) return
+        val it = enemy.statuses.iterator()
+        var totalDmg = 0
+        while (it.hasNext()) {
+            val e = it.next()
+            when (e.status) {
+                Status.POISON -> {
+                    val dmg = e.perTick
+                    enemy.hp = (enemy.hp - dmg).coerceAtLeast(0)
+                    totalDmg += dmg
+                }
+            }
+            e.turnsLeft -= 1
+            if (e.turnsLeft <= 0) it.remove()
+        }
+        if (totalDmg > 0) {
+            popups += Popup("-$totalDmg", onEnemy = true, targetIdx = -1,
+                ttl = 900L, color = Color.rgb(120, 220, 120))
+            pushLog(lang("독: -$totalDmg HP", "Poison: -$totalDmg HP"))
         }
     }
 
@@ -523,6 +578,15 @@ class BattleScene(
         val ratio = enemy.hp.toFloat() / enemy.def.hpMax.coerceAtLeast(1)
         canvas.drawRect(barX, barY, barX + barW * ratio, barY + barH, hpBar)
         canvas.drawText("HP ${enemy.hp}/${enemy.def.hpMax}", barX, barY - 2f, UiKit.muted)
+        // R94: 상태 이상 인디케이터 (적 HP 바 우측).
+        if (enemy.statuses.isNotEmpty()) {
+            val statusText = enemy.statuses.joinToString(" ") { e ->
+                val tag = when (e.status) { Status.POISON -> if (isEn) "POI" else "독" }
+                "$tag(${e.turnsLeft})"
+            }
+            val statusPaint = Paint(UiKit.muted).apply { color = Color.rgb(150, 230, 150) }
+            canvas.drawText(statusText, barX + barW - 60f, barY - 2f, statusPaint)
+        }
 
         // 액터(현재 차례) sprite — 좌측, lunge
         heroSprite?.let { bmp ->
