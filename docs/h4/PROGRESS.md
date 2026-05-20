@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 95 (2026-05-20) — element byte[5]=2 검증 + R89 정정 ★
+
+> R89 의 "element field byte[5]=2" 명명 정정. 상세: [round95-active-attack-xref.md](round95-active-attack-xref.md).
+>
+> 전 252 decrypted 파일 scan 결과 valid ACTIVE_ATTACK signature (0x14...) 는 `_H_SS` 전용 5 hit (모두 byte[5]=2, valid speed/range/anim). 다른 파일에 11 hit 있으나 모두 false-positive (coincidental 0x14 byte + all-zero supporting fields). 즉 byte[5]=2 는 "element" 가 아닌 **summon-exclusive 'ACTIVE_ATTACK subtype marker'** (= 환수 attack 종류). PASSIVE_TEMPLATE 의 byte[5] 가 subtype 결정자 역할을 하는 것과 동일한 layer (단 ACTIVE_ATTACK 에서만 한 값(2) 만 사용).
+>
+> Character class skill (S000-S003) 은 별개 stat block schema 사용 — 가변 길이 body, EUC-KR description suffix 포함. R96+ 별도 분석 대상.
+>
+> `parse_h4_active_attack_xref.py` 신규 + `h4_active_attack_xref.json` 6.5KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 94 (2026-05-20) — _H_SA ability skill_id 카테고리 식별 (R88 후속) ★
 
 > R88 의 24 ability slot skill_id 8 종 매핑. 상세: [round94-sa-ability-skill-map.md](round94-sa-ability-skill-map.md).

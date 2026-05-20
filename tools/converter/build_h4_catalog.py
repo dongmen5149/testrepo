@@ -301,6 +301,20 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Active attack xref (R95) — R89 element 검증 + 정정
+    aax_path = CONVERTED / 'h4_active_attack_xref.json'
+    if aax_path.exists():
+        try:
+            aax = json.loads(aax_path.read_text(encoding='utf-8'))
+            catalog['active_attack_xref'] = {
+                'scan_meta': aax['scan_meta'],
+                'r89_correction': aax['r89_correction'],
+                'character_skill_schema_note': aax['character_skill_schema_note'],
+            }
+            print(f'\nActive attack xref: R89 element field 정정 — summon-exclusive marker 확정 (R95)')
+        except Exception as e:
+            print(f'  WARN: failed to load active_attack_xref: {e}', file=sys.stderr)
+
     # SA ability skill map (R94) — _H_SA 24 ability slot 의 8 skill_id 매핑
     sasm_path = CONVERTED / 'h4_sa_ability_skill_map.json'
     if sasm_path.exists():

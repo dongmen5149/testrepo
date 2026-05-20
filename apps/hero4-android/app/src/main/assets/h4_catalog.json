@@ -2916,6 +2916,25 @@
       "summon_tier_count": 15
     }
   },
+  "active_attack_xref": {
+    "scan_meta": {
+      "files_scanned": 252,
+      "files_with_active_attack_signature": 11,
+      "element_distribution": {
+        "0": 12,
+        "2": 6,
+        "1": 2,
+        "6": 1
+      }
+    },
+    "r89_correction": {
+      "old_interpretation": "byte[5] = element (const 2)",
+      "new_interpretation": "byte[5] = ACTIVE_ATTACK subtype marker (const 2 = 환수 attack)",
+      "evidence": "0x14 ACTIVE_ATTACK signature 는 _H_SS catalog 에만 출현 (21 hit). byte[5]=2 는 invariant — 즉 \"element\" 가 아닌 \"summon-exclusive subtype\" marker.",
+      "summon_exclusive": false
+    },
+    "character_skill_schema_note": "character class skill 파일 (_H_S000-_H_S003) 은 ACTIVE_ATTACK template 부재. 별개 stat block schema 사용 — R96+ 별도 분석 필요."
+  },
   "sa_ability_skill_map": {
     "global_skill_id_rule": "skill_id = class_index × 10 + local_index (4 class × 10 skills)",
     "ability_skill_summary": [
