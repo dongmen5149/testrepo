@@ -1,0 +1,553 @@
+{
+  "round": 91,
+  "outlier_count": 4,
+  "r78_field_layout": {
+    "enemy_class": "pos[0]",
+    "exp_base": "pos[2-3] LE16",
+    "hp_max": "pos[23-24] LE16",
+    "pair_a": "pos[29-30] LE16",
+    "pair_b": "pos[31-32] LE16",
+    "atk": "pos[35-36] LE16",
+    "def": "pos[37-38] LE16",
+    "misc": "pos[39-40] LE16",
+    "gold_reward": "pos[57-58] LE16",
+    "exp_reward": "pos[59-60] LE16"
+  },
+  "r80_link_layout": {
+    "signature": "pos[67-68] = 0x47 0x00",
+    "phase_id": "pos[69-70] LE16 sequential",
+    "transition": "pos[71-72] = 0xbcb1 (final 진입) or 0xfabf (continue)"
+  },
+  "outliers": [
+    {
+      "file": "_ESDAT_0",
+      "offset": "0x1362",
+      "name": "좀비",
+      "body_size": 213,
+      "phase_count": 2,
+      "phases": [
+        {
+          "enemy_class": 13,
+          "exp_base_p2": 2377,
+          "hp_max_p23": 175,
+          "pair_p29": 38,
+          "pair_p31": 38,
+          "atk_p35": 2825,
+          "def_p37": 6144,
+          "misc_p39": 794,
+          "gold_p57": 2569,
+          "exp_p59": 2053,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 575,
+            "transition_le16": 48305,
+            "transition_hex": "b1bc"
+          }
+        },
+        {
+          "enemy_class": 28,
+          "exp_base_p2": 2377,
+          "hp_max_p23": 175,
+          "pair_p29": 38,
+          "pair_p31": 38,
+          "atk_p35": 2825,
+          "def_p37": 6144,
+          "misc_p39": 794,
+          "gold_p57": 2569,
+          "exp_p59": 2053,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 576,
+            "transition_le16": 48305,
+            "transition_hex": "b1bc"
+          }
+        }
+      ],
+      "final": {
+        "enemy_class": 28,
+        "exp_base_p2": 2812,
+        "hp_max_p23": 204,
+        "pair_p29": 45,
+        "pair_p31": 45,
+        "atk_p35": 3082,
+        "def_p37": 6912,
+        "misc_p39": 1054,
+        "gold_p57": 3339,
+        "exp_p59": 2569,
+        "section_marker_p42_43": "ff3f",
+        "sub_marker_p56": "ff"
+      },
+      "scaling": {
+        "hp_max_p23": {
+          "sequence": [
+            175,
+            175,
+            204
+          ],
+          "phase0_to_final_ratio": 1.166,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 2
+        },
+        "atk_p35": {
+          "sequence": [
+            2825,
+            2825,
+            3082
+          ],
+          "phase0_to_final_ratio": 1.091,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 2
+        },
+        "def_p37": {
+          "sequence": [
+            6144,
+            6144,
+            6912
+          ],
+          "phase0_to_final_ratio": 1.125,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 2
+        },
+        "exp_p59": {
+          "sequence": [
+            2053,
+            2053,
+            2569
+          ],
+          "phase0_to_final_ratio": 1.251,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 2
+        },
+        "gold_p57": {
+          "sequence": [
+            2569,
+            2569,
+            3339
+          ],
+          "phase0_to_final_ratio": 1.3,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 2
+        }
+      },
+      "enemy_class_sequence": [
+        13,
+        28,
+        28
+      ],
+      "class_changes": 1
+    },
+    {
+      "file": "_ESDAT_0",
+      "offset": "0x1a8e",
+      "name": "소환된 좀비",
+      "body_size": 140,
+      "phase_count": 1,
+      "phases": [
+        {
+          "enemy_class": 13,
+          "exp_base_p2": 2877,
+          "hp_max_p23": 208,
+          "pair_p29": 46,
+          "pair_p31": 46,
+          "atk_p35": 3338,
+          "def_p37": 7168,
+          "misc_p39": 1054,
+          "gold_p57": 3339,
+          "exp_p59": 2569,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 598,
+            "transition_le16": 48305,
+            "transition_hex": "b1bc"
+          }
+        }
+      ],
+      "final": {
+        "enemy_class": 28,
+        "exp_base_p2": 2497,
+        "hp_max_p23": 183,
+        "pair_p29": 40,
+        "pair_p31": 40,
+        "atk_p35": 2826,
+        "def_p37": 6400,
+        "misc_p39": 795,
+        "gold_p57": 2569,
+        "exp_p59": 2053,
+        "section_marker_p42_43": "ff3f",
+        "sub_marker_p56": "ff"
+      },
+      "scaling": {
+        "hp_max_p23": {
+          "sequence": [
+            208,
+            183
+          ],
+          "phase0_to_final_ratio": 0.88,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        },
+        "atk_p35": {
+          "sequence": [
+            3338,
+            2826
+          ],
+          "phase0_to_final_ratio": 0.847,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        },
+        "def_p37": {
+          "sequence": [
+            7168,
+            6400
+          ],
+          "phase0_to_final_ratio": 0.893,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        },
+        "exp_p59": {
+          "sequence": [
+            2569,
+            2053
+          ],
+          "phase0_to_final_ratio": 0.799,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        },
+        "gold_p57": {
+          "sequence": [
+            3339,
+            2569
+          ],
+          "phase0_to_final_ratio": 0.769,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        }
+      },
+      "enemy_class_sequence": [
+        13,
+        28
+      ],
+      "class_changes": 1
+    },
+    {
+      "file": "_ESDAT_0",
+      "offset": "0x2bef",
+      "name": "오토마톤",
+      "body_size": 432,
+      "phase_count": 5,
+      "phases": [
+        {
+          "enemy_class": 13,
+          "exp_base_p2": 2062,
+          "hp_max_p23": 154,
+          "pair_p29": 34,
+          "pair_p31": 34,
+          "atk_p35": 2316,
+          "def_p37": 5376,
+          "misc_p39": 791,
+          "gold_p57": 2569,
+          "exp_p59": 2053,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 654,
+            "transition_le16": 64191,
+            "transition_hex": "bffa"
+          }
+        },
+        {
+          "enemy_class": 26,
+          "exp_base_p2": 1202,
+          "hp_max_p23": 97,
+          "pair_p29": 29,
+          "pair_p31": 29,
+          "atk_p35": 1289,
+          "def_p37": 3584,
+          "misc_p39": 528,
+          "gold_p57": 1025,
+          "exp_p59": 0,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 655,
+            "transition_le16": 64191,
+            "transition_hex": "bffa"
+          }
+        },
+        {
+          "enemy_class": 26,
+          "exp_base_p2": 1822,
+          "hp_max_p23": 138,
+          "pair_p29": 43,
+          "pair_p31": 43,
+          "atk_p35": 2059,
+          "def_p37": 4864,
+          "misc_p39": 789,
+          "gold_p57": 2053,
+          "exp_p59": 1025,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "01",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 656,
+            "transition_le16": 64191,
+            "transition_hex": "bffa"
+          }
+        },
+        {
+          "enemy_class": 26,
+          "exp_base_p2": 2127,
+          "hp_max_p23": 158,
+          "pair_p29": 50,
+          "pair_p31": 50,
+          "atk_p35": 2316,
+          "def_p37": 5632,
+          "misc_p39": 792,
+          "gold_p57": 2569,
+          "exp_p59": 2053,
+          "section_marker_p42_43": "ff3f",
+          "sub_marker_p56": "15",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 657,
+            "transition_le16": 48305,
+            "transition_hex": "b1bc"
+          }
+        },
+        {
+          "enemy_class": 47,
+          "exp_base_p2": 2442,
+          "hp_max_p23": 179,
+          "pair_p29": 39,
+          "pair_p31": 39,
+          "atk_p35": 2825,
+          "def_p37": 6144,
+          "misc_p39": 795,
+          "gold_p57": 2569,
+          "exp_p59": 2053,
+          "section_marker_p42_43": "0000",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 658,
+            "transition_le16": 48305,
+            "transition_hex": "b1bc"
+          }
+        }
+      ],
+      "final": {
+        "enemy_class": 47,
+        "exp_base_p2": 2682,
+        "hp_max_p23": 195,
+        "pair_p29": 43,
+        "pair_p31": 43,
+        "atk_p35": 3082,
+        "def_p37": 6656,
+        "misc_p39": 797,
+        "gold_p57": 3339,
+        "exp_p59": 2569,
+        "section_marker_p42_43": "0000",
+        "sub_marker_p56": "ff"
+      },
+      "scaling": {
+        "hp_max_p23": {
+          "sequence": [
+            154,
+            97,
+            138,
+            158,
+            179,
+            195
+          ],
+          "phase0_to_final_ratio": 1.266,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 5
+        },
+        "atk_p35": {
+          "sequence": [
+            2316,
+            1289,
+            2059,
+            2316,
+            2825,
+            3082
+          ],
+          "phase0_to_final_ratio": 1.331,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 5
+        },
+        "def_p37": {
+          "sequence": [
+            5376,
+            3584,
+            4864,
+            5632,
+            6144,
+            6656
+          ],
+          "phase0_to_final_ratio": 1.238,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 5
+        },
+        "exp_p59": {
+          "sequence": [
+            2053,
+            0,
+            1025,
+            2053,
+            2053,
+            2569
+          ],
+          "phase0_to_final_ratio": 1.251,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 5
+        },
+        "gold_p57": {
+          "sequence": [
+            2569,
+            1025,
+            2053,
+            2569,
+            2569,
+            3339
+          ],
+          "phase0_to_final_ratio": 1.3,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 5
+        }
+      },
+      "enemy_class_sequence": [
+        13,
+        26,
+        26,
+        26,
+        47,
+        47
+      ],
+      "class_changes": 2
+    },
+    {
+      "file": "_ESDAT_0",
+      "offset": "0x2f80",
+      "name": "기갑병",
+      "body_size": 140,
+      "phase_count": 1,
+      "phases": [
+        {
+          "enemy_class": 9,
+          "exp_base_p2": 662,
+          "hp_max_p23": 39,
+          "pair_p29": 8,
+          "pair_p31": 8,
+          "atk_p35": 520,
+          "def_p37": 2560,
+          "misc_p39": 519,
+          "gold_p57": 1025,
+          "exp_p59": 0,
+          "section_marker_p42_43": "3333",
+          "sub_marker_p56": "ff",
+          "link": {
+            "sig": "4700",
+            "phase_id_le16": 666,
+            "transition_le16": 64191,
+            "transition_hex": "bffa"
+          }
+        }
+      ],
+      "final": {
+        "enemy_class": 26,
+        "exp_base_p2": 637,
+        "hp_max_p23": 60,
+        "pair_p29": 9,
+        "pair_p31": 9,
+        "atk_p35": 776,
+        "def_p37": 2560,
+        "misc_p39": 267,
+        "gold_p57": 0,
+        "exp_p59": 0,
+        "section_marker_p42_43": "ff3f",
+        "sub_marker_p56": "15"
+      },
+      "scaling": {
+        "hp_max_p23": {
+          "sequence": [
+            39,
+            60
+          ],
+          "phase0_to_final_ratio": 1.538,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 1
+        },
+        "atk_p35": {
+          "sequence": [
+            520,
+            776
+          ],
+          "phase0_to_final_ratio": 1.492,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 1
+        },
+        "def_p37": {
+          "sequence": [
+            2560,
+            2560
+          ],
+          "phase0_to_final_ratio": 1.0,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 0
+        },
+        "exp_p59": {
+          "sequence": [
+            0,
+            0
+          ],
+          "phase0_to_final_ratio": null,
+          "monotonic_inc": true,
+          "min_phase_idx": 0,
+          "max_phase_idx": 0
+        },
+        "gold_p57": {
+          "sequence": [
+            1025,
+            0
+          ],
+          "phase0_to_final_ratio": 0.0,
+          "monotonic_inc": false,
+          "min_phase_idx": 1,
+          "max_phase_idx": 0
+        }
+      },
+      "enemy_class_sequence": [
+        9,
+        26
+      ],
+      "class_changes": 1
+    }
+  ]
+}

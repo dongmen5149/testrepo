@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 91 (2026-05-20) — Multi-phase boss encounter stat scaling 정량 (R80 후속) ★
+
+> R80 미해결 보스 phase 강화율 정량화. 상세: [round91-boss-phase-scaling.md](round91-boss-phase-scaling.md).
+>
+> 4 ESDAT outlier (좀비 213B / 소환된 좀비 140B / 오토마톤 432B / 기갑병 140B) phase 별 stat 추출. 표준 보스 (좀비/오토마톤) 의 phase 0 → final 강화율 **HP +17-27%, ATK +9-33%, DEF +12-24%, gold 1.30× (정확), EXP 1.25× (정확)** — gold/EXP 두 보스가 정확히 동일 ratio → 공식 기반 scaling. 오토마톤 5-phase 는 phase 1 dip (취약 cinematic, EXP=0) → 회복 → enemy_class 13→26→47 진화 → 최종 enraged. 6B inter-phase link (R80) 재검증 통과. 소환된 좀비는 역방향 (phase 0=peak, final=defeat). 기갑병은 R80 의 marker 부재 anomaly 확인.
+>
+> `parse_h4_boss_phases.py` 신규 + `h4_boss_phases.json` 13.8KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 90 (2026-05-20) — Q_REPAY idx ↔ quest 1:1 매핑 확정 (R85 미해결 해소) ★
 
 > R85 의 "200 vs 128 차이 72" 미해결 해소. 상세: [round90-quest-reward-map.md](round90-quest-reward-map.md).

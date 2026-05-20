@@ -2916,6 +2916,77 @@
       "summon_tier_count": 15
     }
   },
+  "boss_phase_scaling": {
+    "outlier_count": 4,
+    "r78_field_layout": {
+      "enemy_class": "pos[0]",
+      "exp_base": "pos[2-3] LE16",
+      "hp_max": "pos[23-24] LE16",
+      "pair_a": "pos[29-30] LE16",
+      "pair_b": "pos[31-32] LE16",
+      "atk": "pos[35-36] LE16",
+      "def": "pos[37-38] LE16",
+      "misc": "pos[39-40] LE16",
+      "gold_reward": "pos[57-58] LE16",
+      "exp_reward": "pos[59-60] LE16"
+    },
+    "r80_link_layout": {
+      "signature": "pos[67-68] = 0x47 0x00",
+      "phase_id": "pos[69-70] LE16 sequential",
+      "transition": "pos[71-72] = 0xbcb1 (final 진입) or 0xfabf (continue)"
+    },
+    "outliers_summary": [
+      {
+        "name": "좀비",
+        "body_size": 213,
+        "phase_count": 2,
+        "enemy_class_sequence": [
+          13,
+          28,
+          28
+        ],
+        "hp_ratio_p0_to_final": 1.166,
+        "atk_ratio_p0_to_final": 1.091
+      },
+      {
+        "name": "소환된 좀비",
+        "body_size": 140,
+        "phase_count": 1,
+        "enemy_class_sequence": [
+          13,
+          28
+        ],
+        "hp_ratio_p0_to_final": 0.88,
+        "atk_ratio_p0_to_final": 0.847
+      },
+      {
+        "name": "오토마톤",
+        "body_size": 432,
+        "phase_count": 5,
+        "enemy_class_sequence": [
+          13,
+          26,
+          26,
+          26,
+          47,
+          47
+        ],
+        "hp_ratio_p0_to_final": 1.266,
+        "atk_ratio_p0_to_final": 1.331
+      },
+      {
+        "name": "기갑병",
+        "body_size": 140,
+        "phase_count": 1,
+        "enemy_class_sequence": [
+          9,
+          26
+        ],
+        "hp_ratio_p0_to_final": 1.538,
+        "atk_ratio_p0_to_final": 1.492
+      }
+    ]
+  },
   "quest_reward_map": {
     "meta": {
       "quest_count": 128,

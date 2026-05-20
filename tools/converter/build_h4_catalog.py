@@ -301,6 +301,30 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Boss phase scaling (R91) — 4 multi-phase encounter stat 정량
+    bp_path = CONVERTED / 'h4_boss_phases.json'
+    if bp_path.exists():
+        try:
+            bp = json.loads(bp_path.read_text(encoding='utf-8'))
+            catalog['boss_phase_scaling'] = {
+                'outlier_count': bp['outlier_count'],
+                'r78_field_layout': bp['r78_field_layout'],
+                'r80_link_layout': bp['r80_link_layout'],
+                'outliers_summary': [
+                    {
+                        'name': o['name'],
+                        'body_size': o['body_size'],
+                        'phase_count': o['phase_count'],
+                        'enemy_class_sequence': o['enemy_class_sequence'],
+                        'hp_ratio_p0_to_final': o['scaling']['hp_max_p23']['phase0_to_final_ratio'],
+                        'atk_ratio_p0_to_final': o['scaling']['atk_p35']['phase0_to_final_ratio'],
+                    } for o in bp['outliers']
+                ],
+            }
+            print(f'\nBoss phase scaling: 4 multi-phase encounters (R91)')
+        except Exception as e:
+            print(f'  WARN: failed to load boss_phases: {e}', file=sys.stderr)
+
     # Quest reward map (R90) — idx ↔ quest 1:1 매핑
     qrm_path = CONVERTED / 'h4_quest_reward_map.json'
     if qrm_path.exists():
