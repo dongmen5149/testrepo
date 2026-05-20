@@ -7,30 +7,33 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 98 종료, uncommitted)**:
-> - 마지막 commit = `7a66113f feat:영웅서기3 Round 97 — ACCURACY/DODGE 시스템 + ModifierKind 7종 wiring 완성`
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R98 는 catalog 통합 라운드)
-> - Hero3 리메이크 진행률 **~92-93%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 99 종료, uncommitted)**:
+> - 마지막 commit = `2f7a95f5 feat:영웅서기3 Round 98 — HP_REGEN/SP_REGEN ongoing buff wiring`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R99 는 catalog 통합 라운드)
+> - Hero3 리메이크 진행률 **~93%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R99 가이드 (HP_DRAIN/CURE_STATUS/TAUNT 등)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R100 가이드 (milestone, CURE_STATUS/TAUNT 등)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R99 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R100 가이드 (milestone)
 
-R98 분기 B 완료 (HP_REGEN / SP_REGEN buff). R99 후보:
+R99 분기 A 완료 (HP_DRAIN). R100 = milestone. 후보:
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐ | A. HP_DRAIN — life steal | `Hero3CatalogSkillIndex` + `BattleScene.useSkill` | dmg × N% HP 회복. |
-| ⭐⭐ | B. CURE_STATUS / BUFF_REMOVE | `BattleScene` | 자기/적 status 제거. |
-| ⭐⭐ | C. TAUNT | `BattleScene.doEnemyAttack` | 타겟 우선순위. |
-| ⭐⭐ | D. recipe bytes[0..1] gold cost? | `tools/recon/` 분석 | 가설 검증성. |
-| ⭐⭐ | E. enemy 측 buff 시스템 — 적도 ACC/DOD buff | `BattleScene` | 더 풍부한 전투. |
+| ⭐⭐ | A. CURE_STATUS | `BattleScene.useSkill` | 시전 시 actor status 제거. |
+| ⭐⭐ | B. TAUNT | `BattleScene.doEnemyAttack` | target picker 우선순위. |
+| ⭐⭐ | C. HP_MAX / SP_MAX 일시 증가 buff | `Status` enum + BattleScene | R96 buff 패턴. |
+| ⭐⭐ | D. BUFF_REMOVE — 적 buff 제거 | enemy buff 시스템 선행 | E와 묶음. |
+| ⭐⭐ | E. enemy 측 buff/debuff 시스템 | `BattleScene` | 더 풍부한 전투. |
+| ⭐⭐ | F. recipe bytes[0..1] gold cost? | `tools/recon/` 분석 | 가설 검증성. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 98, uncommitted) — **HP_REGEN/SP_REGEN ongoing buff wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 7종 → 9종** — `HP_REGEN` / `SP_REGEN` 2 신규 (exact-match `codeName == "HP_REGEN"` / `"SP_REGEN"`). HEAL kind 는 R91 의 startsWith 의도 유지 (시전 시 즉시 회복 그대로). (2) ⭐⭐⭐⭐ **engine `Status` enum 8종 → 10종** — `HP_REGEN_BUFF` (perTick = HP/턴) / `SP_REGEN_BUFF` (perTick = SP/턴). (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — 기존 4종 (CRIT_DEF/DEFENSE/ACC/DOD) 에 HP_REGEN/SP_REGEN 도 0..25 clamp 후 self-buff (3턴) 등록. 로그에 6종 모두 표시 가능 (`HP재생+N/턴 SP재생+M/턴`). (4) ⭐⭐⭐⭐ **`tickPartyStatuses` 회복 로직** — 라운드 종료 시 각 살아있는 member 의 buff 리스트 순회. HP_REGEN_BUFF → `c.hp += min(hpMax-hp, perTick)` + popup + 로그. SP_REGEN_BUFF → `c.sp += min(spMax-sp, perTick)` + 로그. 죽은 member skip, cap 적용. (5) ⭐⭐⭐ **statusLabel + enemy tick `when`** 에 HP_REGEN_BUFF (`HP재/HPR`) / SP_REGEN_BUFF (`SP재/SPR`) 추가. enemy tick no-op 분기. (6) ⭐⭐⭐ **4 신규 unit tests** — engine 2 (`r98_status_enum_has_regen_buffs` size ≥ 10 / `r98_regen_tick_simulation_caps_at_max` 50→80 cap) + catalog 2 (`r98_hp_regen_modifier_kind_matches_only_hp_regen` exact-match / `r98_sp_regen_modifier_kind_matches_only_sp_regen` exact-match). (7) **115/115 tests** (engine 44→46 +2, catalog 55→57 +2, app 69) + APK BUILD SUCCESSFUL. (8) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~92% → ~92-93% (HP/SP 재생 buff 가 가시화, catalog stat enum 23종 중 9종 wiring). 상세는 [ghidra-round98-hp-sp-regen-buff-2026-05-19.md](ghidra-round98-hp-sp-regen-buff-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 99, uncommitted) — **HP_DRAIN (life steal) wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 9종 → 10종** — `HP_DRAIN` 신규 (exact-match `codeName == "HP_DRAIN"`). (2) ⭐⭐⭐⭐ **`BattleScene.tryHpDrainFromSkill(actor, nameKo, dmgDealt)`** — useSkill 공격 분기 끝에서 호출 (POISON / self-buff 등록 다음). catalog HP_DRAIN primaryModifier 0..25 clamp 후 `heal = (dmg * drainPct / 100).coerceAtLeast(1).coerceAtMost(hpMax - hp)`. (3) ⭐⭐⭐ **UI** — 보라색 popup `rgb(220,120,220)` + "흡혈: +N HP" / "Drain: +N HP" 로그. drainPct ≤ 0 또는 dmg ≤ 0 또는 actor.hp 가 이미 max 면 no-op. (4) ⭐⭐⭐ **2 신규 unit tests** — `r99_hp_drain_modifier_kind_matches_only_hp_drain` (exact-match 검증) / `r99_hp_drain_lookup_returns_zero_for_unknown_engine_name` (sentinel = 0). (5) **117/117 tests** (catalog 57→59 +2, engine 46 그대로, app 71) + APK BUILD SUCCESSFUL. (6) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~92-93% → ~93% (life steal 가시 효과 + catalog stat enum 23종 중 10종 wiring). 상세는 [ghidra-round99-hp-drain-life-steal-2026-05-19.md](ghidra-round99-hp-drain-life-steal-2026-05-19.md).
+
+**Round 98** (committed `2f7a95f5`) — **HP_REGEN/SP_REGEN ongoing buff wiring**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 7종 → 9종** — `HP_REGEN` / `SP_REGEN` 2 신규 (exact-match `codeName == "HP_REGEN"` / `"SP_REGEN"`). HEAL kind 는 R91 의 startsWith 의도 유지 (시전 시 즉시 회복 그대로). (2) ⭐⭐⭐⭐ **engine `Status` enum 8종 → 10종** — `HP_REGEN_BUFF` (perTick = HP/턴) / `SP_REGEN_BUFF` (perTick = SP/턴). (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — 기존 4종 (CRIT_DEF/DEFENSE/ACC/DOD) 에 HP_REGEN/SP_REGEN 도 0..25 clamp 후 self-buff (3턴) 등록. 로그에 6종 모두 표시 가능 (`HP재생+N/턴 SP재생+M/턴`). (4) ⭐⭐⭐⭐ **`tickPartyStatuses` 회복 로직** — 라운드 종료 시 각 살아있는 member 의 buff 리스트 순회. HP_REGEN_BUFF → `c.hp += min(hpMax-hp, perTick)` + popup + 로그. SP_REGEN_BUFF → `c.sp += min(spMax-sp, perTick)` + 로그. 죽은 member skip, cap 적용. (5) ⭐⭐⭐ **statusLabel + enemy tick `when`** 에 HP_REGEN_BUFF (`HP재/HPR`) / SP_REGEN_BUFF (`SP재/SPR`) 추가. enemy tick no-op 분기. (6) ⭐⭐⭐ **4 신규 unit tests** — engine 2 (`r98_status_enum_has_regen_buffs` size ≥ 10 / `r98_regen_tick_simulation_caps_at_max` 50→80 cap) + catalog 2 (`r98_hp_regen_modifier_kind_matches_only_hp_regen` exact-match / `r98_sp_regen_modifier_kind_matches_only_sp_regen` exact-match). (7) **115/115 tests** (engine 44→46 +2, catalog 55→57 +2, app 69) + APK BUILD SUCCESSFUL. (8) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~92% → ~92-93% (HP/SP 재생 buff 가 가시화, catalog stat enum 23종 중 9종 wiring). 상세는 [ghidra-round98-hp-sp-regen-buff-2026-05-19.md](ghidra-round98-hp-sp-regen-buff-2026-05-19.md).
 
 **Round 97** (committed `7a66113f`) — **ACCURACY/DODGE 시스템 + catalog ModifierKind 7종 wiring 완성**. (1) ⭐⭐⭐⭐⭐ **engine `Status` enum 6종 → 8종** — `ACCURACY_BUFF` (perTick = +명중 %) / `DODGE_BUFF` (perTick = +회피 %) 2 신규. (2) ⭐⭐⭐⭐⭐ **`BattleScene.rollHit(attackerAccPct, targetDodgePct): Boolean`** — `chance = (90 + acc - dodge).coerceIn(30, 100)`, `Random.nextInt(100) < chance`. base hit rate 90%, ACC/DOD buff 로 ±30 변동, 최저 30% 보장. (3) ⭐⭐⭐⭐ **useSkill 공격 분기 hit-roll** — actor ACC buff 합산 → `rollHit(accPct, 0)`. 실패 시 `"$name → 빗나감"` 로그 + damage/debuff/buff 등록 모두 skip + animation 정상 진행. (4) ⭐⭐⭐⭐ **doEnemyAttack dodge-roll** — target DODGE buff 합산 → `rollHit(0, dodgePct)`. 실패 시 `"$name → ${target} 회피!"` 로그 + 데미지 0. (5) ⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — 기존 CRIT_DEF / DEFENSE 에 더해 catalog ACCURACY / DODGE primaryModifier 도 ±25 clamp 후 self-buff (3턴) 등록. 로그에 4종 모두 표시. (6) ⭐⭐⭐ **statusLabel + enemy tick `when`** 에 ACC/DOD 추가 — render 인디케이터 자동 처리 + enemy 측 buff 분기 (no-op). (7) ⭐⭐⭐ **2 신규 engine tests** — `r97_status_enum_has_accuracy_and_dodge_buff` (8종 확인) / `r97_hit_chance_formula_clamps_to_30_100` (5 sample cases 식 검증). R96 의 `enum == 6` 단정을 `>= 6` 으로 완화. (8) **111/111 tests** (engine 42→44 +2, app 67 그대로) + APK BUILD SUCCESSFUL. (9) **catalog effect_v2 전체 게임플레이 통합 완성** — ModifierKind 7종 (OFFENSE/HEAL/CRIT_RATE/CRIT_DEF/DEFENSE/ACCURACY/DODGE) + nDebuffs 4종 (POISON/BURN/SLOW/STUN). (10) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~91% → ~92% (catalog effect_v2 stat 카테고리 전체 wiring + miss/dodge 시스템 도입). 상세는 [ghidra-round97-accuracy-dodge-2026-05-19.md](ghidra-round97-accuracy-dodge-2026-05-19.md).
 

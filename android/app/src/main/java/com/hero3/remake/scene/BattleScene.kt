@@ -180,6 +180,23 @@ class BattleScene(
     }
 
     /**
+     * R99 — 입힌 데미지의 catalog HP_DRAIN% 만큼 actor HP 회복 (cap hpMax). 0 이면 no-op.
+     */
+    private fun tryHpDrainFromSkill(actor: Character, nameKo: String, dmgDealt: Int) {
+        val idx = catalogSkillIndex ?: return
+        val drainPct = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.HP_DRAIN)
+            .coerceIn(0, catalogBonusClamp)
+        if (drainPct <= 0 || dmgDealt <= 0) return
+        val heal = (dmgDealt * drainPct / 100).coerceAtLeast(1)
+            .coerceAtMost(actor.hpMax - actor.hp)
+        if (heal <= 0) return
+        actor.hp += heal
+        popups += Popup("+$heal", onEnemy = false, targetIdx = actorIdx, ttl = 900L, color = Color.rgb(220, 120, 220))
+        pushLog(lang("흡혈: +$heal HP", "Drain: +$heal HP"))
+    }
+
+    /**
      * R97 — hit-roll. base 90% + attackerAccPct - targetDodgePct, clamp [30, 100].
      * 결과 = 명중 여부 (true = 적중, false = 빗나감/회피).
      */
@@ -401,6 +418,8 @@ class BattleScene(
         if (enemy.hp > 0) tryApplyPoisonFromSkill(s.nameKo, dmg)
         // R96: catalog CRIT_DEF / DEFENSE slot 값을 actor 자기 buff status 로 등록 (3턴).
         registerSelfBuffsFromSkill(actorIdx, s.nameKo)
+        // R99: catalog HP_DRAIN slot → 입힌 데미지 × N% 를 actor HP 로 흡혈.
+        tryHpDrainFromSkill(actor, s.nameKo, dmg)
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 

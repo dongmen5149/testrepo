@@ -600,6 +600,29 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R99: HP_DRAIN ModifierKind ────────────────────────────────────────
+
+    @Test
+    fun r99_hp_drain_modifier_kind_matches_only_hp_drain() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "HP_DRAIN" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.HP_DRAIN))
+        }
+    }
+
+    @Test
+    fun r99_hp_drain_lookup_returns_zero_for_unknown_engine_name() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        assertEquals(0, idx.primaryModifierForEngineName(
+            "__nope_zzz__", Hero3CatalogSkillIndex.ModifierKind.HP_DRAIN))
+    }
+
     // ─── R98: HP_REGEN / SP_REGEN ModifierKind ─────────────────────────────
 
     @Test

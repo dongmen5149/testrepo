@@ -86,6 +86,8 @@ class Hero3CatalogSkillIndex(
         HP_REGEN,
         /** R98 — SP_REGEN slot 한정 (ongoing tick). */
         SP_REGEN,
+        /** R99 — HP_DRAIN slot. 시전 시 입힌 데미지의 perTick% 를 actor HP 로 회복 (life steal). */
+        HP_DRAIN,
     }
 
     /**
@@ -115,6 +117,7 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.DODGE     -> s.codeName == "DOD"
                 ModifierKind.HP_REGEN  -> s.codeName == "HP_REGEN"
                 ModifierKind.SP_REGEN  -> s.codeName == "SP_REGEN"
+                ModifierKind.HP_DRAIN  -> s.codeName == "HP_DRAIN"
             }
             if (keep) sum += s.primarySigned
         }
