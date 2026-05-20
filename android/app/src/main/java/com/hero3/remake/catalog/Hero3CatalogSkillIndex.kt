@@ -69,6 +69,47 @@ class Hero3CatalogSkillIndex(
             f to FILE_PALETTE[i % FILE_PALETTE.size]
         }
 
+    /** R91: catalog effectV2 의 어떤 stat code 를 데미지/회복 식에 더할지 지정. */
+    enum class ModifierKind { OFFENSE, HEAL }
+
+    /**
+     * R91 — engine 데미지/회복 식에 가산할 catalog 보정값.
+     *
+     * 살아있는 effectV2 slot 만 검사하고, [kind] 에 맞는 codeName 을 가진 slot 의
+     * `primarySigned` 를 합산한다. 매칭이 없거나 effectV2=null 이면 0.
+     *
+     *  - [ModifierKind.OFFENSE] → codeName 이 "ATT" 로 시작 (ATT1 / ATT1_BASE / ATT2)
+     *  - [ModifierKind.HEAL]    → codeName 이 "HP_HEAL" / "HP_REGEN" 으로 시작
+     *
+     * BattleScene.useSkill 가 호출. 결과는 clamp 등 후처리 없이 raw 합을 돌려준다 —
+     * 호출측에서 imbalance 방지 clamp 적용.
+     */
+    fun primaryModifier(skill: Hero3Skill, kind: ModifierKind): Int {
+        val ev = skill.effectV2 ?: return 0
+        val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+        var sum = 0
+        for (s in live) {
+            val keep = when (kind) {
+                ModifierKind.OFFENSE -> s.codeName.startsWith("ATT")
+                ModifierKind.HEAL    -> s.codeName.startsWith("HP_HEAL") || s.codeName.startsWith("HP_REGEN")
+            }
+            if (keep) sum += s.primarySigned
+        }
+        return sum
+    }
+
+    /**
+     * R91 — engine skill 한국어 이름으로 catalog 를 fuzzy 매칭한 뒤 [primaryModifier] 결과를 돌려준다.
+     * 매칭 hits 가 여러 개면 rank 가 가장 높은 1개 사용 (SkillScene 의 catalogLine 과 동일 규칙).
+     * 매칭 없음 / catalog 미설치 등은 0.
+     */
+    fun primaryModifierForEngineName(nameKo: String, kind: ModifierKind): Int {
+        val hits = lookupByName(nameKo)
+        if (hits.isEmpty()) return 0
+        val best = hits.maxByOrNull { it.skill.effectV2?.rank ?: 0 } ?: hits[0]
+        return primaryModifier(best.skill, kind)
+    }
+
     /** [Hero3Skill] 의 effectV2 가 있고 첫 슬롯이 sentinel/zero 가 아니면 한 줄 요약 — 디버그/UI 용. */
     fun effectSummary(skill: Hero3Skill): String? {
         val ev = skill.effectV2 ?: return null

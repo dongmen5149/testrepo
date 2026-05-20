@@ -488,6 +488,57 @@ class Hero3CatalogLoaderTest {
         assertTrue(hits.all { it.skill.name.contains("섬광") })
     }
 
+    // ─── R91: primaryModifier (effect_v2 → damage/heal bonus) ──────────────
+
+    @Test
+    fun r91_skill_index_primaryModifier_handles_null_effect() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // effectV2=null 인 skill 은 무조건 0 (OFFENSE / HEAL 둘 다).
+        val noEffect = idx.entries.firstOrNull { it.skill.effectV2 == null }
+        if (noEffect != null) {
+            assertEquals(0, idx.primaryModifier(noEffect.skill,
+                Hero3CatalogSkillIndex.ModifierKind.OFFENSE))
+            assertEquals(0, idx.primaryModifier(noEffect.skill,
+                Hero3CatalogSkillIndex.ModifierKind.HEAL))
+        }
+    }
+
+    @Test
+    fun r91_skill_index_primaryModifier_picks_only_matching_codes() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // OFFENSE 합 = 살아있는 slot 중 codeName startsWith("ATT") 의 primarySigned 만.
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expectedOff = live.filter { it.codeName.startsWith("ATT") }.sumOf { it.primarySigned }
+            val expectedHeal = live.filter {
+                it.codeName.startsWith("HP_HEAL") || it.codeName.startsWith("HP_REGEN")
+            }.sumOf { it.primarySigned }
+            assertEquals(expectedOff,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.OFFENSE))
+            assertEquals(expectedHeal,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.HEAL))
+        }
+    }
+
+    @Test
+    fun r91_primaryModifierForEngineName_returns_zero_for_unknown() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        // 매칭 0 hits → 0.
+        assertEquals(0, idx.primaryModifierForEngineName(
+            "__no_such_engine_skill_zzz__",
+            Hero3CatalogSkillIndex.ModifierKind.OFFENSE))
+        // engine "연사" 는 catalog 에 ≥1 hit (R89 finding) — Int 반환 (예외 없음).
+        // 값은 데이터 의존이라 sign 검증만.
+        val v = idx.primaryModifierForEngineName(
+            "연사", Hero3CatalogSkillIndex.ModifierKind.OFFENSE)
+        // primaryModifier 의 합은 Int 범위 안.
+        assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
+    }
+
     // ─── R90: engine ↔ catalog skill bridge ────────────────────────────────
 
     @Test

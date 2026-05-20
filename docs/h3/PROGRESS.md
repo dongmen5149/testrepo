@@ -7,36 +7,39 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 90 종료, uncommitted)**:
-> - 마지막 commit = `a999738c feat:영웅서기 3,4,5 추가작업` (Round 89 인덱스 등)
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R90 는 catalog 통합 라운드)
-> - Hero3 리메이크 진행률 **~88%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 91 종료, uncommitted)**:
+> - 마지막 commit = `2a8b4f54 feat:영웅서기3 Round 90 — SkillScene catalog effectSummary bridge + Quest.catalogKey`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R91 는 catalog 통합 라운드)
+> - Hero3 리메이크 진행률 **~88-89%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R91 즉시 시작 가이드 (§1.2 권장)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R92 즉시 시작 가이드 (§1.3 권장)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R91 즉시 시작 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R92 즉시 시작 가이드
 
-`SESSION_HANDOFF.md §1` 참조 — R91 후보 (R90 에서 §1.1, §1.4 종결):
+`SESSION_HANDOFF.md §1` 참조 — R92 후보 (R90 §1.1+§1.4, R91 §1.2 OFFENSE/HEAL 종결):
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐⭐⭐ | **R66 effect_v2 BattleScene 데미지 공식 반영** | `scene/BattleScene.kt` | R90 의 SkillScene lookup 패턴을 데미지 식에 적용. 중급. |
-| ⭐⭐⭐ | Hero3CatalogItemIndex (R88-R89 패턴 3번째) | `catalog/Hero3CatalogItemIndex.kt` 신규 | 18 카테고리 × N items, ITEMS 탭 drill-down. |
+| ⭐⭐⭐ | **Hero3CatalogItemIndex** (R88-R89 패턴 3번째) | `catalog/Hero3CatalogItemIndex.kt` 신규 | 18 카테고리 × N items, ITEMS 탭 drill-down. |
+| ⭐⭐ | §1.2 확장 — P_DEF/CRI_RATE/ACC/DOD 매핑 | `Hero3CatalogSkillIndex.kt` + `BattleScene.kt` | R91 의 OFFENSE/HEAL 두 종을 확장. |
+| ⭐⭐ | 디버프 (`nDebuffs > 0`) 통합 | engine `Status` enum 신설 + BattleScene | 중급. |
 | ⭐⭐ | ForgeScene recipe bytes[0..1] = gold cost? | `tools/recon/` 분석 | 가설 검증성. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
-**R91 권장 시작 순서** (SESSION_HANDOFF §2 참조):
-1. `git status` + `git log --oneline -5` → R90 commit 확인.
-2. **§1.2 BattleScene** — `Hero3CatalogSkillIndex.lookupByName` + slot1.codeName ↔ engine stat 매핑 정리 → 데미지 modifier 적용.
-3. (병행) **§1.3 Hero3CatalogItemIndex** — Quest/Skill 인덱스 패턴 3번째.
+**R92 권장 시작 순서** (SESSION_HANDOFF §2 참조):
+1. `git status` + `git log --oneline -5` → R91 commit 확인.
+2. **§1.3 Hero3CatalogItemIndex** — Quest/Skill 인덱스 패턴 3번째.
+3. (병행) §1.2 확장 — P_DEF/CRI_RATE/ACC/DOD 한 카테고리씩 추가.
 4. Hero3CatalogLoaderTest 갱신.
 5. `:app:testDebugUnitTest` + `:engine-core:testDebugUnitTest` + `:app:assembleDebug`.
-6. `docs/h3/ghidra-round91-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
+6. `docs/h3/ghidra-round92-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 90, uncommitted) — **SkillScene engine↔catalog bridge + Quest.catalogKey 슬롯**. (1) ⭐⭐⭐⭐⭐ **`SkillScene` 첫 catalog 소비** — `Hero3CatalogProvider.get()?.let { Hero3CatalogSkillIndex.build(it) }` lazy 인덱스 1회 빌드, 신규 `catalogLine(nameKo)` 가 `lookupByName` (fuzzy) → `rank` 최대 hit → `effectSummary` → `<weapon>: rank=N (deb=M)  CODE+x/y | …` 한 줄. (2) ⭐⭐⭐⭐ **하단 detail box 40→54px**, 3번째 줄 노출. 매칭 = sky-blue muted, 없음 / catalog 미설치 = grey "(no catalog match)" / "(catalog n/a)" graceful fallback. (3) ⭐⭐⭐ **`Quest.catalogKey: String? = null` 슬롯** — `engine-core/.../Quest.kt`. 4 bespoke entries (guardian_hunt/chaos_lord/sealed_god/herb_gather) 모두 null 유지. 추후 narrative 매핑 자리. (4) ⭐⭐⭐ **3 신규 unit tests** — engine "연사" → catalog ≥1 hit + rank=… 시작 / sentinel 입력 empty / 4 quest 모두 catalogKey==null. (5) **finding (R89 확장)**: engine `ritz_rapidfire` ("연사") ↔ catalog s7/s8 의 "연사" 정확 매칭으로 첫 실 사용 검증. engine bespoke 스킬 (`강타/메가 크러쉬` 등) 은 lookupByName(contains) 정상 미매칭 — fallback UI 잘 작동. (6) **89/89 tests** (catalog 40→43, +3 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~87-88% → ~88% (lookup API 의 실제 소비 첫 라운드 + 데이터 모델 슬롯). 상세는 [ghidra-round90-skill-bridge-quest-catalogkey-2026-05-19.md](ghidra-round90-skill-bridge-quest-catalogkey-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 91, uncommitted) — **BattleScene 데미지/회복에 catalog effect_v2 보정**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.primaryModifier(skill, kind)`** 신규 — `enum ModifierKind { OFFENSE, HEAL }`. 살아있는 effectV2 slot 만 검사 (`!isSentinel && !isZero`), OFFENSE = `codeName.startsWith("ATT")` (ATT1/ATT1_BASE/ATT2), HEAL = `startsWith("HP_HEAL")` 또는 `startsWith("HP_REGEN")` 의 primarySigned 합. (2) ⭐⭐⭐⭐ **`primaryModifierForEngineName(nameKo, kind)`** — `lookupByName` fuzzy + rank 최대 hit 1개 → `primaryModifier`. 매칭 없음 = 0. (3) ⭐⭐⭐⭐ **`BattleScene.useSkill` 데미지/회복 식에 가산** — `catalogSkillIndex` lazy 빌드 (catalog 미설치 시 null), `catalogBonusFor(nameKo, heal)` 가 ±25 clamp. heal: `intl*powerMul + flatBonus + catalogBonus` (음수 방지). 공격: `atk = effectiveAttack*powerMul + flatBonus + catalogBonus`. 보정 ≠ 0 시 "(카탈로그 +N)" 한 줄 로그. (4) ⭐⭐⭐ **3 신규 unit tests** — null effectV2 = 0 / 모든 catalog skill 의 OFFENSE/HEAL 합 = manually computed expected 일치 / unknown engine name = 0 + "연사" Int 반환. (5) **finding**: catalog 의 effectV2 stat enum 23종 중 R91 은 ATT*/HP_HEAL*/HP_REGEN* 만 매핑 (5종). P_DEF/M_DEF/CRI_RATE/ACC/DOD/디버프 = R92 확장 대상. (6) 92/92 tests (catalog 43→46, +3 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~88% → ~88-89% (catalog effect_v2 가 UI 표시 → 실 데미지 식까지 도달, 가시적 게임플레이 영향). 상세는 [ghidra-round91-battle-effect-v2-modifier-2026-05-19.md](ghidra-round91-battle-effect-v2-modifier-2026-05-19.md).
+
+**Round 90** (committed `2a8b4f54`) — **SkillScene engine↔catalog bridge + Quest.catalogKey 슬롯**. (1) ⭐⭐⭐⭐⭐ **`SkillScene` 첫 catalog 소비** — `Hero3CatalogProvider.get()?.let { Hero3CatalogSkillIndex.build(it) }` lazy 인덱스 1회 빌드, 신규 `catalogLine(nameKo)` 가 `lookupByName` (fuzzy) → `rank` 최대 hit → `effectSummary` → `<weapon>: rank=N (deb=M)  CODE+x/y | …` 한 줄. (2) ⭐⭐⭐⭐ **하단 detail box 40→54px**, 3번째 줄 노출. 매칭 = sky-blue muted, 없음 / catalog 미설치 = grey "(no catalog match)" / "(catalog n/a)" graceful fallback. (3) ⭐⭐⭐ **`Quest.catalogKey: String? = null` 슬롯** — `engine-core/.../Quest.kt`. 4 bespoke entries (guardian_hunt/chaos_lord/sealed_god/herb_gather) 모두 null 유지. 추후 narrative 매핑 자리. (4) ⭐⭐⭐ **3 신규 unit tests** — engine "연사" → catalog ≥1 hit + rank=… 시작 / sentinel 입력 empty / 4 quest 모두 catalogKey==null. (5) **finding (R89 확장)**: engine `ritz_rapidfire` ("연사") ↔ catalog s7/s8 의 "연사" 정확 매칭으로 첫 실 사용 검증. engine bespoke 스킬 (`강타/메가 크러쉬` 등) 은 lookupByName(contains) 정상 미매칭 — fallback UI 잘 작동. (6) **89/89 tests** (catalog 40→43, +3 / engine 34 그대로) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~87-88% → ~88% (lookup API 의 실제 소비 첫 라운드 + 데이터 모델 슬롯). 상세는 [ghidra-round90-skill-bridge-quest-catalogkey-2026-05-19.md](ghidra-round90-skill-bridge-quest-catalogkey-2026-05-19.md).
 
 **Round 89** (committed `92752a1f`) — **Hero3CatalogSkillIndex + SKILLS 탭 drill-down**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex` 신설** — R88 quest 인덱스 패턴 그대로. `Entry(file, weapon, skill)` flat view + byWeapon / byFile / colorOf / fileColors + 7-슬롯 ARGB 팔레트 (sky/orange/mint/magenta/gold/ivory/violet, quest 팔레트와 hue 충돌 없음). (2) ⭐⭐⭐ **lookup API 2종** — `lookupByName(fragment)` / `lookupByWeapon(fragment)`. engine SkillRegistry (강타/메가 크러쉬 등) ↔ catalog (창술1..7/섬광 등) 의 미래 fuzzy bridge 용. (3) ⭐⭐⭐ **`effectSummary(skill)` 헬퍼** — effectV2 가 있고 살아있는 slot 1개 이상 = `rank=N (deb=M)  CODE+x/y | …` 한 줄. 모든 slot sentinel/zero = `rank=N (no live slot)`. effectV2=null = null. (4) ⭐⭐⭐ **CatalogViewerScene SKILLS 탭 확장** — 7-줄 weapon-요약 → ~115 줄 per-skill drill-down. weapon 헤더 + skills 가 같은 색으로 묶임. effectV2 가 있으면 행 우측에 한 줄 요약. (5) ⭐⭐ **5 신규 unit tests** — 7 weapon files 검증 / weapon 그룹화 / colorOf distinct+stable+fallback / lookupByName "섬광" 매칭 / effectSummary null + non-null 분기. (6) **finding**: 7 weapon files (s4..s10_dat) 정렬 순 ↔ palette[0..6] 1:1. 평탄화 합계 = catalog.totalSkills 와 일치 (sanity). (7) 86/86 tests (catalog 35→40, engine-core 34, 0 failures) + APK 14M BUILD SUCCESSFUL. (8) **진행률 ~99.98% → ~99.98%** (분석 동일, 리메이크 UI 가독성 + 미래 bridge API 두 측면). 상세는 [ghidra-round89-catalog-skill-index-2026-05-19.md](ghidra-round89-catalog-skill-index-2026-05-19.md).
 

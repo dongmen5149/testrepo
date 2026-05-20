@@ -66,6 +66,22 @@ class BattleScene(
 
     private val inventory: Inventory = gameState.loadInventory()
 
+    /** R91: catalog SkillIndex 1회 빌드 (catalog 미설치 시 null — 보정 0). */
+    private val catalogSkillIndex: com.hero3.remake.catalog.Hero3CatalogSkillIndex? =
+        com.hero3.remake.catalog.Hero3CatalogProvider.get()
+            ?.let { com.hero3.remake.catalog.Hero3CatalogSkillIndex.build(it) }
+
+    /** R91: imbalance 방지 clamp 폭 (catalog primarySigned 값이 크게 튈 수 있어서). */
+    private val catalogBonusClamp = 25
+
+    private fun catalogBonusFor(nameKo: String, heal: Boolean): Int {
+        val idx = catalogSkillIndex ?: return 0
+        val kind = if (heal) com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.HEAL
+                   else      com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.OFFENSE
+        val raw = idx.primaryModifierForEngineName(nameKo, kind)
+        return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
+    }
+
     private val enemy: EnemyInstance = run {
         // R80: forcedEnemyId 가 "h3_n_NNN" / "h3_h_NNN" 패턴이면 Hero3Catalog 의 161 enemies 사용.
         // 그 외는 기존 EnemyRegistry (placeholder 13 entries).
@@ -201,24 +217,29 @@ class BattleScene(
         val actor = currentActor()
         actor.sp -= s.spCost
         val name = lang(s.nameKo, s.nameEn)
+        // R91: catalog effect_v2 보정 — fuzzy 매칭 hit 의 ATT*/HP_HEAL* slot primarySigned 합.
+        val catalogBonus = catalogBonusFor(s.nameKo, heal = s.heal)
         if (s.heal) {
             val targetIdx = lowestHpAliveAlly()
             val target = party[targetIdx]
             val intl = CharacterRegistry.effectiveIntl(actor)
-            val healed = ((intl * s.powerMul).toInt() + s.flatBonus).coerceAtMost(target.hpMax - target.hp)
+            val healedRaw = (intl * s.powerMul).toInt() + s.flatBonus + catalogBonus
+            val healed = healedRaw.coerceAtLeast(0).coerceAtMost(target.hpMax - target.hp)
             target.hp += healed
             popups += Popup("+$healed", onEnemy = false, targetIdx = targetIdx, ttl = 900L, color = Color.rgb(120, 240, 120))
             pushLog("$name → ${displayName(target, isEn)} +${healed} HP")
+            if (catalogBonus != 0) pushLog(lang("(카탈로그 +$catalogBonus)", "(catalog +$catalogBonus)"))
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
-        val atk = (CharacterRegistry.effectiveAttack(actor) * s.powerMul).toInt() + s.flatBonus
+        val atk = (CharacterRegistry.effectiveAttack(actor) * s.powerMul).toInt() + s.flatBonus + catalogBonus
         val dmg = damage(atk, enemy.def.def)
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 280L
         popups += Popup("-$dmg", onEnemy = true, targetIdx = -1, ttl = 900L, color = Color.rgb(255, 200, 100))
         pushLog("$name → $dmg")
+        if (catalogBonus != 0) pushLog(lang("(카탈로그 +$catalogBonus)", "(catalog +$catalogBonus)"))
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
