@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 102 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 103 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R102 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R103 은 각 round 문서.
 
-## 🏆 Round 76-R102 누적 (2026-05-19 ~ 2026-05-20, 27 라운드 연속 자동 분석) ★ R100 마일스톤
+## 🏆 Round 76-R103 누적 (2026-05-19 ~ 2026-05-20, 28 라운드 연속 자동 분석) ★ R100 마일스톤
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -34,18 +34,19 @@
 | R99 | n0124_scn 환수 tutorial 전문 + R86-R88 catalog 1:1 매핑 | [round99-summon-tutorial.md](round99-summon-tutorial.md) |
 | R100 ★ | tier_value/bonus_id semantic 확정 (R94 마지막 ambiguity 해소) | [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md) |
 | R101 | character class skill schema 확정 — 4 class × 16 entries = 64 skill (R69 의 40 + 24 alt-form) | [round101-class-skill-schema.md](round101-class-skill-schema.md) |
-| **R102** | **★ 32B class skill field 정밀** — 64 skill 전수 byte 분포로 field 확정. byte[0]=MP cost, [3-4]=damage LE16, [5]=dtype enum (4종), [8]=skill_lvl_req (0/3/6/11 dominant), [16-19]=speed/range/anim cluster. 환수 stat block 과 layout 다르나 semantic 유사 (offset shift +9) | [round102-class-skill-fields.md](round102-class-skill-fields.md) |
+| R102 | 32B class skill field 정밀 — 64 skill 전수 byte 분포로 field 확정 | [round102-class-skill-fields.md](round102-class-skill-fields.md) |
+| **R103** | **★ 24 alt-form mode 매핑** — alt-form = primary 의 advanced variant (MP 1.5×, mid-tier lvl unlock). 4 category 식별 (enhanced 5/state_transform 8/variant 8/**summon_combo 3**). ★ S002 환수 합신 + S003 환수특공/환수증폭 = 환수+character mode-2 combo skill | [round103-alt-form-mode.md](round103-alt-form-mode.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. 32B field 정밀까지 완성. 남은 트랙은 alt-form mode 매핑, drop_id 17, damage type 별 특성.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. character + 환수 mode-2 combo skill 연결 발견. 남은 자동 트랙은 damage type 별 특성, drop_id 17, milestone 결산.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **24 alt-form 의 mode 매핑** (R101 후속) — 어떤 mode/condition 활성화
+1. ⭐ **damage type 5/20/25 별 특성** (R102 후속) — 10 skill 의 in-game 의미
 2. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
 3. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
-4. **damage type 5/20/25 별 특성** (R102 후속) — 10 skill 의 in-game 의미
+4. **환수 합신 / 환수특공 / 환수증폭 dialogue 검색** (R103 후속)
 5. **R100 milestone 결산 문서**
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)

@@ -4,6 +4,23 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 103 (2026-05-20) — 24 alt-form mode 매핑 (R101 후속) ★
+
+> R101 의 alt-form 24개 활성화 mode/condition 분석. 상세: [round103-alt-form-mode.md](round103-alt-form-mode.md).
+>
+> alt-form 은 primary 의 advanced variant: MP cost 평균 19.0 (primary 12.6, 1.5×), lvl_req=11 부재 (primary passive 와 다른 layer), mid-tier (5/6/10) unlock. 4 category: enhanced_primary (5), state_transform (8: 은신/광폭/지축/격노/금강귀 등), variant (8: 영검 series 등), **summon_combo (3)**.
+>
+> ★ Summon-linked alt-forms (R86-R99 환수 시스템과 character mode-2 cross-link):
+> - S002 (티르 마검) **환수 합신** (lvl 6, MP 27, dmg 300)
+> - S003 (루레인 마법) **환수특공** (lvl 10, MP 24, dmg 210)
+> - S003 (루레인 마법) **환수증폭** (lvl 10, MP 28, dmg 210)
+>
+> R81 의 2 영웅 × 2 mode 구조 강화: mode 0 = primary, mode 1 = alt-form 가설 정합. 환수 + 마법 mode 의 advanced combo skill 이 mode-2 의 핵심.
+>
+> `parse_h4_alt_form_mode.py` 신규 + `h4_alt_form_mode.json` 9.7KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 102 (2026-05-20) — 32B class skill stat block field 정밀 (R101 후속) ★
 
 > R101 의 64 skill 전수 byte 분포 분석. 상세: [round102-class-skill-fields.md](round102-class-skill-fields.md).

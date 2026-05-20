@@ -2916,6 +2916,85 @@
       "summon_tier_count": 15
     }
   },
+  "alt_form_mode": {
+    "stats_comparison": {
+      "primary_count": 40,
+      "alt_count": 24,
+      "primary_mp_mean": 12.6,
+      "alt_mp_mean": 19.0,
+      "primary_lvl_req_distribution": {
+        "0": 5,
+        "3": 14,
+        "4": 1,
+        "5": 1,
+        "7": 3,
+        "11": 12,
+        "6": 3,
+        "10": 1
+      },
+      "alt_lvl_req_distribution": {
+        "5": 3,
+        "6": 6,
+        "11": 4,
+        "3": 6,
+        "4": 1,
+        "10": 3,
+        "7": 1
+      }
+    },
+    "category_distribution": {
+      "enhanced_primary": 5,
+      "state_transform": 8,
+      "variant": 8,
+      "summon_combo": 3
+    },
+    "summon_linked_alts": [
+      {
+        "file": "_H_S002",
+        "name": "환수 합신",
+        "category": "summon_combo",
+        "mp_cost": 27,
+        "damage_le16": 300,
+        "skill_lvl_req": 6,
+        "speed": 63,
+        "range_or_duration": 44,
+        "animation_id": 15,
+        "linked_primary_name": null
+      },
+      {
+        "file": "_H_S003",
+        "name": "환수특공",
+        "category": "summon_combo",
+        "mp_cost": 24,
+        "damage_le16": 210,
+        "skill_lvl_req": 10,
+        "speed": 48,
+        "range_or_duration": 60,
+        "animation_id": 3,
+        "linked_primary_name": "환수흡수"
+      },
+      {
+        "file": "_H_S003",
+        "name": "환수증폭",
+        "category": "summon_combo",
+        "mp_cost": 28,
+        "damage_le16": 210,
+        "skill_lvl_req": 10,
+        "speed": 63,
+        "range_or_duration": 44,
+        "animation_id": 15,
+        "linked_primary_name": "환수흡수"
+      }
+    ],
+    "mode_hypothesis": {
+      "r81_context": "2 영웅 × 2 mode = 4 character slot. mode 0 = primary, mode 1 = alt-form 가능성",
+      "observation_1": "alt-form lvl_req 에 11 부재 (primary passive 11 과 다른 unlock layer)",
+      "observation_2": "alt-form 평균 MP cost 가 primary 보다 약 1.5× 높음 → 고급 skill",
+      "observation_3": "S002 (티르 마검) 의 \"환수 합신\" + S003 (루레인 마법) 의 환수 4종 alt 가 환수 시스템 cross-link",
+      "observation_4": "alt-form 어근 공유: 영검 series, 인첸트 series, 암즈샷 series 등 → 같은 skill family 의 advanced variant",
+      "conclusion": "alt-form 은 mode-2 skill 으로 추정 (R81 mode 구조와 부합). 특히 S002/S003 의 환수 관련 alt 는 환수+character mode 의 조합 skill. 게임 진행 (mode switch / quest unlock / 특정 장비) 으로 활성화"
+    }
+  },
   "class_skill_fields": {
     "r101_followup": "32B stat block field 정밀 식별",
     "damage_type_enum": {

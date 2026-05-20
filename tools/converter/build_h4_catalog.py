@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Alt-form mode (R103) — 24 alt-form mode 매핑
+    afm_path = CONVERTED / 'h4_alt_form_mode.json'
+    if afm_path.exists():
+        try:
+            afm = json.loads(afm_path.read_text(encoding='utf-8'))
+            catalog['alt_form_mode'] = {
+                'stats_comparison': afm['stats_comparison'],
+                'category_distribution': afm['category_distribution'],
+                'summon_linked_alts': afm['summon_linked_alts'],
+                'mode_hypothesis': afm['mode_hypothesis'],
+            }
+            print(f'\nAlt-form mode: 24 alt-form, 3 summon-combo (S002/S003 환수 합체) (R103)')
+        except Exception as e:
+            print(f'  WARN: failed to load alt_form_mode: {e}', file=sys.stderr)
+
     # Class skill fields (R102) — 32B field 정밀 식별
     csf_path = CONVERTED / 'h4_class_skill_fields.json'
     if csf_path.exists():
