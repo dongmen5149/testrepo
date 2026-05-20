@@ -48,6 +48,13 @@ class StatusTest {
     }
 
     @Test
+    fun r102_status_enum_has_sp_cost_reduce_buff() {
+        val all = Status.values().toSet()
+        assertTrue(Status.SP_COST_REDUCE_BUFF in all)
+        assertTrue(Status.values().size >= 13)
+    }
+
+    @Test
     fun r101_status_enum_has_block_buff() {
         val all = Status.values().toSet()
         assertTrue(Status.BLOCK_BUFF in all)

@@ -94,6 +94,10 @@ class Hero3CatalogSkillIndex(
         REVIVE,
         /** R101 — BLOCK slot. 시전 시 actor 자기 BLOCK buff (perTick% 받는 공격 무효) 등록. */
         BLOCK,
+        /** R102 — SP_COST_REDUCE slot. 자기 buff — 이후 스킬 SP 비용 perTick% 감소. */
+        SP_COST_REDUCE,
+        /** R102 — SHIELD_PIERCE slot. 공격 시 적 방어력 perTick% 무시. */
+        SHIELD_PIERCE,
     }
 
     /**
@@ -127,6 +131,8 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.TAUNT     -> s.codeName == "TAUNT"
                 ModifierKind.REVIVE    -> s.codeName == "REVIVE"
                 ModifierKind.BLOCK     -> s.codeName == "BLOCK"
+                ModifierKind.SP_COST_REDUCE -> s.codeName == "SP_COST_REDUCE"
+                ModifierKind.SHIELD_PIERCE  -> s.codeName == "SHIELD_PIERCE"
             }
             if (keep) sum += s.primarySigned
         }

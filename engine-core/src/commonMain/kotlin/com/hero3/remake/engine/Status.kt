@@ -58,6 +58,11 @@ enum class Status {
      * catalog BLOCK slot 값에서 유래.
      */
     BLOCK_BUFF,
+    /**
+     * R102 — 이후 스킬 SP 비용 perTick% 감소. BattleScene.effectiveSpCost 가 합산 적용.
+     * catalog SP_COST_REDUCE slot 값에서 유래.
+     */
+    SP_COST_REDUCE_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

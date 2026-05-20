@@ -97,6 +97,17 @@ class BattleScene(
     private fun buffPercent(memberIdx: Int, st: Status): Int =
         partyStatuses[memberIdx]?.filter { it.status == st }?.sumOf { it.perTick } ?: 0
 
+    /**
+     * R102 — actor 의 SP_COST_REDUCE_BUFF 합 (0..clamp) 을 적용한 실 SP 비용.
+     * 결과는 항상 ≥ 1 (skill 이 spCost > 0 일 때).
+     */
+    private fun effectiveSpCost(memberIdx: Int, baseCost: Int): Int {
+        if (baseCost <= 0) return baseCost
+        val reducePct = buffPercent(memberIdx, Status.SP_COST_REDUCE_BUFF).coerceIn(0, 90)
+        if (reducePct <= 0) return baseCost
+        return (baseCost * (100 - reducePct) / 100).coerceAtLeast(1)
+    }
+
     /** R94: engine skill 의 catalog effectV2.nDebuffs (0 이면 부여 없음). */
     private fun catalogDebuffCountFor(nameKo: String): Int {
         val idx = catalogSkillIndex ?: return 0
@@ -141,6 +152,9 @@ class BattleScene(
         val block = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.BLOCK)
             .coerceIn(0, catalogBonusClamp)
+        val spCostReduce = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SP_COST_REDUCE)
+            .coerceIn(0, catalogBonusClamp)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -181,7 +195,12 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.BLOCK_BUFF, turnsLeft = 3, perTick = block)
         }
-        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0 || block > 0) {
+        if (spCostReduce > 0) {
+            val ex = list.firstOrNull { it.status == Status.SP_COST_REDUCE_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.SP_COST_REDUCE_BUFF, turnsLeft = 3, perTick = spCostReduce)
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0 || block > 0 || spCostReduce > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
@@ -191,6 +210,7 @@ class BattleScene(
                 if (spRegen > 0) "${if (isEn) "SPR" else "SP재생"}+$spRegen/턴" else null,
                 if (taunt > 0) "${if (isEn) "TNT" else "도발"}" else null,
                 if (block > 0) "${if (isEn) "BLK" else "블록"}+$block%" else null,
+                if (spCostReduce > 0) "${if (isEn) "SPC" else "SP비"}-$spCostReduce%" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
@@ -407,7 +427,8 @@ class BattleScene(
         if (input.pressedOnce(InputController.K_OK)) {
             val s = skills[skillPickIdx]
             val actor = currentActor()
-            if (actor.sp < s.spCost) {
+            val cost = effectiveSpCost(actorIdx, s.spCost)
+            if (actor.sp < cost) {
                 pushLog(lang("SP 부족.", "Not enough SP."))
                 return
             }
@@ -417,7 +438,7 @@ class BattleScene(
 
     private fun useSkill(s: Skill) {
         val actor = currentActor()
-        actor.sp -= s.spCost
+        actor.sp -= effectiveSpCost(actorIdx, s.spCost)
         val name = lang(s.nameKo, s.nameEn)
         // R91: catalog effect_v2 보정 — fuzzy 매칭 hit 의 ATT*/HP_HEAL* slot primarySigned 합.
         val catalogBonus = catalogBonusFor(s.nameKo, heal = s.heal)
@@ -446,7 +467,16 @@ class BattleScene(
             phase = Phase.ANIMATE; animTtl = 500L
             return
         }
-        val dmg = damage(atk, enemy.def.def, extraCritPercent = critBonus)
+        // R102: catalog SHIELD_PIERCE → 적 방어력 perTick% 무시.
+        val piercePct = catalogSkillIndex
+            ?.primaryModifierForEngineName(s.nameKo,
+                com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SHIELD_PIERCE)
+            ?.coerceIn(0, 100) ?: 0
+        val effectiveEnemyDef = if (piercePct > 0)
+            (enemy.def.def * (100 - piercePct) / 100).coerceAtLeast(0)
+        else enemy.def.def
+        val dmg = damage(atk, effectiveEnemyDef, extraCritPercent = critBonus)
+        if (piercePct > 0) pushLog(lang("(방어 관통 -$piercePct%)", "(pierce -$piercePct%)"))
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 280L
@@ -633,7 +663,8 @@ class BattleScene(
                 Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF,
                 Status.ACCURACY_BUFF, Status.DODGE_BUFF,
                 Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF,
-                Status.TAUNT_BUFF, Status.BLOCK_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.TAUNT_BUFF, Status.BLOCK_BUFF,
+                Status.SP_COST_REDUCE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -671,6 +702,7 @@ class BattleScene(
         Status.SP_REGEN_BUFF -> if (isEn) "SPR" else "SP재"
         Status.TAUNT_BUFF    -> if (isEn) "TNT" else "도발"
         Status.BLOCK_BUFF    -> if (isEn) "BLK" else "블록"
+        Status.SP_COST_REDUCE_BUFF -> if (isEn) "SPC" else "SP비"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)

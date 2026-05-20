@@ -600,6 +600,34 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R102: SP_COST_REDUCE + SHIELD_PIERCE ModifierKind ─────────────────
+
+    @Test
+    fun r102_sp_cost_reduce_modifier_kind_exact_match() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "SP_COST_REDUCE" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.SP_COST_REDUCE))
+        }
+    }
+
+    @Test
+    fun r102_shield_pierce_modifier_kind_exact_match() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "SHIELD_PIERCE" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.SHIELD_PIERCE))
+        }
+    }
+
     // ─── R101: REVIVE + BLOCK ModifierKind ─────────────────────────────────
 
     @Test
