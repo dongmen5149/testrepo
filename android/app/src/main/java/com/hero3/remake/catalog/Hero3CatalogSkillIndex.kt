@@ -88,6 +88,8 @@ class Hero3CatalogSkillIndex(
         SP_REGEN,
         /** R99 — HP_DRAIN slot. 시전 시 입힌 데미지의 perTick% 를 actor HP 로 회복 (life steal). */
         HP_DRAIN,
+        /** R100 — TAUNT slot. 시전 시 actor 를 적 target picker 우선순위로 N턴 등록. */
+        TAUNT,
     }
 
     /**
@@ -118,6 +120,7 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.HP_REGEN  -> s.codeName == "HP_REGEN"
                 ModifierKind.SP_REGEN  -> s.codeName == "SP_REGEN"
                 ModifierKind.HP_DRAIN  -> s.codeName == "HP_DRAIN"
+                ModifierKind.TAUNT     -> s.codeName == "TAUNT"
             }
             if (keep) sum += s.primarySigned
         }

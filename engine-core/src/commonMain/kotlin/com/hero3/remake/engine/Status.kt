@@ -48,6 +48,11 @@ enum class Status {
      * catalog SP_REGEN slot 값에서 유래.
      */
     SP_REGEN_BUFF,
+    /**
+     * R100 — 적 target picker 가 이 buff 가진 member 를 우선 대상으로 선택.
+     * perTick 미사용. catalog TAUNT slot 값에서 유래.
+     */
+    TAUNT_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

@@ -136,6 +136,8 @@ class BattleScene(
         val spRegen = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SP_REGEN)
             .coerceIn(0, catalogBonusClamp)
+        val taunt = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.TAUNT)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -166,7 +168,12 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.SP_REGEN_BUFF, turnsLeft = 3, perTick = spRegen)
         }
-        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0) {
+        if (taunt > 0) {
+            val ex = list.firstOrNull { it.status == Status.TAUNT_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.TAUNT_BUFF, turnsLeft = 3, perTick = taunt)
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
@@ -174,6 +181,7 @@ class BattleScene(
                 if (dodge > 0) "${if (isEn) "DOD" else "회피"}+$dodge%" else null,
                 if (hpRegen > 0) "${if (isEn) "HPR" else "HP재생"}+$hpRegen/턴" else null,
                 if (spRegen > 0) "${if (isEn) "SPR" else "SP재생"}+$spRegen/턴" else null,
+                if (taunt > 0) "${if (isEn) "TNT" else "도발"}" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
@@ -591,7 +599,7 @@ class BattleScene(
                 Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
                 Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF,
                 Status.ACCURACY_BUFF, Status.DODGE_BUFF,
-                Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF, Status.TAUNT_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -627,6 +635,7 @@ class BattleScene(
         Status.DODGE_BUFF    -> if (isEn) "DOD" else "회피"
         Status.HP_REGEN_BUFF -> if (isEn) "HPR" else "HP재"
         Status.SP_REGEN_BUFF -> if (isEn) "SPR" else "SP재"
+        Status.TAUNT_BUFF    -> if (isEn) "TNT" else "도발"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
@@ -634,7 +643,12 @@ class BattleScene(
     private fun doEnemyAttack() {
         val alive = party.withIndex().filter { it.value.hp > 0 }
         if (alive.isEmpty()) return
-        val pick = alive[Random.nextInt(alive.size)]
+        // R100: TAUNT_BUFF 가진 살아있는 member 가 있으면 우선 대상.
+        val taunters = alive.filter { iv ->
+            partyStatuses[iv.index]?.any { it.status == Status.TAUNT_BUFF } == true
+        }
+        val pool = if (taunters.isNotEmpty()) taunters else alive
+        val pick = pool[Random.nextInt(pool.size)]
         val target = pick.value
         // R96: target 의 CRIT_DEF / DEFENSE buff 합산 → damage() / 최종 데미지에 반영.
         val critDefPct = buffPercent(pick.index, Status.CRIT_DEF_BUFF)

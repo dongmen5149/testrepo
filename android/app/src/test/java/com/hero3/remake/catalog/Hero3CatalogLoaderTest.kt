@@ -600,6 +600,21 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R100: TAUNT ModifierKind ──────────────────────────────────────────
+
+    @Test
+    fun r100_taunt_modifier_kind_matches_only_taunt() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "TAUNT" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.TAUNT))
+        }
+    }
+
     // ─── R99: HP_DRAIN ModifierKind ────────────────────────────────────────
 
     @Test
