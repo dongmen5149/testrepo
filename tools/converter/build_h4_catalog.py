@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Tier/bonus semantics (R100) — tier_value = 진화포인트 cost, bonus_id 의미 확정
+    tbs_path = CONVERTED / 'h4_tier_bonus_semantics.json'
+    if tbs_path.exists():
+        try:
+            tbs = json.loads(tbs_path.read_text(encoding='utf-8'))
+            catalog['tier_bonus_semantics'] = {
+                'r94_followup': tbs['r94_followup'],
+                'arithmetic_progression_verification': tbs['arithmetic_progression_verification'],
+                'tier_value_cost_classes': tbs['tier_value_cost_classes'],
+                'bonus_chain_summary': tbs['bonus_chain_summary'],
+            }
+            print(f'\nTier/bonus semantics: 8/8 arithmetic, S001 self-tree 3 chains (R100)')
+        except Exception as e:
+            print(f'  WARN: failed to load tier_bonus_semantics: {e}', file=sys.stderr)
+
     # Summon tutorial (R99) — n0124_scn tutorial 전문
     st_path = CONVERTED / 'h4_summon_tutorial.json'
     if st_path.exists():

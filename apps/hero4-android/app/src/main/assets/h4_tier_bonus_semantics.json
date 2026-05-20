@@ -1,0 +1,214 @@
+{
+  "round": 100,
+  "milestone": "Hero4 자동 분석 100 round 마일스톤",
+  "r94_followup": {
+    "tier_value_semantic": "진화포인트 소모량 (R99 tutorial: \"고레벨일수록 소모 포인트 증가\")",
+    "bonus_id_semantic": "0 = self-only upgrade, >0 = cross-tree bonus to linked passive"
+  },
+  "arithmetic_progression_verification": {
+    "count_arithmetic": 8,
+    "total_abilities": 8,
+    "all_arithmetic": true
+  },
+  "tier_value_cost_classes": {
+    "5": [
+      "마검공격"
+    ],
+    "10": [
+      "동시사격",
+      "급소사격",
+      "에이밍샷",
+      "암즈트랩",
+      "암즈강화"
+    ],
+    "15": [
+      "텔레포트소드"
+    ],
+    "20": [
+      "마법강화"
+    ]
+  },
+  "bonus_chain_summary": {
+    "with_bonus_count": 3,
+    "no_bonus_count": 5,
+    "cross_tree_links": [
+      "동시사격 (id 12) → 암즈강화 (id 18)",
+      "에이밍샷 (id 15) → 속사 (id 19)",
+      "암즈트랩 (id 16) → 회피증가 (id 17)"
+    ]
+  },
+  "all_abilities": [
+    {
+      "skill_id": 12,
+      "class_name": "S001",
+      "skill_name": "동시사격",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "tier_diffs": [
+        10,
+        10
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 10,
+      "has_bonus_chain": true,
+      "bonus_target_id": 18,
+      "bonus_target_name": "암즈강화",
+      "bonus_values": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "skill_id": 13,
+      "class_name": "S001",
+      "skill_name": "급소사격",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "tier_diffs": [
+        10,
+        10
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 10,
+      "has_bonus_chain": false,
+      "bonus_target_id": 0,
+      "bonus_target_name": null,
+      "bonus_values": null
+    },
+    {
+      "skill_id": 15,
+      "class_name": "S001",
+      "skill_name": "에이밍샷",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "tier_diffs": [
+        10,
+        10
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 10,
+      "has_bonus_chain": true,
+      "bonus_target_id": 19,
+      "bonus_target_name": "속사",
+      "bonus_values": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "skill_id": 16,
+      "class_name": "S001",
+      "skill_name": "암즈트랩",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "tier_diffs": [
+        10,
+        10
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 10,
+      "has_bonus_chain": true,
+      "bonus_target_id": 17,
+      "bonus_target_name": "회피증가",
+      "bonus_values": [
+        10,
+        20,
+        30
+      ]
+    },
+    {
+      "skill_id": 18,
+      "class_name": "S001",
+      "skill_name": "암즈강화",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "tier_diffs": [
+        10,
+        10
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 10,
+      "has_bonus_chain": false,
+      "bonus_target_id": 0,
+      "bonus_target_name": null,
+      "bonus_values": null
+    },
+    {
+      "skill_id": 21,
+      "class_name": "S002",
+      "skill_name": "마검공격",
+      "tier_values": [
+        5,
+        10,
+        15
+      ],
+      "tier_diffs": [
+        5,
+        5
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 5,
+      "has_bonus_chain": false,
+      "bonus_target_id": 0,
+      "bonus_target_name": null,
+      "bonus_values": null
+    },
+    {
+      "skill_id": 22,
+      "class_name": "S002",
+      "skill_name": "텔레포트소드",
+      "tier_values": [
+        10,
+        25,
+        40
+      ],
+      "tier_diffs": [
+        15,
+        15
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 15,
+      "has_bonus_chain": false,
+      "bonus_target_id": 0,
+      "bonus_target_name": null,
+      "bonus_values": null
+    },
+    {
+      "skill_id": 37,
+      "class_name": "S003",
+      "skill_name": "마법강화",
+      "tier_values": [
+        20,
+        40,
+        60
+      ],
+      "tier_diffs": [
+        20,
+        20
+      ],
+      "is_arithmetic_progression": true,
+      "arithmetic_step": 20,
+      "has_bonus_chain": false,
+      "bonus_target_id": 0,
+      "bonus_target_name": null,
+      "bonus_values": null
+    }
+  ]
+}

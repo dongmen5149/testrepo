@@ -4,6 +4,20 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 100 (2026-05-20) — bonus_id=0 + tier_value semantic 확정 ★ **R100 마일스톤**
+
+> R94 마지막 ambiguity 해소. 상세: [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md).
+>
+> R99 tutorial 단서 ("고레벨일수록 소모 포인트 증가") 부합 검증. **tier_value = 진화포인트 cost** (8/8 ability 모두 arithmetic progression, step +5/+10/+15/+20 가 skill power 와 비례), **bonus_id=0 = self-only upgrade**, **bonus_id>0 = cross-tree link** (S001 사격 self-tree 전용 3개: 동시사격→암즈강화, 에이밍샷→속사, 암즈트랩→회피증가). 18 암즈강화 = dual upgrade path (직접 강화 + 12 동시사격 통한 간접 강화).
+>
+> Cost-class 그룹: +5 마검공격(cheapest), +10 S001 5개, +15 텔레포트소드, +20 마법강화(most expensive). 엔진 cost formula 의 일관성 확인.
+>
+> **Hero4 자동 분석 100 라운드 마일스톤 달성**. R68-R100 누적: DES 풀이 → 데이터 catalog → summon system → stat block schema → quest reward 매핑 → boss phase scaling → dialogue cross-ref → ability mapping → tier/bonus 의미까지 완성.
+>
+> `parse_h4_tier_bonus_semantics.py` 신규 + `h4_tier_bonus_semantics.json` 4.7KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 99 (2026-05-20) — n0124_scn 환수 시스템 tutorial 전문 + R86-R88 catalog 1:1 매핑 (R92 후속) ★
 
 > R92 의 환수 tutorial scene 전문 추출. 상세: [round99-summon-tutorial.md](round99-summon-tutorial.md).
