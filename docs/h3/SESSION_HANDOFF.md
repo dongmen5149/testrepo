@@ -8,7 +8,7 @@
 
 ## 1. 다음 세션 즉시 시작 가이드 (R107)
 
-R73 시점에 분석/DES 는 끝났고, R74~R101 는 catalog 데이터를 Android 리메이크 안으로 끌어들이는 통합 라운드들 — 28 라운드. catalog stat enum 23종 중 13종 wiring. **R102 부터는 CURE_STATUS / HP_MAX·SP_MAX / SP_COST_REDUCE / SHIELD_PIERCE / BUFF_REMOVE / *_BASE 영구 stat / enemy buff 시스템 / recipe gold cost 분석** 이 메인 트랙.
+R73 시점에 분석/DES 는 끝났고, R74~R106 는 catalog 데이터를 Android 리메이크 안으로 끌어들이는 통합 라운드들 — **33 라운드**. catalog stat enum 23종 중 **17종 wiring**, 전투 양방향 대칭성 (party / enemy 둘 다 buff + debuff) 완성. **R107 부터는 HP_MAX·SP_MAX 일시 buff (R96 패턴) / CD_REDUCE / *_BASE 영구 stat / boss skill 매핑 (R74) / party debuff render UI / recipe gold cost 분석** 이 메인 트랙.
 
 ### 1.0 R88-R92 결과 (참고)
 

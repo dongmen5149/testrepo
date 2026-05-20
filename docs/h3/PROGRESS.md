@@ -7,8 +7,8 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 106 종료, uncommitted)**:
-> - 마지막 commit = `d6bf54cc feat:영웅서기3 Round 105 — BUFF_REMOVE wiring + enemy buff render 개선`
+> **현재 git 상태 (2026-05-19 Round 106 종료, committed)**:
+> - 마지막 commit = `70427fe6 feat:영웅서기3 Round 106 — Party debuff 시스템 + CURE_STATUS wiring`
 > - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R106 는 catalog 통합 33 라운드)
 > - Hero3 리메이크 진행률 **~96-97%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
