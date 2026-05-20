@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 89 (2026-05-20) — 23B stat block 통합 schema (R87 정정) ★
+
+> R87 의 stat block field 표 전수 정정. 상세: [round89-statblock-schema.md](round89-statblock-schema.md).
+>
+> 21 개 23B block (boss + summon active 11 + global passive 4 + divider 1) 통합 분석. `byte[0]` = template marker (3종: 0x14 ACTIVE_ATTACK / 0x0a DIVIDER / 0x00 PASSIVE_TEMPLATE), PASSIVE_TEMPLATE 의 `byte[5]` = subtype (4종: 6 SHIELD / 7 STATUS_PROC / 11 AURA / 12 PASSIVE).
+>
+> R87 정정: damage 가 byte[3] 단일 (44/200/144/44/244) 이 아닌 byte[3-4] LE16 (300/200/400/300/500). element=2, heal_flag/reflect_flag/secondary buff 등 모든 field 의미 확정. `parse_h4_statblock_schema.py` 신규 + `h4_statblock_schema.json` 17.5KB + catalog 통합.
+
+---
+
 ## 🏆 Round 88 (2026-05-20) — `_H_BS` + `_H_SA` 환수 progression / ability slot 정밀화 ★
 
 > R86 동반 파일 두 개 정밀화. 상세: [round88-summon-progression.md](round88-summon-progression.md).

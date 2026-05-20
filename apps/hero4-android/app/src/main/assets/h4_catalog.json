@@ -2915,5 +2915,27 @@
       "ability_slot_count": 24,
       "summon_tier_count": 15
     }
+  },
+  "statblock_schema": {
+    "template_catalog": {
+      "20": "ACTIVE_ATTACK",
+      "10": "DIVIDER",
+      "0": "PASSIVE_TEMPLATE"
+    },
+    "passive_subtype_catalog": {
+      "6": "SHIELD",
+      "7": "STATUS_PROC",
+      "11": "AURA",
+      "12": "PASSIVE"
+    },
+    "block_count": 21,
+    "by_template": {
+      "PASSIVE_TEMPLATE/STATUS_PROC": 5,
+      "ACTIVE_ATTACK": 5,
+      "PASSIVE_TEMPLATE/AURA": 5,
+      "PASSIVE_TEMPLATE/SHIELD": 1,
+      "PASSIVE_TEMPLATE/PASSIVE": 4,
+      "DIVIDER": 1
+    }
   }
 }

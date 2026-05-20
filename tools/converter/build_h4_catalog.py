@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Stat block schema (R89) — 23B block 통합 schema
+    schema_path = CONVERTED / 'h4_statblock_schema.json'
+    if schema_path.exists():
+        try:
+            sch = json.loads(schema_path.read_text(encoding='utf-8'))
+            catalog['statblock_schema'] = {
+                'template_catalog': sch['template_catalog'],
+                'passive_subtype_catalog': sch['passive_subtype_catalog'],
+                'block_count': sch['block_count'],
+                'by_template': sch['by_template'],
+            }
+            print(f'\nStat block schema: 3 templates + 4 passive subtypes ({sch["block_count"]} blocks) (R89)')
+        except Exception as e:
+            print(f'  WARN: failed to load statblock_schema: {e}', file=sys.stderr)
+
     # Quests (R70) — separately parsed in h4_quests.json
     quests_path = CONVERTED / 'h4_quests.json'
     if quests_path.exists():
