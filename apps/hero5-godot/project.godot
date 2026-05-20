@@ -34,6 +34,10 @@ textures/canvas_textures/default_texture_filter=0
 
 pointing/emulate_touch_from_mouse=true
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [autoload]
 
 GameState="*res://scripts/core/game_state.gd"

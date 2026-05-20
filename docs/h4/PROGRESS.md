@@ -2,7 +2,149 @@
 
 > 다음 세션에서 가장 먼저 읽기. 디테일은 분류별 폴더 / 파일 참조.
 >
-> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
+> **완성도 / 몇 %?** → [COMPLETION.md](COMPLETION.md) — **베타 오픈(원작 동일·시나리오·정상 플레이) ~15%** · 데이터 RE **~99%** · 전체 공정 **~45%**.
+>
+> **"영웅서기4 다음 내용 진행해줘"** 받았으면 → [SESSION_HANDOFF.md](SESSION_HANDOFF.md) → 라운드 상세는 아래 §.
+
+## 📊 리메이크 완성도 (2026-05-20)
+
+> **100% = 베타 서비스 오픈** — 원작과 거의 동일한 화면·동일 시나리오·정상 플레이 ([`COMPLETION.md`](COMPLETION.md))
+
+| 기준 | 완료율 | 비고 |
+|------|--------|------|
+| **베타 오픈** ★ | **~12–18%** (중앙 **~15%**) | 원작 UI·시나리오 실행·H4 런타임 거의 없음; Hero3 베타 ~97% |
+| 프로젝트 전체 공정 | **~45%** | 분석·카탈로그 대부분 완료 |
+| 데이터·RE·자산 | **~99%** | R68–R107 — **베타 체감과 별도** |
+
+- 1차 문서 **~35%** = KMM PoC·데이터 가중 과대 — **이번 베타 정의보다 느슨**.
+- 구식 **「55–65%」** = 준비 결선만 해당.
+
+---
+
+## 🏆 Round 114 ★★ (2026-05-20) — 3-system unified effect engine (R87+R89+R113 후속)
+
+> R113 의 effect_id namespace 가 **환수 시스템 (`_H_SS`)** 까지 확장됨을 검증.
+>
+> **STATUS_PROC byte[7] 검증** (R89 정정):
+> - 베놈 맹독 = 85 = **중독** ✓
+> - 헤지호그 되돌리기 = 86 = **데미지반사** ✓
+> - 그래비티 슬로우 = 75 = **슬로우발동** ✓ (= OPTION + 급소사격)
+> - 쇼커 스턴 = 76 = **스턴발동** ✓ (= OPTION + 기절의검/크리티컬샷)
+>
+> **AURA byte[7]+byte[11] 검증**:
+> - 강화의 오러 = HPmax + Spmax buff
+> - 마법의 오러 = 마법공격 + 저항 buff
+> - 보호의 오러 = 물리방어 + 마법방어 buff
+>
+> **3-system unified effect engine**: OPTION (item) + class skill (32B) + 환수 (23B) 가 **모두 동일 effect_id namespace 공유**. 통합 일치율 **32/34 (94.1%)**.
+>
+> 상세: [round114-summon-effect-id-xref.md](round114-summon-effect-id-xref.md).
+
+## 🏆 Round 113 ★ (2026-05-20) — effect_id namespace 통합 (R106+R112 후속)
+
+> R106 `_ITM_OPTION` 의 byte0 effect_id 와 R112 class skill stat block byte[20] 가 **동일 enum namespace** 임을 검증.
+>
+> **12 effect_id 공유** (HP회복/SP소모/SP회복/근접공격/마법공격/쿨타임/넉백/슬로우/스턴/화염/결빙/물약).
+>
+> OPTION 의 명명된 entry ("화염발동 L1" 등) 로부터 effect_id 의미 직접 추론 → **19/20 class skill cross-reference 가 desc 와 일치** (95% 정합).
+>
+> **R113 통합 모델**: Hero4 game engine 의 secondary-effect engine 은 단일 시스템. item enchantment / class skill 이 같은 effect_id namespace 공유.
+>
+> 상세: [round113-effect-id-namespace.md](round113-effect-id-namespace.md).
+
+## 🏆 Round 112 (2026-05-20) — 32B stat block 미확정 byte 정밀화 (R102+R109 후속) ★
+
+> R102 의 32B class skill stat block 의 9 미확정 byte 의 의미를 R109 sub-cat / R104 dtype / class 와 cross-ref.
+>
+> **핵심 발견 4가지**:
+> 1. **byte[21] = magnitude class** (1/10/100 + signed -4) — R106 `_ITM_OPTION` 의 cat 0/15/100 과 동일 layer (enchantment + class skill 공통 secondary-effect engine)
+> 2. **byte[14] = active skill marker** (21 entries = 0x78, passive 0)
+> 3. **byte[18] = dtype=0 channeled/sustained flag** (9 entries 모두 type=0)
+> 4. **byte[24-31] = DEBUFF/COMBO side-effect** (0xFC/0xFF = signed negative for 감소 modifier)
+>
+> R102 의 23 byte → **R112 까지 28/32 byte 의미 추정 확정**. 남은 byte[15] = invariant 0.
+>
+> 상세: [round112-statblock-uncertain-bytes.md](round112-statblock-uncertain-bytes.md).
+
+## 🏆 Round 111 (2026-05-20) — alt-form 24 × type=0 sub-cat cross-check (R103+R109 후속) ★
+
+> R103 4 alt-form 카테고리 × R109 11 type=0 sub-cat × R110 advanced layer 가설 검증.
+>
+> **3가지 핵심 발견**:
+> 1. **24 alt-form 전부 damage_type=0** — type=5/20/25 10 skill 은 모두 primary
+> 2. **R103 ↔ R109 정합 100%** (24/24 일관 매핑)
+> 3. **ACTIVE_COMBO 4/4 (100%) 가 alt-form** — 환수 융합 = 순수 mode-2. DEBUFF/TRAP 는 primary 다수
+>
+> R110 milestone 의 "advanced layer 12 ≈ alt-form 절반" 가설 정밀화: 12 advanced sub-cat 중 7개 (58%) alt-form, 5개 primary. **ACTIVE_COMBO 만 순수 mode-2 mechanic**.
+>
+> 상세: [round111-alt-form-subcat-xref.md](round111-alt-form-subcat-xref.md).
+
+## 🏆 Round 110 ★★ (2026-05-20) — R100+ 밀레스톤 결산 (R68–R109 누적 42 라운드)
+
+> Hero4 데이터 RE 자동 트랙 종결 milestone 문서 작성.
+>
+> **누적 변화**: 데이터 RE 30% → **99%** (+69%p), 평균 **+1.65%p/라운드** (42 라운드).
+>
+> **카테고리별 종결**:
+> - A. 암호화: 0→100% (R68 DES key)
+> - B. 자산 포맷: 30→98% (SMAF 단일 미완)
+> - C. 대사 corpus: 0→100% (35,752 lines)
+> - D. 게임 데이터 RE: 5→99% (catalog 모두 완료)
+> - E. 게임 메카닉 모델: 5→97% (4 class design philosophy + 환수 + alt-form)
+>
+> **종합 베타 %**: ~5 → **~15%** (+10%p). 데이터 99% 와 별도 — 베타 100% 까지 Phase C Step 4d + 원작 UI + SCN 진행기 + 본편 QA 필요.
+>
+> 상세: [MILESTONE_R100.md](MILESTONE_R100.md).
+
+## 🏆 Round 109 (2026-05-20) — type=0 magic skill sub-categorization (R104 후속) ★
+
+> R104 의 type=0 dominant (54/64 = 84.4%) 의 design intent 를 description text + dmg 기반 **11 sub-category** 분류.
+>
+> **분포**: PASSIVE_DEEP 16 (4×4) / ACTIVE_BUFF_SELF 10 / COMBO 4 (S002+S003) / DEBUFF 3 (S003) / ELEMENT 5 (S002+S003) / AOE 5 / DASH 3 / TRAP 2 / BASIC 3 / MULTI 2 / STATUS 1.
+>
+> 4 character class design philosophy:
+> - **S000 양손검**: 물리 + 다양성 (ELEMENT/COMBO/DEBUFF 부재)
+> - **S001 사격**: 장거리 + buff(4) 최다 + TRAP(1) 유일 무기 class
+> - **S002 마검**: ELEMENT(3) + DASH(2) 최다 + COMBO(2) 환수 시작
+> - **S003 마법**: DEBUFF(3) 전용 + AOE(3) 최다 + 환수 시스템 핵심
+>
+> mode_1 advanced layer (DASH+TRAP+DEBUFF+COMBO = 12) ≈ R103 alt-form 24 절반 — R101/R103 schema 정합.
+>
+> 상세: [round109-type0-subcategory.md](round109-type0-subcategory.md).
+
+## 🏆 Round 108 (2026-05-20) — 환수 combo skill dialogue 부재 확정 (R103 후속) ★
+
+> R103 의 mode-2 환수 combo (합신/특공/증폭) + S003 환수 primary (흡수/흡혈환수) 5종을 corpus 252 파일 전수 검색.
+>
+> 결과: 5종 모두 **`_H_S002`/`_H_S003` catalog 단 1 hit**, scene/NPC/event **0 hits**. R92 의 "환수 시스템 = 상점 NPC + tutorial 외 story 부재" 패턴 그대로 combo 까지 연장.
+>
+> **결론**: 환수 combo 는 **mode-2 mechanic-only** — story 노출 없는 mid-tier advanced skill. R103 가설 강력 검증.
+>
+> 상세: [round108-summon-combo-dialogue.md](round108-summon-combo-dialogue.md).
+
+## 🏆 Round 107 (2026-05-20) — 죽음의 구 timer 단위 검증 (R98 후속) ★
+
+> R98 countdown 필드의 **seconds** 단위 구조 검증. 상세: [round107-death-sphere-timer-verify.md](round107-death-sphere-timer-verify.md).
+>
+> `_ESDAT_0/1/2` @ `0x331b` 재현: timer **600 → 480 → 360**, stage당 **-120** 고정. ESDAT 72B 전수 스캔 — 600/480/360 은 **죽음의 구 entry 만** (uniqueness=True). dialogue 에 `10분`/`8분`/`6분` **0 hits** (구조 증거만, 대사 미지원).
+>
+> **결론**: pos[63-64] LE16 = **seconds** → **10 / 8 / 6 분** (confidence: high_structural).
+>
+> `parse_h4_death_sphere_timer_verify.py` 신규 + `h4_death_sphere_timer_verify.json` + `h4_catalog.death_sphere.timer_unit_verify` 통합 + Android 자산 배포.
+
+---
+
+## 🏆 Round 106 (2026-05-20) — `_ITM_OPTION` 1928B 구조 정밀 (R84/R105 후속) ★
+
+> R84 텍스트 run + R105 LE16 qty 정정 이후 binary layout 확정. 상세: [round106-itm-option-structure.md](round106-itm-option-structure.md).
+>
+> **6B header + 122 variable entries + 5B tail**. entry = `[size LE16][nlen][name EUC-KR][payload 3B]`. payload = `[effect_id][category][magnitude]` — category **0**=stat / **15**=proc / **100**=스턴발동. magnitude L1→L4 monotonic (HP회복 5/10/15/20 등).
+>
+> R84 `1928/16=120.5` 의문 해소: fixed stride 아님.
+>
+> `parse_h4_itm_option_struct.py` 신규 + `h4_itm_option_struct.json` + catalog 통합 + Android 자산 배포.
+
+---
 
 ## 🏆 Round 105 (2026-05-20) — drop_id 17 byte10=232 정확한 해석 (R97 정정) ★
 

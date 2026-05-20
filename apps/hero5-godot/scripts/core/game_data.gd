@@ -562,30 +562,345 @@ func _stat_at(stats: Array, index: int, default: int) -> int:
 	return int(stats[index])
 
 
-## skill 설명에서 `}#NN%}` 등 템플릿 변수를 stat 값으로 치환.
+## skill 설명에서 `}#NN<unit>|` 등 템플릿 변수를 stat 값으로 치환.
 ##   예: "재사용대기 }#09초|" + stats_u16[9]=600 → "재사용대기 600초|"
 ##       "근접공격력 }#05%|" + stats_u16[5]=120 → "근접공격력 120%|"
-func resolve_skill_desc(class_id: int, skill_id: int) -> String:
+## Round 105: stats_u16 의 값은 file 의 raw u16 LE stride 로 얻은 것인데,
+## 실측 결과 placeholder `#NN` 이 참조하는 실제 stat 값과 일치하지 않음. 실
+## source 는 Formula::calc 런타임 — R106+ 의 통합 작업 대상. R105 휴리스틱
+## 가드: 값 > 500 시 `?` 로 표시.
+const PLACEHOLDER_UNREASONABLE_THRESHOLD := 500
+
+## Round 106→109: R75 convention 의 placeholder NN → 의미 label.
+## R106 형식 `"공격%"` 는 desc 의 unit (`%`, `초`) 와 중복 노출 → R109 에서 unit
+## 분리. desc 의 `}#NN<unit>|` 가 unit 을 보유하므로 label 은 의미만.
+##   raw                placeholder 치환                    bracket 변환
+##   `}#05%|`           `}?(공격)%|`                       `[?(공격)%]`  (R109)
+##   `}#08초|`          `}?(지속)초|`                       `[?(지속)초]` (R109)
+##                       (이전 R106: `[?(공격%)%]` / `[?(지속초)초]` — 단위 중복)
+##
+##   #04 → 효과 강도 (effect_pct)
+##   #05 → damage 자릿수 (R57 convention, spirit/class 공통)
+##   #06 → magic 자릿수
+##   #07 → MP cost
+##   #08 → duration (buff/curse 지속)
+##   #09 → cooldown
+##   #12 → 다목적 (배수/초/… — desc unit 으로 구분)
+## 미매핑 NN 은 raw `?` 유지.
+const PLACEHOLDER_LABELS := {
+	4: "효과",
+	5: "공격",
+	6: "마법",
+	7: "MP",
+	8: "지속",
+	9: "쿨",
+	10: "값",
+	11: "강화",
+	12: "수치",
+	13: "양",
+}
+
+## Round 108→109: placeholder NN → stat source (Formula::calc 우선, explicit field 차순).
+## R105/R106 의 stats_u16[NN] 직접 치환은 file padding 과 불일치 — spirit 의
+## primary_u16 / formula_id_1·2 / mp_cost·cooldown (R87) 및 FormulaVM 으로 해석.
+## R109: #12 의 `primary_u16` 매핑 제거 — 폭발 `}#12초|` 가 damage% (300) 로
+## 잘못 노출되던 케이스 차단. NN 미매핑 시 stats_u16[12] fallback → garbage 가드.
+const PLACEHOLDER_STAT_SOURCE := {
+	4: {"formula_key": "formula_id_2", "field": "secondary_u16"},
+	5: {"formula_key": "formula_id_1", "field": "primary_u16"},
+	6: {"formula_key": "formula_id_1", "field": "primary_u16"},
+	7: {"field": "mp_cost"},
+	8: {"formula_key": "formula_id_2", "field": "secondary_u16"},
+	9: {"field": "cooldown"},
+}
+
+
+func _ensure_skills_cache_loaded() -> void:
 	if _skills_cache.is_empty():
 		var p := "res://assets/gamedata/skills.json"
 		if FileAccess.file_exists(p):
 			var f := FileAccess.open(p, FileAccess.READ)
 			_skills_cache = JSON.parse_string(f.get_as_text()) or {}
-	# Round 88: class_5 (spirit) 호출 시 별도 c_csv_skill_05.json 도 로드.
+	_ensure_spirit_skills_loaded()
+
+
+func _skill_record(class_id: int, skill_id: int) -> Dictionary:
+	_ensure_skills_cache_loaded()
+	var arr: Array = _skills_cache.get("class_%d" % class_id, [])
+	if skill_id < 0 or skill_id >= arr.size():
+		return {}
+	return arr[skill_id]
+
+
+func _formula_vm() -> Node:
+	return get_node_or_null("/root/FormulaVM")
+
+
+## Round 108: Formula::calc 용 최소 player ctx (battle_system._player_ctx 축약).
+func _placeholder_player_ctx() -> Dictionary:
+	var atk: int = GameState.total_attack() if GameState.has_method("total_attack") else 10
+	var def_v: int = GameState.total_defense() if GameState.has_method("total_defense") else 5
+	return {
+		"hp": GameState.hp,
+		"max_hp": GameState.max_hp,
+		"sp": GameState.sp,
+		"max_sp": GameState.max_sp,
+		"level": GameState.level,
+		"str": GameState.stat_str,
+		"dex": GameState.stat_dex,
+		"int": GameState.stat_int,
+		"con": GameState.stat_con,
+		"atk": atk,
+		"def": def_v,
+		"557": GameState.level,
+		"566": GameState.stat_str,
+		"568": GameState.stat_dex,
+		"570": GameState.stat_con,
+		"572": GameState.stat_int,
+		"584": GameState.sp,
+		"734": GameState.stat_int,
+		"736": GameState.stat_int,
+		"738": GameState.stat_con,
+		"740": GameState.stat_str,
+		"742": GameState.max_sp,
+	}
+
+
+func _placeholder_formula_ctx(class_id: int, skill_id: int, rec: Dictionary) -> Dictionary:
+	var info: Dictionary = skill_info(class_id, skill_id)
+	var skill_payload: Dictionary = rec.duplicate(true)
+	for k in info.keys():
+		skill_payload[k] = info[k]
+	return {
+		"skill": skill_payload,
+		"defender": {"atk": 10, "def": 5, "hp": 100, "max_hp": 100},
+		"item": {},
+		"player": _placeholder_player_ctx(),
+	}
+
+
+func _calc_placeholder_formula(formula_id: int, ctx: Dictionary) -> int:
+	if formula_id <= 0:
+		return 0
+	var fvm := _formula_vm()
+	if fvm == null:
+		return 0
+	return int(fvm.calc(formula_id, ctx))
+
+
+func _placeholder_int_field(rec: Dictionary, info: Dictionary, field: String) -> int:
+	if rec.has(field):
+		return int(rec[field])
+	if info.has(field):
+		return int(info[field])
+	return -1
+
+
+func _format_placeholder_display(nn: int, value: int) -> String:
+	if value < 0 or value > PLACEHOLDER_UNREASONABLE_THRESHOLD:
+		if PLACEHOLDER_LABELS.has(nn):
+			return "?(%s)" % PLACEHOLDER_LABELS[nn]
+		return "?"
+	return str(value)
+
+
+## Round 108: 단일 placeholder NN 의 표시용 정수 (-1 = 미해결).
+func eval_placeholder_stat(nn: int, class_id: int, skill_id: int) -> int:
+	var src: Dictionary = PLACEHOLDER_STAT_SOURCE.get(nn, {})
+	if src.is_empty():
+		return -1
+	var rec: Dictionary = _skill_record(class_id, skill_id)
+	if rec.is_empty():
+		return -1
+	var info: Dictionary = skill_info(class_id, skill_id)
+	var ctx: Dictionary = _placeholder_formula_ctx(class_id, skill_id, rec)
+	if src.has("formula_key"):
+		var fid: int = int(info.get(src["formula_key"], 0))
+		var calc_v: int = _calc_placeholder_formula(fid, ctx)
+		if calc_v > 0 and calc_v <= PLACEHOLDER_UNREASONABLE_THRESHOLD:
+			return calc_v
+	if src.has("field"):
+		var fv: int = _placeholder_int_field(rec, info, src["field"])
+		if fv >= 0 and fv <= PLACEHOLDER_UNREASONABLE_THRESHOLD:
+			return fv
+	var stats: Array = rec.get("stats_u16", [])
+	if nn >= 0 and nn < stats.size():
+		var raw: int = int(stats[nn])
+		if raw <= PLACEHOLDER_UNREASONABLE_THRESHOLD:
+			return raw
+	return -1
+
+
+func _resolve_placeholder_stat(nn: int, class_id: int, skill_id: int) -> String:
+	return _format_placeholder_display(nn, eval_placeholder_stat(nn, class_id, skill_id))
+
+
+func resolve_skill_desc(class_id: int, skill_id: int) -> String:
+	_ensure_skills_cache_loaded()
 	if class_id == 5 and not _skills_cache.has("class_5"):
 		_ensure_spirit_skills_loaded()
-	var arr = _skills_cache.get("class_%d" % class_id, [])
-	if skill_id < 0 or skill_id >= arr.size():
+	var skill: Dictionary = _skill_record(class_id, skill_id)
+	if skill.is_empty():
 		return ""
-	var skill = arr[skill_id]
-	var desc = skill.get("desc", "")
+	var desc: String = str(skill.get("desc", ""))
 	var stats: Array = skill.get("stats_u16", [])
-	# regex 대신 단순 치환
-	var result = desc
+	# Round 110: bracket-aware — `}...|` 내부 #NN 만 치환. bare `#NN` (예: `#01돌격-스턴효과`)
+	# 은 skill-link 참조이므로 보존. R108 의 `result.replace("#%02d", val)` 무차별 치환은
+	# class_0..3 의 46+ skill-link 를 corruption 했음 (`#01돌격-스턴효과` → `0돌격-스턴효과`).
+	# Round 111: indices 에 `}...|` 괄호 내부에 등장하는 모든 `#NN` 자동 수집 →
+	# SOURCE 미매핑 NN (#10/#11/#13) 도 stats fallback / label fallback 통해 처리.
+	var indices: Array[int] = []
+	for nn in PLACEHOLDER_STAT_SOURCE.keys():
+		if desc.find("#%02d" % nn) != -1:
+			indices.append(nn)
 	for i in stats.size():
-		result = result.replace("}#%02d" % i, "}%d" % stats[i])
-		result = result.replace("#%02d" % i, str(stats[i]))
+		if not indices.has(i):
+			indices.append(i)
+	# R111: 괄호 내부에 등장하는 `#NN` 자동 수집 (#10/#11/#13 등 SOURCE 미매핑)
+	var bi: int = 0
+	while bi < desc.length():
+		var b_open := desc.find("}", bi)
+		if b_open == -1:
+			break
+		var b_close := desc.find("|", b_open + 1)
+		if b_close == -1:
+			break
+		var bracket_inner := desc.substr(b_open + 1, b_close - b_open - 1)
+		var pi: int = 0
+		while pi < bracket_inner.length() - 2:
+			if bracket_inner[pi] == "#" \
+				and bracket_inner[pi + 1].is_valid_int() \
+				and bracket_inner[pi + 2].is_valid_int():
+				var nn_str := bracket_inner.substr(pi + 1, 2)
+				var nn := nn_str.to_int()
+				if not indices.has(nn):
+					indices.append(nn)
+				pi += 3
+			else:
+				pi += 1
+		bi = b_close + 1
+	# display_val 산출 (NN → 치환값)
+	var values: Dictionary = {}
+	for i in indices:
+		if PLACEHOLDER_STAT_SOURCE.has(i):
+			values[i] = _resolve_placeholder_stat(i, class_id, skill_id)
+		else:
+			var raw_val: int = int(stats[i]) if i < stats.size() else -1
+			values[i] = _format_placeholder_display(i, raw_val)
+	return _replace_placeholders_in_brackets(desc, values)
+
+
+## Round 110: `}...|` 강조 괄호 내부의 `#NN` 만 치환.
+## bare `#NN` (괄호 외부, 주로 skill-link 참조) 은 보존.
+## 동일 괄호 안에서 여러 #NN 등장 가능 (예: `}SP #07| 소모.;재사용대기 }#09초|.`).
+func _replace_placeholders_in_brackets(desc: String, values: Dictionary) -> String:
+	var result := ""
+	var i := 0
+	while i < desc.length():
+		var c := desc[i]
+		if c == "}":
+			var close := desc.find("|", i + 1)
+			if close == -1:
+				result += desc.substr(i)
+				break
+			var inner := desc.substr(i + 1, close - i - 1)
+			for nn in values.keys():
+				inner = inner.replace("#%02d" % nn, values[nn])
+			result += "}" + inner + "|"
+			i = close + 1
+		else:
+			result += c
+			i += 1
 	return result
+
+
+## Round 90: spirit/class skill description 을 UI 표시용으로 한국어 정제.
+##
+## R88 의 raw desc 는 `}#NN<unit>|` placeholder + `;` 줄바꿈 마커를 포함.
+## 본 함수는 (1) resolve_skill_desc 로 stat 치환 후 (2) `}...|` 강조 브래킷을
+## `[...]` 로 변환 (UI 가독성) + (3) `;` → `\n` 변환.
+##
+##   예 (spirit #0 암흑탄, stats_u16[5]=12336):
+##     raw   : "거대한 암흑탄을 발사하여;정령마력 }#05%|의;피해를 준다.;..."
+##     return: "거대한 암흑탄을 발사하여\n정령마력 [12336%]의\n피해를 준다.\n..."
+##
+## Round 108: spirit/class placeholder 는 primary_u16·formula_id·FormulaVM 우선.
+## Formula JSON 미export 시 calc=0 → explicit field (예: 암흑탄 #05→400) 노출.
+## Round 111: `{관련특성|` 섹션 헤더 → `▸ <text>:` + bare `#NN<text>` skill-link →
+## `• <text>` 불릿 렌더링. class_0..3 의 46건 skill-link 정직 표시.
+##
+## Round 112: 원본 데이터 quirk 흡수 — (1) `}<text>}<num>|` 중첩 시 inner `}` 제거
+## 후 `[text num]` 으로 평탄화 (봉쇄/섬광탄 `}시야를 }1|로` 패턴), (2) `{` 를 close
+## 대체 marker 로 수용 (쐐기탄 `}민첩 12당 1{의` 의 bit-flip 가설).
+func resolve_skill_desc_display(class_id: int, skill_id: int) -> String:
+	var raw := resolve_skill_desc(class_id, skill_id)
+	if raw.is_empty():
+		return ""
+	# `}TEXT|` 강조 브래킷 → `[TEXT]`. `}` 와 `|` 가 짝지어 등장한다고 가정.
+	var out := ""
+	var i := 0
+	while i < raw.length():
+		var c := raw[i]
+		if c == "}":
+			# R112: `|` 또는 `{` (data quirk) 를 close marker 로 수용. 더 가까운 쪽 사용.
+			var close_pipe := raw.find("|", i + 1)
+			var close_brace := raw.find("{", i + 1)
+			var close := -1
+			if close_pipe == -1:
+				close = close_brace
+			elif close_brace == -1:
+				close = close_pipe
+			else:
+				close = min(close_pipe, close_brace)
+			if close == -1:
+				out += c
+				i += 1
+				continue
+			# R112: 중첩 `}` 가 bracket 안에 등장하면 inner `}` 는 제거.
+			var inner := raw.substr(i + 1, close - i - 1).replace("}", "")
+			out += "[" + inner + "]"
+			i = close + 1
+		elif c == "{":
+			# R111: `{관련특성|` 섹션 헤더 → `▸ 관련 특성:`. 일반 `{TEXT|` 도 동일 처리.
+			var close := raw.find("|", i + 1)
+			if close == -1:
+				out += c
+				i += 1
+				continue
+			var header := raw.substr(i + 1, close - i - 1)
+			if header == "관련특성":
+				out += "▸ 관련 특성:"
+			else:
+				out += "▸ " + header + ":"
+			i = close + 1
+		elif c == "#" and i + 2 < raw.length() \
+			and raw[i + 1].is_valid_int() and raw[i + 2].is_valid_int() \
+			and (out.is_empty() or out.ends_with("\n")):
+			# R111: bare `#NN<text>` skill-link → `• <text>` 불릿.
+			# R112: 줄 시작 (`\n` 직후 또는 빈 출력) 위치만 불릿화. 행 중간의 `#NN`
+			# (예: 포격 `사격당 |#07|의`) 은 raw 유지.
+			out += "• "
+			i += 3
+		elif c == ";":
+			out += "\n"
+			i += 1
+		else:
+			out += c
+			i += 1
+	return out
+
+
+## Round 90: skill desc 의 첫 줄 (`;` 분리 첫 segment) 만 UI 로그용으로 반환.
+## battle log 에 짧게 표시할 때 사용. placeholder 치환 + 브래킷 정제 후 첫 줄.
+##   예: "거대한 암흑탄을 발사하여" (placeholder 가 첫 줄 뒤에 있으면 그대로).
+func resolve_skill_desc_first_line(class_id: int, skill_id: int) -> String:
+	var full := resolve_skill_desc_display(class_id, skill_id)
+	if full.is_empty():
+		return ""
+	var nl := full.find("\n")
+	if nl == -1:
+		return full.strip_edges()
+	return full.substr(0, nl).strip_edges()
 
 
 ## Round 83: spirit skills (class_5, 16 entries) 를 별도 c_csv_skill_05.json 에서 load.

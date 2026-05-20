@@ -308,10 +308,10 @@ func player_action(action: Action, skill_id: int = 0) -> void:
 					4: fx_str = " +자세"
 			log_message.emit("[%s]! %d 피해%s%s%s (MP -%d) [F:%d]" % [skill_name, dmg, combo_str, sp_str, fx_str, mp_cost, formula_id])
 			# Round 88: spirit (Sorcerer) skill 발동 시 한국어 desc 첫 segment 노출.
-			# desc 는 EUC-KR 디코딩된 멀티라인 (";" 구분). 첫 줄만 짧게.
-			var desc_str: String = str(skill_data.get("desc", ""))
-			if GameState.class_id == 4 and not desc_str.is_empty():
-				var first_line: String = desc_str.split(";")[0].strip_edges()
+			# Round 90: placeholder (}#NN%|) 치환 + 브래킷 정제 적용한 첫 줄 사용.
+			#   resolve_skill_desc_first_line(5, skill_id) — class_5 (spirit) lookup.
+			if GameState.class_id == 4:
+				var first_line: String = GameData.resolve_skill_desc_first_line(5, skill_id)
 				if not first_line.is_empty():
 					log_message.emit("  ▸ %s" % first_line)
 			if enemy_hp == 0:

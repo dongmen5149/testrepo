@@ -17,6 +17,9 @@ static func save_path(slot: int) -> String:
 
 static func make_payload(state: Dictionary) -> Dictionary:
 	var inv: Array = state.get("inventory", [])
+	# Round 91: skill_levels + stat_points + Sorcerer/Gunner combo state + active
+	# effect arrays 추가 (이전엔 누락되어 quick_save → quick_load 가 stat/combo
+	# 상태를 잃음).
 	return {
 		"version": SAVE_VERSION,
 		"timestamp": Time.get_datetime_string_from_system(),
@@ -39,13 +42,22 @@ static func make_payload(state: Dictionary) -> Dictionary:
 			"dex": state.get("stat_dex", 0),
 			"int": state.get("stat_int", 0),
 			"con": state.get("stat_con", 0),
+			"stat_points": state.get("stat_points", 0),
 		},
 		"inventory": inv,
 		"inventory_count": inv.size(),
 		"equipment": state.get("equipment", []),
 		"unlocked_skills": state.get("unlocked_skills", []),
+		"skill_levels": state.get("skill_levels", {}),
+		"gunner_combo": state.get("gunner_combo", 0),
+		"gunner_max_combo": state.get("gunner_max_combo", 4),
+		"gunner_ammo": state.get("gunner_ammo", 0),
+		"active_curses": state.get("active_curses", []),
+		"active_buffs": state.get("active_buffs", []),
+		"active_stances": state.get("active_stances", []),
 		"flags": state.get("flags", {}),
 		"quest": state.get("quest", {}),
+		"mission": state.get("mission", {}),
 	}
 
 

@@ -1,0 +1,2955 @@
+{
+  "meta": {
+    "round": "R106",
+    "date": "2026-05-20",
+    "source": "work\\h4\\decrypted\\ITM\\DAT\\_ITM_OPTION",
+    "file_size": 1928
+  },
+  "header": {
+    "hex": "040000000000",
+    "le32_first4": 4
+  },
+  "entry_count": 122,
+  "consumed_bytes": 1923,
+  "trailing_bytes": 5,
+  "trailing_hex": "0000000000",
+  "payload_len_histogram": {
+    "3": 122
+  },
+  "payload_byte_freq": {
+    "byte0_top": [
+      [
+        0,
+        15
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        90,
+        5
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        80,
+        4
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        15,
+        4
+      ],
+      [
+        16,
+        4
+      ]
+    ],
+    "byte1_top": [
+      [
+        0,
+        101
+      ],
+      [
+        15,
+        18
+      ],
+      [
+        100,
+        3
+      ]
+    ],
+    "byte2_top": [
+      [
+        10,
+        27
+      ],
+      [
+        5,
+        24
+      ],
+      [
+        15,
+        17
+      ],
+      [
+        0,
+        15
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        20,
+        9
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        2,
+        2
+      ]
+    ]
+  },
+  "by_base": [
+    {
+      "base": "HPmax",
+      "count": 6,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        2,
+        10,
+        5,
+        5,
+        8,
+        10
+      ]
+    },
+    {
+      "base": "HP회복",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "HP흡수",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        5,
+        5,
+        5
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "SPmax",
+      "count": 1,
+      "levels": [
+        [
+          1,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        6
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        5
+      ]
+    },
+    {
+      "base": "SP분노",
+      "count": 1,
+      "levels": [
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        11
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        20
+      ]
+    },
+    {
+      "base": "SP소모",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        7,
+        7,
+        7
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "SP회복",
+      "count": 1,
+      "levels": [
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        8
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        20
+      ]
+    },
+    {
+      "base": "Spmax",
+      "count": 3,
+      "levels": [
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        6,
+        6,
+        6
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        8,
+        10
+      ]
+    },
+    {
+      "base": "결빙(냉기)",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        79,
+        79,
+        79
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "근접공격",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "기절저항",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        3,
+        6,
+        10,
+        13
+      ]
+    },
+    {
+      "base": "넉백발동",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        68,
+        68,
+        68
+      ],
+      "p1_seq": [
+        100,
+        100,
+        100
+      ],
+      "p2_seq": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "base": "데미지반사",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        86,
+        86,
+        86
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "마법공격",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        15,
+        15,
+        15,
+        15
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "마법방어",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "명중",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        1,
+        3,
+        6,
+        10
+      ]
+    },
+    {
+      "base": "물리방어",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "물약회복",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          3,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        2,
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "블록",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        21,
+        21,
+        21,
+        21
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        3,
+        6,
+        10,
+        13
+      ]
+    },
+    {
+      "base": "사격/마법",
+      "count": 1,
+      "levels": [
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        90
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        15
+      ]
+    },
+    {
+      "base": "스턴발동",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        76,
+        76,
+        76
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "슬로우발동",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        75,
+        75,
+        75
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "원거리공격",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "저주",
+      "count": 1,
+      "levels": [
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        25
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        5
+      ]
+    },
+    {
+      "base": "저항",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        30,
+        30,
+        30
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        3,
+        6,
+        5
+      ]
+    },
+    {
+      "base": "중독",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        85,
+        85,
+        85
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "직격",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        3,
+        6,
+        10,
+        13
+      ]
+    },
+    {
+      "base": "쿨타임",
+      "count": 1,
+      "levels": [
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        27
+      ],
+      "p1_seq": [
+        0
+      ],
+      "p2_seq": [
+        10
+      ]
+    },
+    {
+      "base": "크리데미지",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        23,
+        23,
+        23,
+        23
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    {
+      "base": "크리티컬",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        22,
+        22,
+        22,
+        22
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        1,
+        3,
+        6,
+        10
+      ]
+    },
+    {
+      "base": "특수공격",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        90,
+        90,
+        90
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        3,
+        7,
+        10
+      ]
+    },
+    {
+      "base": "화염발동",
+      "count": 3,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        78,
+        78,
+        78
+      ],
+      "p1_seq": [
+        15,
+        15,
+        15
+      ],
+      "p2_seq": [
+        5,
+        10,
+        15
+      ]
+    },
+    {
+      "base": "회피",
+      "count": 4,
+      "levels": [
+        [
+          1,
+          ""
+        ],
+        [
+          2,
+          ""
+        ],
+        [
+          3,
+          ""
+        ],
+        [
+          4,
+          ""
+        ]
+      ],
+      "p0_seq": [
+        19,
+        19,
+        19,
+        19
+      ],
+      "p1_seq": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "p2_seq": [
+        1,
+        3,
+        6,
+        10
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "offset": 6,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L1",
+      "name_hex": "48506d6178204c31",
+      "payload_len": 3,
+      "payload_hex": "020002",
+      "payload": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "offset": 20,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP회복 L1",
+      "name_hex": "4850c8b8bab9204c31",
+      "payload_len": 3,
+      "payload_hex": "040005",
+      "payload": [
+        4,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 35,
+      "size": 12,
+      "nlen": 8,
+      "name": "SPmax L1",
+      "name_hex": "53506d6178204c31",
+      "payload_len": 3,
+      "payload_hex": "060005",
+      "payload": [
+        6,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 49,
+      "size": 15,
+      "nlen": 11,
+      "name": "물약회복 L1",
+      "name_hex": "b9b0bee0c8b8bab9204c31",
+      "payload_len": 3,
+      "payload_hex": "500002",
+      "payload": [
+        80,
+        0,
+        2
+      ]
+    },
+    {
+      "offset": 66,
+      "size": 15,
+      "nlen": 11,
+      "name": "특수공격 L1",
+      "name_hex": "c6afbcf6b0f8b0dd204c31",
+      "payload_len": 3,
+      "payload_hex": "5a0003",
+      "payload": [
+        90,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 83,
+      "size": 15,
+      "nlen": 11,
+      "name": "근접공격 L1",
+      "name_hex": "b1d9c1a2b0f8b0dd204c31",
+      "payload_len": 3,
+      "payload_hex": "0c0005",
+      "payload": [
+        12,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 100,
+      "size": 17,
+      "nlen": 13,
+      "name": "원거리공격 L1",
+      "name_hex": "bff8b0c5b8aeb0f8b0dd204c31",
+      "payload_len": 3,
+      "payload_hex": "0e0005",
+      "payload": [
+        14,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 119,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법공격 L1",
+      "name_hex": "b8b6b9fdb0f8b0dd204c31",
+      "payload_len": 3,
+      "payload_hex": "0f0005",
+      "payload": [
+        15,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 136,
+      "size": 15,
+      "nlen": 11,
+      "name": "물리방어 L1",
+      "name_hex": "b9b0b8aeb9e6beee204c31",
+      "payload_len": 3,
+      "payload_hex": "100005",
+      "payload": [
+        16,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 153,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법방어 L1",
+      "name_hex": "b8b6b9fdb9e6beee204c31",
+      "payload_len": 3,
+      "payload_hex": "110005",
+      "payload": [
+        17,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 170,
+      "size": 11,
+      "nlen": 7,
+      "name": "명중 L1",
+      "name_hex": "b8edc1df204c31",
+      "payload_len": 3,
+      "payload_hex": "120001",
+      "payload": [
+        18,
+        0,
+        1
+      ]
+    },
+    {
+      "offset": 183,
+      "size": 11,
+      "nlen": 7,
+      "name": "회피 L1",
+      "name_hex": "c8b8c7c7204c31",
+      "payload_len": 3,
+      "payload_hex": "130001",
+      "payload": [
+        19,
+        0,
+        1
+      ]
+    },
+    {
+      "offset": 196,
+      "size": 15,
+      "nlen": 11,
+      "name": "크리티컬 L1",
+      "name_hex": "c5a9b8aec6bcc4c3204c31",
+      "payload_len": 3,
+      "payload_hex": "160001",
+      "payload": [
+        22,
+        0,
+        1
+      ]
+    },
+    {
+      "offset": 213,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L2",
+      "name_hex": "48506d6178204c32",
+      "payload_len": 3,
+      "payload_hex": "020005",
+      "payload": [
+        2,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 227,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP회복 L2",
+      "name_hex": "4850c8b8bab9204c32",
+      "payload_len": 3,
+      "payload_hex": "04000a",
+      "payload": [
+        4,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 242,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP흡수 L1",
+      "name_hex": "4850c8edbcf6204c31",
+      "payload_len": 3,
+      "payload_hex": "050005",
+      "payload": [
+        5,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 257,
+      "size": 12,
+      "nlen": 8,
+      "name": "Spmax L2",
+      "name_hex": "53706d6178204c32",
+      "payload_len": 3,
+      "payload_hex": "060005",
+      "payload": [
+        6,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 271,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L1",
+      "name_hex": "48506d6178204c31",
+      "payload_len": 3,
+      "payload_hex": "02000a",
+      "payload": [
+        2,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 285,
+      "size": 13,
+      "nlen": 9,
+      "name": "SP소모 L1",
+      "name_hex": "5350bcd2b8f0204c31",
+      "payload_len": 3,
+      "payload_hex": "070005",
+      "payload": [
+        7,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 300,
+      "size": 15,
+      "nlen": 11,
+      "name": "물약회복 L2",
+      "name_hex": "b9b0bee0c8b8bab9204c32",
+      "payload_len": 3,
+      "payload_hex": "500005",
+      "payload": [
+        80,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 317,
+      "size": 15,
+      "nlen": 11,
+      "name": "특수공격 L2",
+      "name_hex": "c6afbcf6b0f8b0dd204c32",
+      "payload_len": 3,
+      "payload_hex": "5a0007",
+      "payload": [
+        90,
+        0,
+        7
+      ]
+    },
+    {
+      "offset": 334,
+      "size": 15,
+      "nlen": 11,
+      "name": "근접공격 L2",
+      "name_hex": "b1d9c1a2b0f8b0dd204c32",
+      "payload_len": 3,
+      "payload_hex": "0c000a",
+      "payload": [
+        12,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 351,
+      "size": 17,
+      "nlen": 13,
+      "name": "원거리공격 L2",
+      "name_hex": "bff8b0c5b8aeb0f8b0dd204c32",
+      "payload_len": 3,
+      "payload_hex": "0e000a",
+      "payload": [
+        14,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 370,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법공격 L2",
+      "name_hex": "b8b6b9fdb0f8b0dd204c32",
+      "payload_len": 3,
+      "payload_hex": "0f000a",
+      "payload": [
+        15,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 387,
+      "size": 15,
+      "nlen": 11,
+      "name": "물리방어 L2",
+      "name_hex": "b9b0b8aeb9e6beee204c32",
+      "payload_len": 3,
+      "payload_hex": "10000a",
+      "payload": [
+        16,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 404,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법방어 L2",
+      "name_hex": "b8b6b9fdb9e6beee204c32",
+      "payload_len": 3,
+      "payload_hex": "11000a",
+      "payload": [
+        17,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 421,
+      "size": 11,
+      "nlen": 7,
+      "name": "명중 L2",
+      "name_hex": "b8edc1df204c32",
+      "payload_len": 3,
+      "payload_hex": "120003",
+      "payload": [
+        18,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 434,
+      "size": 11,
+      "nlen": 7,
+      "name": "회피 L2",
+      "name_hex": "c8b8c7c7204c32",
+      "payload_len": 3,
+      "payload_hex": "130003",
+      "payload": [
+        19,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 447,
+      "size": 11,
+      "nlen": 7,
+      "name": "직격 L1",
+      "name_hex": "c1f7b0dd204c31",
+      "payload_len": 3,
+      "payload_hex": "140003",
+      "payload": [
+        20,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 460,
+      "size": 11,
+      "nlen": 7,
+      "name": "블록 L1",
+      "name_hex": "baedb7cf204c31",
+      "payload_len": 3,
+      "payload_hex": "150003",
+      "payload": [
+        21,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 473,
+      "size": 15,
+      "nlen": 11,
+      "name": "크리티컬 L2",
+      "name_hex": "c5a9b8aec6bcc4c3204c32",
+      "payload_len": 3,
+      "payload_hex": "160003",
+      "payload": [
+        22,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 490,
+      "size": 17,
+      "nlen": 13,
+      "name": "크리데미지 L1",
+      "name_hex": "c5a9b8aeb5a5b9ccc1f6204c31",
+      "payload_len": 3,
+      "payload_hex": "170005",
+      "payload": [
+        23,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 509,
+      "size": 15,
+      "nlen": 11,
+      "name": "기절저항 L1",
+      "name_hex": "b1e2c0fdc0fac7d7204c31",
+      "payload_len": 3,
+      "payload_hex": "180003",
+      "payload": [
+        24,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 526,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L3",
+      "name_hex": "48506d6178204c33",
+      "payload_len": 3,
+      "payload_hex": "020008",
+      "payload": [
+        2,
+        0,
+        8
+      ]
+    },
+    {
+      "offset": 540,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP회복 L3",
+      "name_hex": "4850c8b8bab9204c33",
+      "payload_len": 3,
+      "payload_hex": "04000f",
+      "payload": [
+        4,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 555,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP흡수 L2",
+      "name_hex": "4850c8edbcf6204c32",
+      "payload_len": 3,
+      "payload_hex": "05000a",
+      "payload": [
+        5,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 570,
+      "size": 12,
+      "nlen": 8,
+      "name": "Spmax L3",
+      "name_hex": "53706d6178204c33",
+      "payload_len": 3,
+      "payload_hex": "060008",
+      "payload": [
+        6,
+        0,
+        8
+      ]
+    },
+    {
+      "offset": 584,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L2",
+      "name_hex": "48506d6178204c32",
+      "payload_len": 3,
+      "payload_hex": "020005",
+      "payload": [
+        2,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 598,
+      "size": 13,
+      "nlen": 9,
+      "name": "SP소모 L3",
+      "name_hex": "5350bcd2b8f0204c33",
+      "payload_len": 3,
+      "payload_hex": "07000a",
+      "payload": [
+        7,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 613,
+      "size": 15,
+      "nlen": 11,
+      "name": "물약회복 L3",
+      "name_hex": "b9b0bee0c8b8bab9204c33",
+      "payload_len": 3,
+      "payload_hex": "50000a",
+      "payload": [
+        80,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 630,
+      "size": 15,
+      "nlen": 11,
+      "name": "특수공격 L3",
+      "name_hex": "c6afbcf6b0f8b0dd204c33",
+      "payload_len": 3,
+      "payload_hex": "5a000a",
+      "payload": [
+        90,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 647,
+      "size": 15,
+      "nlen": 11,
+      "name": "근접공격 L3",
+      "name_hex": "b1d9c1a2b0f8b0dd204c33",
+      "payload_len": 3,
+      "payload_hex": "0c000f",
+      "payload": [
+        12,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 664,
+      "size": 17,
+      "nlen": 13,
+      "name": "원거리공격 L3",
+      "name_hex": "bff8b0c5b8aeb0f8b0dd204c33",
+      "payload_len": 3,
+      "payload_hex": "0e000f",
+      "payload": [
+        14,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 683,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법공격 L3",
+      "name_hex": "b8b6b9fdb0f8b0dd204c33",
+      "payload_len": 3,
+      "payload_hex": "0f000f",
+      "payload": [
+        15,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 700,
+      "size": 15,
+      "nlen": 11,
+      "name": "물리방어 L3",
+      "name_hex": "b9b0b8aeb9e6beee204c33",
+      "payload_len": 3,
+      "payload_hex": "10000f",
+      "payload": [
+        16,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 717,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법방어 L3",
+      "name_hex": "b8b6b9fdb9e6beee204c33",
+      "payload_len": 3,
+      "payload_hex": "11000f",
+      "payload": [
+        17,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 734,
+      "size": 11,
+      "nlen": 7,
+      "name": "명중 L3",
+      "name_hex": "b8edc1df204c33",
+      "payload_len": 3,
+      "payload_hex": "120006",
+      "payload": [
+        18,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 747,
+      "size": 11,
+      "nlen": 7,
+      "name": "회피 L3",
+      "name_hex": "c8b8c7c7204c33",
+      "payload_len": 3,
+      "payload_hex": "130006",
+      "payload": [
+        19,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 760,
+      "size": 11,
+      "nlen": 7,
+      "name": "직격 L2",
+      "name_hex": "c1f7b0dd204c32",
+      "payload_len": 3,
+      "payload_hex": "140006",
+      "payload": [
+        20,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 773,
+      "size": 11,
+      "nlen": 7,
+      "name": "블록 L2",
+      "name_hex": "baedb7cf204c32",
+      "payload_len": 3,
+      "payload_hex": "150006",
+      "payload": [
+        21,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 786,
+      "size": 15,
+      "nlen": 11,
+      "name": "크리티컬 L3",
+      "name_hex": "c5a9b8aec6bcc4c3204c33",
+      "payload_len": 3,
+      "payload_hex": "160006",
+      "payload": [
+        22,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 803,
+      "size": 17,
+      "nlen": 13,
+      "name": "크리데미지 L2",
+      "name_hex": "c5a9b8aeb5a5b9ccc1f6204c32",
+      "payload_len": 3,
+      "payload_hex": "17000a",
+      "payload": [
+        23,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 822,
+      "size": 15,
+      "nlen": 11,
+      "name": "기절저항 L2",
+      "name_hex": "b1e2c0fdc0fac7d7204c32",
+      "payload_len": 3,
+      "payload_hex": "180006",
+      "payload": [
+        24,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 839,
+      "size": 11,
+      "nlen": 7,
+      "name": "직격 L3",
+      "name_hex": "c1f7b0dd204c33",
+      "payload_len": 3,
+      "payload_hex": "14000a",
+      "payload": [
+        20,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 852,
+      "size": 11,
+      "nlen": 7,
+      "name": "블록 L3",
+      "name_hex": "baedb7cf204c33",
+      "payload_len": 3,
+      "payload_hex": "15000a",
+      "payload": [
+        21,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 865,
+      "size": 17,
+      "nlen": 13,
+      "name": "크리데미지 L3",
+      "name_hex": "c5a9b8aeb5a5b9ccc1f6204c33",
+      "payload_len": 3,
+      "payload_hex": "17000f",
+      "payload": [
+        23,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 884,
+      "size": 15,
+      "nlen": 11,
+      "name": "기절저항 L3",
+      "name_hex": "b1e2c0fdc0fac7d7204c33",
+      "payload_len": 3,
+      "payload_hex": "18000a",
+      "payload": [
+        24,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 901,
+      "size": 11,
+      "nlen": 7,
+      "name": "저항 L1",
+      "name_hex": "c0fac7d7204c31",
+      "payload_len": 3,
+      "payload_hex": "1e0003",
+      "payload": [
+        30,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 914,
+      "size": 17,
+      "nlen": 13,
+      "name": "슬로우발동 L1",
+      "name_hex": "bdbdb7cebfecb9dfb5bf204c31",
+      "payload_len": 3,
+      "payload_hex": "4b0f05",
+      "payload": [
+        75,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 933,
+      "size": 15,
+      "nlen": 11,
+      "name": "화염발동 L1",
+      "name_hex": "c8adbfb0b9dfb5bf204c31",
+      "payload_len": 3,
+      "payload_hex": "4e0f05",
+      "payload": [
+        78,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 950,
+      "size": 17,
+      "nlen": 13,
+      "name": "결빙(냉기) L1",
+      "name_hex": "b0e1baf928b3c3b1e229204c31",
+      "payload_len": 3,
+      "payload_hex": "4f0f05",
+      "payload": [
+        79,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 969,
+      "size": 11,
+      "nlen": 7,
+      "name": "중독 L1",
+      "name_hex": "c1dfb5b6204c31",
+      "payload_len": 3,
+      "payload_hex": "550f05",
+      "payload": [
+        85,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 982,
+      "size": 15,
+      "nlen": 11,
+      "name": "스턴발동 L1",
+      "name_hex": "bdbac5cfb9dfb5bf204c31",
+      "payload_len": 3,
+      "payload_hex": "4c0f05",
+      "payload": [
+        76,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 999,
+      "size": 15,
+      "nlen": 11,
+      "name": "넉백발동 L1",
+      "name_hex": "b3cbb9e9b9dfb5bf204c31",
+      "payload_len": 3,
+      "payload_hex": "446401",
+      "payload": [
+        68,
+        100,
+        1
+      ]
+    },
+    {
+      "offset": 1016,
+      "size": 17,
+      "nlen": 13,
+      "name": "데미지반사 L1",
+      "name_hex": "b5a5b9ccc1f6b9ddbbe7204c31",
+      "payload_len": 3,
+      "payload_hex": "560f05",
+      "payload": [
+        86,
+        15,
+        5
+      ]
+    },
+    {
+      "offset": 1035,
+      "size": 11,
+      "nlen": 7,
+      "name": "저항 L2",
+      "name_hex": "c0fac7d7204c32",
+      "payload_len": 3,
+      "payload_hex": "1e0006",
+      "payload": [
+        30,
+        0,
+        6
+      ]
+    },
+    {
+      "offset": 1048,
+      "size": 17,
+      "nlen": 13,
+      "name": "슬로우발동 L2",
+      "name_hex": "bdbdb7cebfecb9dfb5bf204c32",
+      "payload_len": 3,
+      "payload_hex": "4b0f0a",
+      "payload": [
+        75,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1067,
+      "size": 15,
+      "nlen": 11,
+      "name": "화염발동 L2",
+      "name_hex": "c8adbfb0b9dfb5bf204c32",
+      "payload_len": 3,
+      "payload_hex": "4e0f0a",
+      "payload": [
+        78,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1084,
+      "size": 17,
+      "nlen": 13,
+      "name": "결빙(냉기) L2",
+      "name_hex": "b0e1baf928b3c3b1e229204c32",
+      "payload_len": 3,
+      "payload_hex": "4f0f0a",
+      "payload": [
+        79,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1103,
+      "size": 11,
+      "nlen": 7,
+      "name": "중독 L2",
+      "name_hex": "c1dfb5b6204c32",
+      "payload_len": 3,
+      "payload_hex": "550f0a",
+      "payload": [
+        85,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1116,
+      "size": 15,
+      "nlen": 11,
+      "name": "스턴발동 L2",
+      "name_hex": "bdbac5cfb9dfb5bf204c32",
+      "payload_len": 3,
+      "payload_hex": "4c0f0a",
+      "payload": [
+        76,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1133,
+      "size": 15,
+      "nlen": 11,
+      "name": "넉백발동 L2",
+      "name_hex": "b3cbb9e9b9dfb5bf204c32",
+      "payload_len": 3,
+      "payload_hex": "446403",
+      "payload": [
+        68,
+        100,
+        3
+      ]
+    },
+    {
+      "offset": 1150,
+      "size": 17,
+      "nlen": 13,
+      "name": "데미지반사 L2",
+      "name_hex": "b5a5b9ccc1f6b9ddbbe7204c32",
+      "payload_len": 3,
+      "payload_hex": "560f0a",
+      "payload": [
+        86,
+        15,
+        10
+      ]
+    },
+    {
+      "offset": 1169,
+      "size": 16,
+      "nlen": 12,
+      "name": "레벨제한감소",
+      "name_hex": "b7b9baa7c1a6c7d1b0a8bcd2",
+      "payload_len": 3,
+      "payload_hex": "570005",
+      "payload": [
+        87,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 1187,
+      "size": 12,
+      "nlen": 8,
+      "name": "HPmax L4",
+      "name_hex": "48506d6178204c34",
+      "payload_len": 3,
+      "payload_hex": "02000a",
+      "payload": [
+        2,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1201,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP회복 L4",
+      "name_hex": "4850c8b8bab9204c34",
+      "payload_len": 3,
+      "payload_hex": "040014",
+      "payload": [
+        4,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1216,
+      "size": 13,
+      "nlen": 9,
+      "name": "HP흡수 L4",
+      "name_hex": "4850c8edbcf6204c34",
+      "payload_len": 3,
+      "payload_hex": "05000f",
+      "payload": [
+        5,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 1231,
+      "size": 12,
+      "nlen": 8,
+      "name": "Spmax L4",
+      "name_hex": "53706d6178204c34",
+      "payload_len": 3,
+      "payload_hex": "06000a",
+      "payload": [
+        6,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1245,
+      "size": 13,
+      "nlen": 9,
+      "name": "SP소모 L4",
+      "name_hex": "5350bcd2b8f0204c34",
+      "payload_len": 3,
+      "payload_hex": "07000f",
+      "payload": [
+        7,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 1260,
+      "size": 13,
+      "nlen": 9,
+      "name": "SP회복 L4",
+      "name_hex": "5350c8b8bab9204c34",
+      "payload_len": 3,
+      "payload_hex": "080014",
+      "payload": [
+        8,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1275,
+      "size": 13,
+      "nlen": 9,
+      "name": "SP분노 L4",
+      "name_hex": "5350bad0b3eb204c34",
+      "payload_len": 3,
+      "payload_hex": "0b0014",
+      "payload": [
+        11,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1290,
+      "size": 15,
+      "nlen": 11,
+      "name": "물약회복 L3",
+      "name_hex": "b9b0bee0c8b8bab9204c33",
+      "payload_len": 3,
+      "payload_hex": "50000f",
+      "payload": [
+        80,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 1307,
+      "size": 15,
+      "nlen": 11,
+      "name": "근접공격 L4",
+      "name_hex": "b1d9c1a2b0f8b0dd204c34",
+      "payload_len": 3,
+      "payload_hex": "0c0014",
+      "payload": [
+        12,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1324,
+      "size": 17,
+      "nlen": 13,
+      "name": "원거리공격 L4",
+      "name_hex": "bff8b0c5b8aeb0f8b0dd204c34",
+      "payload_len": 3,
+      "payload_hex": "0e0014",
+      "payload": [
+        14,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1343,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법공격 L4",
+      "name_hex": "b8b6b9fdb0f8b0dd204c34",
+      "payload_len": 3,
+      "payload_hex": "0f0014",
+      "payload": [
+        15,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1360,
+      "size": 15,
+      "nlen": 11,
+      "name": "물리방어 L4",
+      "name_hex": "b9b0b8aeb9e6beee204c34",
+      "payload_len": 3,
+      "payload_hex": "100014",
+      "payload": [
+        16,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1377,
+      "size": 15,
+      "nlen": 11,
+      "name": "마법방어 L4",
+      "name_hex": "b8b6b9fdb9e6beee204c34",
+      "payload_len": 3,
+      "payload_hex": "110014",
+      "payload": [
+        17,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1394,
+      "size": 11,
+      "nlen": 7,
+      "name": "명중 L4",
+      "name_hex": "b8edc1df204c34",
+      "payload_len": 3,
+      "payload_hex": "12000a",
+      "payload": [
+        18,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1407,
+      "size": 11,
+      "nlen": 7,
+      "name": "회피 L4",
+      "name_hex": "c8b8c7c7204c34",
+      "payload_len": 3,
+      "payload_hex": "13000a",
+      "payload": [
+        19,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1420,
+      "size": 11,
+      "nlen": 7,
+      "name": "직격 L4",
+      "name_hex": "c1f7b0dd204c34",
+      "payload_len": 3,
+      "payload_hex": "14000d",
+      "payload": [
+        20,
+        0,
+        13
+      ]
+    },
+    {
+      "offset": 1433,
+      "size": 11,
+      "nlen": 7,
+      "name": "블록 L4",
+      "name_hex": "baedb7cf204c34",
+      "payload_len": 3,
+      "payload_hex": "15000d",
+      "payload": [
+        21,
+        0,
+        13
+      ]
+    },
+    {
+      "offset": 1446,
+      "size": 15,
+      "nlen": 11,
+      "name": "크리티컬 L4",
+      "name_hex": "c5a9b8aec6bcc4c3204c34",
+      "payload_len": 3,
+      "payload_hex": "16000a",
+      "payload": [
+        22,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1463,
+      "size": 17,
+      "nlen": 13,
+      "name": "크리데미지 L4",
+      "name_hex": "c5a9b8aeb5a5b9ccc1f6204c34",
+      "payload_len": 3,
+      "payload_hex": "170014",
+      "payload": [
+        23,
+        0,
+        20
+      ]
+    },
+    {
+      "offset": 1482,
+      "size": 15,
+      "nlen": 11,
+      "name": "기절저항 L4",
+      "name_hex": "b1e2c0fdc0fac7d7204c34",
+      "payload_len": 3,
+      "payload_hex": "18000d",
+      "payload": [
+        24,
+        0,
+        13
+      ]
+    },
+    {
+      "offset": 1499,
+      "size": 11,
+      "nlen": 7,
+      "name": "저항 L4",
+      "name_hex": "c0fac7d7204c34",
+      "payload_len": 3,
+      "payload_hex": "1e0005",
+      "payload": [
+        30,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 1512,
+      "size": 15,
+      "nlen": 11,
+      "name": "넉백발동 L4",
+      "name_hex": "b3cbb9e9b9dfb5bf204c34",
+      "payload_len": 3,
+      "payload_hex": "446405",
+      "payload": [
+        68,
+        100,
+        5
+      ]
+    },
+    {
+      "offset": 1529,
+      "size": 17,
+      "nlen": 13,
+      "name": "슬로우발동 L4",
+      "name_hex": "bdbdb7cebfecb9dfb5bf204c34",
+      "payload_len": 3,
+      "payload_hex": "4b0f0f",
+      "payload": [
+        75,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1548,
+      "size": 15,
+      "nlen": 11,
+      "name": "스턴발동 L4",
+      "name_hex": "bdbac5cfb9dfb5bf204c34",
+      "payload_len": 3,
+      "payload_hex": "4c0f0f",
+      "payload": [
+        76,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1565,
+      "size": 15,
+      "nlen": 11,
+      "name": "화염발동 L4",
+      "name_hex": "c8adbfb0b9dfb5bf204c34",
+      "payload_len": 3,
+      "payload_hex": "4e0f0f",
+      "payload": [
+        78,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1582,
+      "size": 17,
+      "nlen": 13,
+      "name": "결빙(냉기) L4",
+      "name_hex": "b0e1baf928b3c3b1e229204c34",
+      "payload_len": 3,
+      "payload_hex": "4f0f0f",
+      "payload": [
+        79,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1601,
+      "size": 11,
+      "nlen": 7,
+      "name": "중독 L4",
+      "name_hex": "c1dfb5b6204c34",
+      "payload_len": 3,
+      "payload_hex": "550f0f",
+      "payload": [
+        85,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1614,
+      "size": 17,
+      "nlen": 13,
+      "name": "데미지반사 L4",
+      "name_hex": "b5a5b9ccc1f6b9ddbbe7204c34",
+      "payload_len": 3,
+      "payload_hex": "560f0f",
+      "payload": [
+        86,
+        15,
+        15
+      ]
+    },
+    {
+      "offset": 1633,
+      "size": 11,
+      "nlen": 7,
+      "name": "저주 L4",
+      "name_hex": "c0fac1d6204c34",
+      "payload_len": 3,
+      "payload_hex": "190005",
+      "payload": [
+        25,
+        0,
+        5
+      ]
+    },
+    {
+      "offset": 1646,
+      "size": 13,
+      "nlen": 9,
+      "name": "쿨타임 L4",
+      "name_hex": "c4f0c5b8c0d3204c34",
+      "payload_len": 3,
+      "payload_hex": "1b000a",
+      "payload": [
+        27,
+        0,
+        10
+      ]
+    },
+    {
+      "offset": 1661,
+      "size": 16,
+      "nlen": 12,
+      "name": "사격/마법 L4",
+      "name_hex": "bbe7b0dd2fb8b6b9fd204c34",
+      "payload_len": 3,
+      "payload_hex": "5a000f",
+      "payload": [
+        90,
+        0,
+        15
+      ]
+    },
+    {
+      "offset": 1679,
+      "size": 15,
+      "nlen": 11,
+      "name": "양손검 보완",
+      "name_hex": "bee7bcd5b0cb20bab8bfcf",
+      "payload_len": 3,
+      "payload_hex": "0c0003",
+      "payload": [
+        12,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 1696,
+      "size": 18,
+      "nlen": 14,
+      "name": "사격/마법 보완",
+      "name_hex": "bbe7b0dd2fb8b6b9fd20bab8bfcf",
+      "payload_len": 3,
+      "payload_hex": "5a0003",
+      "payload": [
+        90,
+        0,
+        3
+      ]
+    },
+    {
+      "offset": 1716,
+      "size": 16,
+      "nlen": 12,
+      "name": "무기공격력 +",
+      "name_hex": "b9abb1e2b0f8b0ddb7c2202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1734,
+      "size": 16,
+      "nlen": 12,
+      "name": "물리방어력 +",
+      "name_hex": "b9b0b8aeb9e6beeeb7c2202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1752,
+      "size": 16,
+      "nlen": 12,
+      "name": "마법방어력 +",
+      "name_hex": "b8b6b9fdb9e6beeeb7c2202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1770,
+      "size": 10,
+      "nlen": 6,
+      "name": "명중 +",
+      "name_hex": "b8edc1df202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1782,
+      "size": 10,
+      "nlen": 6,
+      "name": "회피 +",
+      "name_hex": "c8b8c7c7202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1794,
+      "size": 14,
+      "nlen": 10,
+      "name": "크리티컬 +",
+      "name_hex": "c5a9b8aec6bcc4c3202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1810,
+      "size": 14,
+      "nlen": 10,
+      "name": "기절저항 +",
+      "name_hex": "b1e2c0fdc0fac7d7202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1826,
+      "size": 11,
+      "nlen": 7,
+      "name": "HPmax +",
+      "name_hex": "48506d6178202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1839,
+      "size": 12,
+      "nlen": 8,
+      "name": "HP회복 +",
+      "name_hex": "4850c8b8bab9202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1853,
+      "size": 12,
+      "nlen": 8,
+      "name": "HP흡수 +",
+      "name_hex": "4850c8edbcf6202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1867,
+      "size": 12,
+      "nlen": 8,
+      "name": "SP소모 +",
+      "name_hex": "5350bcd2b8f0202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1881,
+      "size": 10,
+      "nlen": 6,
+      "name": "저항 +",
+      "name_hex": "c0fac7d7202b",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1893,
+      "size": 14,
+      "nlen": 10,
+      "name": "쿨타임감소",
+      "name_hex": "c4f0c5b8c0d3b0a8bcd2",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1909,
+      "size": 5,
+      "nlen": 1,
+      "name": "0",
+      "name_hex": "30",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "offset": 1916,
+      "size": 5,
+      "nlen": 1,
+      "name": "0",
+      "name_hex": "30",
+      "payload_len": 3,
+      "payload_hex": "000000",
+      "payload": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

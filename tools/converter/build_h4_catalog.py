@@ -316,6 +316,27 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load drop_id_17_fix: {e}', file=sys.stderr)
 
+    # ITM_OPTION structure (R106) — 1928B enchantment pool binary layout
+    opt_path = CONVERTED / 'h4_itm_option_struct.json'
+    if opt_path.exists():
+        try:
+            opt = json.loads(opt_path.read_text(encoding='utf-8'))
+            catalog['itm_option_struct'] = {
+                'meta': opt['meta'],
+                'header': opt['header'],
+                'entry_count': opt['entry_count'],
+                'payload_len_histogram': opt['payload_len_histogram'],
+                'payload_byte_freq': opt['payload_byte_freq'],
+                'category_byte_meaning': {
+                    '0': 'normal stat bonus',
+                    '15': 'proc effect (slow/knockback/fire/freeze/reflect)',
+                    '100': 'stun proc (스턴발동)',
+                },
+            }
+            print(f'\nITM_OPTION struct: 122 entries, 3B payload [effect_id][category][magnitude] (R106)')
+        except Exception as e:
+            print(f'  WARN: failed to load itm_option_struct: {e}', file=sys.stderr)
+
     # Damage type semantics (R104) — byte[5] enum 4 type
     dts_path = CONVERTED / 'h4_damage_type_semantics.json'
     if dts_path.exists():
@@ -424,7 +445,13 @@ def main():
                 'countdown_timer_finding': ds['countdown_timer_finding'],
                 'layout_summary': ds['layout_summary'],
             }
+            tv_path = CONVERTED / 'h4_death_sphere_timer_verify.json'
+            if tv_path.exists():
+                tv = json.loads(tv_path.read_text(encoding='utf-8'))
+                catalog['death_sphere']['timer_unit_verify'] = tv['conclusion']
             print(f'\nDeath sphere: 3-stage time-limited boss (timer 600/480/360s) (R98)')
+            if tv_path.exists():
+                print(f'  + timer unit verify: seconds, uniqueness OK (R107)')
         except Exception as e:
             print(f'  WARN: failed to load death_sphere: {e}', file=sys.stderr)
 

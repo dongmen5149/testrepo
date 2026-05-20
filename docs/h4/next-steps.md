@@ -3,6 +3,8 @@
 Phase A 종료 + Phase C Step 5 진행 중. 이 문서는 사용자 (또는 다음 세션 Claude) 가 진행해야 할 작업을 우선순위 순으로 정리.
 
 > 사용자 컨텍스트: "리메이크" 정의는 [`../REMAKE_METHODOLOGY.md`](../REMAKE_METHODOLOGY.md) 참조 — 최종 산출물은 Play Store + App Store 직배포.
+>
+> **완성도 (2026-05-20)**: 베타 오픈(원작 동일·시나리오·정상 플레이) **~15%** · 데이터 RE **~99%** — [`COMPLETION.md`](COMPLETION.md)
 
 ---
 

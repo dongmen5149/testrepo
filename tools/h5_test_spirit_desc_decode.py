@@ -93,12 +93,13 @@ def main():
     assert "Round 88" in bs, "missing R88 docstring in battle_system"
     print("[PASS] battle_system._skill_data: desc 필드 반환 (외부 UI 조회용)")
 
-    # 8. SKILL action 발동 시 spirit desc 첫 라인 로그 노출
-    assert 'desc_str: String = str(skill_data.get("desc"' in bs, \
-        "battle log 의 desc 노출 누락"
-    assert "split(\";\")[0]" in bs, "desc 첫 segment 분리 누락"
+    # 8. SKILL action 발동 시 spirit desc 첫 라인 로그 노출 (R90 이후 GameData 위임)
+    has_r88_inline = 'desc_str: String = str(skill_data.get("desc"' in bs and 'split(";")[0]' in bs
+    has_r90_helper = "GameData.resolve_skill_desc_first_line(5, skill_id)" in bs
+    assert has_r88_inline or has_r90_helper, \
+        "battle log 의 spirit desc 첫 라인 노출 누락 (R88 inline 또는 R90 GameData helper)"
     assert "▸" in bs, "log marker '▸' 누락"
-    print("[PASS] battle_system SKILL action: spirit desc 첫 라인 로그 노출")
+    print("[PASS] battle_system SKILL action: spirit desc 첫 라인 로그 노출 (R90 GameData helper)")
 
     # 9. R87 회귀 (explicit field + 8 spirit field 유지)
     assert 'class_id == 5 and rec.has("effect_type")' in gd, \

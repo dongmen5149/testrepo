@@ -24,7 +24,13 @@ OUT = GAMEDATA / 'skills.json'
 
 
 def split_stats_desc(b: bytes) -> tuple[list[int], str]:
-    """첫 u16 들 (stat) + 끝 EUC-KR 한글 설명 분리."""
+    """첫 u16 들 (stat) + 끝 EUC-KR 한글 설명 분리.
+
+    R112: 한글 직전의 `}` (0x7d) 또는 `}#NN<unit>` 형태의 placeholder marker
+    도 desc 의 일부로 포함. passive 스킬의 desc 가 `}<관련스킬>|` 로 시작하는
+    경우 (예: `}돌진| 스킬과...`) 가 흔하므로, marker byte 가 직전에 있으면
+    desc_start 를 backtrack.
+    """
     # 한글 시작 위치 = 첫 EUC-KR 한글 byte (high byte 0xb0..0xc8)
     desc_start = -1
     for i in range(len(b) - 1):
@@ -44,6 +50,10 @@ def split_stats_desc(b: bytes) -> tuple[list[int], str]:
                 break
     if desc_start < 0:
         desc_start = len(b)
+    # R112: 한글 직전이 `}` 면 desc_start 를 1 byte 앞당김 (open bracket 보존).
+    # passive desc 의 `}<active_skill>|` form 을 위해 필요.
+    if desc_start > 0 and b[desc_start - 1] == 0x7d:  # `}`
+        desc_start -= 1
     stats_bytes = b[:desc_start]
     desc_bytes = b[desc_start:]
     n_u16 = len(stats_bytes) // 2

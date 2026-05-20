@@ -112,7 +112,7 @@
 | 사운드 | Yamaha SMAF/MMF — 모던 OS 미지원 → OGG/MP3 변환 필요 | 미해결 |
 | 화면 | 240×320 4-bit 또는 8-bit 인덱스 컬러 | 자동 |
 | 진행상황 (Hero3) | Phase A ✅ + Phase B 1차 완료 + Android 8개 씬 + i18n + HD ✅ + Phase C/D 대기 |
-| 진행상황 (Hero4) | Phase A ✅ + Phase B 일부 (`_PAL`/`_EXD`/`_MAP_M extras` 미해독) + Android 모듈 placeholder + Phase C 대기 |
+| 진행상황 (Hero4) | Phase A ✅ · 데이터 RE ~99% · Android = catalog PoC · **베타 오픈(원작 동일·시나리오) ~15%** — [`docs/h4/COMPLETION.md`](h4/COMPLETION.md) |
 
 **JAR 케이스의 핵심 어려움**: 원본 바이너리에 **심볼이 없고 ELF 헤더도 없다**. 함수 경계를 string xref 만으로 추정해야 함. 그래서 `tools/recon/extract_strings.py` + `find_xrefs.py` + `find_pic_xrefs.py` + `find_base.py` 가 게임-aware 로 동작해야 한다 (현재 그렇게 되어 있음).
 

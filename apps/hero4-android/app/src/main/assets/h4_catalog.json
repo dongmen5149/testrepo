@@ -2941,6 +2941,127 @@
       }
     }
   },
+  "itm_option_struct": {
+    "meta": {
+      "round": "R106",
+      "date": "2026-05-20",
+      "source": "work\\h4\\decrypted\\ITM\\DAT\\_ITM_OPTION",
+      "file_size": 1928
+    },
+    "header": {
+      "hex": "040000000000",
+      "le32_first4": 4
+    },
+    "entry_count": 122,
+    "payload_len_histogram": {
+      "3": 122
+    },
+    "payload_byte_freq": {
+      "byte0_top": [
+        [
+          0,
+          15
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          90,
+          5
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          80,
+          4
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          15,
+          4
+        ],
+        [
+          16,
+          4
+        ]
+      ],
+      "byte1_top": [
+        [
+          0,
+          101
+        ],
+        [
+          15,
+          18
+        ],
+        [
+          100,
+          3
+        ]
+      ],
+      "byte2_top": [
+        [
+          10,
+          27
+        ],
+        [
+          5,
+          24
+        ],
+        [
+          15,
+          17
+        ],
+        [
+          0,
+          15
+        ],
+        [
+          3,
+          11
+        ],
+        [
+          20,
+          9
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    "category_byte_meaning": {
+      "0": "normal stat bonus",
+      "15": "proc effect (slow/knockback/fire/freeze/reflect)",
+      "100": "stun proc (스턴발동)"
+    }
+  },
   "damage_type_semantics": {
     "type_enum_definitions": {
       "0": "MAGIC_OR_SKILL",
@@ -3302,6 +3423,21 @@
       "pos_59_60": "EXP LE16",
       "pos_63_64": "★ countdown timer LE16 (death sphere 시간 제한)",
       "pos_65_71": "zero padding (5B trailer 남은 부분)"
+    },
+    "timer_unit_verify": {
+      "timer_field_confirmed": true,
+      "sequence": [
+        600,
+        480,
+        360
+      ],
+      "step_per_stage": 120,
+      "unit_verdict": "seconds (1:1 LE16 = seconds)",
+      "display_minutes": "10 → 8 → 6 minutes",
+      "confidence": "high_structural_low_dialogue",
+      "dialogue_support": "none — no 10분/8분/6분 strings in decrypted corpus",
+      "dialogue_death_sphere_hits": 3,
+      "uniqueness": true
     }
   },
   "drop_id_currency": {

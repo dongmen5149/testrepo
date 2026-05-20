@@ -52,25 +52,32 @@ offset_bottom = 82.0
 max_value = 100.0
 value = 80.0
 
+[node name="MuteCheck" type="CheckBox" parent="BG"]
+offset_left = 8.0
+offset_top = 92.0
+offset_right = 248.0
+offset_bottom = 112.0
+text = "음소거 (F8)"
+
 [node name="FPSCheck" type="CheckBox" parent="BG"]
 offset_left = 8.0
-offset_top = 96.0
+offset_top = 120.0
 offset_right = 248.0
-offset_bottom = 116.0
+offset_bottom = 140.0
 text = "FPS 표시"
 
 [node name="FullscreenCheck" type="CheckBox" parent="BG"]
 offset_left = 8.0
-offset_top = 124.0
+offset_top = 148.0
 offset_right = 248.0
-offset_bottom = 144.0
+offset_bottom = 168.0
 text = "전체 화면"
 
 [node name="FPSLabel" type="Label" parent="BG"]
 offset_left = 8.0
-offset_top = 156.0
+offset_top = 180.0
 offset_right = 248.0
-offset_bottom = 176.0
+offset_bottom = 200.0
 text = "FPS: --"
 visible = false
 

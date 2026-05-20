@@ -454,6 +454,8 @@ func _process(delta: float) -> void:
 
 
 func to_save_dict() -> Dictionary:
+	# Round 91: stat_points + Sorcerer/Gunner state + active effect arrays +
+	# mission state 추가 (이전엔 누락되어 save → load 후 stat/combo 사라짐).
 	return {
 		"scene_id": current_scene_id,
 		"map_id": map_id,
@@ -465,22 +467,36 @@ func to_save_dict() -> Dictionary:
 		"level": level, "exp": exp, "gold": gold,
 		"stat_str": stat_str, "stat_dex": stat_dex,
 		"stat_int": stat_int, "stat_con": stat_con,
+		"stat_points": stat_points,
+		"gunner_combo": gunner_combo,
+		"gunner_max_combo": gunner_max_combo,
+		"gunner_ammo": gunner_ammo,
+		"active_curses": active_curses.duplicate(true),
+		"active_buffs": active_buffs.duplicate(true),
+		"active_stances": active_stances.duplicate(true),
 		"inventory": inventory,
 		"equipment": equipment,
 		"unlocked_skills": unlocked_skills,
 		"skill_levels": skill_levels,
 		"flags": flags,
 		"quest": Quest.to_save() if Quest else {},
+		"mission": Mission.to_save() if Mission else {},
 	}
 
 
+## Round 91: save round-trip 정합성 — class_id / stat_* / equipment /
+## unlocked_skills / skill_levels / play_time_sec / stat_points / gunner_* /
+## active_* / quest / mission 모두 복원. 이전엔 player_x/y/hp/level/gold/
+## inventory/flags 만 복원되어 save → load 시 클래스/스탯/스킬 lost.
 func apply_save(data: Dictionary) -> void:
 	current_scene_id = int(data.get("scene_id", 0))
 	map_id = int(data.get("map_id", 0))
+	play_time_sec = float(data.get("play_time_sec", 0))
 	var p = data.get("player", data)  # support both nested + flat
 	player_x = int(p.get("x", p.get("player_x", 0)))
 	player_y = int(p.get("y", p.get("player_y", 0)))
 	player_dir = int(p.get("dir", p.get("player_dir", 0)))
+	class_id = int(p.get("class_id", data.get("class_id", 0)))
 	hp = int(p.get("hp", 100))
 	max_hp = int(p.get("max_hp", 100))
 	sp = int(p.get("sp", 50))
@@ -488,8 +504,39 @@ func apply_save(data: Dictionary) -> void:
 	level = int(p.get("level", 1))
 	exp = int(p.get("exp", 0))
 	gold = int(p.get("gold", 1000))
+	stat_str = int(p.get("str", p.get("stat_str", stat_str)))
+	stat_dex = int(p.get("dex", p.get("stat_dex", stat_dex)))
+	stat_int = int(p.get("int", p.get("stat_int", stat_int)))
+	stat_con = int(p.get("con", p.get("stat_con", stat_con)))
+	stat_points = int(p.get("stat_points", data.get("stat_points", 0)))
 	inventory = data.get("inventory", [])
+	# equipment: Array[int] 타입 유지 (PackedByteArray 비교 대비)
+	var eq_raw: Array = data.get("equipment", [])
+	equipment.clear()
+	for v in eq_raw:
+		equipment.append(int(v))
+	# unlocked_skills: Array[int]
+	var us_raw: Array = data.get("unlocked_skills", [])
+	unlocked_skills.clear()
+	for v in us_raw:
+		unlocked_skills.append(int(v))
+	# skill_levels: JSON 의 key 는 string → int 변환
+	var sl_raw = data.get("skill_levels", {})
+	skill_levels = {}
+	if sl_raw is Dictionary:
+		for k in sl_raw.keys():
+			skill_levels[int(k)] = int(sl_raw[k])
+	gunner_combo = int(data.get("gunner_combo", 0))
+	gunner_max_combo = int(data.get("gunner_max_combo", 4))
+	gunner_ammo = int(data.get("gunner_ammo", 0))
+	active_curses = data.get("active_curses", [])
+	active_buffs = data.get("active_buffs", [])
+	active_stances = data.get("active_stances", [])
 	flags = data.get("flags", {})
+	if Quest and data.has("quest"):
+		Quest.from_save(data.get("quest", {}))
+	if Mission and data.has("mission"):
+		Mission.from_save(data.get("mission", {}))
 	state_changed.emit()
 
 

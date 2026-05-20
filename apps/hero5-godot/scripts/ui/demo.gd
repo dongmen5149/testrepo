@@ -29,6 +29,7 @@ var _orb: CanvasLayer
 var _blacksmith: CanvasLayer
 var _skill_book: CanvasLayer
 var _mission: CanvasLayer
+var _save_list: CanvasLayer   # Round 92: SaveListPanel
 
 ## Round 62: 활성 monster 목록 — _physics_process 가 매 frame AI tick.
 var _monsters: Array = []   # Array[H5Character], 각각 meta("ai_runtime") 보유 가능
@@ -68,13 +69,11 @@ func _ready() -> void:
 	# 레벨업 popup
 	GameState.level_up.connect(_on_level_up)
 	# Quest 알림
+	# Round 96: Toast.severity helper 마이그레이션.
 	Quest.quest_started.connect(func(qid, n):
-		preload("res://scripts/ui/toast.gd").show_msg(self,
-			"퀘스트 시작: " + n))
+		Toast.info(self, "퀘스트 시작: " + n))
 	Quest.quest_completed.connect(func(qid):
-		preload("res://scripts/ui/toast.gd").show_msg(self,
-			"퀘스트 완료: " + Quest.quest_name(qid),
-			3.0, Color(0.5, 1, 0.5, 1)))
+		Toast.success(self, "퀘스트 완료: " + Quest.quest_name(qid), 3.0))
 	# warp 감지: hero 가 이동하면 check_warp
 	if _hero.has_signal("moved"):
 		_hero.moved.connect(_on_hero_moved)
@@ -124,6 +123,16 @@ func _ready() -> void:
 	# Round 58: 미션 진척 패널
 	_mission = preload("res://scenes/mission_panel.tscn").instantiate()
 	add_child(_mission)
+	# Round 92: SaveListPanel — F6 으로 토글, slot 선택 후 로드 시 scene 갱신.
+	_save_list = preload("res://scenes/save_list_panel.tscn").instantiate()
+	add_child(_save_list)
+	_save_list.slot_loaded.connect(func(_slot):
+		_scene_idx = GameState.current_scene_id
+		_apply_scene())
+	# Round 103: Audio.mute_changed 단일 핸들러로 Toast/체크박스/ConfigFile 동기화.
+	# F8 / HUD AudioIndicator 클릭 / SettingsPanel MuteCheck 어느 쪽에서 토글해도
+	# 동일 경로로 처리 → 코드 중복 제거 + 일관성.
+	Audio.mute_changed.connect(_on_audio_mute_changed)
 	# 기존 패널의 mission hook 연결
 	_refine.refined.connect(func(_idx, _case):
 		Mission.bump_progress(Mission.EVENT_REFINE_DONE))
@@ -442,9 +451,8 @@ func _on_monster_skill_cast(skill_id: int, source: Node2D, monster_id: int) -> v
 	var DamagePopup = preload("res://scripts/ui/damage_popup.gd")
 	DamagePopup.spawn(self, _hero.position + Vector2(-10, -30),
 		"-%d" % dmg, Color(1, 0.4, 0.4, 1))
-	# 몬스터 위에 스킬 이름
-	preload("res://scripts/ui/toast.gd").show_msg(self,
-		"#%d → skill %d (-%d HP)" % [monster_id, skill_id, dmg])
+	# 몬스터 위에 스킬 이름 (R96: info severity)
+	Toast.info(self, "#%d → skill %d (-%d HP)" % [monster_id, skill_id, dmg])
 	# 사망 처리 (Round 82): silent quick_load → 명시적 GameOver scene 전환.
 	# 사용자에게 Continue / Title 선택지 제공.
 	if GameState.hp == 0:
@@ -457,7 +465,7 @@ func _on_monster_skill_cast(skill_id: int, source: Node2D, monster_id: int) -> v
 ## monster.take_damage 호출 → dead 전환 시 AI tick 루프가 list 정리 + Mission 트리거.
 func _hero_attack_nearest() -> void:
 	if _monsters.is_empty():
-		preload("res://scripts/ui/toast.gd").show_msg(self, "공격할 적 없음")
+		Toast.warn(self, "공격할 적 없음")
 		return
 	var best: Node2D = null
 	var best_dist := 9999
@@ -469,8 +477,7 @@ func _hero_attack_nearest() -> void:
 		if d <= ATTACK_RANGE_TILES and d < best_dist:
 			best = c; best_dist = d
 	if best == null:
-		preload("res://scripts/ui/toast.gd").show_msg(self,
-			"공격 범위 내 적 없음 (≤%d tile)" % ATTACK_RANGE_TILES)
+		Toast.warn(self, "공격 범위 내 적 없음 (≤%d tile)" % ATTACK_RANGE_TILES)
 		return
 	var atk = GameState.total_attack() if GameState.has_method("total_attack") else 10
 	var dmg = max(1, atk + randi() % 8)
@@ -508,8 +515,8 @@ func _award_kill_reward(monster_node: Node2D, mid: int) -> void:
 	GameState.add_battle_reward(exp_g, gold_g)
 	for item_name in drops:
 		GameState.inventory.append(item_name)
-		preload("res://scripts/ui/toast.gd").show_msg(self,
-			"획득: %s" % item_name, 2.0, Color(0.7, 0.9, 1, 1))
+		# R96: 아이템 획득은 success severity (의미상 연두색).
+		Toast.success(self, "획득: %s" % item_name, 2.0)
 	if not drops.is_empty():
 		GameState.state_changed.emit()
 
@@ -535,6 +542,19 @@ func _roll_kill_drops() -> Array:
 		if pick and not out.has(pick):
 			out.append(pick)
 	return out
+
+
+## Round 103: Audio.mute_changed 단일 핸들러. F8 키 / HUD AudioIndicator 클릭 /
+## SettingsPanel MuteCheck — 어디서 토글되든 이 핸들러가 (1) SettingsPanel
+## 체크박스 silent 동기화, (2) ConfigFile 영속 저장, (3) Toast 시각 피드백
+## 모두 처리. set_muted 의 `changed` 가드 (R102) 가 중복 발화를 막아 cycle 없음.
+func _on_audio_mute_changed(muted: bool) -> void:
+	_settings.sync_mute_check(muted)
+	_settings._save_config()
+	if muted:
+		Toast.warn(self, "🔇 음소거")
+	else:
+		Toast.info(self, "🔊 음소거 해제")
 
 
 func _input(event: InputEvent) -> void:
@@ -632,7 +652,7 @@ func _input(event: InputEvent) -> void:
 				var offset = Vector2(randi_range(-160, 160), randi_range(-100, 100))
 				var ai_type = mid % 48   # 48 AI defs (Round 50)
 				spawn_monster(mid, _hero.position + offset, ai_type)
-				preload("res://scripts/ui/toast.gd").show_msg(self,
+				Toast.info(self,
 					"monster #%d (AI %d) spawn (총 %d)" % [mid, ai_type, _monsters.size()])
 			KEY_F9:
 				# F9: 빠른 로드
@@ -640,6 +660,17 @@ func _input(event: InputEvent) -> void:
 					_scene_idx = GameState.current_scene_id
 					_apply_scene()
 					_dialog.show_dialog("System", "불러옴 (slot 0)")
+			KEY_F6:
+				# F6: SaveListPanel 토글 (Round 92 — 8 slot 선택 UI)
+				GameState.current_scene_id = _scene_idx
+				GameState.map_id = _map.map_id
+				GameState.player_x = int(_hero.position.x)
+				GameState.player_y = int(_hero.position.y)
+				_save_list.toggle()
+			KEY_F8:
+				# F8: 음소거 토글. Round 103: 모든 sync 동작은 Audio.mute_changed
+				# 단일 핸들러 (_on_audio_mute_changed) 가 처리 → F8 은 토글만 호출.
+				Audio.toggle_mute()
 
 
 func _show_map_name(scene_meta: Dictionary) -> void:
@@ -710,14 +741,12 @@ func _on_map_tile_change(x: int, y: int, layer: int, tile_id: int) -> void:
 	# MapRenderer 가 highlight overlay 를 1.5초 표시 (set_tile 시각화)
 	if _map and _map.has_method("highlight_tile"):
 		_map.highlight_tile(x, y, 1.5)
-	preload("res://scripts/ui/toast.gd").show_msg(self,
-		"타일 변경: (%d, %d) layer=%d tile=%d" % [x, y, layer, tile_id])
+	Toast.info(self, "타일 변경: (%d, %d) layer=%d tile=%d" % [x, y, layer, tile_id])
 
 func _on_map_attribute_change(x: int, y: int, attr: int) -> void:
 	if _map and _map.has_method("highlight_tile"):
 		_map.highlight_tile(x, y, 1.0)
-	preload("res://scripts/ui/toast.gd").show_msg(self,
-		"충돌 변경: (%d, %d) attr=%d" % [x, y, attr])
+	Toast.info(self, "충돌 변경: (%d, %d) attr=%d" % [x, y, attr])
 
 ## 화면 흔들림: a=강도, b=duration_frames(추정), c=axis flag (현재 c 무시).
 ## .scn body 의 screen_shake opcode 가 emit. demo Node2D 의 position 을
@@ -726,8 +755,7 @@ func _on_screen_shake(a: int, b: int, _c: int) -> void:
 	var amp: float = clamp(float(a), 1.0, 16.0)
 	var dur: float = clamp(float(b) / 30.0, 0.15, 1.5)  # frames → seconds (30fps 가정)
 	_apply_screen_shake(amp, dur)
-	preload("res://scripts/ui/toast.gd").show_msg(self,
-		"화면 흔들림 (%d, %d)" % [a, b])
+	Toast.info(self, "화면 흔들림 (%d, %d)" % [a, b])
 
 func _apply_screen_shake(amp: float, dur: float) -> void:
 	var orig := position
@@ -744,8 +772,8 @@ func _apply_screen_shake(amp: float, dur: float) -> void:
 
 func _on_system_message(str_id: int) -> void:
 	# system_message 는 dialog 가 아닌 작은 narration 형태 — toast 로 처리
-	preload("res://scripts/ui/toast.gd").show_msg(self, "시스템 메시지 #%d" % str_id)
+	Toast.info(self, "시스템 메시지 #%d" % str_id)
 
 func _on_scene_change_bgm(bgm_id: int) -> void:
 	Audio.play_bgm(bgm_id)
-	preload("res://scripts/ui/toast.gd").show_msg(self, "BGM 변경 #%d" % bgm_id)
+	Toast.info(self, "BGM 변경 #%d" % bgm_id)

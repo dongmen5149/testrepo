@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "round": "R107",
+    "date": "2026-05-20",
+    "r98_followup": true
+  },
+  "death_sphere_entries": [
+    {
+      "file": "_ESDAT_0",
+      "offset": 13083,
+      "name": "죽음의 구",
+      "timer_p63_le16": 600,
+      "enemy_class": 50,
+      "hp_p23": 120,
+      "gold_p57": 3339
+    },
+    {
+      "file": "_ESDAT_1",
+      "offset": 13083,
+      "name": "죽음의 구",
+      "timer_p63_le16": 480,
+      "enemy_class": 50,
+      "hp_p23": 322,
+      "gold_p57": 13621
+    },
+    {
+      "file": "_ESDAT_2",
+      "offset": 13083,
+      "name": "죽음의 구",
+      "timer_p63_le16": 360,
+      "enemy_class": 50,
+      "hp_p23": 437,
+      "gold_p57": 18499
+    }
+  ],
+  "timer_uniqueness": {
+    "600": {
+      "total_hits_in_72b_entries": 0,
+      "named_death_sphere_only": true,
+      "hits": []
+    },
+    "480": {
+      "total_hits_in_72b_entries": 0,
+      "named_death_sphere_only": true,
+      "hits": []
+    },
+    "360": {
+      "total_hits_in_72b_entries": 0,
+      "named_death_sphere_only": true,
+      "hits": []
+    }
+  },
+  "unit_hypotheses": [
+    {
+      "unit": "seconds",
+      "divisor": 60,
+      "display": "10/8/6 minutes",
+      "values": [
+        10.0,
+        8.0,
+        6.0
+      ],
+      "step_per_stage": 2.0,
+      "monotonic_decrease": true,
+      "uniform_step_120": false,
+      "recommended": false
+    },
+    {
+      "unit": "centiseconds",
+      "divisor": 100,
+      "display": "6.0/4.8/3.6 minutes (weak)",
+      "values": [
+        6.0,
+        4.8,
+        3.6
+      ],
+      "step_per_stage": 1.2,
+      "monotonic_decrease": true,
+      "uniform_step_120": false,
+      "recommended": false
+    },
+    {
+      "unit": "two_minute_blocks",
+      "divisor": 120,
+      "display": "5/4/3 blocks × 2 min",
+      "values": [
+        5.0,
+        4.0,
+        3.0
+      ],
+      "step_per_stage": 1.0,
+      "monotonic_decrease": true,
+      "uniform_step_120": false,
+      "recommended": false
+    },
+    {
+      "unit": "deciseconds",
+      "divisor": 10,
+      "display": "60/48/36 seconds (too long for mobile boss)",
+      "values": [
+        60.0,
+        48.0,
+        36.0
+      ],
+      "step_per_stage": 12.0,
+      "monotonic_decrease": true,
+      "uniform_step_120": false,
+      "recommended": false
+    },
+    {
+      "unit": "frames_at_60fps",
+      "divisor": 60,
+      "display": "alias seconds",
+      "values": [
+        10.0,
+        8.0,
+        6.0
+      ],
+      "step_per_stage": 2.0,
+      "monotonic_decrease": true,
+      "uniform_step_120": false,
+      "recommended": false
+    }
+  ],
+  "dialogue_scan": {
+    "files_scanned": 252,
+    "keyword_hits": {
+      "죽음의 구": {
+        "hits": 3,
+        "files": [
+          {
+            "path": "E/_ESDAT_0",
+            "count": 1
+          },
+          {
+            "path": "E/_ESDAT_1",
+            "count": 1
+          },
+          {
+            "path": "E/_ESDAT_2",
+            "count": 1
+          }
+        ]
+      },
+      "10분": {
+        "hits": 0,
+        "files": []
+      },
+      "8분": {
+        "hits": 0,
+        "files": []
+      },
+      "6분": {
+        "hits": 0,
+        "files": []
+      },
+      "제한시간": {
+        "hits": 0,
+        "files": []
+      },
+      "시간이 얼마": {
+        "hits": 1,
+        "files": [
+          {
+            "path": "MAP/SC/n0032_scn",
+            "count": 1
+          }
+        ]
+      },
+      "카운트다운": {
+        "hits": 0,
+        "files": []
+      },
+      "600": {
+        "hits": 0,
+        "files": []
+      },
+      "480": {
+        "hits": 0,
+        "files": []
+      },
+      "360": {
+        "hits": 0,
+        "files": []
+      }
+    }
+  },
+  "conclusion": {
+    "timer_field_confirmed": true,
+    "sequence": [
+      600,
+      480,
+      360
+    ],
+    "step_per_stage": 120,
+    "unit_verdict": "seconds (1:1 LE16 = seconds)",
+    "display_minutes": "10 → 8 → 6 minutes",
+    "confidence": "high_structural_low_dialogue",
+    "dialogue_support": "none — no 10분/8분/6분 strings in decrypted corpus",
+    "dialogue_death_sphere_hits": 3,
+    "uniqueness": true
+  },
+  "esdat_72b_entry_count": 0
+}

@@ -1,9 +1,23 @@
-# Hero4 Session Handoff — Round 105 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 114 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R105 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R107 은 각 round 문서.
+> **완성도 (베타=100% 정의)**: [`COMPLETION.md`](COMPLETION.md) ★ 2026-05-20 갱신
 
-## 🏆 Round 76-R105 누적 (2026-05-19 ~ 2026-05-20, 30 라운드 연속 자동 분석) ★ R100 마일스톤
+## 📊 완성도 요약 (2026-05-20)
+
+> **100% = 베타 서비스 오픈** — 원작과 **거의 동일한 화면**에서 **동일 시나리오**로 **정상 플레이** ([`COMPLETION.md`](COMPLETION.md))
+
+| 기준 | 완료율 |
+|------|--------|
+| **베타 오픈 (원작 동일·시나리오·정상 플레이)** ★ | **~12–18%** (중앙 **~15%**) |
+| 프로젝트 전체 공정 (분석+구현 누적) | **~42–48%** (중앙 **~45%**) |
+| 데이터·자산·카탈로그 RE만 | **~97–99%** |
+
+- **앱 상태**: `hero4-android` = 카탈로그 **텍스트 PoC** — 원작 UI·맵·전투·SCN/퀘스트 실행 **없음**.
+- **⚠️**: ~~베타 ~35%~~(1차)·~~55–65%~~(R75)는 느슨 정의/준비 결선 — **베타 오픈 정의와 혼용 금지**.
+
+## 🏆 Round 76-R107 누적 (2026-05-19 ~ 2026-05-20, 32 라운드 연속 자동 분석) ★ R100 마일스톤
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -38,18 +52,33 @@
 | R103 | 24 alt-form mode 매핑 — primary 의 advanced variant, S002/S003 환수 combo 발견 | [round103-alt-form-mode.md](round103-alt-form-mode.md) |
 | R104 | damage_type enum 별 특성 확정 (R102 후속) | [round104-damage-type-semantics.md](round104-damage-type-semantics.md) |
 | **R105** | **★ drop_id 17 byte10=232 정정** — raw record 재검토로 **bytes[10-11] LE16=0x03e8=1000** 확인. drop_id 17 = `_ITM_OPTION` × qty **1000** (endgame achievement enchantment scroll 대량 보상). record format = variable-width qty | [round105-drop-id-17-fix.md](round105-drop-id-17-fix.md) |
+| **R106** | **`_ITM_OPTION` 1928B 구조** — 6B hdr + 122 entries + 3B payload `[effect_id][cat][mag]` (cat 0/15/100) | [round106-itm-option-structure.md](round106-itm-option-structure.md) |
+| **R107** | **죽음의 구 timer 단위 확정** — 600/480/360 = **초**, 10/8/6분, ESDAT uniqueness + dialogue negative | [round107-death-sphere-timer-verify.md](round107-death-sphere-timer-verify.md) |
+| **R108** | **환수 combo skill dialogue 부재 확정** — 합신/특공/증폭/흡수/흡혈환수 5종 모두 `_H_S002/S003` catalog 1 hit, scene/NPC/event 0 → R103 mode-2 mechanic-only 가설 강력 검증 | [round108-summon-combo-dialogue.md](round108-summon-combo-dialogue.md) |
+| **R109** | **type=0 (54 skill) 11 sub-cat 분류** — PASSIVE 16 (4×4) / BUFF 10 / COMBO 4 (S002/S003) / DEBUFF 3 (S003) / ELEMENT 5 / AOE 5 / DASH 3 / TRAP 2 / BASIC 3 / MULTI 2 / STATUS 1. mode_1 advanced layer 12 ≈ R103 alt-form 절반과 정합 | [round109-type0-subcategory.md](round109-type0-subcategory.md) |
+| **R110** ★ | **밀레스톤 결산** — R68–R109 42 라운드 누적 (데이터 RE 30% → 99%, 평균 +1.65%p/라운드). 4 character class design philosophy 확정, 환수 시스템 + alt-form mode-2 + type=0 sub-cat 모두 종결 | [MILESTONE_R100.md](MILESTONE_R100.md) |
+| **R111** | **alt-form 24 × type=0 sub-cat cross-check** — 24 alt-form 전부 damage_type=0 (10 non-type-0 = 모두 primary), R103↔R109 정합 100%. ACTIVE_COMBO 4/4 = 순수 mode-2 (환수 융합), DEBUFF/TRAP 는 primary 다수 → R110 advanced layer 가설 정밀화 | [round111-alt-form-subcat-xref.md](round111-alt-form-subcat-xref.md) |
+| **R112** | **32B stat block 미확정 byte 정밀화** — byte[14]=0x78 active marker / byte[18]=type=0 channel flag / byte[21]=magnitude class (R106 OPTION 과 동일) / byte[24-31]=DEBUFF/COMBO side-effect (signed -4 = 0xFC 감소). 23 → **28 byte 의미 추정 확정** | [round112-statblock-uncertain-bytes.md](round112-statblock-uncertain-bytes.md) |
+| **R113** ★ | **effect_id namespace 통합** — OPTION byte0 ⊃ class skill byte[20] = **12 effect_id 공유** (HP회복/SP/공격/쿨타임/넉백/슬로우/스턴/화염/결빙/물약). 19/20 cross-validation 일치 (95%). game engine 의 secondary-effect engine 이 item/skill 공통 운용 확정 | [round113-effect-id-namespace.md](round113-effect-id-namespace.md) |
+| **R114** ★★ | **3-system unified effect engine** — 환수 stat block STATUS_PROC byte[7] (베놈 중독=85, 헤지호그 반사=86, 그래비티 슬로우=75, 쇼커 스턴=76) + AURA byte[7]+byte[11] 모두 OPTION namespace 일치. **32/34 (94.1%)** 통합. R89 의 "strength" 라벨 정정 → effect_id | [round114-summon-effect-id-xref.md](round114-summon-effect-id-xref.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. drop slot 구조 완전 확정. 남은 자동 트랙은 dialogue 검색, milestone 결산.
+**Hero4 데이터 RE ~99% 종결**. R114 로 **OPTION + class skill + 환수 = 3 시스템 통합 effect engine** 확정. 남은 자동 트랙: SCN opcode dispatch / class skill 단독 effect_id 정밀화.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **죽음의 구 timer 단위 in-game 검증** (R98 후속)
-2. **환수 합신 / 환수특공 / 환수증폭 dialogue 검색** (R103 후속)
-3. **type=0 magic skill 의 sub-categorization** (R104 후속)
-4. **OPTION 1928B 구조 정밀** (R105 후속) — 1928/16=120.5 non-integer
-5. **R100 milestone 결산 문서**
+1. ~~환수 combo dialogue~~ ✅ R108
+2. ~~type=0 sub-categorization~~ ✅ R109
+3. ~~R100 milestone 결산~~ ✅ R110 ([MILESTONE_R100.md](MILESTONE_R100.md))
+4. ~~alt-form 24 × type=0 cross-check~~ ✅ R111
+5. ~~stat block 32B 미확정 byte~~ ✅ R112 (28/32 byte 의미 확정)
+6. ~~OPTION × class skill effect_id 통합~~ ✅ R113 (12 effect_id 공유, 19/20 정합)
+7. ~~환수 stat block effect_id namespace 확장~~ ✅ R114 (3-system 통합, 32/34 정합)
+8. ⭐ **SCN opcode dispatch** (R72 BSDAT body opcode 와 SCN bytecode 매핑) — 자동 가능
+9. **class skill 단독 effect_id 9/36/46/64 의미 정밀화** (R113+R114 잔여)
+7. ~~죽음의 구 timer 단위~~ ✅ R107
+8. ~~OPTION 1928B 구조~~ ✅ R106
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
@@ -189,13 +218,16 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 
 ### 문서
 
-| 문서 | 라운드 |
+| 문서 | 용도 |
 |---|---|
+| **`docs/h4/COMPLETION.md`** | **리메이크 완성도 (베타=100% 정의)** ★ |
+| `docs/h4/PROGRESS.md` | 라운드별 진행·핸드오프 |
+| `docs/h4/SESSION_HANDOFF.md` | 이 문서 (빠른 재개) |
 | `docs/h4/round68-des-key-discovered.md` | R68 |
 | `docs/h4/round69-skill-catalog-and-batch-decrypt.md` | R69 |
-| `docs/h4/round70-75-summary.md` | R70-R75 통합 (이 세션) |
-| `docs/h4/PROGRESS.md` | 메인 핸드오프 |
-| `docs/h4/SESSION_HANDOFF.md` | 이 문서 |
+| `docs/h4/round70-75-summary.md` | R70-R75 통합 |
+| `docs/h4/round106-itm-option-structure.md` | R106 |
+| `docs/h4/round107-death-sphere-timer-verify.md` | R107 |
 
 ## Phase C (engine wiring) 진행 상황
 
@@ -210,20 +242,33 @@ HERO_GAME=h4 python tools/i18n/translate_dialogues.py
 
 상세는 [`../architecture/phase-c-step1-engine-core.md`](../architecture/phase-c-step1-engine-core.md) + [`project_phase_c.md`](../../../../Users/viewe/.claude/projects/c--gameRemake-testrepo/memory/project_phase_c.md).
 
-## 진행률 갱신 (R75 시점)
+## 진행률 갱신 (2026-05-20, R107 반영)
 
-| 영역 | R67 (R68 직전) | R75 |
+상세·가중치·체크리스트: **[`COMPLETION.md`](COMPLETION.md)**
+
+### Phase / 인프라 (변경 적음)
+
+| 영역 | R75 | R107 (현재) |
 |---|---|---|
-| 자산 포맷 분석/변환 | ~95% | **~100%** (모든 DES 풀림) |
-| 대사 corpus 한국어 | 0% garbage | **100%** (35,752 entries) |
-| 게임 시스템 데이터 | 0% | **~90%** (스킬/아이템/quest/weapon/event/boss 분류 완료) |
-| 암호화 시스템 | ~70% (key 미발견) | **100%** (407 파일 전체 복호화) |
-| Phase A | 99% | **100%** |
-| Phase B (Ghidra) | 30% | 30% (선택적, stat field 정밀화에만 필요) |
-| Phase C (KMM) | 0% | **75%** (Step 1+2+3+4a/4b/4c+5 완료, Step 4d만 남음) |
-| Phase D (iOS) | 0% | 0% (Mac 환경 필요) |
+| 자산 포맷 분석/변환 (Phase A) | ~100% | **~98%** |
+| 대사 corpus | 100% | **100%** (35,752) |
+| 게임 시스템 데이터 RE | ~90% | **~99%** (R76–R107, `h4_catalog` + 슬라이스 JSON) |
+| 암호화 (DES) | 100% | **100%** |
+| Phase B (Ghidra, 선택) | 30% | **~35%** |
+| Phase C (KMM) | 75% | **~50%** (Step 1–5·4a/b/c ✅, **4d Compose MP ⏳**, Hero4 씬 0) |
+| Phase D (iOS) | 0% | **0%** |
+| `apps/hero4-android` 플레이 루프 | PoC | **PoC** (변경 없음) |
 
-**Hero4 Android remake 완성 기준**: 약 **55-65%** (자산+데이터+엔진 결합 완료, UI/scene wiring 만 남음)
+### 완성도 — 기준별 (혼용 금지)
+
+| 기준 | R75 (구) | **2026-05-20** |
+|------|----------|----------------|
+| 자산+데이터+엔진 PoC 결선 | **55–65%** | *(준비 축만 해당)* |
+| **베타 오픈 = 100%** (원작 화면·시나리오·정상 플레이) | *(미기재)* | **~12–18%** ★ |
+| 프로젝트 전체 공정 | — | **~42–48%** |
+| 데이터·RE 트랙만 | ~95% | **~97–99%** |
+
+**한 줄**: 재료(RE·자산)는 끝; **원작처럼 플레이하게 만드는 구현이 베타 잔여의 ~85%**.
 
 ## 핵심 lesson 누적
 
