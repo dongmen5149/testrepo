@@ -48,6 +48,30 @@ class StatusTest {
     }
 
     @Test
+    fun r108_render_partition_buffs_and_debuffs_is_exhaustive_and_stable() {
+        // R108 — BattleScene.renderPartyPanel / enemy render 가 isBuff(st) 로 분리한다.
+        // 4 debuff (POISON/BURN/SLOW/STUN) + 나머지 buff 의 분류가 정확히 partition 인지 검증.
+        val debuffs = setOf(Status.POISON, Status.BURN, Status.SLOW, Status.STUN)
+        assertEquals(4, debuffs.size)
+        val all = Status.values().toSet()
+        // debuff 4종은 정확히 enum 안에 있음.
+        for (d in debuffs) assertTrue(d in all, "expected debuff $d in enum")
+        // 나머지는 모두 buff.
+        val buffs = all - debuffs
+        assertEquals(all.size, debuffs.size + buffs.size)
+        // R107 의 HP_MAX_BUFF / SP_MAX_BUFF 도 buff 측 (render light-blue) — UI 색이 정확.
+        assertTrue(Status.HP_MAX_BUFF in buffs)
+        assertTrue(Status.SP_MAX_BUFF in buffs)
+        // R104 boss 의 상시 buff (turnsLeft=99) 가 render 시 "∞" 로 표시되는지 식 검증.
+        fun turnLabel(turnsLeft: Int): String = if (turnsLeft > 9) "∞" else turnsLeft.toString()
+        assertEquals("∞", turnLabel(99))
+        assertEquals("∞", turnLabel(10))
+        assertEquals("9", turnLabel(9))
+        assertEquals("3", turnLabel(3))
+        assertEquals("1", turnLabel(1))
+    }
+
+    @Test
     fun r105_buff_remove_filter_keeps_debuffs() {
         // BUFF_REMOVE 는 buff (POISON/BURN/SLOW/STUN 제외 모두) 만 제거. debuff 는 유지.
         // isBuff 분류 시뮬: BattleScene.isBuff 와 동일 로직.

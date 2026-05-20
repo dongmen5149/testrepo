@@ -936,8 +936,6 @@ class BattleScene(
         Status.SP_MAX_BUFF   -> if (isEn) "SPM" else "SP최"
     }
 
-    private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
-
     private fun doEnemyAttack() {
         val alive = party.withIndex().filter { it.value.hp > 0 }
         if (alive.isEmpty()) return
@@ -1122,15 +1120,28 @@ class BattleScene(
         val ratio = enemy.hp.toFloat() / enemy.def.hpMax.coerceAtLeast(1)
         canvas.drawRect(barX, barY, barX + barW * ratio, barY + barH, hpBar)
         canvas.drawText("HP ${enemy.hp}/${enemy.def.hpMax}", barX, barY - 2f, UiKit.muted)
-        // R94/R95/R105: 상태 이상 인디케이터 (적 HP 바 우측).
+        // R94/R95/R105/R108: 상태 이상 인디케이터 (적 HP 바 우측).
         // R105: turnsLeft > 9 (boss 상시 buff 등) 은 "∞" 로 표시해 거추장 회피.
+        // R108: party 측과 색상 컨벤션 일치 — debuff (light-red) / buff (light-blue).
         if (enemy.statuses.isNotEmpty()) {
-            val statusText = enemy.statuses.joinToString(" ") { e ->
-                val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
-                "${statusLabel(e.status, isEn)}($turn)"
+            val debuffs = enemy.statuses.filter { !isBuff(it.status) }
+            val buffs = enemy.statuses.filter { isBuff(it.status) }
+            if (debuffs.isNotEmpty()) {
+                val dtxt = debuffs.joinToString(" ") { e ->
+                    val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
+                    "${statusLabel(e.status, isEn)}($turn)"
+                }
+                canvas.drawText(dtxt, barX + barW - 140f, barY - 2f,
+                    Paint(UiKit.muted).apply { color = Color.rgb(255, 130, 130) })
             }
-            val statusPaint = Paint(UiKit.muted).apply { color = Color.rgb(150, 230, 150) }
-            canvas.drawText(statusText, barX + barW - 90f, barY - 2f, statusPaint)
+            if (buffs.isNotEmpty()) {
+                val btxt = buffs.joinToString(" ") { e ->
+                    val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
+                    "${statusLabel(e.status, isEn)}($turn)"
+                }
+                canvas.drawText(btxt, barX + barW - 90f, barY - 2f,
+                    Paint(UiKit.muted).apply { color = Color.rgb(130, 200, 255) })
+            }
         }
 
         // 액터(현재 차례) sprite — 좌측, lunge
@@ -1235,12 +1246,30 @@ class BattleScene(
                     virtualWidth - 40f, y + 11f,
                     Paint(UiKit.body).apply { color = Color.rgb(255, 120, 120) })
             } else {
-                // R96: party buff 인디케이터 (행 우측, 좌상 작은 텍스트).
-                val buffs = partyStatuses[i]
-                if (!buffs.isNullOrEmpty()) {
-                    val txt = buffs.joinToString(" ") { e -> partyBuffLabel(e.status, isEn) + "(${e.turnsLeft})" }
-                    canvas.drawText(txt, virtualWidth - 90f, y + 5f,
-                        Paint(UiKit.muted).apply { color = Color.rgb(130, 200, 255); textSize = 8f })
+                // R96 + R108: party buff/debuff 인디케이터 (행 우측, 작은 텍스트).
+                // R108: buff (R96~R107) 와 debuff (R106 POISON/BURN/SLOW/STUN) 를
+                // 색상으로 분리 표시. 좌측 = debuff (light-red), 우측 = buff (light-blue).
+                // R105 패턴 재사용: turnsLeft > 9 (boss 상시 buff 등) 은 "∞" 로 표시.
+                val list = partyStatuses[i]
+                if (!list.isNullOrEmpty()) {
+                    val debuffs = list.filter { !isBuff(it.status) }
+                    val buffs = list.filter { isBuff(it.status) }
+                    if (debuffs.isNotEmpty()) {
+                        val dtxt = debuffs.joinToString(" ") { e ->
+                            val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
+                            "${statusLabel(e.status, isEn)}($turn)"
+                        }
+                        canvas.drawText(dtxt, virtualWidth - 140f, y + 5f,
+                            Paint(UiKit.muted).apply { color = Color.rgb(255, 130, 130); textSize = 8f })
+                    }
+                    if (buffs.isNotEmpty()) {
+                        val btxt = buffs.joinToString(" ") { e ->
+                            val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
+                            "${statusLabel(e.status, isEn)}($turn)"
+                        }
+                        canvas.drawText(btxt, virtualWidth - 90f, y + 5f,
+                            Paint(UiKit.muted).apply { color = Color.rgb(130, 200, 255); textSize = 8f })
+                    }
                 }
             }
         }
