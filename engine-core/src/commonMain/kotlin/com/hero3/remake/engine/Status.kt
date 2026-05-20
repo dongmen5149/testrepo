@@ -18,6 +18,16 @@ enum class Status {
     SLOW,
     /** 적 행동 100% skip. perTick 미사용. */
     STUN,
+    /**
+     * R96 — 받는 crit 데미지 감쇄 buff. perTick = percent (예: 30 → crit ×1.7 → ×1.4).
+     * BattleScene 이 적 공격 결과에서 합산하여 multiplier 차감.
+     */
+    CRIT_DEF_BUFF,
+    /**
+     * R96 — 받는 데미지 reduction buff. perTick = percent (예: 20 → 받는 데미지 ×0.8).
+     * BattleScene.doEnemyAttack 가 최종 데미지에 곱셈 적용.
+     */
+    DEFENSE_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

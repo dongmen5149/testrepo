@@ -84,6 +84,19 @@ class BattleScene(
         return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
     }
 
+    /**
+     * R96 — 파티 멤버별 buff/debuff status. battle-scoped (저장 안 됨).
+     * key = party index, value = active StatusEffect 리스트.
+     */
+    private val partyStatuses: MutableMap<Int, MutableList<StatusEffect>> = mutableMapOf()
+
+    private fun statusesOf(memberIdx: Int): MutableList<StatusEffect> =
+        partyStatuses.getOrPut(memberIdx) { mutableListOf() }
+
+    /** R96 — 특정 status 의 perTick 합 (해당 member 의 모든 매칭 buff). */
+    private fun buffPercent(memberIdx: Int, st: Status): Int =
+        partyStatuses[memberIdx]?.filter { it.status == st }?.sumOf { it.perTick } ?: 0
+
     /** R94: engine skill 의 catalog effectV2.nDebuffs (0 이면 부여 없음). */
     private fun catalogDebuffCountFor(nameKo: String): Int {
         val idx = catalogSkillIndex ?: return 0
@@ -96,6 +109,50 @@ class BattleScene(
         val raw = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.CRIT_RATE)
         return raw.coerceIn(-catalogBonusClamp, catalogBonusClamp)
+    }
+
+    /**
+     * R96 — engine skill 의 CRIT_DEF / DEFENSE slot 값을 actor 자기 buff status 로 N턴 등록.
+     * 두 종 모두 ±25 clamp, 3턴 유지. 같은 status 가 있으면 turnsLeft refresh + percent 갱신.
+     */
+    private fun registerSelfBuffsFromSkill(actorMemberIdx: Int, nameKo: String) {
+        val idx = catalogSkillIndex ?: return
+        val critDef = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.CRIT_DEF)
+            .coerceIn(0, catalogBonusClamp)
+        val defense = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.DEFENSE)
+            .coerceIn(0, catalogBonusClamp)
+        val list = statusesOf(actorMemberIdx)
+        if (critDef > 0) {
+            val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.CRIT_DEF_BUFF, turnsLeft = 3, perTick = critDef)
+        }
+        if (defense > 0) {
+            val ex = list.firstOrNull { it.status == Status.DEFENSE_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.DEFENSE_BUFF, turnsLeft = 3, perTick = defense)
+        }
+        if (critDef > 0 || defense > 0) {
+            val parts = listOfNotNull(
+                if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
+                if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
+            ).joinToString(" ")
+            pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
+        }
+    }
+
+    /** R96 — 1턴 경과 처리. 모든 party member 의 buff 의 turnsLeft 감소 + 만료 제거. */
+    private fun tickPartyStatuses() {
+        for ((_, list) in partyStatuses) {
+            val it = list.iterator()
+            while (it.hasNext()) {
+                val e = it.next()
+                e.turnsLeft -= 1
+                if (e.turnsLeft <= 0) it.remove()
+            }
+        }
     }
 
     private val enemy: EnemyInstance = run {
@@ -259,6 +316,8 @@ class BattleScene(
         if (catalogBonus != 0) pushLog(lang("(카탈로그 +$catalogBonus)", "(catalog +$catalogBonus)"))
         // R94: catalog effectV2.nDebuffs > 0 인 skill 은 처치되지 않은 적에게 POISON 부여 (3턴).
         if (enemy.hp > 0) tryApplyPoisonFromSkill(s.nameKo, dmg)
+        // R96: catalog CRIT_DEF / DEFENSE slot 값을 actor 자기 buff status 로 등록 (3턴).
+        registerSelfBuffsFromSkill(actorIdx, s.nameKo)
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
@@ -381,6 +440,8 @@ class BattleScene(
             if (aliveCount() == 0) {
                 beginDefeat()
             } else {
+                // R96: 한 라운드 (party 행동 → enemy 행동) 종료 → 파티 buff turnsLeft 감소.
+                tickPartyStatuses()
                 actorIdx = firstAliveFrom(0)
                 menuIdx = 0; skillPickIdx = 0; itemPickIdx = 0
                 phase = Phase.COMMAND
@@ -426,6 +487,7 @@ class BattleScene(
                     totalDmg += dmg
                 }
                 Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
+                Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -455,30 +517,45 @@ class BattleScene(
         Status.BURN   -> if (isEn) "BRN" else "화상"
         Status.SLOW   -> if (isEn) "SLW" else "둔화"
         Status.STUN   -> if (isEn) "STN" else "기절"
+        Status.CRIT_DEF_BUFF -> if (isEn) "CDF" else "크감"
+        Status.DEFENSE_BUFF  -> if (isEn) "DEF" else "방어"
     }
+
+    private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
 
     private fun doEnemyAttack() {
         val alive = party.withIndex().filter { it.value.hp > 0 }
         if (alive.isEmpty()) return
         val pick = alive[Random.nextInt(alive.size)]
         val target = pick.value
-        val dmg = damage(enemy.def.atk, CharacterRegistry.effectiveDefense(target))
+        // R96: target 의 CRIT_DEF / DEFENSE buff 합산 → damage() / 최종 데미지에 반영.
+        val critDefPct = buffPercent(pick.index, Status.CRIT_DEF_BUFF)
+        val defPct     = buffPercent(pick.index, Status.DEFENSE_BUFF)
+        val rawDmg = damage(enemy.def.atk, CharacterRegistry.effectiveDefense(target),
+            extraCritDefPercent = critDefPct)
+        val dmg = if (defPct > 0) maxOf(1, rawDmg * (100 - defPct) / 100) else rawDmg
         target.hp = (target.hp - dmg).coerceAtLeast(0)
         popups += Popup("-$dmg", onEnemy = false, targetIdx = pick.index, ttl = 900L, color = Color.rgb(255, 80, 80))
         val name = lang(enemy.def.nameKo, enemy.def.nameEn)
         pushLog("$name → ${displayName(target, isEn)} $dmg.")
+        if (critDefPct > 0 || defPct > 0) {
+            pushLog(lang("(버프 흡수: 크감 $critDefPct% / 방어 $defPct%)",
+                         "(buffs: critDef $critDefPct% / def $defPct%)"))
+        }
     }
 
-    /** R83/R93: damage = max(1, atk - def/2) × variance(0.8..1.2), with crit (×1.7).
+    /** R83/R93/R96: damage = max(1, atk - def/2) × variance(0.8..1.2), with crit.
      *  base crit chance 8% + [extraCritPercent] (catalog CRI_RATE slot, R93). clamp [0, 50%].
+     *  crit multiplier 1.7 - [extraCritDefPercent]/100 (R96, target 측 CRIT_DEF_BUFF). clamp [1.0, 1.7].
      *  catalog-fed enemy (forcedEnemyId h3_*) 은 추후 R63 stat enum / element 적용 (R84+).
      */
-    private fun damage(atk: Int, def: Int, extraCritPercent: Int = 0): Int {
+    private fun damage(atk: Int, def: Int, extraCritPercent: Int = 0, extraCritDefPercent: Int = 0): Int {
         val raw = max(1, atk - def / 2)
         val critChance = (0.08f + extraCritPercent / 100f).coerceIn(0f, 0.5f)
         val isCrit = Random.nextFloat() < critChance
         val variance = (raw * (0.8f + Random.nextFloat() * 0.4f)).toInt()
-        val final = if (isCrit) (variance * 1.7f).toInt() else variance
+        val critMul = (1.7f - extraCritDefPercent / 100f).coerceIn(1.0f, 1.7f)
+        val final = if (isCrit) (variance * critMul).toInt() else variance
         if (isCrit) pushLog(lang("크리티컬!", "Critical!"))
         return max(1, final)
     }
@@ -714,6 +791,14 @@ class BattleScene(
                 canvas.drawText(lang("기절", "KO"),
                     virtualWidth - 40f, y + 11f,
                     Paint(UiKit.body).apply { color = Color.rgb(255, 120, 120) })
+            } else {
+                // R96: party buff 인디케이터 (행 우측, 좌상 작은 텍스트).
+                val buffs = partyStatuses[i]
+                if (!buffs.isNullOrEmpty()) {
+                    val txt = buffs.joinToString(" ") { e -> partyBuffLabel(e.status, isEn) + "(${e.turnsLeft})" }
+                    canvas.drawText(txt, virtualWidth - 90f, y + 5f,
+                        Paint(UiKit.muted).apply { color = Color.rgb(130, 200, 255); textSize = 8f })
+                }
             }
         }
     }

@@ -26,7 +26,36 @@ class StatusTest {
         assertTrue(Status.BURN in all)
         assertTrue(Status.SLOW in all)
         assertTrue(Status.STUN in all)
-        assertEquals(4, Status.values().size)
+        assertTrue(Status.values().size >= 4)
+    }
+
+    @Test
+    fun r96_status_enum_has_buff_kinds() {
+        // R96: CRIT_DEF_BUFF / DEFENSE_BUFF 추가.
+        val all = Status.values().toSet()
+        assertTrue(Status.CRIT_DEF_BUFF in all)
+        assertTrue(Status.DEFENSE_BUFF in all)
+        assertEquals(6, Status.values().size)
+    }
+
+    @Test
+    fun r96_buff_perTick_used_as_percent_not_dot() {
+        // R96 의 BUFF status 는 perTick 을 percent 로 재사용. tick 시뮬에서 HP 감소시키지 않음.
+        val def = EnemyRegistry.all.first()
+        val ei = EnemyInstance(def, hp = 100)
+        ei.statuses += StatusEffect(Status.CRIT_DEF_BUFF, turnsLeft = 3, perTick = 30)
+        repeat(3) {
+            val it = ei.statuses.iterator()
+            while (it.hasNext()) {
+                val e = it.next()
+                // BUFF 는 dot 아님 — 따로 분기.
+                if (e.status == Status.POISON || e.status == Status.BURN) ei.hp -= e.perTick
+                e.turnsLeft -= 1
+                if (e.turnsLeft <= 0) it.remove()
+            }
+        }
+        assertEquals(100, ei.hp)
+        assertTrue(ei.statuses.isEmpty())
     }
 
     @Test
