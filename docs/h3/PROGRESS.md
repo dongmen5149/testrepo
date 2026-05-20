@@ -7,31 +7,33 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 104 종료, uncommitted)**:
-> - 마지막 commit = `675a5595 feat:영웅서기3 Round 103 — Enemy buff 시스템 (boss DEFENSE_BUFF)`
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R104 는 catalog 통합 31 라운드)
-> - Hero3 리메이크 진행률 **~95-96%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 105 종료, uncommitted)**:
+> - 마지막 commit = `be9a860f feat:영웅서기3 Round 104 — Boss 별 차별화 buff 조합 + 4 enemy buff 전체 wiring`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R105 는 catalog 통합 32 라운드)
+> - Hero3 리메이크 진행률 **~96%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R105 가이드
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R106 가이드
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R105 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R106 가이드
 
-R104 (boss 차별화 + 4 enemy buff wiring) 완료. catalog stat enum 23종 중 15종 wiring 동일, boss 별 차별화 + enemy buff 4종 전체 wiring. R105 후보:
+R105 (BUFF_REMOVE + render ∞) 완료. catalog stat enum 23종 중 16종 wiring. R106 후보:
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐⭐ | A. enemy buff render 개선 | BattleScene render | turnsLeft=99 → "∞". |
-| ⭐⭐⭐ | B. BUFF_REMOVE wiring | `useSkill` | enemy buff 1-N 제거. |
-| ⭐⭐ | C. boss skill 매핑 (R74) | `BattleScene` | 큰 작업. |
-| ⭐⭐ | D. CURE_STATUS | party debuff 선행 | 미루기. |
-| ⭐⭐ | E. HP_MAX / SP_MAX / *_BASE | engine + 저장 | 큰 작업. |
+| ⭐⭐⭐ | A. party debuff 시스템 | `BattleScene.doEnemyAttack` + tickPartyStatuses | CURE_STATUS 의미 활성화. |
+| ⭐⭐⭐ | B. boss skill 매핑 (R74) | `BattleScene` | 큰 작업. |
+| ⭐⭐ | C. HP_MAX / SP_MAX 일시 buff | `Status` + BattleScene | 작은 작업. |
+| ⭐⭐ | D. CD_REDUCE | cooldown 시스템 선행 | 큰 작업. |
+| ⭐⭐ | E. *_BASE 영구 stat (서적) | engine + 저장 | 큰 작업. |
 | ⭐⭐ | F. recipe bytes[0..1] gold cost | `tools/recon/` | 가설 검증성. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 104, uncommitted) — **Boss 별 차별화 buff 조합 + 4 enemy buff 전체 wiring**. (1) ⭐⭐⭐⭐⭐ **`applyBossBuffs(bossId)` 신규** — R103 의 인라인 `DEFENSE_BUFF 25%` 부여를 boss-id 별 조합으로 분리. **boss_guardian** = tank (DEFENSE 25% + CRIT_DEF 20%), **boss_chaos** = evasive (DODGE 20% + ACCURACY 15%), **boss_sealed** = endgame (BLOCK 15% + DEFENSE 20% + CRIT_DEF 30%), 기타 boss = default (DEFENSE 25%). (2) ⭐⭐⭐⭐ **`doActorAttack` 에 hit-roll + block 추가** — 이전엔 무조건 hit 였음. R104 부터: rollHit (enemy DODGE_BUFF) → 실패 "빗나감" / BLOCK_BUFF 확률 무효 → "적이 막아냄!" / damage 에 enemy CRIT_DEF_BUFF 가산 / R103 의 applyEnemyDefenseBuff 유지. (3) ⭐⭐⭐⭐ **`useSkill` 공격 분기에 4 enemy buff 모두 wiring** — R97 의 `targetDodgePct = 0` 을 `enemyBuffPercent(DODGE_BUFF)` 로 교체. BLOCK 체크 추가. `damage(..., extraCritDefPercent = enemyBuffPercent(CRIT_DEF_BUFF))`. SHIELD_PIERCE + DEFENSE_BUFF stacking 그대로. (4) ⭐⭐⭐⭐ **`doEnemyAttack` 에 ACCURACY_BUFF 가산** — `rollHit(attackerAccPct = 0, ...)` → `attackerAccPct = enemyBuffPercent(ACCURACY_BUFF)`. boss_chaos 의 15% ACC 가 적의 명중률 가산 → 회피 어렵게. (5) **127/127 tests 유지** (engine 51 + app 76, 0 new) + APK BUILD SUCCESSFUL. R103 의 식 단위 검증 + R97 hit-roll 식 검증 재사용 — boss-specific 조합은 통합 동작. (6) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~95% → ~95-96% (boss 전이 컨셉별 차별 적으로 본격 전환). 상세는 [ghidra-round104-boss-buff-differentiation-2026-05-19.md](ghidra-round104-boss-buff-differentiation-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 105, uncommitted) — **BUFF_REMOVE wiring + enemy buff render 개선**. (1) ⭐⭐⭐⭐ **`Hero3CatalogSkillIndex.ModifierKind` 15종 → 16종** — BUFF_REMOVE exact-match (`codeName == "BUFF_REMOVE"`). (2) ⭐⭐⭐⭐ **`isBuff(st)` 헬퍼** — POISON/BURN/SLOW/STUN = false (debuff), 나머지 9종 = true (buff). exhaustive `when`. (3) ⭐⭐⭐⭐ **`tryRemoveEnemyBuffsFromSkill(nameKo)`** — catalog BUFF_REMOVE primaryModifier (`coerceIn(0, 3)`) 명 만큼 enemy.statuses 의 buff 부터 앞에서 take. debuff 보존. 제거 시 "적 버프 제거: <라벨/라벨>" 로그. useSkill 공격 분기 끝 (REVIVE 호출 다음, `enemy.hp > 0` 조건) 에 hook. (4) ⭐⭐⭐ **render 개선** — `turnsLeft > 9` (R103/R104 boss 의 turnsLeft=99 등) 은 `"∞"` 로 표시 → `"방어(∞)"` 처럼 깔끔. 일반 debuff (3턴) 는 그대로 `"독(3)"`. (5) ⭐⭐⭐ **2 신규 unit tests** — engine `r105_buff_remove_filter_keeps_debuffs` (4 debuff + 나머지 buff 분류 검증, total = buffCount + debuffCount) + catalog `r105_buff_remove_modifier_kind_exact_match`. (6) **129/129 tests** (engine 51→52 +1, catalog 64→65 +1, app 77) + APK BUILD SUCCESSFUL. (7) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~95-96% → ~96% (BUFF_REMOVE wiring + UI 깔끔). 상세는 [ghidra-round105-buff-remove-render-2026-05-19.md](ghidra-round105-buff-remove-render-2026-05-19.md).
+
+**Round 104** (committed `be9a860f`) — **Boss 별 차별화 buff 조합 + 4 enemy buff 전체 wiring**. (1) ⭐⭐⭐⭐⭐ **`applyBossBuffs(bossId)` 신규** — R103 의 인라인 `DEFENSE_BUFF 25%` 부여를 boss-id 별 조합으로 분리. **boss_guardian** = tank (DEFENSE 25% + CRIT_DEF 20%), **boss_chaos** = evasive (DODGE 20% + ACCURACY 15%), **boss_sealed** = endgame (BLOCK 15% + DEFENSE 20% + CRIT_DEF 30%), 기타 boss = default (DEFENSE 25%). (2) ⭐⭐⭐⭐ **`doActorAttack` 에 hit-roll + block 추가** — 이전엔 무조건 hit 였음. R104 부터: rollHit (enemy DODGE_BUFF) → 실패 "빗나감" / BLOCK_BUFF 확률 무효 → "적이 막아냄!" / damage 에 enemy CRIT_DEF_BUFF 가산 / R103 의 applyEnemyDefenseBuff 유지. (3) ⭐⭐⭐⭐ **`useSkill` 공격 분기에 4 enemy buff 모두 wiring** — R97 의 `targetDodgePct = 0` 을 `enemyBuffPercent(DODGE_BUFF)` 로 교체. BLOCK 체크 추가. `damage(..., extraCritDefPercent = enemyBuffPercent(CRIT_DEF_BUFF))`. SHIELD_PIERCE + DEFENSE_BUFF stacking 그대로. (4) ⭐⭐⭐⭐ **`doEnemyAttack` 에 ACCURACY_BUFF 가산** — `rollHit(attackerAccPct = 0, ...)` → `attackerAccPct = enemyBuffPercent(ACCURACY_BUFF)`. boss_chaos 의 15% ACC 가 적의 명중률 가산 → 회피 어렵게. (5) **127/127 tests 유지** (engine 51 + app 76, 0 new) + APK BUILD SUCCESSFUL. R103 의 식 단위 검증 + R97 hit-roll 식 검증 재사용 — boss-specific 조합은 통합 동작. (6) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~95% → ~95-96% (boss 전이 컨셉별 차별 적으로 본격 전환). 상세는 [ghidra-round104-boss-buff-differentiation-2026-05-19.md](ghidra-round104-boss-buff-differentiation-2026-05-19.md).
 
 **Round 103** (committed `675a5595`) — **Enemy buff 시스템 (boss DEFENSE_BUFF)**. (1) ⭐⭐⭐⭐⭐ **enemy.statuses 컨테이너 일반화** — R94 의 debuff 전용 컨테이너 (POISON 등) 가 R103 부터 buff 도 담는다. boss 적은 전투 시작 시 자기 `DEFENSE_BUFF 25%` (turnsLeft = 99, 사실상 전투 내내) 자동 부여. 일반 적은 변동 없음. (2) ⭐⭐⭐⭐ **신규 `enemyBuffPercent(st: Status): Int`** — party 측 `buffPercent` 의 enemy 측 대응 헬퍼. (3) ⭐⭐⭐⭐ **신규 `applyEnemyDefenseBuff(rawDmg: Int): Int`** — `defPct.coerceIn(0, 90)`, 0 이하 = raw 그대로. 아니면 `(rawDmg * (100 - defPct) / 100).coerceAtLeast(1)`. (4) ⭐⭐⭐⭐ **`doActorAttack` + `useSkill` 공격 분기 wiring** — 모든 player → enemy 데미지가 `damage()` 결과 `rawDmg` → `applyEnemyDefenseBuff(rawDmg)` → `dmg`. SHIELD_PIERCE 와 stacking 가능 (SHIELD_PIERCE 가 enemy.def.def 무시, DEFENSE_BUFF 가 결과 데미지 감쇄 — 별개 step). (5) ⭐⭐⭐ **tickEnemyStatuses 의 buff 분기 주석 갱신** — "enemy 에 부여 안 됨" → "enemy 에도 부여 가능 (R103: boss DEFENSE_BUFF). tick 시 효과 없음 — buff 사용처에서 buffPercent 합산". (6) ⭐⭐⭐ **2 신규 engine tests** — `r103_enemy_defense_buff_reduces_damage_in_simulation` (5 sample 식 검증: 100/25→75, 100/50→50, 100/90→10 clamp, 100/0→100, 2/90→1 ≥1) + `r103_enemy_statuses_can_hold_buffs_not_just_debuffs` (POISON + DEFENSE_BUFF 같이 컨테이너에 담겨 분리 합산). (7) **127/127 tests** (engine 49→51 +2, app 76) + APK BUILD SUCCESSFUL. (8) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~94-95% → ~95% (boss 전 변별력 +α, enemy buff 시스템 첫 등장). 상세는 [ghidra-round103-enemy-defense-buff-2026-05-19.md](ghidra-round103-enemy-defense-buff-2026-05-19.md).
 

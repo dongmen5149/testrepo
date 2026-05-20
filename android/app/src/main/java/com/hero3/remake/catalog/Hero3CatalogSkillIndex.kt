@@ -98,6 +98,8 @@ class Hero3CatalogSkillIndex(
         SP_COST_REDUCE,
         /** R102 — SHIELD_PIERCE slot. 공격 시 적 방어력 perTick% 무시. */
         SHIELD_PIERCE,
+        /** R105 — BUFF_REMOVE slot. 시전 시 적 buff 중 perTick 개 제거 (debuff 는 미보존). */
+        BUFF_REMOVE,
     }
 
     /**
@@ -133,6 +135,7 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.BLOCK     -> s.codeName == "BLOCK"
                 ModifierKind.SP_COST_REDUCE -> s.codeName == "SP_COST_REDUCE"
                 ModifierKind.SHIELD_PIERCE  -> s.codeName == "SHIELD_PIERCE"
+                ModifierKind.BUFF_REMOVE    -> s.codeName == "BUFF_REMOVE"
             }
             if (keep) sum += s.primarySigned
         }

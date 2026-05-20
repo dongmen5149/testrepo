@@ -230,6 +230,35 @@ class BattleScene(
     }
 
     /**
+     * R105 — 주어진 Status 가 buff (긍정 효과) 인지 debuff (부정 효과) 인지 분류.
+     * POISON/BURN/SLOW/STUN = debuff, 나머지는 모두 buff.
+     */
+    private fun isBuff(st: Status): Boolean = when (st) {
+        Status.POISON, Status.BURN, Status.SLOW, Status.STUN -> false
+        Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF, Status.ACCURACY_BUFF, Status.DODGE_BUFF,
+        Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF, Status.TAUNT_BUFF, Status.BLOCK_BUFF,
+        Status.SP_COST_REDUCE_BUFF -> true
+    }
+
+    /**
+     * R105 — catalog BUFF_REMOVE slot > 0 시 enemy buff 중 N 개를 제거 (debuff 는 보존).
+     * N = primaryModifier (clamp 1..3). 제거 우선순위 = enemy.statuses 안 buff 입력 순서.
+     */
+    private fun tryRemoveEnemyBuffsFromSkill(nameKo: String) {
+        val idx = catalogSkillIndex ?: return
+        val rawN = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.BUFF_REMOVE)
+        val n = rawN.coerceIn(0, 3)
+        if (n <= 0) return
+        val removable = enemy.statuses.filter { isBuff(it.status) }
+        if (removable.isEmpty()) return
+        val toRemove = removable.take(n)
+        val names = toRemove.joinToString("/") { statusLabel(it.status, isEn) }
+        enemy.statuses.removeAll(toRemove.toSet())
+        pushLog(lang("적 버프 제거: $names", "Enemy buffs removed: $names"))
+    }
+
+    /**
      * R101 — catalog REVIVE slot 이 있으면 KO 된 party member 한 명을 perTick% HP 로 부활.
      * 매칭이 없거나 KO 된 member 가 없으면 no-op. 우선 lowest index (먼저 죽은 멤버).
      */
@@ -537,6 +566,8 @@ class BattleScene(
         tryHpDrainFromSkill(actor, s.nameKo, dmg)
         // R101: 공격 skill 도 REVIVE slot 가지면 KO 된 member 부활 (드물지만 가능).
         tryReviveFromSkill(s.nameKo)
+        // R105: catalog BUFF_REMOVE slot → enemy buff N 개 제거.
+        if (enemy.hp > 0) tryRemoveEnemyBuffsFromSkill(s.nameKo)
         if (enemy.hp <= 0) { enemy.hp = 0; beginVictory() } else { phase = Phase.ANIMATE; animTtl = 500L }
     }
 
@@ -951,10 +982,12 @@ class BattleScene(
         val ratio = enemy.hp.toFloat() / enemy.def.hpMax.coerceAtLeast(1)
         canvas.drawRect(barX, barY, barX + barW * ratio, barY + barH, hpBar)
         canvas.drawText("HP ${enemy.hp}/${enemy.def.hpMax}", barX, barY - 2f, UiKit.muted)
-        // R94/R95: 상태 이상 인디케이터 (적 HP 바 우측).
+        // R94/R95/R105: 상태 이상 인디케이터 (적 HP 바 우측).
+        // R105: turnsLeft > 9 (boss 상시 buff 등) 은 "∞" 로 표시해 거추장 회피.
         if (enemy.statuses.isNotEmpty()) {
             val statusText = enemy.statuses.joinToString(" ") { e ->
-                "${statusLabel(e.status, isEn)}(${e.turnsLeft})"
+                val turn = if (e.turnsLeft > 9) "∞" else e.turnsLeft.toString()
+                "${statusLabel(e.status, isEn)}($turn)"
             }
             val statusPaint = Paint(UiKit.muted).apply { color = Color.rgb(150, 230, 150) }
             canvas.drawText(statusText, barX + barW - 90f, barY - 2f, statusPaint)

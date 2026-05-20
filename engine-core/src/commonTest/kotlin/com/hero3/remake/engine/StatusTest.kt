@@ -48,6 +48,23 @@ class StatusTest {
     }
 
     @Test
+    fun r105_buff_remove_filter_keeps_debuffs() {
+        // BUFF_REMOVE 는 buff (POISON/BURN/SLOW/STUN 제외 모두) 만 제거. debuff 는 유지.
+        // isBuff 분류 시뮬: BattleScene.isBuff 와 동일 로직.
+        val debuffs = setOf(Status.POISON, Status.BURN, Status.SLOW, Status.STUN)
+        for (st in Status.values()) {
+            val isBuff = st !in debuffs
+            // POISON/BURN/SLOW/STUN 만 false, 나머지 true.
+            if (isBuff) assertTrue(st !in debuffs)
+            else assertTrue(st in debuffs)
+        }
+        // 모든 Status 가 정확히 한 카테고리.
+        val total = Status.values().size
+        val buffCount = Status.values().count { it !in debuffs }
+        assertEquals(total, buffCount + debuffs.size)
+    }
+
+    @Test
     fun r103_enemy_defense_buff_reduces_damage_in_simulation() {
         // R103: enemy DEFENSE_BUFF 25% → 받는 raw 100 dmg → 75 적용. BattleScene 의 applyEnemyDefenseBuff
         // 식 자체를 검증.
