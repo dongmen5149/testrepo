@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 93 (2026-05-20) — _H_SA group_id ↔ 5 환수 매핑 검증 (R88 후속) ★
+
+> R88 의 5 group_id (0/64/78/38/75) → 5 환수 매핑 가설을 검증. 상세: [round93-sa-summon-map.md](round93-sa-summon-map.md).
+>
+> ordinal 매핑 확정: group 0=베놈, 64=헤지호그, 78=그래비티, 38=쇼커, 75=세이프가드. 5 verification check 모두 통과: (1) group 64 유일 signed-LE16 negative extras (-30/-50/-70) = 헤지호그 되돌리기 reflect mechanic, (2) group 38 가 non-reflect groups 중 max count 성장 (20/40/60), (3) group 38 환수가 유일 aura_cost=2 (= 쇼커 마력의 오러), (4) group 64 환수의 ranged_status = '되돌리기', (5) 5 환수 ranged_status skill 5/5 매치 (맹독/되돌리기/슬로우/스턴/실드).
+>
+> R86-R93 통합 stat 매트릭스 완성 — 5 환수 × 모든 stat axis (damage/range/skill/aura/reflect/cost/tier/count).
+>
+> `parse_h4_sa_summon_map.py` 신규 + `h4_sa_summon_map.json` 4KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 92 (2026-05-20) — Summon dialogue corpus cross-ref (R87 후속) ★
 
 > R87 의 dialogue cross-ref 완료. 상세: [round92-summon-dialogue-xref.md](round92-summon-dialogue-xref.md).

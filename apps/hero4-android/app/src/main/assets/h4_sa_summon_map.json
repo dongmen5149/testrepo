@@ -1,0 +1,207 @@
+{
+  "round": 93,
+  "group_to_summon": {
+    "0": {
+      "summon_id": 0,
+      "name": "베놈"
+    },
+    "64": {
+      "summon_id": 1,
+      "name": "헤지호그"
+    },
+    "78": {
+      "summon_id": 2,
+      "name": "그래비티"
+    },
+    "38": {
+      "summon_id": 3,
+      "name": "쇼커"
+    },
+    "75": {
+      "summon_id": 4,
+      "name": "세이프가드"
+    }
+  },
+  "evidence": {
+    "mapping": [
+      {
+        "group_id": 0,
+        "summon_id": 0,
+        "name": "베놈",
+        "tier_values": [
+          400,
+          600,
+          800
+        ],
+        "tier_levels": [
+          40,
+          60,
+          80
+        ],
+        "count_progression": [
+          0,
+          0,
+          0
+        ],
+        "signed_extras_LE16_17_18": [
+          0,
+          0,
+          0
+        ],
+        "has_signed_neg": false,
+        "bs_cost_marker": 15,
+        "bs_learn_skill_ids": [
+          6,
+          7,
+          8
+        ],
+        "ranged_status_skill": "맹독",
+        "aura_cost": 1
+      },
+      {
+        "group_id": 64,
+        "summon_id": 1,
+        "name": "헤지호그",
+        "tier_values": [
+          300,
+          450,
+          600
+        ],
+        "tier_levels": [
+          30,
+          45,
+          60
+        ],
+        "count_progression": [
+          50,
+          75,
+          100
+        ],
+        "signed_extras_LE16_17_18": [
+          -30,
+          -50,
+          -70
+        ],
+        "has_signed_neg": true,
+        "bs_cost_marker": 0,
+        "bs_learn_skill_ids": [
+          9,
+          10,
+          11
+        ],
+        "ranged_status_skill": "되돌리기",
+        "aura_cost": 1
+      },
+      {
+        "group_id": 78,
+        "summon_id": 2,
+        "name": "그래비티",
+        "tier_values": [
+          340,
+          510,
+          680
+        ],
+        "tier_levels": [
+          34,
+          51,
+          68
+        ],
+        "count_progression": [
+          5,
+          10,
+          15
+        ],
+        "signed_extras_LE16_17_18": [
+          0,
+          0,
+          0
+        ],
+        "has_signed_neg": false,
+        "bs_cost_marker": 0,
+        "bs_learn_skill_ids": [
+          12,
+          13,
+          14
+        ],
+        "ranged_status_skill": "슬로우",
+        "aura_cost": 1
+      },
+      {
+        "group_id": 38,
+        "summon_id": 3,
+        "name": "쇼커",
+        "tier_values": [
+          340,
+          510,
+          680
+        ],
+        "tier_levels": [
+          34,
+          51,
+          68
+        ],
+        "count_progression": [
+          20,
+          40,
+          60
+        ],
+        "signed_extras_LE16_17_18": [
+          0,
+          0,
+          0
+        ],
+        "has_signed_neg": false,
+        "bs_cost_marker": 40,
+        "bs_learn_skill_ids": [
+          15,
+          16,
+          17
+        ],
+        "ranged_status_skill": "스턴",
+        "aura_cost": 2
+      },
+      {
+        "group_id": 75,
+        "summon_id": 4,
+        "name": "세이프가드",
+        "tier_values": [
+          300,
+          450,
+          600
+        ],
+        "tier_levels": [
+          30,
+          45,
+          60
+        ],
+        "count_progression": [
+          5,
+          10,
+          15
+        ],
+        "signed_extras_LE16_17_18": [
+          0,
+          0,
+          0
+        ],
+        "has_signed_neg": false,
+        "bs_cost_marker": 0,
+        "bs_learn_skill_ids": [
+          18,
+          19,
+          20
+        ],
+        "ranged_status_skill": "실드",
+        "aura_cost": 1
+      }
+    ]
+  },
+  "verification_checks": {
+    "group_64_only_has_signed_neg": true,
+    "group_38_highest_count_among_non_reflect_groups": true,
+    "group_38_summon_has_max_aura_cost": true,
+    "group_64_summon_has_reflect_skill": true,
+    "all_5_ranged_status_skills_match_r86_r87": true
+  },
+  "all_checks_pass": true
+}

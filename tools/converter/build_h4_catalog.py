@@ -301,6 +301,20 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # SA summon map (R93) — _H_SA group_id ↔ 5 환수 매핑 검증
+    sam_path = CONVERTED / 'h4_sa_summon_map.json'
+    if sam_path.exists():
+        try:
+            sam = json.loads(sam_path.read_text(encoding='utf-8'))
+            catalog['sa_summon_map'] = {
+                'group_to_summon': sam['group_to_summon'],
+                'verification_checks': sam['verification_checks'],
+                'all_checks_pass': sam['all_checks_pass'],
+            }
+            print(f'\nSA summon map: 5 verified mappings, all checks pass={sam["all_checks_pass"]} (R93)')
+        except Exception as e:
+            print(f'  WARN: failed to load sa_summon_map: {e}', file=sys.stderr)
+
     # Summon dialogue xref (R92) — 환수 시스템 corpus cross-ref
     sdx_path = CONVERTED / 'h4_summon_dialogue_xref.json'
     if sdx_path.exists():

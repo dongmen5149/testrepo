@@ -2916,6 +2916,38 @@
       "summon_tier_count": 15
     }
   },
+  "sa_summon_map": {
+    "group_to_summon": {
+      "0": {
+        "summon_id": 0,
+        "name": "베놈"
+      },
+      "64": {
+        "summon_id": 1,
+        "name": "헤지호그"
+      },
+      "78": {
+        "summon_id": 2,
+        "name": "그래비티"
+      },
+      "38": {
+        "summon_id": 3,
+        "name": "쇼커"
+      },
+      "75": {
+        "summon_id": 4,
+        "name": "세이프가드"
+      }
+    },
+    "verification_checks": {
+      "group_64_only_has_signed_neg": true,
+      "group_38_highest_count_among_non_reflect_groups": true,
+      "group_38_summon_has_max_aura_cost": true,
+      "group_64_summon_has_reflect_skill": true,
+      "all_5_ranged_status_skills_match_r86_r87": true
+    },
+    "all_checks_pass": true
+  },
   "summon_dialogue_xref": {
     "corpus_meta": {
       "files_scanned": 252,
