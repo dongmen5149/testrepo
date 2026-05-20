@@ -488,6 +488,43 @@ class Hero3CatalogLoaderTest {
         assertTrue(hits.all { it.skill.name.contains("섬광") })
     }
 
+    // ─── R90: engine ↔ catalog skill bridge ────────────────────────────────
+
+    @Test
+    fun r90_skill_index_bridges_engine_rapidfire_to_catalog() {
+        // R89 finding: engine "연사" (ritz_rapidfire) ↔ catalog 정확 매칭 (≥1 hit).
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        val hits = idx.lookupByName("연사")
+        assertTrue(hits.isNotEmpty())
+        // 매칭된 entry 의 effectV2 가 살아있으면 effectSummary 가 rank= 로 시작.
+        val withEffect = hits.firstOrNull { it.skill.effectV2 != null }
+        if (withEffect != null) {
+            val summary = idx.effectSummary(withEffect.skill)
+            assertNotNull(summary)
+            assertTrue(summary!!.startsWith("rank="))
+        }
+    }
+
+    @Test
+    fun r90_skill_index_lookupByName_returns_empty_for_unknown_engine_skill() {
+        // bespoke engine 스킬 ("강타" 등) 은 catalog 에 명시적 매칭이 없을 수 있다.
+        // 매칭이 없어도 (no catalog match) 동작 — empty list 만 보장.
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        val hits = idx.lookupByName("__no_such_skill_zzz__")
+        assertTrue(hits.isEmpty())
+    }
+
+    @Test
+    fun r90_quest_registry_has_catalogKey_slot_defaulting_to_null() {
+        // R90 §1.4: Quest data class 에 catalogKey: String? = null 슬롯 추가.
+        // 4 bespoke 엔트리는 모두 null 그대로.
+        val all = com.hero3.remake.engine.QuestRegistry.all
+        assertEquals(4, all.size)
+        assertTrue(all.all { it.catalogKey == null })
+    }
+
     @Test
     fun r89_skill_index_effectSummary_handles_null_and_empty() {
         val catalog = Hero3CatalogLoader.load(reader())

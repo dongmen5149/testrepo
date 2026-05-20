@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.hero3.remake.MainActivity
 import com.hero3.remake.R
+import com.hero3.remake.catalog.Hero3CatalogProvider
+import com.hero3.remake.catalog.Hero3CatalogSkillIndex
 import com.hero3.remake.engine.CharacterRegistry
 import com.hero3.remake.engine.GameState
 import com.hero3.remake.engine.InputController
@@ -33,6 +35,11 @@ class SkillScene(
     private val bg = Paint().apply { color = Color.rgb(15, 18, 30) }
     private val unlocked = Paint(UiKit.body).apply { color = Color.rgb(255, 240, 180) }
     private val locked   = Paint(UiKit.body).apply { color = Color.rgb(100, 100, 110) }
+    private val catalogMatch = Paint(UiKit.muted).apply { color = Color.rgb(140, 220, 255) }
+    private val catalogMiss  = Paint(UiKit.muted).apply { color = Color.rgb(110, 110, 130) }
+
+    private val catalogSkillIndex: Hero3CatalogSkillIndex? =
+        Hero3CatalogProvider.get()?.let { Hero3CatalogSkillIndex.build(it) }
 
     override fun update(deltaMs: Long) {
         if (input.pressedOnce(InputController.K_SOFT2) ||
@@ -48,6 +55,21 @@ class SkillScene(
             if (input.pressedOnce(InputController.K_UP))   skillIdx = (skillIdx - 1 + all.size) % all.size
             if (input.pressedOnce(InputController.K_DOWN)) skillIdx = (skillIdx + 1) % all.size
         }
+    }
+
+    /**
+     * R90: engine skill 의 한국어 이름으로 catalog skill 을 fuzzy 매칭해 effectSummary 노출.
+     * - catalog 미설치 → "(catalog n/a)"
+     * - 매칭 없음 → "(no catalog match)"
+     * - 매칭 여러개 → rank 가 가장 높은 1개 (effectV2 가 없으면 0 으로 취급, tie 면 첫 hit).
+     */
+    private fun catalogLine(nameKo: String): Pair<String, Paint> {
+        val idx = catalogSkillIndex ?: return "(catalog n/a)" to catalogMiss
+        val hits = idx.lookupByName(nameKo)
+        if (hits.isEmpty()) return "(no catalog match)" to catalogMiss
+        val best = hits.maxByOrNull { it.skill.effectV2?.rank ?: 0 } ?: hits[0]
+        val summary = idx.effectSummary(best.skill) ?: "(no effectV2)"
+        return "${best.weapon}: $summary" to catalogMatch
     }
 
     private fun currentAll() = party.getOrNull(memberIdx)?.let { ch ->
@@ -85,9 +107,9 @@ class SkillScene(
 
         val sel = skills.getOrNull(skillIdx)
         if (sel != null) {
-            UiKit.drawBox(canvas, 8f, virtualHeight - 70f, virtualWidth - 16f, 40f)
+            UiKit.drawBox(canvas, 8f, virtualHeight - 84f, virtualWidth - 16f, 54f)
             val name = if (isEn) sel.nameEn else sel.nameKo
-            canvas.drawText(name, 14f, virtualHeight - 54f, UiKit.body)
+            canvas.drawText(name, 14f, virtualHeight - 68f, UiKit.body)
             val mulText = if (sel.heal) {
                 val parts = mutableListOf<String>()
                 if (sel.powerMul > 0f) parts += if (isEn) "INT×${sel.powerMul}" else "INT×${sel.powerMul}"
@@ -99,7 +121,11 @@ class SkillScene(
                 if (sel.flatBonus > 0) parts += "+${sel.flatBonus}"
                 "DMG: " + parts.joinToString(" ")
             }
-            canvas.drawText(mulText, 14f, virtualHeight - 40f, UiKit.muted)
+            canvas.drawText(mulText, 14f, virtualHeight - 54f, UiKit.muted)
+
+            // R90: catalog effectSummary fuzzy bridge (engine nameKo → catalog skill).
+            val (text, paint) = catalogLine(sel.nameKo)
+            canvas.drawText(text, 14f, virtualHeight - 40f, paint)
         }
 
         val nav = if (party.size > 1) "◀▶ ${memberIdx + 1}/${party.size}  " else ""

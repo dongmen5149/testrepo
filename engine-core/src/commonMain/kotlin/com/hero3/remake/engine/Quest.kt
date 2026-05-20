@@ -25,6 +25,12 @@ data class Quest(
     val rewardItemId: String? = null,
     /** 완료 시 자동 시작할 후속 퀘스트 id. */
     val followUpQuestId: String? = null,
+    /**
+     * R90: 향후 catalog quest 데이터 (115 entries across quest_00/01/10/11_dat)
+     * 와의 narrative 매핑을 위한 슬롯. null 이면 catalog 와 무관한 bespoke 퀘스트.
+     * 값은 [com.hero3.remake.catalog.Hero3CatalogQuestIndex.canonicalize] 형식.
+     */
+    val catalogKey: String? = null,
 )
 
 object QuestRegistry {
