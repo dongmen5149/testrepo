@@ -1,0 +1,1456 @@
+{
+  "round": 101,
+  "r95_followup": "32B stat block + variable description 형태 schema 확정",
+  "r69_correction": "R69 catalog 가 4 class × 10 = 40 skill 으로 보고했으나 실제 64 skill 발견",
+  "entry_layout": "[size:1B][00][nlen:1B][name:EUC-KR][stat_block:32B][desc_len:1B][desc:1B=\"{\" + EUC-KR text]",
+  "validation": "body[32] == len(body) - 32 로 entry 경계 자가검증",
+  "total_skills": 64,
+  "alt_form_count": 24,
+  "class_files": {
+    "_H_S000": {
+      "role": "티르 양손검 (base)",
+      "entry_count": 16,
+      "alt_form_count": 6,
+      "entries": [
+        {
+          "offset": 0,
+          "name_raw": "대검공격= ",
+          "name_clean": "대검공격",
+          "is_alt_form": false,
+          "size_field": 67,
+          "body_size": 55,
+          "stat_block_hex": "00ffff000005080000000000000100003c640004000000000000000000000000",
+          "stat_byte_0_mp_cost": 0,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 0,
+          "stat_byte_16_17": [
+            60,
+            100
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{양손검의;기본 콤보공�"
+        },
+        {
+          "offset": 69,
+          "name_raw": "반동의영검= ",
+          "name_clean": "반동의영검",
+          "is_alt_form": false,
+          "size_field": 85,
+          "body_size": 71,
+          "stat_block_hex": "040aff2c01003c0003000000000078003396000f430500010000000000000000",
+          "stat_byte_0_mp_cost": 4,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            51,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{연타로 추가타;가능한 띄우기;공격 }SP3"
+        },
+        {
+          "offset": 156,
+          "name_raw": "기절의검= ",
+          "name_clean": "기절의검",
+          "is_alt_form": false,
+          "size_field": 75,
+          "body_size": 63,
+          "stat_block_hex": "13ffff000005500003000000000178003396000f4c0a00010000000000000000",
+          "stat_byte_0_mp_cost": 19,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            51,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{적을 공격하여;높은 확률로;스�"
+        },
+        {
+          "offset": 233,
+          "name_raw": "유린의검= ",
+          "name_clean": "유린의검",
+          "is_alt_form": false,
+          "size_field": 71,
+          "body_size": 59,
+          "stat_block_hex": "17ffff00000550000300000000017800338c000e000000000000000000000000",
+          "stat_byte_0_mp_cost": 23,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            51,
+            140
+          ],
+          "stat_byte_18_19": [
+            0,
+            14
+          ],
+          "desc_text": "{빠른 공격 후;후방으로 회�"
+        },
+        {
+          "offset": 306,
+          "name_raw": "찰라의영검= ",
+          "name_clean": "찰라의영검",
+          "is_alt_form": false,
+          "size_field": 83,
+          "body_size": 69,
+          "stat_block_hex": "0701ff0000002c01040000000a017800372c011e000000000000000000000000",
+          "stat_byte_0_mp_cost": 7,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 4,
+          "stat_byte_16_17": [
+            55,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            30
+          ],
+          "desc_text": "{입력지속으로;}SP를 모아{;강력한 일�"
+        },
+        {
+          "offset": 391,
+          "name_raw": "철의주먹= ",
+          "name_clean": "철의주먹",
+          "is_alt_form": false,
+          "size_field": 67,
+          "body_size": 55,
+          "stat_block_hex": "05ffff000019180005000001000000003678000c000000000000000000000000",
+          "stat_byte_0_mp_cost": 5,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 25,
+          "stat_byte_8_skill_level_req": 5,
+          "stat_byte_16_17": [
+            54,
+            120
+          ],
+          "stat_byte_18_19": [
+            0,
+            12
+          ],
+          "desc_text": "{암즈로 2콤보;직접 타�"
+        },
+        {
+          "offset": 460,
+          "name_raw": "= 회전의영검",
+          "name_clean": "회전의영검",
+          "is_alt_form": true,
+          "size_field": 83,
+          "body_size": 69,
+          "stat_block_hex": "0d04082c01003c0005000002000100003396000f000000000000000000000000",
+          "stat_byte_0_mp_cost": 13,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 5,
+          "stat_byte_16_17": [
+            51,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{연타로 추가타;가능한 범위;공격 }SP3"
+        },
+        {
+          "offset": 545,
+          "name_raw": "= 관통의영검",
+          "name_clean": "관통의영검",
+          "is_alt_form": true,
+          "size_field": 73,
+          "body_size": 59,
+          "stat_block_hex": "1d030b2c01003c00050004020001780033aa0011441e00030000000000000000",
+          "stat_byte_0_mp_cost": 29,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 5,
+          "stat_byte_16_17": [
+            51,
+            170
+          ],
+          "stat_byte_18_19": [
+            0,
+            17
+          ],
+          "desc_text": "{추가타 가능한;돌격기 }SP3"
+        },
+        {
+          "offset": 620,
+          "name_raw": "= 격노",
+          "name_clean": "격노",
+          "is_alt_form": true,
+          "size_field": 66,
+          "body_size": 58,
+          "stat_block_hex": "0b05ff0000002c0105020000000000003f96000f090a00050000000000000000",
+          "stat_byte_0_mp_cost": 11,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 5,
+          "stat_byte_16_17": [
+            63,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{짧은시간동안;SP 자동 생�"
+        },
+        {
+          "offset": 688,
+          "name_raw": "= 금강귀",
+          "name_clean": "금강귀",
+          "is_alt_form": true,
+          "size_field": 84,
+          "body_size": 74,
+          "stat_block_hex": "1b0fff000000f000060200000000000047010001000000000000000000000000",
+          "stat_byte_0_mp_cost": 27,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            71,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{모아둔 }SP를;전부 소모{하여;방어력 극대�"
+        },
+        {
+          "offset": 774,
+          "name_raw": "약화의검= ",
+          "name_clean": "약화의검",
+          "is_alt_form": false,
+          "size_field": 77,
+          "body_size": 65,
+          "stat_block_hex": "01ffff00001450000700000000000000338c00064064000a10d8fffd00000000",
+          "stat_byte_0_mp_cost": 1,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 20,
+          "stat_byte_8_skill_level_req": 7,
+          "stat_byte_16_17": [
+            51,
+            140
+          ],
+          "stat_byte_18_19": [
+            0,
+            6
+          ],
+          "desc_text": "{강한 일격으로;적의 방어도를;감�"
+        },
+        {
+          "offset": 853,
+          "name_raw": "압도의검= ",
+          "name_clean": "압도의검",
+          "is_alt_form": false,
+          "size_field": 74,
+          "body_size": 62,
+          "stat_block_hex": "1602ff00001450000700000000000000337800064064000a4b01000145010001",
+          "stat_byte_0_mp_cost": 22,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 20,
+          "stat_byte_8_skill_level_req": 7,
+          "stat_byte_16_17": [
+            51,
+            120
+          ],
+          "stat_byte_18_19": [
+            0,
+            6
+          ],
+          "desc_text": "{적을 위축시켜;둔화시키는;공�"
+        },
+        {
+          "offset": 929,
+          "name_raw": "= |강타연마",
+          "name_clean": "|강타연마",
+          "is_alt_form": true,
+          "size_field": 71,
+          "body_size": 58,
+          "stat_block_hex": "0900ff00000000000b0200000000000016040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 9,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            22,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{크리티컬 확률;증가 패시�"
+        },
+        {
+          "offset": 1002,
+          "name_raw": "|철벽방어= ",
+          "name_clean": "|철벽방어",
+          "is_alt_form": false,
+          "size_field": 69,
+          "body_size": 56,
+          "stat_block_hex": "0fffff00000000000b0200000000000015040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 15,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            21,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{블록 성공률;증가 패시�"
+        },
+        {
+          "offset": 1073,
+          "name_raw": "|분노축적= ",
+          "name_clean": "|분노축적",
+          "is_alt_form": false,
+          "size_field": 71,
+          "body_size": 58,
+          "stat_block_hex": "120dff00000000000b020000000000001f040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 18,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            31,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{블록시 SP축적;증가 패시�"
+        },
+        {
+          "offset": 1146,
+          "name_raw": "= |체질개선",
+          "name_clean": "|체질개선",
+          "is_alt_form": true,
+          "size_field": 83,
+          "body_size": 70,
+          "stat_block_hex": "180eff00000000000b020000000000001e040004500a00040000000000000000",
+          "stat_byte_0_mp_cost": 24,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            30,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{마법 저항과;물약의 회복량;증가 패시�"
+        }
+      ]
+    },
+    "_H_S001": {
+      "role": "루레인 사격 (shooter)",
+      "entry_count": 16,
+      "alt_form_count": 6,
+      "entries": [
+        {
+          "offset": 0,
+          "name_raw": "사격= ",
+          "name_clean": "사격",
+          "is_alt_form": false,
+          "size_field": 59,
+          "body_size": 51,
+          "stat_block_hex": "00ffff00000508000000020000000000345a0002000000000000000000000000",
+          "stat_byte_0_mp_cost": 0,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 0,
+          "stat_byte_16_17": [
+            52,
+            90
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{더블건의;기본 공�"
+        },
+        {
+          "offset": 61,
+          "name_raw": "산탄사격= ",
+          "name_clean": "산탄사격",
+          "is_alt_form": false,
+          "size_field": 70,
+          "body_size": 58,
+          "stat_block_hex": "0fffff000005100003040d0000010000346e000b000000000000000000000000",
+          "stat_byte_0_mp_cost": 15,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            52,
+            110
+          ],
+          "stat_byte_18_19": [
+            0,
+            11
+          ],
+          "desc_text": "{전방을 향해;넓은 영역사�"
+        },
+        {
+          "offset": 133,
+          "name_raw": "동시사격= ",
+          "name_clean": "동시사격",
+          "is_alt_form": false,
+          "size_field": 73,
+          "body_size": 61,
+          "stat_block_hex": "01ffff000005100003000300000078003496000f000000000000000000000000",
+          "stat_byte_0_mp_cost": 1,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            52,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{더블건을 모아;더 강력한 사�"
+        },
+        {
+          "offset": 208,
+          "name_raw": "급소사격= ",
+          "name_clean": "급소사격",
+          "is_alt_form": false,
+          "size_field": 70,
+          "body_size": 58,
+          "stat_block_hex": "0402ff0000055000030002000000780034aa00114b0100015801000100000000",
+          "stat_byte_0_mp_cost": 4,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 5,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            52,
+            170
+          ],
+          "stat_byte_18_19": [
+            0,
+            17
+          ],
+          "desc_text": "{치명상을 입혀;출혈을 유�"
+        },
+        {
+          "offset": 280,
+          "name_raw": "크리티컬샷= ",
+          "name_clean": "크리티컬샷",
+          "is_alt_form": false,
+          "size_field": 77,
+          "body_size": 63,
+          "stat_block_hex": "1201ffc8000064000304010000017800220000004c0500010000000000000000",
+          "stat_byte_0_mp_cost": 18,
+          "stat_damage_le16": 200,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            34,
+            0
+          ],
+          "stat_byte_18_19": [
+            0,
+            0
+          ],
+          "desc_text": "{암즈사격으로;스턴을 유도;}SP2"
+        },
+        {
+          "offset": 359,
+          "name_raw": "에이밍샷= ",
+          "name_clean": "에이밍샷",
+          "is_alt_form": false,
+          "size_field": 74,
+          "body_size": 62,
+          "stat_block_hex": "0600ff2c0100640003000200000078003404011a000000000000000000000000",
+          "stat_byte_0_mp_cost": 6,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            52,
+            4
+          ],
+          "stat_byte_18_19": [
+            1,
+            26
+          ],
+          "desc_text": "{정확히 조준해;필살 공격;}SP3"
+        },
+        {
+          "offset": 435,
+          "name_raw": "암즈트랩= ",
+          "name_clean": "암즈트랩",
+          "is_alt_form": false,
+          "size_field": 76,
+          "body_size": 64,
+          "stat_block_hex": "16ffffc80000280003040600000100002396000f000000000000000000000000",
+          "stat_byte_0_mp_cost": 22,
+          "stat_damage_le16": 200,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            35,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            15
+          ],
+          "desc_text": "{암즈 탄환으로;폭탄을 설치;}SP2"
+        },
+        {
+          "offset": 513,
+          "name_raw": "= 더블암즈샷",
+          "name_clean": "더블암즈샷",
+          "is_alt_form": true,
+          "size_field": 76,
+          "body_size": 62,
+          "stat_block_hex": "1906ffc8000064000304070000017800220000002464000a0000000000000000",
+          "stat_byte_0_mp_cost": 25,
+          "stat_damage_le16": 200,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            34,
+            0
+          ],
+          "stat_byte_18_19": [
+            0,
+            0
+          ],
+          "desc_text": "{암즈 탄을 2개;연속 사격;}SP2"
+        },
+        {
+          "offset": 591,
+          "name_raw": "= 차징암즈샷",
+          "name_clean": "차징암즈샷",
+          "is_alt_form": true,
+          "size_field": 71,
+          "body_size": 57,
+          "stat_block_hex": "1d070e0000002c01040008000001780038fa0019000000000000000000000000",
+          "stat_byte_0_mp_cost": 29,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 4,
+          "stat_byte_16_17": [
+            56,
+            250
+          ],
+          "stat_byte_18_19": [
+            0,
+            25
+          ],
+          "desc_text": "}SP를 모아{;필살 암즈사�"
+        },
+        {
+          "offset": 664,
+          "name_raw": "= 은신",
+          "name_clean": "은신",
+          "is_alt_form": true,
+          "size_field": 62,
+          "body_size": 54,
+          "stat_block_hex": "0b0cff0000005802060200000000000048010001000000000000000000000000",
+          "stat_byte_0_mp_cost": 11,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            72,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{몸을 숨긴채;이동 가�"
+        },
+        {
+          "offset": 728,
+          "name_raw": "= 광폭",
+          "name_clean": "광폭",
+          "is_alt_form": true,
+          "size_field": 84,
+          "body_size": 76,
+          "stat_block_hex": "0c050f0000002c010600000000000000490100011b6400000e00000a00000000",
+          "stat_byte_0_mp_cost": 12,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            73,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{모아둔 SP를;}전부 소모{하여;사격속도 극대�"
+        },
+        {
+          "offset": 814,
+          "name_raw": "= 지축",
+          "name_clean": "지축",
+          "is_alt_form": true,
+          "size_field": 79,
+          "body_size": 71,
+          "stat_block_hex": "1b04ff0000002c0106020000000000004a0000000f0800080000000000000000",
+          "stat_byte_0_mp_cost": 27,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            74,
+            0
+          ],
+          "stat_byte_18_19": [
+            0,
+            0
+          ],
+          "desc_text": "{하체 고정으로;암즈사격의;공격력 극대�"
+        },
+        {
+          "offset": 895,
+          "name_raw": "|회피증가= ",
+          "name_clean": "|회피증가",
+          "is_alt_form": false,
+          "size_field": 67,
+          "body_size": 54,
+          "stat_block_hex": "05ffff00000000000b0200000000000013040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 5,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            19,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{회피 능력;증가 패시�"
+        },
+        {
+          "offset": 964,
+          "name_raw": "|암즈강화= ",
+          "name_clean": "|암즈강화",
+          "is_alt_form": false,
+          "size_field": 69,
+          "body_size": 56,
+          "stat_block_hex": "14ffff00000000000b020000000000000f040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 20,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            15,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{암즈 공격력;증가 패시�"
+        },
+        {
+          "offset": 1035,
+          "name_raw": "|속사= ",
+          "name_clean": "|속사",
+          "is_alt_form": false,
+          "size_field": 65,
+          "body_size": 56,
+          "stat_block_hex": "170dff00000000000b020000000000001b040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 23,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            27,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{스킬 쿨타임;단축 패시�"
+        },
+        {
+          "offset": 1102,
+          "name_raw": "= |집중력",
+          "name_clean": "|집중력",
+          "is_alt_form": true,
+          "size_field": 69,
+          "body_size": 58,
+          "stat_block_hex": "0a03ff00000000000b020000000000000e040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 10,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            14,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{원거리 공격력;증가 패시�"
+        }
+      ]
+    },
+    "_H_S002": {
+      "role": "티르 마검 (mage-sword)",
+      "entry_count": 16,
+      "alt_form_count": 6,
+      "entries": [
+        {
+          "offset": 0,
+          "name_raw": "대검공격= ",
+          "name_clean": "대검공격",
+          "is_alt_form": false,
+          "size_field": 67,
+          "body_size": 55,
+          "stat_block_hex": "00ffff000000080000000000000100003c640004000000000000000000000000",
+          "stat_byte_0_mp_cost": 0,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 0,
+          "stat_byte_16_17": [
+            60,
+            100
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{양손검의;기본 콤보공�"
+        },
+        {
+          "offset": 69,
+          "name_raw": "마검공격= ",
+          "name_clean": "마검공격",
+          "is_alt_form": false,
+          "size_field": 70,
+          "body_size": 58,
+          "stat_block_hex": "02ffff3c0000100000000000000100003c780005000000000000000000000000",
+          "stat_byte_0_mp_cost": 2,
+          "stat_damage_le16": 60,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 0,
+          "stat_byte_16_17": [
+            60,
+            120
+          ],
+          "stat_byte_18_19": [
+            0,
+            5
+          ],
+          "desc_text": "{마나를 담아;콤보공격 }SP"
+        },
+        {
+          "offset": 141,
+          "name_raw": "= 양단",
+          "name_clean": "양단",
+          "is_alt_form": true,
+          "size_field": 69,
+          "body_size": 61,
+          "stat_block_hex": "0a07ff5a0000200003000000000178003964000a000000000000000000000000",
+          "stat_byte_0_mp_cost": 10,
+          "stat_damage_le16": 90,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            57,
+            100
+          ],
+          "stat_byte_18_19": [
+            0,
+            10
+          ],
+          "desc_text": "{화염의 검으로;일도 양단;}SP"
+        },
+        {
+          "offset": 212,
+          "name_raw": "= 관통",
+          "name_clean": "관통",
+          "is_alt_form": true,
+          "size_field": 68,
+          "body_size": 60,
+          "stat_block_hex": "0b08ff5a0000200003000000000178003adc0016000000000000000000000000",
+          "stat_byte_0_mp_cost": 11,
+          "stat_damage_le16": 90,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            58,
+            220
+          ],
+          "stat_byte_18_19": [
+            0,
+            22
+          ],
+          "desc_text": "{빙결의 검으로;돌격공격 }SP"
+        },
+        {
+          "offset": 282,
+          "name_raw": "= 소울웨이브",
+          "name_clean": "소울웨이브",
+          "is_alt_form": true,
+          "size_field": 84,
+          "body_size": 70,
+          "stat_block_hex": "0d02032c010080000a000e00000178003bc80014000000000000000000000000",
+          "stat_byte_0_mp_cost": 13,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 10,
+          "stat_byte_16_17": [
+            59,
+            200
+          ],
+          "stat_byte_18_19": [
+            0,
+            20
+          ],
+          "desc_text": "{소환된 환수와;융합하여;필살공격 }SP3"
+        },
+        {
+          "offset": 368,
+          "name_raw": "텔레포트소드= ",
+          "name_clean": "텔레포트소드",
+          "is_alt_form": false,
+          "size_field": 73,
+          "body_size": 57,
+          "stat_block_hex": "17ffffb40000400003000a000000780033f000184c0a00010000000000000000",
+          "stat_byte_0_mp_cost": 23,
+          "stat_damage_le16": 180,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            51,
+            240
+          ],
+          "stat_byte_18_19": [
+            0,
+            24
+          ],
+          "desc_text": "{추적 텔레포트;공격 }SP1"
+        },
+        {
+          "offset": 443,
+          "name_raw": "= 절륜",
+          "name_clean": "절륜",
+          "is_alt_form": true,
+          "size_field": 68,
+          "body_size": 60,
+          "stat_block_hex": "1d05ffb40000400003000000000078003318011c450100010000000000000000",
+          "stat_byte_0_mp_cost": 29,
+          "stat_damage_le16": 180,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            51,
+            24
+          ],
+          "stat_byte_18_19": [
+            1,
+            28
+          ],
+          "desc_text": "{대지를 흔들어;범위공격}SP1"
+        },
+        {
+          "offset": 513,
+          "name_raw": "프레임인첸트= ",
+          "name_clean": "프레임인첸트",
+          "is_alt_form": false,
+          "size_field": 68,
+          "body_size": 52,
+          "stat_block_hex": "0401ff780000100006020000000000003f2c010f4e0100010000000000000000",
+          "stat_byte_0_mp_cost": 4,
+          "stat_damage_le16": 120,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{화염검을 발동;}SP1"
+        },
+        {
+          "offset": 583,
+          "name_raw": "아이스인첸트= ",
+          "name_clean": "아이스인첸트",
+          "is_alt_form": false,
+          "size_field": 68,
+          "body_size": 52,
+          "stat_block_hex": "0501ff780000100006020000000000003f2c010f4f0100010000000000000000",
+          "stat_byte_0_mp_cost": 5,
+          "stat_damage_le16": 120,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{빙결검을 발동;}SP1"
+        },
+        {
+          "offset": 653,
+          "name_raw": "기합= ",
+          "name_clean": "기합",
+          "is_alt_form": false,
+          "size_field": 71,
+          "body_size": 63,
+          "stat_block_hex": "12ffff5a0000100006010000000000003f2c010f040200020902000200000000",
+          "stat_byte_0_mp_cost": 18,
+          "stat_damage_le16": 90,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{HP와 SP회복;일정시간 증가;}SP"
+        },
+        {
+          "offset": 726,
+          "name_raw": "= 헤이스트",
+          "name_clean": "헤이스트",
+          "is_alt_form": true,
+          "size_field": 80,
+          "body_size": 68,
+          "stat_block_hex": "1809ff5a0000100006010000000000003f2c010f070100011b01000100000000",
+          "stat_byte_0_mp_cost": 24,
+          "stat_damage_le16": 90,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{스킬 쿨타임과;SP의 소모량;감소 }SP"
+        },
+        {
+          "offset": 808,
+          "name_raw": "= 환수 합신",
+          "name_clean": "환수 합신",
+          "is_alt_form": true,
+          "size_field": 83,
+          "body_size": 70,
+          "stat_block_hex": "1b0a0f2c0100c00006020000000000003f2c010f0c0a0002100a0002110a0002",
+          "stat_byte_0_mp_cost": 27,
+          "stat_damage_le16": 300,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 6,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{소환된 환수와;융합하여;육체강화 }SP3"
+        },
+        {
+          "offset": 893,
+          "name_raw": "|적마안= ",
+          "name_clean": "|적마안",
+          "is_alt_form": false,
+          "size_field": 69,
+          "body_size": 58,
+          "stat_block_hex": "0600ff00000000000b0200000000000017020002000000000000000000000000",
+          "stat_byte_0_mp_cost": 6,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            23,
+            2
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{크리티컬 위력;증가 패시�"
+        },
+        {
+          "offset": 964,
+          "name_raw": "|야성= ",
+          "name_clean": "|야성",
+          "is_alt_form": false,
+          "size_field": 65,
+          "body_size": 56,
+          "stat_block_hex": "10ffff00000000000b0200000000000002020002040100010000000000000000",
+          "stat_byte_0_mp_cost": 16,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            2,
+            2
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{HP와 회복력;증가 패시�"
+        },
+        {
+          "offset": 1031,
+          "name_raw": "|동체시력= ",
+          "name_clean": "|동체시력",
+          "is_alt_form": false,
+          "size_field": 67,
+          "body_size": 54,
+          "stat_block_hex": "130dff00000000000b0200000000000013030003000000000000000000000000",
+          "stat_byte_0_mp_cost": 19,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            19,
+            3
+          ],
+          "stat_byte_18_19": [
+            0,
+            3
+          ],
+          "desc_text": "{회피 능력;증가 패시�"
+        },
+        {
+          "offset": 1100,
+          "name_raw": "|치명타회피= ",
+          "name_clean": "|치명타회피",
+          "is_alt_form": false,
+          "size_field": 82,
+          "body_size": 67,
+          "stat_block_hex": "160eff00000000000b0200000000000018040004000000000000000000000000",
+          "stat_byte_0_mp_cost": 22,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            24,
+            4
+          ],
+          "stat_byte_18_19": [
+            0,
+            4
+          ],
+          "desc_text": "{크리티컬로;피격될 확률;감소 패시�"
+        }
+      ]
+    },
+    "_H_S003": {
+      "role": "루레인 단도+마법 (소환사)",
+      "entry_count": 16,
+      "alt_form_count": 6,
+      "entries": [
+        {
+          "offset": 0,
+          "name_raw": "빙결의단도= ",
+          "name_clean": "빙결의단도",
+          "is_alt_form": false,
+          "size_field": 74,
+          "body_size": 60,
+          "stat_block_hex": "00ffff140000080000000f000000000035640003000000000000000000000000",
+          "stat_byte_0_mp_cost": 0,
+          "stat_damage_le16": 20,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 0,
+          "stat_byte_16_17": [
+            53,
+            100
+          ],
+          "stat_byte_18_19": [
+            0,
+            3
+          ],
+          "desc_text": "{전방으로;얼음화살 발사;}SP"
+        },
+        {
+          "offset": 76,
+          "name_raw": "정화의구= ",
+          "name_clean": "정화의구",
+          "is_alt_form": false,
+          "size_field": 70,
+          "body_size": 58,
+          "stat_block_hex": "02ffff1e000010000300000000000000358c0005000000000000000000000000",
+          "stat_byte_0_mp_cost": 2,
+          "stat_damage_le16": 30,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            53,
+            140
+          ],
+          "stat_byte_18_19": [
+            0,
+            5
+          ],
+          "desc_text": "{화염 폭발로;범위공격 }SP"
+        },
+        {
+          "offset": 148,
+          "name_raw": "암흑= ",
+          "name_clean": "암흑",
+          "is_alt_form": false,
+          "size_field": 71,
+          "body_size": 63,
+          "stat_block_hex": "0fffff1e0000100003000f000001780035960006000000000000000000000000",
+          "stat_byte_0_mp_cost": 15,
+          "stat_damage_le16": 30,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            53,
+            150
+          ],
+          "stat_byte_18_19": [
+            0,
+            6
+          ],
+          "desc_text": "{암흑의 구를;전방으로 발사;}SP"
+        },
+        {
+          "offset": 221,
+          "name_raw": "빙결의검= ",
+          "name_clean": "빙결의검",
+          "is_alt_form": false,
+          "size_field": 73,
+          "body_size": 61,
+          "stat_block_hex": "0600ffa000004800030000000000780035be00134f0100010000000000000000",
+          "stat_byte_0_mp_cost": 6,
+          "stat_damage_le16": 160,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            53,
+            190
+          ],
+          "stat_byte_18_19": [
+            0,
+            19
+          ],
+          "desc_text": "{얼음 송곳으로;전방공격;}SP1"
+        },
+        {
+          "offset": 296,
+          "name_raw": "정화의장벽= ",
+          "name_clean": "정화의장벽",
+          "is_alt_form": false,
+          "size_field": 71,
+          "body_size": 57,
+          "stat_block_hex": "0801ffa00000480003040000000078002c010001355000084e01000100000000",
+          "stat_byte_0_mp_cost": 8,
+          "stat_damage_le16": 160,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            44,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{화염의 영역을;생성 }SP1"
+        },
+        {
+          "offset": 369,
+          "name_raw": "= 빙결의대지",
+          "name_clean": "빙결의대지",
+          "is_alt_form": true,
+          "size_field": 78,
+          "body_size": 64,
+          "stat_block_hex": "0c030f400100900003000000000078002c0100012e0100010000000000000000",
+          "stat_byte_0_mp_cost": 12,
+          "stat_damage_le16": 320,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            44,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{얼음 송곳을;연속하여 소환;}SP3"
+        },
+        {
+          "offset": 449,
+          "name_raw": "= 정화의심판",
+          "name_clean": "정화의심판",
+          "is_alt_form": true,
+          "size_field": 73,
+          "body_size": 59,
+          "stat_block_hex": "0e040f4001009000030000000000780035f000184e0100010000000000000000",
+          "stat_byte_0_mp_cost": 14,
+          "stat_damage_le16": 320,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 3,
+          "stat_byte_16_17": [
+            53,
+            240
+          ],
+          "stat_byte_18_19": [
+            0,
+            24
+          ],
+          "desc_text": "{넓은 범위에;화염낙하 }SP3"
+        },
+        {
+          "offset": 524,
+          "name_raw": "쇠약의저주= ",
+          "name_clean": "쇠약의저주",
+          "is_alt_form": false,
+          "size_field": 70,
+          "body_size": 56,
+          "stat_block_hex": "11ffff500000100007000b0000000000403200050cfcfffc0efcfffc0ffcfffc",
+          "stat_byte_0_mp_cost": 17,
+          "stat_damage_le16": 80,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 7,
+          "stat_byte_16_17": [
+            64,
+            50
+          ],
+          "stat_byte_18_19": [
+            0,
+            5
+          ],
+          "desc_text": "{적의 공격력을;감소 }SP"
+        },
+        {
+          "offset": 596,
+          "name_raw": "= 반사의저주",
+          "name_clean": "반사의저주",
+          "is_alt_form": true,
+          "size_field": 72,
+          "body_size": 58,
+          "stat_block_hex": "1a0dff500000100007000c00000000004d010001000000000000000000000000",
+          "stat_byte_0_mp_cost": 26,
+          "stat_damage_le16": 80,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 7,
+          "stat_byte_16_17": [
+            77,
+            1
+          ],
+          "stat_byte_18_19": [
+            0,
+            1
+          ],
+          "desc_text": "{적을 역대미지;상태로 }SP"
+        },
+        {
+          "offset": 670,
+          "name_raw": "환수흡수= ",
+          "name_clean": "환수흡수",
+          "is_alt_form": false,
+          "size_field": 76,
+          "body_size": 64,
+          "stat_block_hex": "1502ff000000c8000a020000000000002f280002000000000000000000000000",
+          "stat_byte_0_mp_cost": 21,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 10,
+          "stat_byte_16_17": [
+            47,
+            40
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{환수를 흡수해;HP와 SP 회복;}SP"
+        },
+        {
+          "offset": 748,
+          "name_raw": "= 환수특공",
+          "name_clean": "환수특공",
+          "is_alt_form": true,
+          "size_field": 81,
+          "body_size": 69,
+          "stat_block_hex": "1809ffd20000c8000a00000000000000303c0003000000000000000000000000",
+          "stat_byte_0_mp_cost": 24,
+          "stat_damage_le16": 210,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 10,
+          "stat_byte_16_17": [
+            48,
+            60
+          ],
+          "stat_byte_18_19": [
+            0,
+            3
+          ],
+          "desc_text": "{환수와 합신해;공격과 방어;강화 }SP2"
+        },
+        {
+          "offset": 831,
+          "name_raw": "= 환수증폭",
+          "name_clean": "환수증폭",
+          "is_alt_form": true,
+          "size_field": 86,
+          "body_size": 74,
+          "stat_block_hex": "1c0a0ed20000c8000a030000000000003f2c010f0f0500053105000200000000",
+          "stat_byte_0_mp_cost": 28,
+          "stat_damage_le16": 210,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 10,
+          "stat_byte_16_17": [
+            63,
+            44
+          ],
+          "stat_byte_18_19": [
+            1,
+            15
+          ],
+          "desc_text": "{환수와 합신해;쿨타임과 마법;적중증가}SP2"
+        },
+        {
+          "offset": 919,
+          "name_raw": "|마법강화= ",
+          "name_clean": "|마법강화",
+          "is_alt_form": false,
+          "size_field": 76,
+          "body_size": 63,
+          "stat_block_hex": "04ffff00000000000b0200000000000006020002080100010000000000000000",
+          "stat_byte_0_mp_cost": 4,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            6,
+            2
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{최대 SP와;SP회복량;증가 패시�"
+        },
+        {
+          "offset": 997,
+          "name_raw": "|저주강화= ",
+          "name_clean": "|저주강화",
+          "is_alt_form": false,
+          "size_field": 69,
+          "body_size": 56,
+          "stat_block_hex": "1407ff00000000000b0200000000000019030003000000000000000000000000",
+          "stat_byte_0_mp_cost": 20,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            25,
+            3
+          ],
+          "stat_byte_18_19": [
+            0,
+            3
+          ],
+          "desc_text": "{마법 적중률;증가 패시�"
+        },
+        {
+          "offset": 1068,
+          "name_raw": "|흡혈환수= ",
+          "name_clean": "|흡혈환수",
+          "is_alt_form": false,
+          "size_field": 82,
+          "body_size": 69,
+          "stat_block_hex": "13ffff00000000000b0200000000000031060003000000000000000000000000",
+          "stat_byte_0_mp_cost": 19,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            49,
+            6
+          ],
+          "stat_byte_18_19": [
+            0,
+            3
+          ],
+          "desc_text": "{사냥을 통해;환수의 HP SP;회복 패시�"
+        },
+        {
+          "offset": 1152,
+          "name_raw": "= |마법단련",
+          "name_clean": "|마법단련",
+          "is_alt_form": true,
+          "size_field": 80,
+          "body_size": 67,
+          "stat_block_hex": "0a0cff00000000000b02000000000000070200021b0100010000000000000000",
+          "stat_byte_0_mp_cost": 10,
+          "stat_damage_le16": 0,
+          "stat_byte_5_dmg_type": 0,
+          "stat_byte_8_skill_level_req": 11,
+          "stat_byte_16_17": [
+            7,
+            2
+          ],
+          "stat_byte_18_19": [
+            0,
+            2
+          ],
+          "desc_text": "{스킬 쿨타임과;SP소모량;감소 패시�"
+        }
+      ]
+    }
+  },
+  "stat_block_field_candidates": {
+    "byte_0": "MP cost (0-23 varies)",
+    "byte_1_2": "flags / 0xff marker",
+    "byte_3_4_LE16": "damage",
+    "byte_5": "damage type",
+    "byte_8": "skill level requirement (0/3/4/5)",
+    "byte_16_19": "speed/range/anim cluster",
+    "byte_20_31": "mostly zero (reserved)"
+  }
+}

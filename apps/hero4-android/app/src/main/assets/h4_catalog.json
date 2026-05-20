@@ -2916,6 +2916,44 @@
       "summon_tier_count": 15
     }
   },
+  "class_skill_schema": {
+    "r95_followup": "32B stat block + variable description 형태 schema 확정",
+    "r69_correction": "R69 catalog 가 4 class × 10 = 40 skill 으로 보고했으나 실제 64 skill 발견",
+    "entry_layout": "[size:1B][00][nlen:1B][name:EUC-KR][stat_block:32B][desc_len:1B][desc:1B=\"{\" + EUC-KR text]",
+    "total_skills": 64,
+    "alt_form_count": 24,
+    "class_files_meta": {
+      "_H_S000": {
+        "role": "티르 양손검 (base)",
+        "entry_count": 16,
+        "alt_form_count": 6
+      },
+      "_H_S001": {
+        "role": "루레인 사격 (shooter)",
+        "entry_count": 16,
+        "alt_form_count": 6
+      },
+      "_H_S002": {
+        "role": "티르 마검 (mage-sword)",
+        "entry_count": 16,
+        "alt_form_count": 6
+      },
+      "_H_S003": {
+        "role": "루레인 단도+마법 (소환사)",
+        "entry_count": 16,
+        "alt_form_count": 6
+      }
+    },
+    "stat_block_field_candidates": {
+      "byte_0": "MP cost (0-23 varies)",
+      "byte_1_2": "flags / 0xff marker",
+      "byte_3_4_LE16": "damage",
+      "byte_5": "damage type",
+      "byte_8": "skill level requirement (0/3/4/5)",
+      "byte_16_19": "speed/range/anim cluster",
+      "byte_20_31": "mostly zero (reserved)"
+    }
+  },
   "tier_bonus_semantics": {
     "r94_followup": {
       "tier_value_semantic": "진화포인트 소모량 (R99 tutorial: \"고레벨일수록 소모 포인트 증가\")",

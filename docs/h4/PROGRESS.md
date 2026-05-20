@@ -4,6 +4,20 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 101 (2026-05-20) — character class skill schema 확정 (R95 후속) ★
+
+> R95 미해결 character skill 구조 확정 + R69 catalog 누락 24 alt-form 발견. 상세: [round101-class-skill-schema.md](round101-class-skill-schema.md).
+>
+> Entry layout: `[size:1B][00][nlen:1B][name:EUC-KR][stat_block:32B][desc_len:1B][desc:1B='{'+EUC-KR]`. body[32] 자가검증으로 64/64 entries 모두 통과. 4 class (`_H_S000-_H_S003`) 각각 16 entries (10 primary + 6 alt-form) = **64 skill** (R69 의 40 → +24 alt-form 추가).
+>
+> Alt-form (`= 이름` prefix) 가설: R81 의 2 영웅 × 2 mode 구조와 부합. 각 class 6 alt-form = mode-2 alt skill 가능성. 32B stat block field 후보 식별 (byte[0] MP cost / byte[3-4] LE16 damage / byte[5] damage type / byte[8] skill level requirement). description 은 `{...}` + 일부는 `}SP[숫자]` suffix (SP 비용 표기).
+>
+> R95 가설 검증: ACTIVE_ATTACK template 미사용, 가변 길이 body, EUC-KR description suffix, 32B stat block + 1B desc_len header — 모두 확인.
+>
+> `parse_h4_class_skill_schema.py` 신규 + `h4_class_skill_schema.json` 46KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 100 (2026-05-20) — bonus_id=0 + tier_value semantic 확정 ★ **R100 마일스톤**
 
 > R94 마지막 ambiguity 해소. 상세: [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md).

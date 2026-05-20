@@ -301,6 +301,27 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Class skill schema (R101) — character S000-S003 32B stat block + desc
+    css_path = CONVERTED / 'h4_class_skill_schema.json'
+    if css_path.exists():
+        try:
+            css = json.loads(css_path.read_text(encoding='utf-8'))
+            catalog['class_skill_schema'] = {
+                'r95_followup': css['r95_followup'],
+                'r69_correction': css['r69_correction'],
+                'entry_layout': css['entry_layout'],
+                'total_skills': css['total_skills'],
+                'alt_form_count': css['alt_form_count'],
+                'class_files_meta': {
+                    fname: {'role': info['role'], 'entry_count': info['entry_count'], 'alt_form_count': info['alt_form_count']}
+                    for fname, info in css['class_files'].items()
+                },
+                'stat_block_field_candidates': css['stat_block_field_candidates'],
+            }
+            print(f'\nClass skill schema: 64 skills (R69:40 → R101:64, +24 alt-form) (R101)')
+        except Exception as e:
+            print(f'  WARN: failed to load class_skill_schema: {e}', file=sys.stderr)
+
     # Tier/bonus semantics (R100) — tier_value = 진화포인트 cost, bonus_id 의미 확정
     tbs_path = CONVERTED / 'h4_tier_bonus_semantics.json'
     if tbs_path.exists():

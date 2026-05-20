@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 100 마일스톤 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 101 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R100 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R101 은 각 round 문서.
 
-## 🏆 Round 76-R100 누적 (2026-05-19 ~ 2026-05-20, 25 라운드 연속 자동 분석) ★ R100 마일스톤
+## 🏆 Round 76-R101 누적 (2026-05-19 ~ 2026-05-20, 26 라운드 연속 자동 분석) ★ R100 마일스톤
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -32,19 +32,20 @@
 | R97 | drop_id 16/17/23 currency 가설 검증 — 16=`_ITM_CASH_RANOMBOX` 확정, 23=`_ITM_REPAY_2` 확정, 17 ambiguous | [round97-drop-id-currency.md](round97-drop-id-currency.md) |
 | R98 | 죽음의 구 72B = time-limited boss 확정 — pos[63-64] LE16 countdown timer 600/480/360 (10/8/6분 단조 감소) | [round98-death-sphere.md](round98-death-sphere.md) |
 | R99 | n0124_scn 환수 tutorial 전문 + R86-R88 catalog 1:1 매핑 | [round99-summon-tutorial.md](round99-summon-tutorial.md) |
-| **R100 ★** | **★ tier_value/bonus_id semantic 확정** — tier_value = 진화포인트 cost (8/8 arithmetic, step +5/+10/+15/+20 = power scaling), bonus_id=0=self-only, bonus_id>0=cross-tree (S001 self-tree 3 link). R99 tutorial 검증. **Hero4 자동 분석 100 라운드 마일스톤** | [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md) |
+| R100 ★ | tier_value/bonus_id semantic 확정 (R94 마지막 ambiguity 해소) | [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md) |
+| **R101** | **★ character class skill schema 확정** — 4 class × **16 entries = 64 skill** (R69 의 40 + 24 alt-form 추가 발견). entry layout: `[size][00][nlen][name][32B stat][1B desc_len][{+EUC-KR]`. body[32] 자가검증 64/64 통과. 32B stat block field 후보 식별 (MP cost / damage LE16 / dtype / level req) | [round101-class-skill-schema.md](round101-class-skill-schema.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결** — **R100 마일스톤 달성**. 남은 자동 트랙은 character skill schema (R95 미해결), drop_id 17 정밀.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. character skill schema 확정으로 R95 미해결 종결. 남은 자동 트랙은 32B stat block field 정밀, drop_id 17, alt-form mode 매핑.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **character class skill (S000-S003) stat block schema** (R95 후속) — 가변 길이 body 정밀
-2. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
-3. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
-4. **타 character class tutorial scene** (R99 후속) — S000-S003 in-game 설명 검색
-5. **R100 milestone 결산 문서 작성** (Hero5 의 MILESTONE_R100.md 처럼)
+1. ⭐ **32B class skill stat block field 정밀** (R101 후속) — byte[16-19] speed/range/anim 식별
+2. **24 alt-form 의 mode 매핑** (R101 후속) — alt-form 이 어떤 mode/condition 에서 활성화
+3. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
+4. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
+5. **R100 milestone 결산 문서 작성** (Hero5 MILESTONE_R100.md 처럼)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
