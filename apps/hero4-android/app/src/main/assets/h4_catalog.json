@@ -2916,6 +2916,18 @@
       "summon_tier_count": 15
     }
   },
+  "drop_id_currency": {
+    "alphabetic_order_hypothesis": {
+      "16": "_ITM_CASH_RANOMBOX",
+      "17": "_ITM_OPTION",
+      "23": "_ITM_REPAY_2"
+    },
+    "conclusion": {
+      "16": "_ITM_CASH_RANOMBOX 매핑 — byte9 in range (0..22). 확정.",
+      "23": "_ITM_REPAY_2 매핑 — byte9 in range (0..73). 확정.",
+      "17": "OPTION 매핑은 byte10=232 가 record idx 로 OOR. currency qty (EXP 232, gold 232 등) 가설 우세."
+    }
+  },
   "q_repay_drops": {
     "meta": {
       "total_drop_records": 65,

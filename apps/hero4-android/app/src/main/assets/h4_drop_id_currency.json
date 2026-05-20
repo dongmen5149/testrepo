@@ -1,0 +1,242 @@
+{
+  "round": 97,
+  "r96_followup_summary": {
+    "16": {
+      "hit_count": 4,
+      "byte9_distribution": {
+        "0": 4
+      },
+      "byte10_distribution": {
+        "1": 4
+      },
+      "records": [
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 169,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 1,
+          "le16_value": 256
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 197,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 1,
+          "le16_value": 256
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 169,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 1,
+          "le16_value": 256
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 197,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 1,
+          "le16_value": 256
+        }
+      ],
+      "suspected_file": "_ITM_CASH_RANOMBOX",
+      "verification": {
+        "cash_record_count": 23,
+        "byte9_values_observed": [
+          0
+        ],
+        "all_in_range": true
+      },
+      "hypothesis_confirmed": true
+    },
+    "17": {
+      "hit_count": 4,
+      "byte9_distribution": {
+        "0": 4
+      },
+      "byte10_distribution": {
+        "232": 4
+      },
+      "records": [
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 168,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 232,
+          "le16_value": 59392
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 196,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 232,
+          "le16_value": 59392
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 168,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 232,
+          "le16_value": 59392
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 196,
+          "slot": "drop1",
+          "byte9": 0,
+          "byte10": 232,
+          "le16_value": 59392
+        }
+      ],
+      "suspected_file": "_ITM_OPTION",
+      "verification": {
+        "option_record_count": 120,
+        "byte10_observed": [
+          232
+        ],
+        "byte10_le16_oor_for_option": true,
+        "currency_qty_hypothesis": true
+      },
+      "hypothesis_confirmed": false
+    },
+    "23": {
+      "hit_count": 11,
+      "byte9_distribution": {
+        "5": 2,
+        "8": 1,
+        "2": 2,
+        "13": 2,
+        "11": 1,
+        "17": 1,
+        "19": 1,
+        "20": 1
+      },
+      "byte10_distribution": {
+        "1": 11
+      },
+      "records": [
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 79,
+          "slot": "drop2",
+          "byte9": 5,
+          "byte10": 1,
+          "le16_value": 261
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 83,
+          "slot": "drop2",
+          "byte9": 8,
+          "byte10": 1,
+          "le16_value": 264
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 87,
+          "slot": "drop2",
+          "byte9": 2,
+          "byte10": 1,
+          "le16_value": 258
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 88,
+          "slot": "drop2",
+          "byte9": 13,
+          "byte10": 1,
+          "le16_value": 269
+        },
+        {
+          "source": "_ITM_Q_REPAY_0",
+          "repay_idx": 97,
+          "slot": "drop2",
+          "byte9": 11,
+          "byte10": 1,
+          "le16_value": 267
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 5,
+          "slot": "drop1",
+          "byte9": 13,
+          "byte10": 1,
+          "le16_value": 269
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 79,
+          "slot": "drop2",
+          "byte9": 5,
+          "byte10": 1,
+          "le16_value": 261
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 83,
+          "slot": "drop2",
+          "byte9": 17,
+          "byte10": 1,
+          "le16_value": 273
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 87,
+          "slot": "drop2",
+          "byte9": 2,
+          "byte10": 1,
+          "le16_value": 258
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 88,
+          "slot": "drop2",
+          "byte9": 19,
+          "byte10": 1,
+          "le16_value": 275
+        },
+        {
+          "source": "_ITM_Q_REPAY_1",
+          "repay_idx": 97,
+          "slot": "drop2",
+          "byte9": 20,
+          "byte10": 1,
+          "le16_value": 276
+        }
+      ],
+      "suspected_file": "_ITM_REPAY_2",
+      "verification": {
+        "repay2_record_count": 74,
+        "byte9_values_observed": [
+          2,
+          5,
+          8,
+          11,
+          13,
+          17,
+          19,
+          20
+        ],
+        "all_in_range": true
+      },
+      "hypothesis_confirmed": true
+    }
+  },
+  "alphabetic_order_hypothesis_v1": {
+    "16": "_ITM_CASH_RANOMBOX",
+    "17": "_ITM_OPTION",
+    "23": "_ITM_REPAY_2"
+  },
+  "conclusion": {
+    "16": "_ITM_CASH_RANOMBOX 매핑 — byte9 in range (0..22). 확정.",
+    "23": "_ITM_REPAY_2 매핑 — byte9 in range (0..73). 확정.",
+    "17": "OPTION 매핑은 byte10=232 가 record idx 로 OOR. currency qty (EXP 232, gold 232 등) 가설 우세."
+  }
+}

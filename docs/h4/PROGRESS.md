@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 97 (2026-05-20) — drop_id 16/17/23 currency 가설 검증 (R96 후속) ★
+
+> R96 미해결 drop_id 3 종 의미 식별. 상세: [round97-drop-id-currency.md](round97-drop-id-currency.md).
+>
+> **drop_id 16 = `_ITM_CASH_RANOMBOX`** (23 records, byte9=0 항상, qty=1 = 1 cash box 보상), **drop_id 23 = `_ITM_REPAY_2`** (74 records, byte9 ∈ {2,5,8,11,13,17,19,20} 모두 in range, drop2 slot 에서만 사용 — EXP/gold pool 별로 다른 sub-item 참조). drop_id 17 (byte10=232 invariant) 은 `_ITM_OPTION` reference 또는 currency qty 232 로 ambiguous. drop_id 가 ITM 파일의 alphabetic order index 매핑임을 확인 (0-15 numeric, 16+ named).
+>
+> endgame achievement (repay#168/169/196/197) = drop_id 17 (OPTION/currency 232) + drop_id 16 (CASH × 1) **2-step pair reward**.
+>
+> `parse_h4_drop_id_currency.py` 신규 + `h4_drop_id_currency.json` 5.8KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 96 (2026-05-20) — Q_REPAY drop_id ↔ ITM 매핑 검증 (R90 후속) ★
 
 > R90 의 drop_id 의미 미해결 해소. 상세: [round96-q-repay-drops.md](round96-q-repay-drops.md).

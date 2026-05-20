@@ -301,6 +301,19 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Drop_id currency (R97) — drop_id 16/17/23 정체
+    drc_path = CONVERTED / 'h4_drop_id_currency.json'
+    if drc_path.exists():
+        try:
+            drc = json.loads(drc_path.read_text(encoding='utf-8'))
+            catalog['drop_id_currency'] = {
+                'alphabetic_order_hypothesis': drc['alphabetic_order_hypothesis_v1'],
+                'conclusion': drc['conclusion'],
+            }
+            print(f'\nDrop_id currency: 16=CASH, 23=REPAY_2 (확정), 17 ambiguous (R97)')
+        except Exception as e:
+            print(f'  WARN: failed to load drop_id_currency: {e}', file=sys.stderr)
+
     # Q_REPAY drops (R96) — drop_id ↔ ITM 매핑
     qrd_path = CONVERTED / 'h4_q_repay_drops.json'
     if qrd_path.exists():

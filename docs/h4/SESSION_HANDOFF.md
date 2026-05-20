@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 96 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 97 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R96 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R97 은 각 round 문서.
 
-## 🏆 Round 76-R96 누적 (2026-05-19 ~ 2026-05-20, 21 라운드 연속 자동 분석)
+## 🏆 Round 76-R97 누적 (2026-05-19 ~ 2026-05-20, 22 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -28,19 +28,20 @@
 | R93 | _H_SA group_id ↔ 5 환수 매핑 검증 — group 0=베놈/64=헤지호그/78=그래비티/38=쇼커/75=세이프가드 ordinal match 확정. 5 verification check 모두 통과 | [round93-sa-summon-map.md](round93-sa-summon-map.md) |
 | R94 | _H_SA ability skill_id 카테고리 식별 — 8 skill_id = global skill_id 0-39 매핑 (`class×10+local`). S001 사격 5/8 (deepest tree), S000 양손검 0 | [round94-sa-ability-skill-map.md](round94-sa-ability-skill-map.md) |
 | R95 | element byte[5]=2 검증 + R89 정정 — `_H_SS` 전용 5 hit, byte[5]=2 invariant = summon-exclusive subtype marker | [round95-active-attack-xref.md](round95-active-attack-xref.md) |
-| **R96** | **★ Q_REPAY drop_id ↔ ITM 매핑 검증** — drop slot 구조 [ITM_file_id:1B][item_idx:1B][qty:1B] × 2 slot. 65 drop 중 55 (85%) DAT 직접 매핑 (가면/통행증/제련석/뇌격 등 quest-thematic 일치). drop_id 16/17/23 은 currency 추정 | [round96-q-repay-drops.md](round96-q-repay-drops.md) |
+| R96 | Q_REPAY drop_id ↔ ITM 매핑 검증 — drop slot 구조 [ITM_file_id:1B][item_idx:1B][qty:1B] × 2 slot. 55/65 DAT 매핑 (quest-thematic 일치) | [round96-q-repay-drops.md](round96-q-repay-drops.md) |
+| **R97** | **★ drop_id 16/17/23 currency 가설 검증** — 16=`_ITM_CASH_RANOMBOX` 확정 (byte9 in 0-22 range), 23=`_ITM_REPAY_2` 확정 (byte9 in 0-73 range). drop_id 17 byte10=232 invariant 은 currency qty 또는 OPTION pool reference 로 ambiguous | [round97-drop-id-currency.md](round97-drop-id-currency.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. drop slot 구조 확정. 남은 자동 트랙은 죽음의 구, character skill schema, currency drop_id.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. drop_id 매핑 거의 완성. 남은 자동 트랙은 죽음의 구, character skill schema, drop_id 17 정밀.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **drop_id 16/17/23 currency 가설 검증** (R96 후속)
-2. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
-3. **n0124_scn tutorial 전문 분석** (R92 후속)
-4. **bonus_id=0 + tier_value 의미** (R94 후속)
-5. **character class skill (S000-S003) stat block schema** (R95 후속)
+1. ⭐ **죽음의 구 72B 특수 layout 정밀** (R91 후속)
+2. **n0124_scn tutorial 전문 분석** (R92 후속)
+3. **bonus_id=0 + tier_value 의미** (R94 후속)
+4. **character class skill (S000-S003) stat block schema** (R95 후속)
+5. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
