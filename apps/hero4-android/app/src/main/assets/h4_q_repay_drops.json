@@ -1,0 +1,1159 @@
+{
+  "round": 96,
+  "meta": {
+    "total_drop_records": 65,
+    "resolved_in_DAT": 55,
+    "requires_SD_lookup": 10,
+    "true_out_of_range": 6,
+    "drop_id_distribution": {
+      "4": 2,
+      "13": 5,
+      "12": 24,
+      "8": 8,
+      "11": 8,
+      "10": 5,
+      "15": 4,
+      "17": 4,
+      "16": 4,
+      "23": 1
+    }
+  },
+  "itm_file_counts": {
+    "_ITM_00": {
+      "dat_count": 17,
+      "sd_count": 17
+    },
+    "_ITM_01": {
+      "dat_count": 17,
+      "sd_count": 17
+    },
+    "_ITM_02": {
+      "dat_count": 17,
+      "sd_count": 9
+    },
+    "_ITM_03": {
+      "dat_count": 17,
+      "sd_count": 9
+    },
+    "_ITM_04": {
+      "dat_count": 17,
+      "sd_count": 10
+    },
+    "_ITM_05": {
+      "dat_count": 17,
+      "sd_count": 0
+    },
+    "_ITM_06": {
+      "dat_count": 17,
+      "sd_count": 10
+    },
+    "_ITM_08": {
+      "dat_count": 29,
+      "sd_count": 0
+    },
+    "_ITM_09": {
+      "dat_count": 29,
+      "sd_count": 0
+    },
+    "_ITM_10": {
+      "dat_count": 38,
+      "sd_count": 0
+    },
+    "_ITM_11": {
+      "dat_count": 13,
+      "sd_count": 0
+    },
+    "_ITM_12": {
+      "dat_count": 38,
+      "sd_count": 0
+    },
+    "_ITM_13": {
+      "dat_count": 1,
+      "sd_count": 0
+    },
+    "_ITM_14": {
+      "dat_count": 0,
+      "sd_count": 0
+    },
+    "_ITM_15": {
+      "dat_count": 10,
+      "sd_count": 0
+    }
+  },
+  "drop_records": [
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 1,
+      "quest_name": "(종속퀘)",
+      "drop1": {
+        "itm_id": 4,
+        "item_idx": 22,
+        "qty": 4,
+        "resolved_file": "_ITM_04_DAT",
+        "dat_count": 17,
+        "sd_count": 10,
+        "resolved_name": null,
+        "source_section": "SD[5]"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 2,
+      "quest_name": "(종속퀘)",
+      "drop1": {
+        "itm_id": 13,
+        "item_idx": 0,
+        "qty": 118,
+        "resolved_file": "_ITM_13_DAT",
+        "dat_count": 1,
+        "sd_count": 0,
+        "resolved_name": "네트워크전용",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 6,
+      "quest_name": "엘렌을 찾아라",
+      "drop1": {
+        "itm_id": 13,
+        "item_idx": 0,
+        "qty": 64,
+        "resolved_file": "_ITM_13_DAT",
+        "dat_count": 1,
+        "sd_count": 0,
+        "resolved_name": "네트워크전용",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 15,
+      "quest_name": "추가병력 합류",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 3,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "가면",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 23,
+      "quest_name": "주둔지 침입",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 5,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "하급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 24,
+      "quest_name": "유물 탈취",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "중급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 25,
+      "quest_name": "프로비던스로",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 7,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "상급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 60,
+      "quest_name": "전이장치",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 12,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "단열복",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 70,
+      "quest_name": "선박 탈취",
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "제련석",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 8,
+        "item_idx": 0,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "포션",
+        "source_section": "DAT"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 73,
+      "quest_name": "방어 준비 이후",
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "뇌제",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 3,
+        "item_idx": 1,
+        "qty": 1,
+        "resolved_file": "_ITM_03_DAT",
+        "dat_count": 17,
+        "sd_count": 9,
+        "resolved_name": "비스",
+        "source_section": "DAT"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 75,
+      "quest_name": "웜의 껍질",
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 9,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "암즈탄",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 76,
+      "quest_name": "스트레이츠",
+      "drop1": {
+        "itm_id": 10,
+        "item_idx": 4,
+        "qty": 5,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "그라디우스",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 77,
+      "quest_name": "악령",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 15,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "편지",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 86,
+      "quest_name": "탈출",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 18,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "녹색가루",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 95,
+      "quest_name": "팔리아스의 봉인",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 35,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "유품",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 123,
+      "quest_name": "팔리아스 방어전1",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 23,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "감옥열쇠",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 137,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 41,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 166,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 1,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "금강",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 167,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 15,
+        "item_idx": 0,
+        "qty": 8,
+        "resolved_file": "_ITM_15_DAT",
+        "dat_count": 10,
+        "sd_count": 0,
+        "resolved_name": "뇌격",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 168,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 17,
+        "item_idx": 0,
+        "qty": 232,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_17"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 169,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 16,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_16"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 170,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 0,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "포션",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 172,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "제련석",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 174,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 1,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "금강",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 175,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "뇌제",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 185,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 47,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 188,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 13,
+        "item_idx": 0,
+        "qty": 160,
+        "resolved_file": "_ITM_13_DAT",
+        "dat_count": 1,
+        "sd_count": 0,
+        "resolved_name": "네트워크전용",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 193,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 15,
+        "item_idx": 0,
+        "qty": 8,
+        "resolved_file": "_ITM_15_DAT",
+        "dat_count": 10,
+        "sd_count": 0,
+        "resolved_name": "뇌격",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 194,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 43,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 196,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 17,
+        "item_idx": 0,
+        "qty": 232,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_17"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 197,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 16,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_16"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_0",
+      "repay_idx": 198,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 10,
+        "item_idx": 21,
+        "qty": 3,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "드래곤본건틀릿",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 10,
+        "item_idx": 22,
+        "qty": 3,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "드래곤본워커",
+        "source_section": "DAT"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 1,
+      "quest_name": "(종속퀘)",
+      "drop1": {
+        "itm_id": 4,
+        "item_idx": 15,
+        "qty": 5,
+        "resolved_file": "_ITM_04_DAT",
+        "dat_count": 17,
+        "sd_count": 10,
+        "resolved_name": "시온",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 2,
+      "quest_name": "(종속퀘)",
+      "drop1": {
+        "itm_id": 10,
+        "item_idx": 19,
+        "qty": 5,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "썬더버드",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 5,
+      "quest_name": "크래드를 찾아라",
+      "drop1": {
+        "itm_id": 23,
+        "item_idx": 13,
+        "qty": 1,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_23"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 6,
+      "quest_name": "엘렌을 찾아라",
+      "drop1": {
+        "itm_id": 13,
+        "item_idx": 0,
+        "qty": 84,
+        "resolved_file": "_ITM_13_DAT",
+        "dat_count": 1,
+        "sd_count": 0,
+        "resolved_name": "네트워크전용",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 15,
+      "quest_name": "추가병력 합류",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 3,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "가면",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 23,
+      "quest_name": "주둔지 침입",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 5,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "하급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 24,
+      "quest_name": "유물 탈취",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "중급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 25,
+      "quest_name": "프로비던스로",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 7,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "상급통행증",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 60,
+      "quest_name": "전이장치",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 12,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "단열복",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 70,
+      "quest_name": "선박 탈취",
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "제련석",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 8,
+        "item_idx": 2,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "하이포션",
+        "source_section": "DAT"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 73,
+      "quest_name": "방어 준비 이후",
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 2,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "정령",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 3,
+        "item_idx": 8,
+        "qty": 1,
+        "resolved_file": "_ITM_03_DAT",
+        "dat_count": 17,
+        "sd_count": 9,
+        "resolved_name": "이즈",
+        "source_section": "DAT"
+      }
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 75,
+      "quest_name": "웜의 껍질",
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 10,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "섬광탄",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 76,
+      "quest_name": "스트레이츠",
+      "drop1": {
+        "itm_id": 10,
+        "item_idx": 4,
+        "qty": 5,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "그라디우스",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 77,
+      "quest_name": "악령",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 15,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "편지",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 86,
+      "quest_name": "탈출",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 18,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "녹색가루",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 95,
+      "quest_name": "팔리아스의 봉인",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 35,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "유품",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 123,
+      "quest_name": "팔리아스 방어전1",
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 23,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "감옥열쇠",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 137,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 41,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 166,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 1,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "금강",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 167,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 15,
+        "item_idx": 0,
+        "qty": 8,
+        "resolved_file": "_ITM_15_DAT",
+        "dat_count": 10,
+        "sd_count": 0,
+        "resolved_name": "뇌격",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 168,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 17,
+        "item_idx": 0,
+        "qty": 232,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_17"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 169,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 16,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_16"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 170,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 2,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "하이포션",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 172,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 8,
+        "item_idx": 6,
+        "qty": 5,
+        "resolved_file": "_ITM_08_DAT",
+        "dat_count": 29,
+        "sd_count": 0,
+        "resolved_name": "제련석",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 174,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 2,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "정령",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 175,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 11,
+        "item_idx": 3,
+        "qty": 1,
+        "resolved_file": "_ITM_11_DAT",
+        "dat_count": 13,
+        "sd_count": 0,
+        "resolved_name": "사신",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 185,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 47,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 188,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 13,
+        "item_idx": 0,
+        "qty": 160,
+        "resolved_file": "_ITM_13_DAT",
+        "dat_count": 1,
+        "sd_count": 0,
+        "resolved_name": "네트워크전용",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 193,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 15,
+        "item_idx": 0,
+        "qty": 8,
+        "resolved_file": "_ITM_15_DAT",
+        "dat_count": 10,
+        "sd_count": 0,
+        "resolved_name": "뇌격",
+        "source_section": "DAT"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 194,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 12,
+        "item_idx": 43,
+        "qty": 1,
+        "resolved_file": "_ITM_12_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": null,
+        "source_section": "SD_or_OOR"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 196,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 17,
+        "item_idx": 0,
+        "qty": 232,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_17"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 197,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 16,
+        "item_idx": 0,
+        "qty": 1,
+        "resolved_name": null,
+        "resolved_file": "UNKNOWN_itm_16"
+      },
+      "drop2": null
+    },
+    {
+      "source": "_ITM_Q_REPAY_1",
+      "repay_idx": 198,
+      "quest_name": null,
+      "drop1": {
+        "itm_id": 10,
+        "item_idx": 21,
+        "qty": 3,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "드래곤본건틀릿",
+        "source_section": "DAT"
+      },
+      "drop2": {
+        "itm_id": 10,
+        "item_idx": 22,
+        "qty": 3,
+        "resolved_file": "_ITM_10_DAT",
+        "dat_count": 38,
+        "sd_count": 0,
+        "resolved_name": "드래곤본워커",
+        "source_section": "DAT"
+      }
+    }
+  ],
+  "r90_followup_findings": {
+    "drop_slot_format": "byte[8]=ITM_file_id, byte[9]=item_idx, byte[10]=qty",
+    "two_slots_per_record": "drop1 at bytes[8-10], drop2 at bytes[14-16]",
+    "common_drop_ids": "ITM_12 가 가장 빈번 (각종 quest item: 가면/단열복 등)",
+    "summon_drop": "ITM_15 = R92 환수 catalog — quest 보상으로 환수 획득 가능",
+    "sd_extension": "item_idx > DAT.count 일 때 _ITM_X_SD subdata 영역 (DAT count 가산)"
+  }
+}

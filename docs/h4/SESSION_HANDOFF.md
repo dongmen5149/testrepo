@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 95 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 96 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R95 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R96 은 각 round 문서.
 
-## 🏆 Round 76-R95 누적 (2026-05-19 ~ 2026-05-20, 20 라운드 연속 자동 분석)
+## 🏆 Round 76-R96 누적 (2026-05-19 ~ 2026-05-20, 21 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -27,19 +27,20 @@
 | R92 | Summon dialogue corpus cross-ref — 252 파일/484KB 스캔. 5 환수 개별 이름은 catalog/item/shop NPC/tutorial 4 파일만, 환수 시스템 acquisition entry = `NPCUI_GUARDIANSHOP_DAT` (수호자 상점), tutorial = `n0124_scn` (베놈 예시), 보스 망각의 저주 catalog 외 0 hits | [round92-summon-dialogue-xref.md](round92-summon-dialogue-xref.md) |
 | R93 | _H_SA group_id ↔ 5 환수 매핑 검증 — group 0=베놈/64=헤지호그/78=그래비티/38=쇼커/75=세이프가드 ordinal match 확정. 5 verification check 모두 통과 | [round93-sa-summon-map.md](round93-sa-summon-map.md) |
 | R94 | _H_SA ability skill_id 카테고리 식별 — 8 skill_id = global skill_id 0-39 매핑 (`class×10+local`). S001 사격 5/8 (deepest tree), S000 양손검 0 | [round94-sa-ability-skill-map.md](round94-sa-ability-skill-map.md) |
-| **R95** | **★ element byte[5]=2 검증 + R89 정정** — 전 코퍼스 252 파일 scan 결과 valid ACTIVE_ATTACK signature 는 `_H_SS` 전용 5 hit, byte[5]=2 invariant. "element" 가 아닌 **summon-exclusive subtype marker** 임을 확정. character skill 은 별개 stat block schema | [round95-active-attack-xref.md](round95-active-attack-xref.md) |
+| R95 | element byte[5]=2 검증 + R89 정정 — `_H_SS` 전용 5 hit, byte[5]=2 invariant = summon-exclusive subtype marker | [round95-active-attack-xref.md](round95-active-attack-xref.md) |
+| **R96** | **★ Q_REPAY drop_id ↔ ITM 매핑 검증** — drop slot 구조 [ITM_file_id:1B][item_idx:1B][qty:1B] × 2 slot. 65 drop 중 55 (85%) DAT 직접 매핑 (가면/통행증/제련석/뇌격 등 quest-thematic 일치). drop_id 16/17/23 은 currency 추정 | [round96-q-repay-drops.md](round96-q-repay-drops.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. R89 element 가설 정정. 남은 자동 트랙은 drop_id, 죽음의 구, character skill schema.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. drop slot 구조 확정. 남은 자동 트랙은 죽음의 구, character skill schema, currency drop_id.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **Q_REPAY drop_id 의미** (R90 후속) — 32 entries 의 drop_id 검증
+1. ⭐ **drop_id 16/17/23 currency 가설 검증** (R96 후속)
 2. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
 3. **n0124_scn tutorial 전문 분석** (R92 후속)
 4. **bonus_id=0 + tier_value 의미** (R94 후속)
-5. **character class skill (S000-S003) stat block schema** (R95 후속) — 가변 길이 body 정밀
+5. **character class skill (S000-S003) stat block schema** (R95 후속)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 

@@ -301,6 +301,20 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Q_REPAY drops (R96) — drop_id ↔ ITM 매핑
+    qrd_path = CONVERTED / 'h4_q_repay_drops.json'
+    if qrd_path.exists():
+        try:
+            qrd = json.loads(qrd_path.read_text(encoding='utf-8'))
+            catalog['q_repay_drops'] = {
+                'meta': qrd['meta'],
+                'itm_file_counts': qrd['itm_file_counts'],
+                'r90_followup_findings': qrd['r90_followup_findings'],
+            }
+            print(f'\nQ_REPAY drops: {qrd["meta"]["total_drop_records"]} records, {qrd["meta"]["resolved_in_DAT"]} resolved in DAT (R96)')
+        except Exception as e:
+            print(f'  WARN: failed to load q_repay_drops: {e}', file=sys.stderr)
+
     # Active attack xref (R95) — R89 element 검증 + 정정
     aax_path = CONVERTED / 'h4_active_attack_xref.json'
     if aax_path.exists():

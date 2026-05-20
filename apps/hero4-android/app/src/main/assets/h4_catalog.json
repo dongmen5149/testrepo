@@ -2916,6 +2916,95 @@
       "summon_tier_count": 15
     }
   },
+  "q_repay_drops": {
+    "meta": {
+      "total_drop_records": 65,
+      "resolved_in_DAT": 55,
+      "requires_SD_lookup": 10,
+      "true_out_of_range": 6,
+      "drop_id_distribution": {
+        "4": 2,
+        "13": 5,
+        "12": 24,
+        "8": 8,
+        "11": 8,
+        "10": 5,
+        "15": 4,
+        "17": 4,
+        "16": 4,
+        "23": 1
+      }
+    },
+    "itm_file_counts": {
+      "_ITM_00": {
+        "dat_count": 17,
+        "sd_count": 17
+      },
+      "_ITM_01": {
+        "dat_count": 17,
+        "sd_count": 17
+      },
+      "_ITM_02": {
+        "dat_count": 17,
+        "sd_count": 9
+      },
+      "_ITM_03": {
+        "dat_count": 17,
+        "sd_count": 9
+      },
+      "_ITM_04": {
+        "dat_count": 17,
+        "sd_count": 10
+      },
+      "_ITM_05": {
+        "dat_count": 17,
+        "sd_count": 0
+      },
+      "_ITM_06": {
+        "dat_count": 17,
+        "sd_count": 10
+      },
+      "_ITM_08": {
+        "dat_count": 29,
+        "sd_count": 0
+      },
+      "_ITM_09": {
+        "dat_count": 29,
+        "sd_count": 0
+      },
+      "_ITM_10": {
+        "dat_count": 38,
+        "sd_count": 0
+      },
+      "_ITM_11": {
+        "dat_count": 13,
+        "sd_count": 0
+      },
+      "_ITM_12": {
+        "dat_count": 38,
+        "sd_count": 0
+      },
+      "_ITM_13": {
+        "dat_count": 1,
+        "sd_count": 0
+      },
+      "_ITM_14": {
+        "dat_count": 0,
+        "sd_count": 0
+      },
+      "_ITM_15": {
+        "dat_count": 10,
+        "sd_count": 0
+      }
+    },
+    "r90_followup_findings": {
+      "drop_slot_format": "byte[8]=ITM_file_id, byte[9]=item_idx, byte[10]=qty",
+      "two_slots_per_record": "drop1 at bytes[8-10], drop2 at bytes[14-16]",
+      "common_drop_ids": "ITM_12 가 가장 빈번 (각종 quest item: 가면/단열복 등)",
+      "summon_drop": "ITM_15 = R92 환수 catalog — quest 보상으로 환수 획득 가능",
+      "sd_extension": "item_idx > DAT.count 일 때 _ITM_X_SD subdata 영역 (DAT count 가산)"
+    }
+  },
   "active_attack_xref": {
     "scan_meta": {
       "files_scanned": 252,

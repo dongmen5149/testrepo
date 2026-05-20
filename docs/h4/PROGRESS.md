@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 96 (2026-05-20) — Q_REPAY drop_id ↔ ITM 매핑 검증 (R90 후속) ★
+
+> R90 의 drop_id 의미 미해결 해소. 상세: [round96-q-repay-drops.md](round96-q-repay-drops.md).
+>
+> Q_REPAY_0/1 의 20B record 의 drop slot 구조: `bytes[8-10] = [ITM_file_id:1B][item_idx:1B][qty:1B]`, `bytes[14-16]` = drop slot 2 (대부분 empty). 65 drop record 중 55 (85%) 가 _ITM_NN_DAT 의 item entry 에 직접 매핑됨. quest 이름과 보상 item 이 thematically 정확 일치 (예: "추가병력 합류"→가면, "주둔지 침입"→하급통행증, "프로비던스로"→상급통행증, 환수 quest reward 167→뇌격 8개). drop_id distribution: ITM_12 가 24/65 으로 가장 빈번 (quest item 핵심). drop_id 16/17/23 은 ITM_NN 파일 부재 → currency type 추정 (R97 검증).
+>
+> `parse_h4_q_repay_drops.py` 신규 + `h4_q_repay_drops.json` 27.8KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 95 (2026-05-20) — element byte[5]=2 검증 + R89 정정 ★
 
 > R89 의 "element field byte[5]=2" 명명 정정. 상세: [round95-active-attack-xref.md](round95-active-attack-xref.md).
