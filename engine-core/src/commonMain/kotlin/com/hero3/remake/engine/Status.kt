@@ -28,6 +28,16 @@ enum class Status {
      * BattleScene.doEnemyAttack 가 최종 데미지에 곱셈 적용.
      */
     DEFENSE_BUFF,
+    /**
+     * R97 — 명중률 buff. perTick = percent (예: 10 → 공격 명중률 +10%).
+     * BattleScene 가 actor 측 hit-roll 에 가산.
+     */
+    ACCURACY_BUFF,
+    /**
+     * R97 — 회피율 buff. perTick = percent (예: 15 → 받는 공격 명중률 -15%).
+     * BattleScene 가 target 측 hit-roll 에서 감산.
+     */
+    DODGE_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

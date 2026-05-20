@@ -124,6 +124,12 @@ class BattleScene(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.DEFENSE)
             .coerceIn(0, catalogBonusClamp)
         val list = statusesOf(actorMemberIdx)
+        val accuracy = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.ACCURACY)
+            .coerceIn(0, catalogBonusClamp)
+        val dodge = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.DODGE)
+            .coerceIn(0, catalogBonusClamp)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -134,13 +140,34 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.DEFENSE_BUFF, turnsLeft = 3, perTick = defense)
         }
-        if (critDef > 0 || defense > 0) {
+        if (accuracy > 0) {
+            val ex = list.firstOrNull { it.status == Status.ACCURACY_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.ACCURACY_BUFF, turnsLeft = 3, perTick = accuracy)
+        }
+        if (dodge > 0) {
+            val ex = list.firstOrNull { it.status == Status.DODGE_BUFF }
+            if (ex != null) { ex.turnsLeft = 3 }
+            else list += StatusEffect(Status.DODGE_BUFF, turnsLeft = 3, perTick = dodge)
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
+                if (accuracy > 0) "${if (isEn) "ACC" else "명중"}+$accuracy%" else null,
+                if (dodge > 0) "${if (isEn) "DOD" else "회피"}+$dodge%" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
+    }
+
+    /**
+     * R97 — hit-roll. base 90% + attackerAccPct - targetDodgePct, clamp [30, 100].
+     * 결과 = 명중 여부 (true = 적중, false = 빗나감/회피).
+     */
+    private fun rollHit(attackerAccPct: Int, targetDodgePct: Int): Boolean {
+        val chance = (90 + attackerAccPct - targetDodgePct).coerceIn(30, 100)
+        return Random.nextInt(100) < chance
     }
 
     /** R96 — 1턴 경과 처리. 모든 party member 의 buff 의 turnsLeft 감소 + 만료 제거. */
@@ -307,6 +334,13 @@ class BattleScene(
         }
         val atk = (CharacterRegistry.effectiveAttack(actor) * s.powerMul).toInt() + s.flatBonus + catalogBonus
         val critBonus = catalogCritBonusFor(s.nameKo)
+        // R97: 명중 판정. 액터 ACC buff, 적은 DODGE 0 (enemy 측 buff 미존재 — 향후 enemy.statuses 확장 시 추가).
+        val accPct = buffPercent(actorIdx, Status.ACCURACY_BUFF)
+        if (!rollHit(accPct, targetDodgePct = 0)) {
+            pushLog(lang("$name → 빗나감.", "$name → missed."))
+            phase = Phase.ANIMATE; animTtl = 500L
+            return
+        }
         val dmg = damage(atk, enemy.def.def, extraCritPercent = critBonus)
         enemy.hp -= dmg
         hitFlashMs = 220L
@@ -487,7 +521,8 @@ class BattleScene(
                     totalDmg += dmg
                 }
                 Status.SLOW, Status.STUN -> { /* tick 시점 효과 없음 — doEnemyAttack 에서 처리 */ }
-                Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF,
+                Status.ACCURACY_BUFF, Status.DODGE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()
@@ -519,6 +554,8 @@ class BattleScene(
         Status.STUN   -> if (isEn) "STN" else "기절"
         Status.CRIT_DEF_BUFF -> if (isEn) "CDF" else "크감"
         Status.DEFENSE_BUFF  -> if (isEn) "DEF" else "방어"
+        Status.ACCURACY_BUFF -> if (isEn) "ACC" else "명중"
+        Status.DODGE_BUFF    -> if (isEn) "DOD" else "회피"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
@@ -531,6 +568,14 @@ class BattleScene(
         // R96: target 의 CRIT_DEF / DEFENSE buff 합산 → damage() / 최종 데미지에 반영.
         val critDefPct = buffPercent(pick.index, Status.CRIT_DEF_BUFF)
         val defPct     = buffPercent(pick.index, Status.DEFENSE_BUFF)
+        // R97: target 의 DODGE buff 로 적의 hit-roll 감산. 적 ACC = 0 (catalog 측 enemy 없음).
+        val dodgePct = buffPercent(pick.index, Status.DODGE_BUFF)
+        if (!rollHit(attackerAccPct = 0, targetDodgePct = dodgePct)) {
+            val name = lang(enemy.def.nameKo, enemy.def.nameEn)
+            pushLog(lang("$name → ${displayName(target, isEn)} 회피!",
+                         "$name → ${displayName(target, isEn)} dodged!"))
+            return
+        }
         val rawDmg = damage(enemy.def.atk, CharacterRegistry.effectiveDefense(target),
             extraCritDefPercent = critDefPct)
         val dmg = if (defPct > 0) maxOf(1, rawDmg * (100 - defPct) / 100) else rawDmg

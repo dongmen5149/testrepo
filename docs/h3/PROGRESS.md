@@ -7,35 +7,31 @@
 
 ## ⚡ 다음 세션 — 여기서부터 시작
 
-> **현재 git 상태 (2026-05-19 Round 96 종료, uncommitted)**:
-> - 마지막 commit = `b18cb7f1 feat:영웅서기3 Round 95 — Status enum 확장 (BURN/SLOW/STUN) + BattleScene wiring`
-> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R96 는 catalog 통합 라운드)
-> - Hero3 리메이크 진행률 **~91%** (UI/UX/통합이 메인 트랙)
+> **현재 git 상태 (2026-05-19 Round 97 종료, uncommitted)**:
+> - 마지막 commit = `f14ecd5a feat:영웅서기3 Round 96 — Party buff status + CRIT_DEF / DEFENSE wiring`
+> - Hero3 분석 진행률 **~99.98%** (분석 트랙 R73 종료, R74~R97 는 catalog 통합 라운드)
+> - Hero3 리메이크 진행률 **~92%** (UI/UX/통합이 메인 트랙)
 > - SMAF→OGG 변환: 사용자 신뢰도 정책 — 도구 설치 보류 (영구 대기)
-> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R97 즉시 시작 가이드 (ACCURACY/DODGE 시스템)
+> - ★ **`docs/h3/SESSION_HANDOFF.md`** = R98 가이드 (다음 분기 선택)
 > - ★ **`docs/h3/MASTER_SPEC.md`** = Android 리메이크 single reference (R73 시점)
 
-### 🚀 "영웅서기3 다음 내용 진행해줘" — R97 즉시 시작 가이드
+### 🚀 "영웅서기3 다음 내용 진행해줘" — R98 가이드
 
-`SESSION_HANDOFF.md §1` 참조 — R97 후보 (R96 CRIT_DEF+DEFENSE wiring 종결, 남은 2종 ACC/DOD):
+`SESSION_HANDOFF.md §1` 참조 — R97 으로 catalog ModifierKind 7종 + nDebuffs 4종 전체 wiring 완성. R98 후보 (자연스러운 다음 단계가 없으니 분기 선택):
 
 | ⭐ | 작업 | 위치 | 비고 |
 |---|---|---|---|
-| ⭐⭐⭐ | **ACCURACY/DODGE 시스템 신설** | `BattleScene.damage` + party buff | R96 패턴 재사용. catalog ModifierKind 7종 전체 wiring 완성. |
-| ⭐⭐ | Status enum 확장 (REGEN/HASTE 등) | `engine-core` | R96 buff 패턴 재사용. |
-| ⭐⭐ | ForgeScene recipe bytes[0..1] = gold cost? | `tools/recon/` 분석 | 가설 검증성. |
+| ⭐⭐ | A. ForgeScene recipe bytes[0..1] gold cost? | `tools/recon/` 분석 | 가설 검증성. |
+| ⭐⭐ | B. Status enum 확장 (REGEN/HASTE/SHIELD) | `engine-core` | R96 buff 패턴 재사용. |
+| ⭐⭐ | C. enemy 측 buff 시스템 — 적도 ACC/DOD buff | `BattleScene` | 더 풍부한 전투. |
+| ⭐⭐ | D. MASTER_SPEC §13 region/event 시스템 | engine + scene | 큰 작업. |
 | ⭐ | Phase C: Dialogue LLM 번역 ($4.09) | `tools/converter/` | 사용자 API key 필요. |
-
-**R97 권장 시작 순서**:
-1. `git status` + `git log --oneline -5` → R96 commit 확인.
-2. **ACCURACY/DODGE** — hit-roll 도입, catalog ACC/DOD 를 R96 self-buff 패턴 사용.
-3. StatusTest + hit-roll 단위 테스트.
-4. `:app:testDebugUnitTest` + `:engine-core:testDebugUnitTest` + `:app:assembleDebug`.
-5. `docs/h3/ghidra-round97-*.md` 작성 + SESSION_HANDOFF/PROGRESS 갱신 + commit.
 
 ---
 
-**최신 진행 라운드**: 2026-05-19 (Round 96, uncommitted) — **Party buff status + CRIT_DEF / DEFENSE wiring**. (1) ⭐⭐⭐⭐ **engine `Status` enum 4종 → 6종** — `CRIT_DEF_BUFF` (perTick = 받는 crit 감쇄 %) / `DEFENSE_BUFF` (perTick = 받는 데미지 reduction %) 2 신규. `perTick` 의 의미를 dot 데미지 → percent 로 재해석. (2) ⭐⭐⭐⭐ **`BattleScene.partyStatuses: MutableMap<Int, MutableList<StatusEffect>>` 도입** — battle-scoped, Character data class 무변경 (GameState 직렬화 호환성 보존). `statusesOf(idx)` / `buffPercent(idx, st)` 헬퍼. (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill(actorMemberIdx, nameKo)`** — useSkill 공격 분기 끝에서 호출, catalog CRIT_DEF/DEFENSE primaryModifier ±25 clamp 후 actor.statuses 에 3턴 등록 (중복은 refresh). 로그: "자기 버프: 크감+N% 방어+M% (3턴)". (4) ⭐⭐⭐⭐ **`doEnemyAttack` 통합** — target 측 critDefPct → `damage(extraCritDefPercent)` (crit multiplier `(1.7 - critDef/100).coerceIn(1.0, 1.7)`) / defPct → 최종 `dmg = rawDmg * (100 - defPct) / 100` (≥1). 두 buff 활성 시 "(버프 흡수: 크감 N% / 방어 M%)" 로그. (5) ⭐⭐⭐ **`tickPartyStatuses()`** — `updateEnemyTurn` 한 라운드 종료 분기에서 호출. 모든 buff turnsLeft -= 1, 만료 제거. (6) ⭐⭐⭐ **render UI** — `renderPartyPanel` 가 살아있는 멤버 행 우측에 `크감(N) 방어(M)` 인디케이터 (light blue, textSize 8f). `statusLabel` 에 6종 라벨. enemy tick `when` 에 buff 분기 (no-op). (7) ⭐⭐ **2 신규 engine tests** — enum size ≥ 4 + 두 BUFF 존재 / BUFF 가 dot 시뮬에서 HP 감소시키지 않음 (BUFF 와 dot 분기 분리). R95 단정 `enum == 4` 를 `>= 4` 로 완화. (8) **109/109 tests** (engine 40→42 +2, app 67 그대로) + APK BUILD SUCCESSFUL. (9) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~90-91% → ~91% (catalog ModifierKind 7종 중 5종 wiring 완료, party buff state 시스템 신설). 상세는 [ghidra-round96-party-buffs-critdef-defense-2026-05-19.md](ghidra-round96-party-buffs-critdef-defense-2026-05-19.md).
+**최신 진행 라운드**: 2026-05-19 (Round 97, uncommitted) — **ACCURACY/DODGE 시스템 + catalog ModifierKind 7종 wiring 완성**. (1) ⭐⭐⭐⭐⭐ **engine `Status` enum 6종 → 8종** — `ACCURACY_BUFF` (perTick = +명중 %) / `DODGE_BUFF` (perTick = +회피 %) 2 신규. (2) ⭐⭐⭐⭐⭐ **`BattleScene.rollHit(attackerAccPct, targetDodgePct): Boolean`** — `chance = (90 + acc - dodge).coerceIn(30, 100)`, `Random.nextInt(100) < chance`. base hit rate 90%, ACC/DOD buff 로 ±30 변동, 최저 30% 보장. (3) ⭐⭐⭐⭐ **useSkill 공격 분기 hit-roll** — actor ACC buff 합산 → `rollHit(accPct, 0)`. 실패 시 `"$name → 빗나감"` 로그 + damage/debuff/buff 등록 모두 skip + animation 정상 진행. (4) ⭐⭐⭐⭐ **doEnemyAttack dodge-roll** — target DODGE buff 합산 → `rollHit(0, dodgePct)`. 실패 시 `"$name → ${target} 회피!"` 로그 + 데미지 0. (5) ⭐⭐⭐ **`registerSelfBuffsFromSkill` 확장** — 기존 CRIT_DEF / DEFENSE 에 더해 catalog ACCURACY / DODGE primaryModifier 도 ±25 clamp 후 self-buff (3턴) 등록. 로그에 4종 모두 표시. (6) ⭐⭐⭐ **statusLabel + enemy tick `when`** 에 ACC/DOD 추가 — render 인디케이터 자동 처리 + enemy 측 buff 분기 (no-op). (7) ⭐⭐⭐ **2 신규 engine tests** — `r97_status_enum_has_accuracy_and_dodge_buff` (8종 확인) / `r97_hit_chance_formula_clamps_to_30_100` (5 sample cases 식 검증). R96 의 `enum == 6` 단정을 `>= 6` 으로 완화. (8) **111/111 tests** (engine 42→44 +2, app 67 그대로) + APK BUILD SUCCESSFUL. (9) **catalog effect_v2 전체 게임플레이 통합 완성** — ModifierKind 7종 (OFFENSE/HEAL/CRIT_RATE/CRIT_DEF/DEFENSE/ACCURACY/DODGE) + nDebuffs 4종 (POISON/BURN/SLOW/STUN). (10) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~91% → ~92% (catalog effect_v2 stat 카테고리 전체 wiring + miss/dodge 시스템 도입). 상세는 [ghidra-round97-accuracy-dodge-2026-05-19.md](ghidra-round97-accuracy-dodge-2026-05-19.md).
+
+**Round 96** (committed `f14ecd5a`) — **Party buff status + CRIT_DEF / DEFENSE wiring**. (1) ⭐⭐⭐⭐ **engine `Status` enum 4종 → 6종** — `CRIT_DEF_BUFF` (perTick = 받는 crit 감쇄 %) / `DEFENSE_BUFF` (perTick = 받는 데미지 reduction %) 2 신규. `perTick` 의 의미를 dot 데미지 → percent 로 재해석. (2) ⭐⭐⭐⭐ **`BattleScene.partyStatuses: MutableMap<Int, MutableList<StatusEffect>>` 도입** — battle-scoped, Character data class 무변경 (GameState 직렬화 호환성 보존). `statusesOf(idx)` / `buffPercent(idx, st)` 헬퍼. (3) ⭐⭐⭐⭐ **`registerSelfBuffsFromSkill(actorMemberIdx, nameKo)`** — useSkill 공격 분기 끝에서 호출, catalog CRIT_DEF/DEFENSE primaryModifier ±25 clamp 후 actor.statuses 에 3턴 등록 (중복은 refresh). 로그: "자기 버프: 크감+N% 방어+M% (3턴)". (4) ⭐⭐⭐⭐ **`doEnemyAttack` 통합** — target 측 critDefPct → `damage(extraCritDefPercent)` (crit multiplier `(1.7 - critDef/100).coerceIn(1.0, 1.7)`) / defPct → 최종 `dmg = rawDmg * (100 - defPct) / 100` (≥1). 두 buff 활성 시 "(버프 흡수: 크감 N% / 방어 M%)" 로그. (5) ⭐⭐⭐ **`tickPartyStatuses()`** — `updateEnemyTurn` 한 라운드 종료 분기에서 호출. 모든 buff turnsLeft -= 1, 만료 제거. (6) ⭐⭐⭐ **render UI** — `renderPartyPanel` 가 살아있는 멤버 행 우측에 `크감(N) 방어(M)` 인디케이터 (light blue, textSize 8f). `statusLabel` 에 6종 라벨. enemy tick `when` 에 buff 분기 (no-op). (7) ⭐⭐ **2 신규 engine tests** — enum size ≥ 4 + 두 BUFF 존재 / BUFF 가 dot 시뮬에서 HP 감소시키지 않음 (BUFF 와 dot 분기 분리). R95 단정 `enum == 4` 를 `>= 4` 로 완화. (8) **109/109 tests** (engine 40→42 +2, app 67 그대로) + APK BUILD SUCCESSFUL. (9) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~90-91% → ~91% (catalog ModifierKind 7종 중 5종 wiring 완료, party buff state 시스템 신설). 상세는 [ghidra-round96-party-buffs-critdef-defense-2026-05-19.md](ghidra-round96-party-buffs-critdef-defense-2026-05-19.md).
 
 **Round 95** (committed `b18cb7f1`) — **Status enum 확장 (BURN/SLOW/STUN) + BattleScene wiring**. (1) ⭐⭐⭐⭐ **engine `Status` enum 1종 → 4종** — BURN (POISON 와 동등 도트, 별개 stack) / SLOW (행동 50% skip) / STUN (행동 100% skip) 3 신규. `StatusEffect.perTick` 는 SLOW/STUN 에서 unused. (2) ⭐⭐⭐⭐ **BattleScene 통합** — `tryApplyPoisonFromSkill` 가 `nDebuffs` count 만큼 `[POISON, BURN, SLOW, STUN]` 앞에서부터 take 해 모두 부여. 중복은 turnsLeft refresh, 로그 한 줄에 모든 부여 status 표시 (`[독/화상/둔화] 부여`). (3) ⭐⭐⭐ **`tickEnemyStatuses when` 분기** — POISON/BURN → dot hp -= perTick, SLOW/STUN → tick 효과 없음 (doEnemyAttack 에서 처리). (4) ⭐⭐⭐ **`enemyShouldSkipAttack(): Boolean`** — STUN 항상 skip + 로그, SLOW 50% skip + 로그. `updateEnemyTurn` 의 호출 순서: tick → 살아있으면 skip 판정 → 아니면 `doEnemyAttack`. (5) ⭐⭐ **`statusLabel(st, isEn)` 헬퍼** — 4종 라벨 (`독/화상/둔화/기절` / `POI/BRN/SLW/STN`). render 인디케이터 자동 처리. (6) ⭐⭐⭐ **2 신규 engine tests** — `r95_status_enum_has_burn_slow_stun` (4종 확인) / `r95_burn_tick_decays_like_poison` (BURN/POISON 동일 dot 시뮬). (7) **107/107 tests** (engine 38→40 +2 / app 67 그대로) + APK BUILD SUCCESSFUL. (8) **진행률 ~99.98% → ~99.98%** 분석 동일, 리메이크 ~90% → ~90-91% (catalog `nDebuffs` 시그널이 dot 1종 → dot+행동 제어 4종 의 의미 있는 다양화). 상세는 [ghidra-round95-status-burn-slow-stun-2026-05-19.md](ghidra-round95-status-burn-slow-stun-2026-05-19.md).
 

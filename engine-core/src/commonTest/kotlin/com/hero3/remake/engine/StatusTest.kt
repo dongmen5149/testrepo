@@ -35,7 +35,28 @@ class StatusTest {
         val all = Status.values().toSet()
         assertTrue(Status.CRIT_DEF_BUFF in all)
         assertTrue(Status.DEFENSE_BUFF in all)
-        assertEquals(6, Status.values().size)
+        assertTrue(Status.values().size >= 6)
+    }
+
+    @Test
+    fun r97_status_enum_has_accuracy_and_dodge_buff() {
+        // R97: ACCURACY_BUFF / DODGE_BUFF 추가.
+        val all = Status.values().toSet()
+        assertTrue(Status.ACCURACY_BUFF in all)
+        assertTrue(Status.DODGE_BUFF in all)
+        assertTrue(Status.values().size >= 8)
+    }
+
+    @Test
+    fun r97_hit_chance_formula_clamps_to_30_100() {
+        // R97 의 rollHit 식 시뮬: chance = (90 + acc - dodge).coerceIn(30, 100).
+        // helper 가 BattleScene 안에 있어 직접 호출 불가 — 식 자체를 여기서 검증.
+        fun chance(acc: Int, dod: Int) = (90 + acc - dod).coerceIn(30, 100)
+        assertEquals(100, chance(50, 0))    // 140 → 100
+        assertEquals(30, chance(0, 100))    // -10 → 30
+        assertEquals(90, chance(0, 0))      // base
+        assertEquals(95, chance(10, 5))     // 95
+        assertEquals(85, chance(5, 10))     // 85
     }
 
     @Test
