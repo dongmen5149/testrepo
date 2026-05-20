@@ -301,6 +301,20 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Damage type semantics (R104) — byte[5] enum 4 type
+    dts_path = CONVERTED / 'h4_damage_type_semantics.json'
+    if dts_path.exists():
+        try:
+            dts = json.loads(dts_path.read_text(encoding='utf-8'))
+            catalog['damage_type_semantics'] = {
+                'type_enum_definitions': dts['type_enum_definitions'],
+                'class_distribution': dts['class_distribution'],
+                'design_observations': dts['design_observations'],
+            }
+            print(f'\nDamage type semantics: 4 enum (0/5/20/25) — WEAPON_BASIC/DEBUFF/SPECIAL/MAGIC (R104)')
+        except Exception as e:
+            print(f'  WARN: failed to load damage_type_semantics: {e}', file=sys.stderr)
+
     # Alt-form mode (R103) — 24 alt-form mode 매핑
     afm_path = CONVERTED / 'h4_alt_form_mode.json'
     if afm_path.exists():

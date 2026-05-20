@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 104 (2026-05-20) — damage_type enum 별 특성 확정 (R102 후속) ★
+
+> R102 의 byte[5] damage_type enum (4종) in-game 의미. 상세: [round104-damage-type-semantics.md](round104-damage-type-semantics.md).
+>
+> Description text cross-ref 로 확정: type=0 MAGIC_OR_SKILL (54, skill 자체 damage + MP 소비), type=5 WEAPON_BASIC (7, skill damage=0, character ATK 사용 — 대검공격/사격 등 무기 기반), type=20 DEBUFF (2, 약화의검/압도의검 = 방어 감소/둔화), type=25 WEAPON_SPECIAL (1, 철의주먹 = 암즈 2콤보).
+>
+> Class 별 dtype 분포: S000 양손검 4 type 모두 (10/3/2/1), S001 사격 2 type (12/4), S002 마검 type=0 만 (16), S003 마법 type=0 만 (16). **S000 양손검만 4 type 모두 보유 = 전투 다양성 핵심**. 무기 클래스 (S000/S001) 만 WEAPON_BASIC 보유, 마검/마법은 모두 skill-based. DEBUFF+SPECIAL 은 S000 전용.
+>
+> `parse_h4_damage_type_semantics.py` 신규 + `h4_damage_type_semantics.json` 13.7KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 103 (2026-05-20) — 24 alt-form mode 매핑 (R101 후속) ★
 
 > R101 의 alt-form 24개 활성화 mode/condition 분석. 상세: [round103-alt-form-mode.md](round103-alt-form-mode.md).

@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 103 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 104 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R103 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R104 은 각 round 문서.
 
-## 🏆 Round 76-R103 누적 (2026-05-19 ~ 2026-05-20, 28 라운드 연속 자동 분석) ★ R100 마일스톤
+## 🏆 Round 76-R104 누적 (2026-05-19 ~ 2026-05-20, 29 라운드 연속 자동 분석) ★ R100 마일스톤
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -35,18 +35,19 @@
 | R100 ★ | tier_value/bonus_id semantic 확정 (R94 마지막 ambiguity 해소) | [round100-tier-bonus-semantics.md](round100-tier-bonus-semantics.md) |
 | R101 | character class skill schema 확정 — 4 class × 16 entries = 64 skill (R69 의 40 + 24 alt-form) | [round101-class-skill-schema.md](round101-class-skill-schema.md) |
 | R102 | 32B class skill field 정밀 — 64 skill 전수 byte 분포로 field 확정 | [round102-class-skill-fields.md](round102-class-skill-fields.md) |
-| **R103** | **★ 24 alt-form mode 매핑** — alt-form = primary 의 advanced variant (MP 1.5×, mid-tier lvl unlock). 4 category 식별 (enhanced 5/state_transform 8/variant 8/**summon_combo 3**). ★ S002 환수 합신 + S003 환수특공/환수증폭 = 환수+character mode-2 combo skill | [round103-alt-form-mode.md](round103-alt-form-mode.md) |
+| R103 | 24 alt-form mode 매핑 — primary 의 advanced variant, S002/S003 환수 combo 발견 | [round103-alt-form-mode.md](round103-alt-form-mode.md) |
+| **R104** | **★ damage_type enum 별 특성 확정** — 0=MAGIC_OR_SKILL(54), 5=WEAPON_BASIC(7, S000+S001만), 20=DEBUFF(2, S000만), 25=WEAPON_SPECIAL(1, 철의주먹). S000 양손검만 4 type 모두 보유 (전투 다양성 핵심). 마검/마법은 모두 magic-based | [round104-damage-type-semantics.md](round104-damage-type-semantics.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. character + 환수 mode-2 combo skill 연결 발견. 남은 자동 트랙은 damage type 별 특성, drop_id 17, milestone 결산.
+**Hero4 게임 데이터 자동 분석 ~99.99%+ 종결**. damage type 의미까지 확정. 남은 자동 트랙은 drop_id 17, dialogue 검색, milestone 결산.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **damage type 5/20/25 별 특성** (R102 후속) — 10 skill 의 in-game 의미
-2. **drop_id 17 byte10=232 정확한 해석** (R97 후속)
-3. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
-4. **환수 합신 / 환수특공 / 환수증폭 dialogue 검색** (R103 후속)
+1. ⭐ **drop_id 17 byte10=232 정확한 해석** (R97 후속)
+2. **죽음의 구 timer 단위 in-game 검증** (R98 후속)
+3. **환수 합신 / 환수특공 / 환수증폭 dialogue 검색** (R103 후속)
+4. **type=0 magic skill 의 sub-categorization** (R104 후속) — 54 skill 세분 분류
 5. **R100 milestone 결산 문서**
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)

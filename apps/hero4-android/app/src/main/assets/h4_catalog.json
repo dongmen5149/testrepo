@@ -2916,6 +2916,37 @@
       "summon_tier_count": 15
     }
   },
+  "damage_type_semantics": {
+    "type_enum_definitions": {
+      "0": "MAGIC_OR_SKILL",
+      "5": "WEAPON_BASIC",
+      "20": "DEBUFF",
+      "25": "WEAPON_SPECIAL"
+    },
+    "class_distribution": {
+      "_H_S000": {
+        "5": 3,
+        "0": 10,
+        "25": 1,
+        "20": 2
+      },
+      "_H_S001": {
+        "5": 4,
+        "0": 12
+      },
+      "_H_S002": {
+        "0": 16
+      },
+      "_H_S003": {
+        "0": 16
+      }
+    },
+    "design_observations": {
+      "weapon_class_split": "S000/S001 (무기 class) 만 WEAPON_BASIC (type=5) 보유, S002/S003 (마검/마법) 은 모두 magic-based",
+      "s000_unique_types": "S000 양손검 만이 DEBUFF (20) + WEAPON_SPECIAL (25) 보유 — 가장 다양한 dtype",
+      "type_0_dominance": "type=0 (skill-based damage) 가 54/64 = 84.4% — 대다수 skill 이 자체 damage 값 보유"
+    }
+  },
   "alt_form_mode": {
     "stats_comparison": {
       "primary_count": 40,
