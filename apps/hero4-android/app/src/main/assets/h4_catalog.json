@@ -2916,6 +2916,151 @@
       "summon_tier_count": 15
     }
   },
+  "sa_ability_skill_map": {
+    "global_skill_id_rule": "skill_id = class_index × 10 + local_index (4 class × 10 skills)",
+    "ability_skill_summary": [
+      {
+        "skill_id": 12,
+        "class_name": "S001",
+        "class_role": "루레인 사격 (shooter)",
+        "local_id": 2,
+        "skill_name": "동시사격",
+        "tier_values": [
+          10,
+          20,
+          30
+        ],
+        "bonus": {
+          "bonus_skill_id": 18,
+          "bonus_name": "암즈강화",
+          "bonus_values": [
+            5,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "skill_id": 13,
+        "class_name": "S001",
+        "class_role": "루레인 사격 (shooter)",
+        "local_id": 3,
+        "skill_name": "급소사격",
+        "tier_values": [
+          10,
+          20,
+          30
+        ],
+        "bonus": null
+      },
+      {
+        "skill_id": 15,
+        "class_name": "S001",
+        "class_role": "루레인 사격 (shooter)",
+        "local_id": 5,
+        "skill_name": "에이밍샷",
+        "tier_values": [
+          10,
+          20,
+          30
+        ],
+        "bonus": {
+          "bonus_skill_id": 19,
+          "bonus_name": "속사",
+          "bonus_values": [
+            5,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "skill_id": 16,
+        "class_name": "S001",
+        "class_role": "루레인 사격 (shooter)",
+        "local_id": 6,
+        "skill_name": "암즈트랩",
+        "tier_values": [
+          10,
+          20,
+          30
+        ],
+        "bonus": {
+          "bonus_skill_id": 17,
+          "bonus_name": "회피증가",
+          "bonus_values": [
+            10,
+            20,
+            30
+          ]
+        }
+      },
+      {
+        "skill_id": 18,
+        "class_name": "S001",
+        "class_role": "루레인 사격 (shooter)",
+        "local_id": 8,
+        "skill_name": "암즈강화",
+        "tier_values": [
+          10,
+          20,
+          30
+        ],
+        "bonus": null
+      },
+      {
+        "skill_id": 21,
+        "class_name": "S002",
+        "class_role": "티르 마검 (mage-sword)",
+        "local_id": 1,
+        "skill_name": "마검공격",
+        "tier_values": [
+          5,
+          10,
+          15
+        ],
+        "bonus": null
+      },
+      {
+        "skill_id": 22,
+        "class_name": "S002",
+        "class_role": "티르 마검 (mage-sword)",
+        "local_id": 2,
+        "skill_name": "텔레포트소드",
+        "tier_values": [
+          10,
+          25,
+          40
+        ],
+        "bonus": null
+      },
+      {
+        "skill_id": 37,
+        "class_name": "S003",
+        "class_role": "루레인 단도+마법 (소환사)",
+        "local_id": 7,
+        "skill_name": "마법강화",
+        "tier_values": [
+          20,
+          40,
+          60
+        ],
+        "bonus": null
+      }
+    ],
+    "class_distribution": {
+      "S001": 5,
+      "S002": 2,
+      "S003": 1
+    },
+    "design_observations": {
+      "S000_no_abilities": "S000 (티르 base) ability upgrade 없음 — default skills only",
+      "S001_dominant": "S001 (루레인 사격) 5/8 ability — deepest customization",
+      "S002_basic_variants": "S002 (티르 마검) 2/8 — 마검공격/텔레포트소드 (combat 변종)",
+      "S003_single_passive": "S003 (마법) 1/8 — 마법강화 만 ability tier 보유",
+      "all_bonus_in_S001": "3 bonus chain (회피증가/암즈강화/속사) 모두 S001 passive — 사격 class 가 self-contained tree"
+    }
+  },
   "sa_summon_map": {
     "group_to_summon": {
       "0": {

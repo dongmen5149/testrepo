@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 94 (2026-05-20) — _H_SA ability skill_id 카테고리 식별 (R88 후속) ★
+
+> R88 의 24 ability slot skill_id 8 종 매핑. 상세: [round94-sa-ability-skill-map.md](round94-sa-ability-skill-map.md).
+>
+> Global skill_id 규칙 `skill_id = class_index × 10 + local_index` 확인 (R69 40 character skills 의 통합 ID space). 매핑 결과: S001 사격(루레인) 5 ability (동시사격/급소사격/에이밍샷/암즈트랩/암즈강화), S002 마검(티르) 2 (마검공격/텔레포트소드), S003 마법(루레인) 1 (마법강화), S000 양손검(티르) **0**. 3 bonus chain (회피증가/암즈강화/속사) 모두 S001 — 사격 class 가 self-contained skill tree. S000 base class 는 ability tier upgrade 부재.
+>
+> `parse_h4_sa_ability_skill_map.py` 신규 + `h4_sa_ability_skill_map.json` 9.7KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 93 (2026-05-20) — _H_SA group_id ↔ 5 환수 매핑 검증 (R88 후속) ★
 
 > R88 의 5 group_id (0/64/78/38/75) → 5 환수 매핑 가설을 검증. 상세: [round93-sa-summon-map.md](round93-sa-summon-map.md).

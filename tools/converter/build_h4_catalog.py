@@ -301,6 +301,21 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # SA ability skill map (R94) — _H_SA 24 ability slot 의 8 skill_id 매핑
+    sasm_path = CONVERTED / 'h4_sa_ability_skill_map.json'
+    if sasm_path.exists():
+        try:
+            sasm = json.loads(sasm_path.read_text(encoding='utf-8'))
+            catalog['sa_ability_skill_map'] = {
+                'global_skill_id_rule': sasm['global_skill_id_rule'],
+                'ability_skill_summary': sasm['ability_skill_summary'],
+                'class_distribution': sasm['class_distribution'],
+                'design_observations': sasm['design_observations'],
+            }
+            print(f'\nSA ability skill map: 8 skills mapped (R94) — S001 dominance ({sasm["class_distribution"].get("S001", 0)}/8)')
+        except Exception as e:
+            print(f'  WARN: failed to load sa_ability_skill_map: {e}', file=sys.stderr)
+
     # SA summon map (R93) — _H_SA group_id ↔ 5 환수 매핑 검증
     sam_path = CONVERTED / 'h4_sa_summon_map.json'
     if sam_path.exists():

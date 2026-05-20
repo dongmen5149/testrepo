@@ -1,0 +1,440 @@
+{
+  "round": 94,
+  "global_skill_id_rule": "skill_id = class_index × 10 + local_index (4 class × 10 skills)",
+  "class_names": {
+    "0": "S000",
+    "1": "S001",
+    "2": "S002",
+    "3": "S003"
+  },
+  "class_roles": {
+    "S000": "티르 양손검 (base)",
+    "S001": "루레인 사격 (shooter)",
+    "S002": "티르 마검 (mage-sword)",
+    "S003": "루레인 단도+마법 (소환사)"
+  },
+  "global_skill_table_40": [
+    {
+      "global_id": 0,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 0,
+      "skill_name": "대검공격"
+    },
+    {
+      "global_id": 1,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 1,
+      "skill_name": "반동의영검"
+    },
+    {
+      "global_id": 2,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 2,
+      "skill_name": "기절의검"
+    },
+    {
+      "global_id": 3,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 3,
+      "skill_name": "유린의검"
+    },
+    {
+      "global_id": 4,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 4,
+      "skill_name": "찰라의영검"
+    },
+    {
+      "global_id": 5,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 5,
+      "skill_name": "철의주먹"
+    },
+    {
+      "global_id": 6,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 6,
+      "skill_name": "약화의검"
+    },
+    {
+      "global_id": 7,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 7,
+      "skill_name": "압도의검"
+    },
+    {
+      "global_id": 8,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 8,
+      "skill_name": "철벽방어"
+    },
+    {
+      "global_id": 9,
+      "class_id": 0,
+      "class_name": "S000",
+      "local_id": 9,
+      "skill_name": "분노축적"
+    },
+    {
+      "global_id": 10,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 0,
+      "skill_name": "사격"
+    },
+    {
+      "global_id": 11,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 1,
+      "skill_name": "산탄사격"
+    },
+    {
+      "global_id": 12,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 2,
+      "skill_name": "동시사격"
+    },
+    {
+      "global_id": 13,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 3,
+      "skill_name": "급소사격"
+    },
+    {
+      "global_id": 14,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 4,
+      "skill_name": "크리티컬샷"
+    },
+    {
+      "global_id": 15,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 5,
+      "skill_name": "에이밍샷"
+    },
+    {
+      "global_id": 16,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 6,
+      "skill_name": "암즈트랩"
+    },
+    {
+      "global_id": 17,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 7,
+      "skill_name": "회피증가"
+    },
+    {
+      "global_id": 18,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 8,
+      "skill_name": "암즈강화"
+    },
+    {
+      "global_id": 19,
+      "class_id": 1,
+      "class_name": "S001",
+      "local_id": 9,
+      "skill_name": "속사"
+    },
+    {
+      "global_id": 20,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 0,
+      "skill_name": "대검공격"
+    },
+    {
+      "global_id": 21,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 1,
+      "skill_name": "마검공격"
+    },
+    {
+      "global_id": 22,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 2,
+      "skill_name": "텔레포트소드"
+    },
+    {
+      "global_id": 23,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 3,
+      "skill_name": "프레임인첸트"
+    },
+    {
+      "global_id": 24,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 4,
+      "skill_name": "아이스인첸트"
+    },
+    {
+      "global_id": 25,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 5,
+      "skill_name": "기합"
+    },
+    {
+      "global_id": 26,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 6,
+      "skill_name": "적마안"
+    },
+    {
+      "global_id": 27,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 7,
+      "skill_name": "야성"
+    },
+    {
+      "global_id": 28,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 8,
+      "skill_name": "동체시력"
+    },
+    {
+      "global_id": 29,
+      "class_id": 2,
+      "class_name": "S002",
+      "local_id": 9,
+      "skill_name": "치명타회피"
+    },
+    {
+      "global_id": 30,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 0,
+      "skill_name": "빙결의단도"
+    },
+    {
+      "global_id": 31,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 1,
+      "skill_name": "정화의구"
+    },
+    {
+      "global_id": 32,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 2,
+      "skill_name": "암흑"
+    },
+    {
+      "global_id": 33,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 3,
+      "skill_name": "빙결의검"
+    },
+    {
+      "global_id": 34,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 4,
+      "skill_name": "정화의장벽"
+    },
+    {
+      "global_id": 35,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 5,
+      "skill_name": "쇠약의저주"
+    },
+    {
+      "global_id": 36,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 6,
+      "skill_name": "환수흡수"
+    },
+    {
+      "global_id": 37,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 7,
+      "skill_name": "마법강화"
+    },
+    {
+      "global_id": 38,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 8,
+      "skill_name": "저주강화"
+    },
+    {
+      "global_id": 39,
+      "class_id": 3,
+      "class_name": "S003",
+      "local_id": 9,
+      "skill_name": "흡혈환수"
+    }
+  ],
+  "ability_skill_summary": [
+    {
+      "skill_id": 12,
+      "class_name": "S001",
+      "class_role": "루레인 사격 (shooter)",
+      "local_id": 2,
+      "skill_name": "동시사격",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "bonus": {
+        "bonus_skill_id": 18,
+        "bonus_name": "암즈강화",
+        "bonus_values": [
+          5,
+          10,
+          15
+        ]
+      }
+    },
+    {
+      "skill_id": 13,
+      "class_name": "S001",
+      "class_role": "루레인 사격 (shooter)",
+      "local_id": 3,
+      "skill_name": "급소사격",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "bonus": null
+    },
+    {
+      "skill_id": 15,
+      "class_name": "S001",
+      "class_role": "루레인 사격 (shooter)",
+      "local_id": 5,
+      "skill_name": "에이밍샷",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "bonus": {
+        "bonus_skill_id": 19,
+        "bonus_name": "속사",
+        "bonus_values": [
+          5,
+          10,
+          15
+        ]
+      }
+    },
+    {
+      "skill_id": 16,
+      "class_name": "S001",
+      "class_role": "루레인 사격 (shooter)",
+      "local_id": 6,
+      "skill_name": "암즈트랩",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "bonus": {
+        "bonus_skill_id": 17,
+        "bonus_name": "회피증가",
+        "bonus_values": [
+          10,
+          20,
+          30
+        ]
+      }
+    },
+    {
+      "skill_id": 18,
+      "class_name": "S001",
+      "class_role": "루레인 사격 (shooter)",
+      "local_id": 8,
+      "skill_name": "암즈강화",
+      "tier_values": [
+        10,
+        20,
+        30
+      ],
+      "bonus": null
+    },
+    {
+      "skill_id": 21,
+      "class_name": "S002",
+      "class_role": "티르 마검 (mage-sword)",
+      "local_id": 1,
+      "skill_name": "마검공격",
+      "tier_values": [
+        5,
+        10,
+        15
+      ],
+      "bonus": null
+    },
+    {
+      "skill_id": 22,
+      "class_name": "S002",
+      "class_role": "티르 마검 (mage-sword)",
+      "local_id": 2,
+      "skill_name": "텔레포트소드",
+      "tier_values": [
+        10,
+        25,
+        40
+      ],
+      "bonus": null
+    },
+    {
+      "skill_id": 37,
+      "class_name": "S003",
+      "class_role": "루레인 단도+마법 (소환사)",
+      "local_id": 7,
+      "skill_name": "마법강화",
+      "tier_values": [
+        20,
+        40,
+        60
+      ],
+      "bonus": null
+    }
+  ],
+  "class_distribution": {
+    "S001": 5,
+    "S002": 2,
+    "S003": 1
+  },
+  "design_observations": {
+    "S000_no_abilities": "S000 (티르 base) ability upgrade 없음 — default skills only",
+    "S001_dominant": "S001 (루레인 사격) 5/8 ability — deepest customization",
+    "S002_basic_variants": "S002 (티르 마검) 2/8 — 마검공격/텔레포트소드 (combat 변종)",
+    "S003_single_passive": "S003 (마법) 1/8 — 마법강화 만 ability tier 보유",
+    "all_bonus_in_S001": "3 bonus chain (회피증가/암즈강화/속사) 모두 S001 passive — 사격 class 가 self-contained tree"
+  }
+}

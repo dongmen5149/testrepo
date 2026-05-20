@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 93 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 94 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R93 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R94 은 각 round 문서.
 
-## 🏆 Round 76-R93 누적 (2026-05-19 ~ 2026-05-20, 18 라운드 연속 자동 분석)
+## 🏆 Round 76-R94 누적 (2026-05-19 ~ 2026-05-20, 19 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -25,19 +25,20 @@
 | R90 | Q_REPAY idx ↔ quest 1:1 매핑 확정 — idx 0-127 = 128 quest 직접 매핑 (경계 61→62 = _QUEST_0→_QUEST_1), 128-198 = 71 extra (52 repeatable + 8 mid + 11 endgame), 199 = sentinel | [round90-quest-reward-map.md](round90-quest-reward-map.md) |
 | R91 | 보스 phase stat scaling 정량 — 4 outlier (좀비/오토마톤/소환된좀비/기갑병) 추출. 표준 보스 phase 0→final HP/ATK/DEF +20-25%, gold/EXP +25-30% 일관 ratio. 오토마톤 V-shape (phase 1 cinematic dip). enemy_class byte 도 phase 별 전환 | [round91-boss-phase-scaling.md](round91-boss-phase-scaling.md) |
 | R92 | Summon dialogue corpus cross-ref — 252 파일/484KB 스캔. 5 환수 개별 이름은 catalog/item/shop NPC/tutorial 4 파일만, 환수 시스템 acquisition entry = `NPCUI_GUARDIANSHOP_DAT` (수호자 상점), tutorial = `n0124_scn` (베놈 예시), 보스 망각의 저주 catalog 외 0 hits | [round92-summon-dialogue-xref.md](round92-summon-dialogue-xref.md) |
-| **R93** | **★ _H_SA group_id ↔ 5 환수 매핑 검증** — group 0=베놈/64=헤지호그/78=그래비티/38=쇼커/75=세이프가드 ordinal match 확정. 5 verification check 모두 통과 (group 64 signed-neg = 되돌리기 reflect, group 38 max aura cost = 쇼커, ranged_status 5/5 일치) | [round93-sa-summon-map.md](round93-sa-summon-map.md) |
+| R93 | _H_SA group_id ↔ 5 환수 매핑 검증 — group 0=베놈/64=헤지호그/78=그래비티/38=쇼커/75=세이프가드 ordinal match 확정. 5 verification check 모두 통과 | [round93-sa-summon-map.md](round93-sa-summon-map.md) |
+| **R94** | **★ _H_SA ability skill_id 카테고리 식별** — 8 skill_id {12,13,15,16,18,21,22,37} = global skill_id 0-39 매핑 (`class×10+local`). S001 사격이 5/8 점유 (deepest tree), S000 양손검은 ability tier 부재. 3 bonus chain 모두 S001 passive (회피증가/암즈강화/속사) | [round94-sa-ability-skill-map.md](round94-sa-ability-skill-map.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.98% 종결**. 환수 시스템 _H_SA 매핑까지 검증. 남은 자동 트랙은 ability skill_id 카테고리, drop_id, 죽음의 구.
+**Hero4 게임 데이터 자동 분석 ~99.99% 종결**. character skill global ID space 까지 통합. 남은 자동 트랙은 element 검증, drop_id, 죽음의 구.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **`_H_SA` ability skill_id {12,13,15,16,18,21,22,37} 카테고리** (R88 후속)
-2. **element byte[5]=2 검증** (R89 후속)
-3. **Q_REPAY drop_id 의미** (R90 후속)
-4. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
-5. **n0124_scn tutorial 전문 분석** (R92 후속)
+1. ⭐ **element byte[5]=2 검증** (R89 후속) — non-summon active skills 와 cross-ref
+2. **Q_REPAY drop_id 의미** (R90 후속)
+3. **죽음의 구 72B 특수 layout 정밀** (R91 후속)
+4. **n0124_scn tutorial 전문 분석** (R92 후속)
+5. **bonus_id=0 + tier_value 의미** (R94 후속)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
