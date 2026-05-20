@@ -98,6 +98,19 @@ class BattleScene(
         partyStatuses[memberIdx]?.filter { it.status == st }?.sumOf { it.perTick } ?: 0
 
     /**
+     * R103 — enemy 의 buff status 합 (특정 종류). doActorAttack / useSkill 의 player → enemy 데미지에 적용.
+     */
+    private fun enemyBuffPercent(st: Status): Int =
+        enemy.statuses.filter { it.status == st }.sumOf { it.perTick }
+
+    /** R103 — player → enemy 입힌 raw 데미지를 enemy DEFENSE_BUFF 로 감쇄. */
+    private fun applyEnemyDefenseBuff(rawDmg: Int): Int {
+        val defPct = enemyBuffPercent(Status.DEFENSE_BUFF).coerceIn(0, 90)
+        if (defPct <= 0) return rawDmg
+        return (rawDmg * (100 - defPct) / 100).coerceAtLeast(1)
+    }
+
+    /**
      * R102 — actor 의 SP_COST_REDUCE_BUFF 합 (0..clamp) 을 적용한 실 SP 비용.
      * 결과는 항상 ≥ 1 (skill 이 spCost > 0 일 때).
      */
@@ -350,6 +363,11 @@ class BattleScene(
         val isBoss = forcedEnemyId?.startsWith("boss_") == true
         SfxBus.playMusic(if (isBoss) SfxBus.Bgm.BOSS else SfxBus.Bgm.BATTLE)
         if (isBoss) SfxBus.play(SfxBus.Sfx.BOSS_INTRO)
+        // R103: boss 는 전투 시작 시 자기 DEFENSE_BUFF 25% (전투 내내) 보유 — 받는 데미지 감쇄.
+        // 일반 적은 변동 없음. enemy.statuses 는 R94 에 도입됨 (debuff 용) 이지만 buff 도 같은 컨테이너 재사용.
+        if (isBoss) {
+            enemy.statuses += StatusEffect(Status.DEFENSE_BUFF, turnsLeft = 99, perTick = 25)
+        }
     }
     private val hpBar = Paint().apply { color = Color.rgb(220, 80, 80) }
     private val spBar = Paint().apply { color = Color.rgb(80, 140, 220) }
@@ -475,8 +493,10 @@ class BattleScene(
         val effectiveEnemyDef = if (piercePct > 0)
             (enemy.def.def * (100 - piercePct) / 100).coerceAtLeast(0)
         else enemy.def.def
-        val dmg = damage(atk, effectiveEnemyDef, extraCritPercent = critBonus)
+        val rawDmg = damage(atk, effectiveEnemyDef, extraCritPercent = critBonus)
         if (piercePct > 0) pushLog(lang("(방어 관통 -$piercePct%)", "(pierce -$piercePct%)"))
+        // R103: enemy DEFENSE_BUFF 감쇄.
+        val dmg = applyEnemyDefenseBuff(rawDmg)
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 280L
@@ -550,7 +570,9 @@ class BattleScene(
     private fun doActorAttack() {
         val actor = currentActor()
         val base = CharacterRegistry.effectiveAttack(actor)
-        val dmg = damage(base, enemy.def.def)
+        val rawDmg = damage(base, enemy.def.def)
+        // R103: enemy DEFENSE_BUFF (예: boss 25%) 가 있으면 받는 데미지 감쇄.
+        val dmg = applyEnemyDefenseBuff(rawDmg)
         enemy.hp -= dmg
         hitFlashMs = 220L
         heroLungeMs = 220L
@@ -664,7 +686,9 @@ class BattleScene(
                 Status.ACCURACY_BUFF, Status.DODGE_BUFF,
                 Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF,
                 Status.TAUNT_BUFF, Status.BLOCK_BUFF,
-                Status.SP_COST_REDUCE_BUFF -> { /* party buff — enemy 에 부여 안 됨 */ }
+                Status.SP_COST_REDUCE_BUFF -> {
+                    /* enemy 에도 부여 가능 (R103: boss DEFENSE_BUFF). tick 시 효과 없음 — buff 사용처에서 buffPercent 합산. */
+                }
             }
             e.turnsLeft -= 1
             if (e.turnsLeft <= 0) it.remove()

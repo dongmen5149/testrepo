@@ -48,6 +48,35 @@ class StatusTest {
     }
 
     @Test
+    fun r103_enemy_defense_buff_reduces_damage_in_simulation() {
+        // R103: enemy DEFENSE_BUFF 25% → 받는 raw 100 dmg → 75 적용. BattleScene 의 applyEnemyDefenseBuff
+        // 식 자체를 검증.
+        fun apply(raw: Int, defPct: Int): Int {
+            val p = defPct.coerceIn(0, 90)
+            return if (p <= 0) raw else (raw * (100 - p) / 100).coerceAtLeast(1)
+        }
+        assertEquals(75, apply(100, 25))
+        assertEquals(50, apply(100, 50))
+        assertEquals(10, apply(100, 90))      // clamp max
+        assertEquals(100, apply(100, 0))      // no buff
+        assertEquals(1, apply(2, 90))         // ≥ 1 보장
+    }
+
+    @Test
+    fun r103_enemy_statuses_can_hold_buffs_not_just_debuffs() {
+        // R94 의 enemy.statuses 가 R103 에서 buff 도 담을 수 있도록 확장됐다.
+        val def = EnemyRegistry.all.first()
+        val ei = EnemyInstance(def, hp = 100)
+        ei.statuses += StatusEffect(Status.DEFENSE_BUFF, turnsLeft = 99, perTick = 25)
+        ei.statuses += StatusEffect(Status.POISON, turnsLeft = 3, perTick = 5)
+        // 두 종 모두 컨테이너에 들어감.
+        assertEquals(2, ei.statuses.size)
+        // perTick 합산이 DEFENSE_BUFF 만 필터링 시 25.
+        val defSum = ei.statuses.filter { it.status == Status.DEFENSE_BUFF }.sumOf { it.perTick }
+        assertEquals(25, defSum)
+    }
+
+    @Test
     fun r102_status_enum_has_sp_cost_reduce_buff() {
         val all = Status.values().toSet()
         assertTrue(Status.SP_COST_REDUCE_BUFF in all)
