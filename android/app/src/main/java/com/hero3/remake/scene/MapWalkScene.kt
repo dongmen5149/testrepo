@@ -70,6 +70,10 @@ class MapWalkScene(
         val layer0: List<Int>,
         val layer1: List<Int>,
         val decorations: List<DecoMarker> = emptyList(),
+        /** R109: meta_header_hex 의 첫 byte = theme sheet ID. theme_{themeId}_bm 로 layer_0 렌더. */
+        val themeId: Int = -1,
+        /** R109: layer_0 raw 값을 `>> themeShift` 하여 sheet 의 row index 얻는다. */
+        val themeShift: Int = 0,
     )
 
     private val tilePx = 16
@@ -111,6 +115,8 @@ class MapWalkScene(
     private var map: MapData? = null
     private val heroWalk: List<List<Bitmap>>  // [dir 0..3][anim 0..7]
     private val npcSprites: MutableMap<String, Bitmap> = mutableMapOf()
+    /** R109: theme sheet ID → 16x16 tile bitmap 리스트. lazy load. */
+    private val themeTileCache: MutableMap<Int, List<Bitmap>> = mutableMapOf()
 
     init {
         loadMap(gameState.currentMapId)
@@ -135,17 +141,53 @@ class MapWalkScene(
                 val tile = r.getJSONArray("tile")
                 DecoMarker(tile.getInt(0), tile.getInt(1), r.getInt("id"), r.getInt("type"))
             }
+            val l0 = jsonIntArray(o.optJSONArray("layer_0"))
+            val themeId = parseFirstHexByte(o.optString("meta_header_hex", ""))
+            val themeRows = themeId.takeIf { it >= 0 }?.let { loadThemeTiles(it)?.size ?: 0 } ?: 0
+            val themeShift = if (themeRows > 0 && l0.isNotEmpty()) {
+                val maxL0 = l0.max()
+                var s = 0
+                while (s < 8 && (maxL0 shr s) >= themeRows) s++
+                if (s < 8) s else 0
+            } else 0
             map = MapData(
                 id = id,
                 name = o.optString("name", "?"),
                 w = w, h = h,
                 palette = jsonIntArray(o.optJSONArray("palette")),
-                layer0 = jsonIntArray(o.optJSONArray("layer_0")),
+                layer0 = l0,
                 layer1 = jsonIntArray(o.optJSONArray("layer_1")),
                 decorations = decos,
+                themeId = themeId,
+                themeShift = themeShift,
             )
             gameState.markVisited(id)
         }
+    }
+
+    /** "06070141" → 0x06 = 6. 비어 있거나 parse 실패 시 -1. */
+    private fun parseFirstHexByte(s: String): Int {
+        val t = s.trim().replace(" ", "")
+        if (t.length < 2) return -1
+        return runCatching { t.substring(0, 2).toInt(16) }.getOrDefault(-1)
+    }
+
+    /**
+     * R109: theme_{id}_bm/frame_00*.png 을 열어 16×16 tile bitmap 리스트로 split.
+     * 동일 themeId 재진입 시 cache 사용.
+     */
+    private fun loadThemeTiles(themeId: Int): List<Bitmap>? {
+        if (themeId < 0) return null
+        themeTileCache[themeId]?.let { return it }
+        val dir = "${settings.spritesDir()}/map/theme_${themeId}_bm"
+        return runCatching {
+            val files = context.assets.list(dir)?.filter { it.endsWith(".png") }?.sorted() ?: emptyList()
+            if (files.isEmpty()) return@runCatching null
+            val sheet = context.assets.open("$dir/${files.first()}").use { BitmapFactory.decodeStream(it) }
+            val px = sheet.width  // 보통 16. HD/SD 동일.
+            val rows = sheet.height / px
+            (0 until rows).map { row -> Bitmap.createBitmap(sheet, 0, row * px, px, px) }
+        }.getOrNull()?.also { themeTileCache[themeId] = it }
     }
 
     private fun jsonIntArray(arr: org.json.JSONArray?): List<Int> {
@@ -386,17 +428,26 @@ class MapWalkScene(
         val ty1 = ((camY + viewportH) / tilePx + 1).coerceAtMost(m.h)
         val hudOffsetY = 24
 
-        // Layer 0 (terrain) 렌더 — 색상 그리드로 임시
+        // Layer 0 (terrain) 렌더 — R109: theme_{themeId}_bm 의 row tile bitmap 사용.
+        // cache 없으면 색상 grid 로 graceful fallback.
+        val themeTiles = if (m.themeId >= 0) loadThemeTiles(m.themeId) else null
+        val dst = Rect()
         for (ty in ty0 until ty1) {
             for (tx in tx0 until tx1) {
                 val i = ty * m.w + tx
                 if (i >= m.layer0.size) continue
                 val tileId = m.layer0[i]
-                tilePaint.color = colorForTile(tileId, layer = 0)
                 val px = tx * tilePx - camX
                 val py = ty * tilePx - camY + hudOffsetY
-                canvas.drawRect(px.toFloat(), py.toFloat(),
-                    (px + tilePx).toFloat(), (py + tilePx).toFloat(), tilePaint)
+                val bmp = themeTiles?.getOrNull(tileId shr m.themeShift)
+                if (bmp != null) {
+                    dst.set(px, py, px + tilePx, py + tilePx)
+                    canvas.drawBitmap(bmp, null, dst, null)
+                } else {
+                    tilePaint.color = colorForTile(tileId, layer = 0)
+                    canvas.drawRect(px.toFloat(), py.toFloat(),
+                        (px + tilePx).toFloat(), (py + tilePx).toFloat(), tilePaint)
+                }
             }
         }
         // Layer 1 (collision/objects) 렌더 — 비-0 만 색상 패널 (반투명)
