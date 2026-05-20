@@ -4,6 +4,16 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 88 (2026-05-20) — `_H_BS` + `_H_SA` 환수 progression / ability slot 정밀화 ★
+
+> R86 동반 파일 두 개 정밀화. 상세: [round88-summon-progression.md](round88-summon-progression.md).
+>
+> R86 stride 가설 정정: `_H_BS` = **5 환수 × 27B + 1B 패딩** (이전 "17×8B" 폐기), `_H_SA` = **40 records × 24B** (1 헤더 + 24 ability slot + 15 summon-tier; 이전 "24×40B" 폐기).
+>
+> `_H_BS`: 환수당 5 stat (HP/SP/ATK/DEF/MAG?) + sequential learn skill IDs 6-20 (5 환수 × 3 skill). `_H_SA`: 8 unique ability skill_id {12,13,15,16,18,21,22,37} × 3 tier (총 24) + 5 summon-group × 3 growth tier (총 15, `value_le16 = tier × 10` 불변량 확인). `parse_h4_summon_progression.py` 신규 + `h4_summon_progression.json` 12.5KB + catalog 통합.
+
+---
+
 ## 🏆 Round 87 (2026-05-19) — `_H_SS` 환수 시스템 stat block 정밀화 ★
 
 > R86 후속 정밀화 라운드. 상세: [round87-summon-stat-detail.md](round87-summon-stat-detail.md).

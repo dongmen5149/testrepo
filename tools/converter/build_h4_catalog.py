@@ -272,6 +272,35 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_system: {e}', file=sys.stderr)
 
+    # Summon progression (R88) — _H_BS stat + _H_SA ability / tier
+    prog_path = CONVERTED / 'h4_summon_progression.json'
+    if prog_path.exists():
+        try:
+            pdata = json.loads(prog_path.read_text(encoding='utf-8'))
+            catalog['summon_progression'] = {
+                'h_bs': {
+                    'record_count': pdata['h_bs']['record_count'],
+                    'record_stride': pdata['h_bs']['record_stride'],
+                    'summons': [
+                        {
+                            'summon_id': s['summon_id'],
+                            'name': s['name'],
+                            'stats': s['stats'],
+                            'learn_skill_ids': s['learn_skill_ids'],
+                            'cost_marker': s['cost_marker'],
+                        } for s in pdata['h_bs']['summons']
+                    ],
+                },
+                'h_sa': {
+                    'record_count': pdata['h_sa']['record_count'],
+                    'ability_slot_count': len(pdata['h_sa']['ability_slots']),
+                    'summon_tier_count': len(pdata['h_sa']['summon_tier_growth']),
+                },
+            }
+            print(f'\nSummon progression: 5 환수 stat + 24 ability + 15 tier (R88)')
+        except Exception as e:
+            print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
+
     # Quests (R70) — separately parsed in h4_quests.json
     quests_path = CONVERTED / 'h4_quests.json'
     if quests_path.exists():

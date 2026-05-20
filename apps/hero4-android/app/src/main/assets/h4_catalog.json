@@ -2817,5 +2817,103 @@
       "boss_like_name": "망각의 저주",
       "section_a_divider_name": "환수A공격"
     }
+  },
+  "summon_progression": {
+    "h_bs": {
+      "record_count": 5,
+      "record_stride": 27,
+      "summons": [
+        {
+          "summon_id": 0,
+          "name": "베놈",
+          "stats": [
+            21,
+            14,
+            18,
+            7,
+            5
+          ],
+          "learn_skill_ids": [
+            6,
+            7,
+            8
+          ],
+          "cost_marker": 15
+        },
+        {
+          "summon_id": 1,
+          "name": "헤지호그",
+          "stats": [
+            18,
+            13,
+            17,
+            12,
+            0
+          ],
+          "learn_skill_ids": [
+            9,
+            10,
+            11
+          ],
+          "cost_marker": 0
+        },
+        {
+          "summon_id": 2,
+          "name": "그래비티",
+          "stats": [
+            14,
+            19,
+            21,
+            6,
+            20
+          ],
+          "learn_skill_ids": [
+            12,
+            13,
+            14
+          ],
+          "cost_marker": 0
+        },
+        {
+          "summon_id": 3,
+          "name": "쇼커",
+          "stats": [
+            25,
+            10,
+            14,
+            11,
+            246
+          ],
+          "learn_skill_ids": [
+            15,
+            16,
+            17
+          ],
+          "cost_marker": 40
+        },
+        {
+          "summon_id": 4,
+          "name": "세이프가드",
+          "stats": [
+            14,
+            15,
+            13,
+            18,
+            0
+          ],
+          "learn_skill_ids": [
+            18,
+            19,
+            20
+          ],
+          "cost_marker": 0
+        }
+      ]
+    },
+    "h_sa": {
+      "record_count": 40,
+      "ability_slot_count": 24,
+      "summon_tier_count": 15
+    }
   }
 }

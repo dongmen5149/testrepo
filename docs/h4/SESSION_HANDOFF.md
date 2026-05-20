@@ -1,9 +1,9 @@
-# Hero4 Session Handoff — Round 87 종료, 다음 세션 시작 가이드
+# Hero4 Session Handoff — Round 88 종료, 다음 세션 시작 가이드
 
 > **다음 세션 시작점**: 이 문서를 가장 먼저 읽기.
-> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R87 은 각 round 문서.
+> R70-R75 누적 요약은 [`round70-75-summary.md`](round70-75-summary.md), R76-R88 은 각 round 문서.
 
-## 🏆 Round 76-R87 누적 (2026-05-19, 12 라운드 연속 자동 분석)
+## 🏆 Round 76-R88 누적 (2026-05-19 ~ 2026-05-20, 13 라운드 연속 자동 분석)
 
 | R | 핵심 발견 | 문서 |
 |---|---|---|
@@ -19,20 +19,21 @@
 | R84 | `_ITM_OPTION` enchantment pool **51종** (클래스 보완 affix) | [round84-enchantment-pool.md](round84-enchantment-pool.md) |
 | R85 | Quest reward 분리: Q_REPAY_0 = EXP, Q_REPAY_1 = gold (~11배) | [round85-quest-reward-distribution.md](round85-quest-reward-distribution.md) |
 | R86 | `_H_SS` 환수(소환수) 시스템 발견 (베놈/헤지호그/그래비티/쇼커/세이프가드) | [round86-summon-system.md](round86-summon-system.md) |
-| **R87** | **★ 환수 시스템 정밀화** — 5 logical skills × 5 환수 + 23B stat block field 의미 + global passive skill_id 91-94 | [round87-summon-stat-detail.md](round87-summon-stat-detail.md) |
+| R87 | 환수 시스템 정밀화 — 5 logical skills × 5 환수 + 23B stat block field 의미 + global passive skill_id 91-94 | [round87-summon-stat-detail.md](round87-summon-stat-detail.md) |
+| **R88** | **★ `_H_BS` + `_H_SA` 정밀화** — R86 stride 가설 정정 (5×27B / 40×24B). 5 환수 base stat + learn skill ID(6-20), 8 ability × 3 tier, 5 summon × 3 growth tier (value = tier × 10) | [round88-summon-progression.md](round88-summon-progression.md) |
 
-**Hero4 게임 데이터 자동 분석 ~99.5% 종결**. 환수 시스템 entry/stat 까지 풀림. 미해결은 `_H_BS`/`_H_SA` 정밀 + 보스 phase stat 정량 + Q_REPAY 매핑.
+**Hero4 게임 데이터 자동 분석 ~99.7% 종결**. 환수 진성 progression 까지 풀림. 남은 자동 트랙은 stat block 추가 field, Q_REPAY 매핑, 보스 phase 정량, dialogue cross-ref.
 
 ## ⏭ 다음 세션 — "영웅서기4 다음 진행해줘" 받으면
 
 ### Option 1: 정밀화 자동 트랙 (1-2h, 즉시 시작 가능)
 
-1. ⭐ **`_H_BS` 17 레벨 stat increment** (R86 동반 발견) — 8B × 17 records, 환수 레벨업 progression
-2. **`_H_SA` 24 slot ability mapping** (R86 동반 발견) — 40B × 24
-3. **23B stat block field 추가 의미** (R87 후속) — pos 0 type catalog, pos 4 flag, aura type
-4. **Q_REPAY idx ↔ R70 quest name 매핑** (R85 후속) — 200 - 128 = 72 차이 해소
-5. **보스 phase stat 강화율 정량** (R80 후속) — 오토마톤 5 phase 비교
-6. **dialogue corpus 환수 등장 빈도** (R87 후속) — 베놈/헤지호그/... 35,752 대사 cross-ref
+1. ⭐ **23B stat block field 5+ 추가 의미** (R87 후속) — pos 0 type catalog, pos 4 flag, aura type
+2. **Q_REPAY idx ↔ R70 quest name 매핑** (R85 후속) — 200 - 128 = 72 차이 해소
+3. **보스 phase stat 강화율 정량** (R80 후속) — 오토마톤 5 phase 비교
+4. **dialogue corpus 환수 등장 빈도** (R87 후속) — 베놈/헤지호그/... 35,752 대사 cross-ref
+5. **`_H_SA` group_id ↔ 5 환수 매핑 검증** (R88 후속) — group 0/64/78/38/75 의 환수 식별
+6. **`_H_SA` ability skill_id {12,13,15,16,18,21,22,37} 카테고리** — environment/elemental? (R88 후속)
 
 ### Option 2: 사용자 환경 트랙 (⛔ 자동 불가)
 
@@ -48,6 +49,9 @@
 - **5 환수 × 5 logical skills = 25 환수 스킬** (R87 확정)
   - 베놈 (독), 헤지호그 (반사), 그래비티 (슬로우), 쇼커 (스턴), 세이프가드 (회복)
   - 각 5 skills: basic_attack + ranged_status + effect_boost + aura + on_summon_buff
+  - 환수 base stat 5-axis + 학습 skill ID 시퀀스 6-20 (R88 `_H_BS`)
+  - 환수 성장 LE16 = tier × 10 (5 group × 3 tier, R88 `_H_SA`)
+- **8 ability slots × 3 tier** (R88 `_H_SA`) — skill_id {12,13,15,16,18,21,22,37}
 - **4 글로벌 소환사 패시브** (skill_id 91-94) — 마법력/교감도/체력/정신 강화
 - **1 보스급 status** — 망각의 저주 (str=66, type=7)
 - **51 enchantments** (HP/SP, 공격/방어, proc, 시스템, 클래스 보완)
