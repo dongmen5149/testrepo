@@ -97,6 +97,18 @@ class BattleScene(
     private fun buffPercent(memberIdx: Int, st: Status): Int =
         partyStatuses[memberIdx]?.filter { it.status == st }?.sumOf { it.perTick } ?: 0
 
+    /** R107 — HP_MAX_BUFF 합 적용한 effective hpMax. */
+    private fun effectiveHpMax(memberIdx: Int): Int {
+        val c = party.getOrNull(memberIdx) ?: return 0
+        return c.hpMax + buffPercent(memberIdx, Status.HP_MAX_BUFF)
+    }
+
+    /** R107 — SP_MAX_BUFF 합 적용한 effective spMax. */
+    private fun effectiveSpMax(memberIdx: Int): Int {
+        val c = party.getOrNull(memberIdx) ?: return 0
+        return c.spMax + buffPercent(memberIdx, Status.SP_MAX_BUFF)
+    }
+
     /**
      * R103 — enemy 의 buff status 합 (특정 종류). doActorAttack / useSkill 의 player → enemy 데미지에 적용.
      */
@@ -168,6 +180,13 @@ class BattleScene(
         val spCostReduce = idx.primaryModifierForEngineName(
             nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SP_COST_REDUCE)
             .coerceIn(0, catalogBonusClamp)
+        // R107 — HP_MAX / SP_MAX 일시 가산 (flat). clamp = ±200 (effective max boost cap).
+        val hpMaxBoost = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.HP_MAX)
+            .coerceIn(0, 200)
+        val spMaxBoost = idx.primaryModifierForEngineName(
+            nameKo, com.hero3.remake.catalog.Hero3CatalogSkillIndex.ModifierKind.SP_MAX)
+            .coerceIn(0, 200)
         if (critDef > 0) {
             val ex = list.firstOrNull { it.status == Status.CRIT_DEF_BUFF }
             if (ex != null) { ex.turnsLeft = 3 }
@@ -213,7 +232,27 @@ class BattleScene(
             if (ex != null) { ex.turnsLeft = 3 }
             else list += StatusEffect(Status.SP_COST_REDUCE_BUFF, turnsLeft = 3, perTick = spCostReduce)
         }
-        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0 || block > 0 || spCostReduce > 0) {
+        if (hpMaxBoost > 0) {
+            // 같은 buff 가 이미 있으면 turnsLeft 만 갱신 (bonus HP 중복 부여 안 함).
+            // 신규 부여 시 현재 HP 에 bonus 만큼 회복 (효과: hpMax 상승 + 회복).
+            val ex = list.firstOrNull { it.status == Status.HP_MAX_BUFF }
+            val actor = party.getOrNull(actorMemberIdx)
+            if (ex != null) { ex.turnsLeft = 3 }
+            else {
+                list += StatusEffect(Status.HP_MAX_BUFF, turnsLeft = 3, perTick = hpMaxBoost)
+                if (actor != null && actor.hp > 0) actor.hp += hpMaxBoost
+            }
+        }
+        if (spMaxBoost > 0) {
+            val ex = list.firstOrNull { it.status == Status.SP_MAX_BUFF }
+            val actor = party.getOrNull(actorMemberIdx)
+            if (ex != null) { ex.turnsLeft = 3 }
+            else {
+                list += StatusEffect(Status.SP_MAX_BUFF, turnsLeft = 3, perTick = spMaxBoost)
+                if (actor != null && actor.hp > 0) actor.sp += spMaxBoost
+            }
+        }
+        if (critDef > 0 || defense > 0 || accuracy > 0 || dodge > 0 || hpRegen > 0 || spRegen > 0 || taunt > 0 || block > 0 || spCostReduce > 0 || hpMaxBoost > 0 || spMaxBoost > 0) {
             val parts = listOfNotNull(
                 if (critDef > 0) "${if (isEn) "CDF" else "크감"}+$critDef%" else null,
                 if (defense > 0) "${if (isEn) "DEF" else "방어"}+$defense%" else null,
@@ -224,6 +263,8 @@ class BattleScene(
                 if (taunt > 0) "${if (isEn) "TNT" else "도발"}" else null,
                 if (block > 0) "${if (isEn) "BLK" else "블록"}+$block%" else null,
                 if (spCostReduce > 0) "${if (isEn) "SPC" else "SP비"}-$spCostReduce%" else null,
+                if (hpMaxBoost > 0) "${if (isEn) "HPM" else "HP최대"}+$hpMaxBoost" else null,
+                if (spMaxBoost > 0) "${if (isEn) "SPM" else "SP최대"}+$spMaxBoost" else null,
             ).joinToString(" ")
             pushLog(lang("자기 버프: $parts (3턴)", "Self buff: $parts (3 turns)"))
         }
@@ -278,7 +319,8 @@ class BattleScene(
         Status.POISON, Status.BURN, Status.SLOW, Status.STUN -> false
         Status.CRIT_DEF_BUFF, Status.DEFENSE_BUFF, Status.ACCURACY_BUFF, Status.DODGE_BUFF,
         Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF, Status.TAUNT_BUFF, Status.BLOCK_BUFF,
-        Status.SP_COST_REDUCE_BUFF -> true
+        Status.SP_COST_REDUCE_BUFF,
+        Status.HP_MAX_BUFF, Status.SP_MAX_BUFF -> true
     }
 
     /**
@@ -328,7 +370,7 @@ class BattleScene(
             .coerceIn(0, catalogBonusClamp)
         if (drainPct <= 0 || dmgDealt <= 0) return
         val heal = (dmgDealt * drainPct / 100).coerceAtLeast(1)
-            .coerceAtMost(actor.hpMax - actor.hp)
+            .coerceAtMost(effectiveHpMax(actorIdx) - actor.hp)
         if (heal <= 0) return
         actor.hp += heal
         popups += Popup("+$heal", onEnemy = false, targetIdx = actorIdx, ttl = 900L, color = Color.rgb(220, 120, 220))
@@ -360,12 +402,12 @@ class BattleScene(
                 for (e in list) {
                     when (e.status) {
                         Status.HP_REGEN_BUFF -> {
-                            val heal = (c.hpMax - c.hp).coerceAtMost(e.perTick).coerceAtLeast(0)
+                            val heal = (effectiveHpMax(idx) - c.hp).coerceAtMost(e.perTick).coerceAtLeast(0)
                             c.hp += heal
                             hpHealed += heal
                         }
                         Status.SP_REGEN_BUFF -> {
-                            val gain = (c.spMax - c.sp).coerceAtMost(e.perTick).coerceAtLeast(0)
+                            val gain = (effectiveSpMax(idx) - c.sp).coerceAtMost(e.perTick).coerceAtLeast(0)
                             c.sp += gain
                             spGained += gain
                         }
@@ -394,6 +436,13 @@ class BattleScene(
                 val e = it.next()
                 e.turnsLeft -= 1
                 if (e.turnsLeft <= 0) it.remove()
+            }
+            // R107 — HP_MAX_BUFF/SP_MAX_BUFF 만료 후 현재 HP/SP 를 새 effective max 로 clamp.
+            if (c.hp > 0) {
+                val ehm = effectiveHpMax(idx)
+                if (c.hp > ehm) c.hp = ehm
+                val esm = effectiveSpMax(idx)
+                if (c.sp > esm) c.sp = esm
             }
         }
     }
@@ -596,7 +645,7 @@ class BattleScene(
             val target = party[targetIdx]
             val intl = CharacterRegistry.effectiveIntl(actor)
             val healedRaw = (intl * s.powerMul).toInt() + s.flatBonus + catalogBonus
-            val healed = healedRaw.coerceAtLeast(0).coerceAtMost(target.hpMax - target.hp)
+            val healed = healedRaw.coerceAtLeast(0).coerceAtMost(effectiveHpMax(targetIdx) - target.hp)
             target.hp += healed
             popups += Popup("+$healed", onEnemy = false, targetIdx = targetIdx, ttl = 900L, color = Color.rgb(120, 240, 120))
             pushLog("$name → ${displayName(target, isEn)} +${healed} HP")
@@ -690,14 +739,14 @@ class BattleScene(
             "potion_s", "potion_m" -> {
                 val targetIdx = lowestHpAliveAlly()
                 val target = party[targetIdx]
-                val healed = (target.hpMax - target.hp).coerceAtMost(item.power)
+                val healed = (effectiveHpMax(targetIdx) - target.hp).coerceAtMost(item.power)
                 target.hp += healed
                 popups += Popup("+$healed", onEnemy = false, targetIdx = targetIdx, ttl = 900L, color = Color.rgb(120, 240, 120))
                 pushLog("$itemName → ${displayName(target, isEn)} +${healed} HP")
             }
             "ether_s" -> {
                 val actor = currentActor()
-                val gained = (actor.spMax - actor.sp).coerceAtMost(item.power)
+                val gained = (effectiveSpMax(actorIdx) - actor.sp).coerceAtMost(item.power)
                 actor.sp += gained
                 pushLog("$itemName +${gained} SP")
             }
@@ -841,7 +890,8 @@ class BattleScene(
                 Status.ACCURACY_BUFF, Status.DODGE_BUFF,
                 Status.HP_REGEN_BUFF, Status.SP_REGEN_BUFF,
                 Status.TAUNT_BUFF, Status.BLOCK_BUFF,
-                Status.SP_COST_REDUCE_BUFF -> {
+                Status.SP_COST_REDUCE_BUFF,
+                Status.HP_MAX_BUFF, Status.SP_MAX_BUFF -> {
                     /* enemy 에도 부여 가능 (R103: boss DEFENSE_BUFF). tick 시 효과 없음 — buff 사용처에서 buffPercent 합산. */
                 }
             }
@@ -882,6 +932,8 @@ class BattleScene(
         Status.TAUNT_BUFF    -> if (isEn) "TNT" else "도발"
         Status.BLOCK_BUFF    -> if (isEn) "BLK" else "블록"
         Status.SP_COST_REDUCE_BUFF -> if (isEn) "SPC" else "SP비"
+        Status.HP_MAX_BUFF   -> if (isEn) "HPM" else "HP최"
+        Status.SP_MAX_BUFF   -> if (isEn) "SPM" else "SP최"
     }
 
     private fun partyBuffLabel(st: Status, isEn: Boolean): String = statusLabel(st, isEn)
@@ -1169,11 +1221,13 @@ class BattleScene(
             // HP 바
             val hbX = 100f; val hbW = 80f; val hbH = 4f
             canvas.drawRect(hbX, y + 4f, hbX + hbW, y + 4f + hbH, hpBarBg)
-            canvas.drawRect(hbX, y + 4f, hbX + hbW * (c.hp.toFloat() / c.hpMax.coerceAtLeast(1)), y + 4f + hbH, hpBar)
+            val effHp = effectiveHpMax(i).coerceAtLeast(1)
+            val effSp = effectiveSpMax(i).coerceAtLeast(1)
+            canvas.drawRect(hbX, y + 4f, hbX + hbW * (c.hp.toFloat() / effHp).coerceAtMost(1f), y + 4f + hbH, hpBar)
             canvas.drawRect(hbX, y + 11f, hbX + hbW, y + 11f + hbH, hpBarBg)
-            canvas.drawRect(hbX, y + 11f, hbX + hbW * (c.sp.toFloat() / c.spMax.coerceAtLeast(1)), y + 11f + hbH, spBar)
-            canvas.drawText("${c.hp}/${c.hpMax}", hbX + hbW + 4f, y + 9f, UiKit.muted)
-            canvas.drawText("${c.sp}/${c.spMax}", hbX + hbW + 4f, y + 16f, UiKit.muted)
+            canvas.drawRect(hbX, y + 11f, hbX + hbW * (c.sp.toFloat() / effSp).coerceAtMost(1f), y + 11f + hbH, spBar)
+            canvas.drawText("${c.hp}/${effHp}", hbX + hbW + 4f, y + 9f, UiKit.muted)
+            canvas.drawText("${c.sp}/${effSp}", hbX + hbW + 4f, y + 16f, UiKit.muted)
 
             if (c.hp <= 0) {
                 canvas.drawRect(10f, y - 1f, virtualWidth - 18f, y + rowH - 3f, deadOverlay)

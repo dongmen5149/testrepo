@@ -63,6 +63,15 @@ enum class Status {
      * catalog SP_COST_REDUCE slot 값에서 유래.
      */
     SP_COST_REDUCE_BUFF,
+    /**
+     * R107 — 일시 hpMax 증가 buff. perTick = flat HP 가산 (예: 50 → effectiveHpMax = hpMax + 50).
+     * grant 시 c.hp 도 같은 양만큼 회복 (보너스 HP). 만료 시 c.hp 가 새 effectiveHpMax 로 clamp.
+     */
+    HP_MAX_BUFF,
+    /**
+     * R107 — 일시 spMax 증가 buff. perTick = flat SP 가산.
+     */
+    SP_MAX_BUFF,
 }
 
 /** 한 entity 위의 한 상태 이상 인스턴스 (turn-based decay). */

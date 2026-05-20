@@ -600,6 +600,34 @@ class Hero3CatalogLoaderTest {
         assertTrue(v in Int.MIN_VALUE..Int.MAX_VALUE)
     }
 
+    // ─── R107: HP_MAX / SP_MAX ModifierKind ────────────────────────────────
+
+    @Test
+    fun r107_hp_max_modifier_kind_exact_match() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "HP_MAX" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.HP_MAX))
+        }
+    }
+
+    @Test
+    fun r107_sp_max_modifier_kind_exact_match() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogSkillIndex.build(catalog)
+        for (e in idx.entries) {
+            val ev = e.skill.effectV2 ?: continue
+            val live = listOf(ev.slot1, ev.slot2, ev.slot3).filterNot { it.isSentinel || it.isZero }
+            val expected = live.filter { it.codeName == "SP_MAX" }.sumOf { it.primarySigned }
+            assertEquals(expected,
+                idx.primaryModifier(e.skill, Hero3CatalogSkillIndex.ModifierKind.SP_MAX))
+        }
+    }
+
     // ─── R106: CURE_STATUS ModifierKind ────────────────────────────────────
 
     @Test

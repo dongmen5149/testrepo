@@ -102,6 +102,10 @@ class Hero3CatalogSkillIndex(
         BUFF_REMOVE,
         /** R106 — CURE_STATUS slot. 시전 시 actor 자기 (또는 파티) 의 debuff 를 perTick 개 제거. */
         CURE_STATUS,
+        /** R107 — HP_MAX slot. 시전 시 actor 의 effectiveHpMax 가 perTick 만큼 일시 증가 (3턴). */
+        HP_MAX,
+        /** R107 — SP_MAX slot. 시전 시 actor 의 effectiveSpMax 가 perTick 만큼 일시 증가 (3턴). */
+        SP_MAX,
     }
 
     /**
@@ -139,6 +143,8 @@ class Hero3CatalogSkillIndex(
                 ModifierKind.SHIELD_PIERCE  -> s.codeName == "SHIELD_PIERCE"
                 ModifierKind.BUFF_REMOVE    -> s.codeName == "BUFF_REMOVE"
                 ModifierKind.CURE_STATUS    -> s.codeName == "CURE_STATUS"
+                ModifierKind.HP_MAX         -> s.codeName == "HP_MAX"
+                ModifierKind.SP_MAX         -> s.codeName == "SP_MAX"
             }
             if (keep) sum += s.primarySigned
         }
