@@ -488,6 +488,67 @@ class Hero3CatalogLoaderTest {
         assertTrue(hits.all { it.skill.name.contains("섬광") })
     }
 
+    // ─── R92: Hero3CatalogItemIndex ─────────────────────────────────────────
+
+    @Test
+    fun r92_item_index_builds_with_eighteen_categories_and_529_items() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogItemIndex.build(catalog)
+        // R71: 18 카테고리 × 총 529 items.
+        assertEquals(18, idx.fileCount)
+        assertEquals(529, idx.size)
+        // 평탄화 합계 = byFile 합계 = idx.size.
+        val total = idx.byFile.values.sumOf { it.size }
+        assertEquals(idx.size, total)
+        // categoryCount 는 18 이하 (일부 카테고리 라벨이 중복일 수 있음).
+        assertTrue(idx.categoryCount in 1..18)
+    }
+
+    @Test
+    fun r92_item_index_groups_by_file_and_keeps_all_entries() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogItemIndex.build(catalog)
+        for ((file, list) in idx.byFile) {
+            assertTrue(file.startsWith("i") && file.endsWith("_dat"))
+            assertTrue(list.isNotEmpty())
+            assertTrue(list.all { it.file == file })
+        }
+    }
+
+    @Test
+    fun r92_item_index_colorOf_distinct_for_first_ten_files_and_stable() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogItemIndex.build(catalog)
+        val sorted = idx.byFile.keys.sorted()
+        // 첫 10 파일은 palette slot[0..9] 와 1:1 distinct.
+        val first10 = sorted.take(10)
+        val colors10 = first10.map { idx.colorOf(it) }
+        assertEquals(first10.size, colors10.toSet().size)
+        // palette slot 매핑 확인.
+        for ((i, f) in first10.withIndex()) {
+            assertEquals(Hero3CatalogItemIndex.FILE_PALETTE[i], idx.colorOf(f))
+        }
+        // 같은 파일을 두 번 물어도 같은 색.
+        assertEquals(idx.colorOf(sorted[0]), idx.colorOf(sorted[0]))
+        // 미지 파일은 fallback (alpha=0xFF, 각 채널 ≥ 0x80).
+        val unknown = idx.colorOf("i99_dat")
+        assertEquals(0xFF.toInt(), (unknown ushr 24) and 0xFF)
+        assertTrue(((unknown ushr 16) and 0xFF) >= 0x80)
+        assertTrue(((unknown ushr 8) and 0xFF) >= 0x80)
+        assertTrue((unknown and 0xFF) >= 0x80)
+    }
+
+    @Test
+    fun r92_item_index_lookupByName_finds_known_consumable() {
+        val catalog = Hero3CatalogLoader.load(reader())
+        val idx = Hero3CatalogItemIndex.build(catalog)
+        // R76 finding: i18_dat[0] = "포션" (recipe 0 output).
+        val hits = idx.lookupByName("포션")
+        assertTrue(hits.isNotEmpty())
+        // 매칭된 entry 의 cleanName 또는 name 에 "포션" 이 포함.
+        assertTrue(hits.all { it.item.name.contains("포션") || it.item.cleanName.contains("포션") })
+    }
+
     // ─── R91: primaryModifier (effect_v2 → damage/heal bonus) ──────────────
 
     @Test

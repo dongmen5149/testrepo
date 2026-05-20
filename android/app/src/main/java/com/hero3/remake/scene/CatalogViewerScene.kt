@@ -90,9 +90,7 @@ class CatalogViewerScene(
             Tab.RARITY -> catalog.rarity.map { r ->
                 Row("${r.prefix.ifBlank { "(none)" }}  ${r.name.padEnd(14)}  arm×${r.modifierArmor}  wep×${r.modifierWeapon}")
             }
-            Tab.ITEMS -> catalog.items.map { c ->
-                Row("${c.file.padEnd(8)}  ${c.category.padEnd(10)}  n=${c.nItems}")
-            }
+            Tab.ITEMS -> itemRows()
             Tab.SKILLS -> skillRows()
             Tab.BOSSES -> catalog.bossesNormal.map { b ->
                 val td = b.trailerDecoded
@@ -132,6 +130,32 @@ class CatalogViewerScene(
                 Row("${f.path.padEnd(20)}  ${f.role}")
             }.ifEmpty { listOf(Row("✓ All ${catalog.desStatus.algorithm} files decrypted (R73)")) }
         }
+    }
+
+    /**
+     * R92 — Items 탭 행 생성. [Hero3CatalogItemIndex] 의 byFile 그룹화 +
+     * 파일별 색상 hint 를 사용해 18 categories 를 색으로 구분 (10 slot palette + 8 hash fallback).
+     * 각 category 헤더 (`=== iN_dat (category) ===`) 다음에 items 가 같은 색으로 이어진다.
+     */
+    private fun itemRows(): List<Row> {
+        if (catalog.items.isEmpty()) return listOf(Row("(no item data)"))
+        val index = com.hero3.remake.catalog.Hero3CatalogItemIndex.build(catalog)
+        val fileColors = index.fileColors()
+        val header = Row(
+            "loaded=${index.size}  categories=${index.categoryCount}  files=${index.fileCount}"
+        )
+        val body = catalog.items.flatMap { c ->
+            val paint = fileColors[c.file]?.let { paintForArgb(it) }
+            listOf(Row("=== ${c.file.padEnd(7)}  ${c.category}  (n=${c.nItems}) ===", paint)) +
+            c.items.map { it ->
+                Row(
+                    " pos=${it.pos.toString().padStart(3)}  ${it.cleanName.padEnd(14)}  " +
+                    "[${it.name}]",
+                    paint,
+                )
+            }
+        }
+        return listOf(header) + body
     }
 
     /**
