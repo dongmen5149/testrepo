@@ -4,6 +4,18 @@
 >
 > **"영웅서기4 다음 내용 진행해줘"** 받았으면 → 먼저 [SESSION_HANDOFF.md](SESSION_HANDOFF.md), 그 다음 §🏆 R68-R75 누적.
 
+## 🏆 Round 102 (2026-05-20) — 32B class skill stat block field 정밀 (R101 후속) ★
+
+> R101 의 64 skill 전수 byte 분포 분석. 상세: [round102-class-skill-fields.md](round102-class-skill-fields.md).
+>
+> Field 확정: byte[0]=MP cost (60/64 nonzero, 1-29), byte[3-4]=damage LE16 (29 nonzero, 20-320), byte[5]=damage type enum (0=54×, 5=7×, 20=2×, 25=1×), byte[8]=skill lvl requirement (0/3/6/11 dominant — 2 major unlock tiers), **byte[16-19]=speed/range/animation cluster** (S001 사격 5종 모두 speed=52 invariant). MP cost 평균 15.2, damage min 20 / max 320.
+>
+> 환수 23B stat block (R87) 과 character 32B 비교: layout 다르나 **speed/range/animation triplet semantic 공통** (offset shift +9). engine 의 internal stat dispatching 은 같은 layer.
+>
+> `parse_h4_class_skill_fields.py` 신규 + `h4_class_skill_fields.json` 35.7KB + catalog 통합 + Android 자산 배포.
+
+---
+
 ## 🏆 Round 101 (2026-05-20) — character class skill schema 확정 (R95 후속) ★
 
 > R95 미해결 character skill 구조 확정 + R69 catalog 누락 24 alt-form 발견. 상세: [round101-class-skill-schema.md](round101-class-skill-schema.md).

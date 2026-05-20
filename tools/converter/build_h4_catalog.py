@@ -301,6 +301,22 @@ def main():
         except Exception as e:
             print(f'  WARN: failed to load summon_progression: {e}', file=sys.stderr)
 
+    # Class skill fields (R102) — 32B field 정밀 식별
+    csf_path = CONVERTED / 'h4_class_skill_fields.json'
+    if csf_path.exists():
+        try:
+            csf = json.loads(csf_path.read_text(encoding='utf-8'))
+            catalog['class_skill_fields'] = {
+                'r101_followup': csf['r101_followup'],
+                'damage_type_enum': csf['damage_type_enum'],
+                'skill_level_req_distribution': csf['skill_level_req_distribution'],
+                'mp_cost_stats': csf['mp_cost_stats'],
+                'damage_stats': csf['damage_stats'],
+            }
+            print(f'\nClass skill fields: 32B field 정밀 (MP/damage/dtype/lvl/speed/range/anim) (R102)')
+        except Exception as e:
+            print(f'  WARN: failed to load class_skill_fields: {e}', file=sys.stderr)
+
     # Class skill schema (R101) — character S000-S003 32B stat block + desc
     css_path = CONVERTED / 'h4_class_skill_schema.json'
     if css_path.exists():

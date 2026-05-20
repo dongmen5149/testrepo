@@ -2916,6 +2916,36 @@
       "summon_tier_count": 15
     }
   },
+  "class_skill_fields": {
+    "r101_followup": "32B stat block field 정밀 식별",
+    "damage_type_enum": {
+      "5": 7,
+      "0": 54,
+      "25": 1,
+      "20": 2
+    },
+    "skill_level_req_distribution": {
+      "0": 5,
+      "3": 20,
+      "4": 2,
+      "5": 4,
+      "6": 9,
+      "7": 4,
+      "11": 16,
+      "10": 4
+    },
+    "mp_cost_stats": {
+      "nonzero_count": 60,
+      "min": 1,
+      "max": 29,
+      "mean": 15.2
+    },
+    "damage_stats": {
+      "nonzero_count": 29,
+      "min": 20,
+      "max": 320
+    }
+  },
   "class_skill_schema": {
     "r95_followup": "32B stat block + variable description 형태 schema 확정",
     "r69_correction": "R69 catalog 가 4 class × 10 = 40 skill 으로 보고했으나 실제 64 skill 발견",
